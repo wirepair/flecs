@@ -728,62 +728,6 @@ void Parser_pair_implicit_subject_obj_w_self_up(void) {
     ecs_fini(world);
 }
 
-void Parser_pair_implicit_subject_pred_w_up_trav(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Pred);
-    ECS_TAG(world, Obj);
-
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
-        .storage = &f,
-        .expr = "(Pred:up(ChildOf), Obj)"
-    }));
-    test_int(filter_count(&f), 1);
-
-    ecs_term_t *terms = filter_terms(&f);
-    test_first(terms[0], Pred, EcsUp|EcsIsEntity);
-    test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
-    test_second(terms[0], Obj, EcsSelf|EcsIsEntity);
-    test_int(terms[0].oper, EcsAnd);
-    test_int(terms[0].inout, EcsInOutDefault);
-    
-    test_assert(terms[0].first.trav == EcsChildOf);
-    test_assert(terms[0].second.trav == 0);
-
-    ecs_filter_fini(&f);
-
-    ecs_fini(world);
-}
-
-void Parser_pair_implicit_subject_obj_w_up_trav(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Pred);
-    ECS_TAG(world, Obj);
-
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
-        .storage = &f,
-        .expr = "(Pred, Obj:up(ChildOf))"
-    }));
-    test_int(filter_count(&f), 1);
-
-    ecs_term_t *terms = filter_terms(&f);
-    test_first(terms[0], Pred, EcsSelf|EcsIsEntity);
-    test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
-    test_second(terms[0], Obj, EcsUp|EcsIsEntity);
-    test_int(terms[0].oper, EcsAnd);
-    test_int(terms[0].inout, EcsInOutDefault);
-
-    test_assert(terms[0].first.trav == 0);
-    test_assert(terms[0].second.trav == EcsChildOf);
-
-    ecs_filter_fini(&f);
-
-    ecs_fini(world);
-}
-
 void Parser_pair_implicit_subject_pred_w_invalid_flags(void) {
     ecs_world_t *world = ecs_mini();
 
@@ -1005,7 +949,7 @@ void Parser_pair_implicit_subject_0_object(void) {
     ecs_term_t *terms = filter_terms(&f);
     test_first(terms[0], EcsChildOf, EcsSelf|EcsIsEntity);
     test_src(terms[0], EcsThis, EcsSelf|EcsIsVariable);
-    test_second(terms[0], 0, EcsIsEntity);
+    test_second(terms[0], 0, EcsIsEntity|EcsSelf);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
     test_int(terms[0].id, ecs_pair(EcsChildOf, 0));
@@ -1028,7 +972,7 @@ void Parser_pair_explicit_subject_0_object(void) {
     ecs_term_t *terms = filter_terms(&f);
     test_first(terms[0], EcsChildOf, EcsSelf|EcsIsEntity);
     test_src(terms[0], EcsThis, EcsSelf|EcsIsVariable);
-    test_second(terms[0], 0, EcsIsEntity);
+    test_second(terms[0], 0, EcsIsEntity|EcsSelf);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
     test_int(terms[0].id, ecs_pair(EcsChildOf, 0));
@@ -2018,7 +1962,6 @@ void Parser_pred_implicit_subject_w_role(void) {
     test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].id_flags, ECS_TOGGLE);
 
     ecs_filter_fini(&f);
 
@@ -2042,7 +1985,6 @@ void Parser_pred_explicit_subject_w_role(void) {
     test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].id_flags, ECS_TOGGLE);
 
     ecs_filter_fini(&f);
 
@@ -2066,7 +2008,6 @@ void Parser_pred_no_subject_w_role(void) {
     test_src(terms[0], 0, EcsIsEntity);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].id_flags, ECS_TOGGLE);
 
     ecs_filter_fini(&f);
 
@@ -2092,7 +2033,6 @@ void Parser_pair_implicit_subject_w_role(void) {
     test_second(terms[0], Obj, EcsSelf|EcsIsEntity);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].id_flags, ECS_PAIR);
 
     ecs_filter_fini(&f);
 
@@ -2118,7 +2058,6 @@ void Parser_pair_explicit_subject_w_role(void) {
     test_second(terms[0], Obj, EcsSelf|EcsIsEntity);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].id_flags, ECS_PAIR);
 
     ecs_filter_fini(&f);
 
@@ -2142,7 +2081,6 @@ void Parser_inout_role_pred_implicit_subject(void) {
     test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
-    test_int(terms[0].id_flags, ECS_TOGGLE);
 
     ecs_filter_fini(&f);
 
@@ -2166,7 +2104,6 @@ void Parser_inout_role_pred_no_subject(void) {
     test_src(terms[0], 0, EcsIsEntity);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
-    test_int(terms[0].id_flags, ECS_TOGGLE);
 
     ecs_filter_fini(&f);
 
@@ -2190,7 +2127,6 @@ void Parser_inout_role_pred_explicit_subject(void) {
     test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
-    test_int(terms[0].id_flags, ECS_TOGGLE);
 
     ecs_filter_fini(&f);
 
@@ -2216,7 +2152,6 @@ void Parser_inout_role_pair_implicit_subject(void) {
     test_second(terms[0], Obj, EcsSelf|EcsIsEntity);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
-    test_int(terms[0].id_flags, ECS_PAIR);
 
     ecs_filter_fini(&f);
 
@@ -2242,7 +2177,6 @@ void Parser_inout_role_pair_explicit_subject(void) {
     test_second(terms[0], Obj, EcsSelf|EcsIsEntity);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
-    test_int(terms[0].id_flags, ECS_PAIR);
 
     ecs_filter_fini(&f);
 
@@ -2425,13 +2359,11 @@ void Parser_2_pred_role(void) {
     test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].id_flags, ECS_TOGGLE);
 
     test_first(terms[1], Pred_2, EcsSelf|EcsIsEntity);
     test_src(terms[1], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault); 
-    test_int(terms[1].id_flags, ECS_TOGGLE);   
 
 
     ecs_filter_fini(&f);
@@ -2460,14 +2392,12 @@ void Parser_2_pair_implicit_subj_role(void) {
     test_second(terms[0], Obj_1, EcsSelf|EcsIsEntity);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].id_flags, ECS_PAIR);
 
     test_first(terms[1], Pred_2, EcsSelf|EcsIsEntity);
     test_src(terms[1], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
     test_second(terms[1], Obj_2, EcsSelf|EcsIsEntity);
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault); 
-    test_int(terms[1].id_flags, ECS_PAIR);   
 
 
     ecs_filter_fini(&f);
@@ -2496,14 +2426,12 @@ void Parser_2_pair_explicit_subj_role(void) {
     test_second(terms[0], Obj_1, EcsSelf|EcsIsEntity);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].id_flags, ECS_PAIR);
 
     test_first(terms[1], Pred_2, EcsSelf|EcsIsEntity);
     test_src(terms[1], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
     test_second(terms[1], Obj_2, EcsSelf|EcsIsEntity);
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault); 
-    test_int(terms[1].id_flags, ECS_PAIR);   
 
 
     ecs_filter_fini(&f);
@@ -2837,31 +2765,7 @@ void Parser_pred_implicit_subject_superset(void) {
     test_src(terms[0], EcsThis, EcsUp|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].src.trav, EcsIsA);
-
-    ecs_filter_fini(&f);
-
-    ecs_fini(world); 
-}
-
-void Parser_pred_implicit_subject_subset(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Pred);
-
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
-        .storage = &f,
-        .expr = "Pred(down)"
-    }));
-    test_int(filter_count(&f), 1);
-
-    ecs_term_t *terms = filter_terms(&f);
-    test_first(terms[0], Pred, EcsSelf|EcsIsEntity);
-    test_src(terms[0], EcsThis, EcsDown|EcsIsVariable);
-    test_int(terms[0].oper, EcsAnd);
-    test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].src.trav, EcsIsA);
+    test_int(terms[0].trav, EcsChildOf);
 
     ecs_filter_fini(&f);
 
@@ -2885,31 +2789,7 @@ void Parser_pred_implicit_subject_superset_inclusive(void) {
     test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].src.trav, EcsIsA);
-
-    ecs_filter_fini(&f);
-
-    ecs_fini(world); 
-}
-
-void Parser_pred_implicit_subject_subset_inclusive(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Pred);
-
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
-        .storage = &f,
-        .expr = "Pred(self|down)"
-    }));
-    test_int(filter_count(&f), 1);
-
-    ecs_term_t *terms = filter_terms(&f);
-    test_first(terms[0], Pred, EcsSelf|EcsIsEntity);
-    test_src(terms[0], EcsThis, EcsSelf|EcsDown|EcsIsVariable);
-    test_int(terms[0].oper, EcsAnd);
-    test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].src.trav, EcsIsA);
+    test_int(terms[0].trav, EcsChildOf);
 
     ecs_filter_fini(&f);
 
@@ -2933,31 +2813,7 @@ void Parser_pred_implicit_subject_superset_cascade(void) {
     test_src(terms[0], EcsThis, EcsUp|EcsCascade|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].src.trav, EcsIsA);
-
-    ecs_filter_fini(&f);
-
-    ecs_fini(world); 
-}
-
-void Parser_pred_implicit_subject_subset_cascade(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Pred);
-
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
-        .storage = &f,
-        .expr = "Pred(down|cascade)"
-    }));
-    test_int(filter_count(&f), 1);
-
-    ecs_term_t *terms = filter_terms(&f);
-    test_first(terms[0], Pred, EcsSelf|EcsIsEntity);
-    test_src(terms[0], EcsThis, EcsDown|EcsCascade|EcsIsVariable);
-    test_int(terms[0].oper, EcsAnd);
-    test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].src.trav, EcsIsA);
+    test_int(terms[0].trav, EcsChildOf);
 
     ecs_filter_fini(&f);
 
@@ -2981,31 +2837,7 @@ void Parser_pred_implicit_subject_superset_inclusive_cascade(void) {
     test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsCascade|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].src.trav, EcsIsA);
-
-    ecs_filter_fini(&f);
-
-    ecs_fini(world); 
-}
-
-void Parser_pred_implicit_subject_subset_inclusive_cascade(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Pred);
-
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
-        .storage = &f,
-        .expr = "Pred(down|cascade|self)"
-    }));
-    test_int(filter_count(&f), 1);
-
-    ecs_term_t *terms = filter_terms(&f);
-    test_first(terms[0], Pred, EcsSelf|EcsIsEntity);
-    test_src(terms[0], EcsThis, EcsSelf|EcsDown|EcsCascade|EcsIsVariable);
-    test_int(terms[0].oper, EcsAnd);
-    test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].src.trav, EcsIsA);
+    test_int(terms[0].trav, EcsChildOf);
 
     ecs_filter_fini(&f);
 
@@ -3029,7 +2861,7 @@ void Parser_pred_implicit_subject_implicit_superset_cascade(void) {
     test_src(terms[0], EcsThis, EcsUp|EcsCascade|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].src.trav, EcsIsA);
+    test_int(terms[0].trav, EcsChildOf);
 
     ecs_filter_fini(&f);
 
@@ -3053,7 +2885,7 @@ void Parser_pred_implicit_subject_implicit_superset_inclusive_cascade(void) {
     test_src(terms[0], EcsThis, EcsUp|EcsSelf|EcsCascade|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);  
-    test_int(terms[0].src.trav, EcsIsA);
+    test_int(terms[0].trav, EcsChildOf);
 
     ecs_filter_fini(&f);
 
@@ -3078,7 +2910,7 @@ void Parser_pred_implicit_subject_implicit_superset_cascade_w_rel(void) {
     test_src(terms[0], EcsThis, EcsUp|EcsCascade|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);  
-    test_int(terms[0].src.trav, Rel);
+    test_int(terms[0].trav, Rel);
 
     ecs_filter_fini(&f);
 
@@ -3103,7 +2935,7 @@ void Parser_pred_implicit_subject_implicit_superset_inclusive_cascade_w_rel(void
     test_src(terms[0], EcsThis, EcsUp|EcsSelf|EcsCascade|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);  
-    test_int(terms[0].src.trav, Rel);
+    test_int(terms[0].trav, Rel);
 
     ecs_filter_fini(&f);
 
@@ -3118,7 +2950,7 @@ void Parser_pred_implicit_subject_superset_childof(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .expr = "Pred(up(ChildOf))"
+        .expr = "Pred(up(IsA))"
     }));
     test_int(filter_count(&f), 1);
 
@@ -3127,7 +2959,7 @@ void Parser_pred_implicit_subject_superset_childof(void) {
     test_src(terms[0], EcsThis, EcsUp|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);  
-    test_int(terms[0].src.trav, EcsChildOf);
+    test_int(terms[0].trav, EcsIsA);
 
     ecs_filter_fini(&f);
 
@@ -3142,7 +2974,7 @@ void Parser_pred_implicit_subject_cascade_superset_childof(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .expr = "Pred(cascade|up(ChildOf))"
+        .expr = "Pred(cascade|up(IsA))"
     }));
     test_int(filter_count(&f), 1);
 
@@ -3151,7 +2983,7 @@ void Parser_pred_implicit_subject_cascade_superset_childof(void) {
     test_src(terms[0], EcsThis, EcsUp|EcsCascade|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);  
-    test_int(terms[0].src.trav, EcsChildOf);
+    test_int(terms[0].trav, EcsIsA);
 
     ecs_filter_fini(&f);
 
@@ -3166,7 +2998,7 @@ void Parser_pred_implicit_subject_superset_cascade_childof(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .expr = "Pred(up|cascade(ChildOf))"
+        .expr = "Pred(up|cascade(IsA))"
     }));
     test_int(filter_count(&f), 1);
 
@@ -3175,7 +3007,7 @@ void Parser_pred_implicit_subject_superset_cascade_childof(void) {
     test_src(terms[0], EcsThis, EcsUp|EcsCascade|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);  
-    test_int(terms[0].src.trav, EcsChildOf);
+    test_int(terms[0].trav, EcsIsA);
 
     ecs_filter_fini(&f);
 
@@ -3190,7 +3022,7 @@ void Parser_pred_implicit_subject_superset_cascade_childof_optional(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .expr = "?Pred(up|cascade(ChildOf))"
+        .expr = "?Pred(up|cascade(IsA))"
     }));
     test_int(filter_count(&f), 1);
 
@@ -3199,7 +3031,7 @@ void Parser_pred_implicit_subject_superset_cascade_childof_optional(void) {
     test_src(terms[0], EcsThis, EcsUp|EcsCascade|EcsIsVariable);
     test_int(terms[0].oper, EcsOptional);
     test_int(terms[0].inout, EcsInOutDefault);  
-    test_int(terms[0].src.trav, EcsChildOf);
+    test_int(terms[0].trav, EcsIsA);
 
     ecs_filter_fini(&f);
 
@@ -3312,7 +3144,7 @@ void Parser_subj_entity_w_explicit_superset_relation(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .expr = "Pred(Subj:up(ChildOf))"
+        .expr = "Pred(Subj:up(IsA))"
     }));
 
     test_int(filter_count(&f), 1);
@@ -3320,7 +3152,7 @@ void Parser_subj_entity_w_explicit_superset_relation(void) {
     ecs_term_t *terms = filter_terms(&f);
     test_first(terms[0], Pred, EcsSelf|EcsIsEntity);
     test_src(terms[0], Subj, EcsUp|EcsIsEntity);
-    test_int(terms[0].src.trav, EcsChildOf);
+    test_int(terms[0].trav, EcsIsA);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
@@ -3338,7 +3170,7 @@ void Parser_subj_entity_w_explicit_self_superset_relation(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .expr = "Pred(Subj:self|up(ChildOf))"
+        .expr = "Pred(Subj:self|up(IsA))"
     }));
 
     test_int(filter_count(&f), 1);
@@ -3346,7 +3178,7 @@ void Parser_subj_entity_w_explicit_self_superset_relation(void) {
     ecs_term_t *terms = filter_terms(&f);
     test_first(terms[0], Pred, EcsSelf|EcsIsEntity);
     test_src(terms[0], Subj, EcsSelf|EcsUp|EcsIsEntity);
-    test_int(terms[0].src.trav, EcsChildOf);
+    test_int(terms[0].trav, EcsIsA);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
@@ -3509,58 +3341,6 @@ void Parser_pred_entity_w_explicit_self_superset(void) {
     ecs_fini(world);
 }
 
-void Parser_pred_entity_w_explicit_superset_relation(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Pred);
-    ECS_TAG(world, Subj);
-
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
-        .storage = &f,
-        .expr = "Pred:up(ChildOf):(Subj)"
-    }));
-
-    test_int(filter_count(&f), 1);
-
-    ecs_term_t *terms = filter_terms(&f);
-    test_first(terms[0], Pred, EcsUp|EcsIsEntity);
-    test_int(terms[0].first.trav, EcsChildOf);
-    test_src(terms[0], Subj, EcsSelf|EcsUp|EcsIsEntity);
-    test_int(terms[0].oper, EcsAnd);
-    test_int(terms[0].inout, EcsInOutDefault);
-
-    ecs_filter_fini(&f);
-
-    ecs_fini(world);
-}
-
-void Parser_pred_entity_w_explicit_self_superset_relation(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Pred);
-    ECS_TAG(world, Subj);
-
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
-        .storage = &f,
-        .expr = "Pred:self|up(ChildOf):(Subj)"
-    }));
-
-    test_int(filter_count(&f), 1);
-
-    ecs_term_t *terms = filter_terms(&f);
-    test_first(terms[0], Pred, EcsSelf|EcsUp|EcsIsEntity);
-    test_int(terms[0].first.trav, EcsChildOf);
-    test_src(terms[0], Subj, EcsSelf|EcsUp|EcsIsEntity);
-    test_int(terms[0].oper, EcsAnd);
-    test_int(terms[0].inout, EcsInOutDefault);
-
-    ecs_filter_fini(&f);
-
-    ecs_fini(world);
-}
-
 void Parser_pred_entity_no_args_w_explicit_self(void) {
     ecs_world_t *world = ecs_mini();
 
@@ -3600,56 +3380,6 @@ void Parser_pred_entity_no_args_w_explicit_self_superset(void) {
 
     ecs_term_t *terms = filter_terms(&f);
     test_first(terms[0], Pred, EcsSelf|EcsUp|EcsIsEntity);
-    test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
-    test_int(terms[0].oper, EcsAnd);
-    test_int(terms[0].inout, EcsInOutDefault);
-
-    ecs_filter_fini(&f);
-
-    ecs_fini(world);
-}
-
-void Parser_pred_entity_no_args_w_explicit_superset_relation(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Pred);
-
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
-        .storage = &f,
-        .expr = "Pred:up(ChildOf)"
-    }));
-
-    test_int(filter_count(&f), 1);
-
-    ecs_term_t *terms = filter_terms(&f);
-    test_first(terms[0], Pred, EcsUp|EcsIsEntity);
-    test_int(terms[0].first.trav, EcsChildOf);
-    test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
-    test_int(terms[0].oper, EcsAnd);
-    test_int(terms[0].inout, EcsInOutDefault);
-
-    ecs_filter_fini(&f);
-
-    ecs_fini(world);
-}
-
-void Parser_pred_entity_no_args_w_explicit_self_superset_relation(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Pred);
-
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
-        .storage = &f,
-        .expr = "Pred:self|up(ChildOf)"
-    }));
-
-    test_int(filter_count(&f), 1);
-
-    ecs_term_t *terms = filter_terms(&f);
-    test_first(terms[0], Pred, EcsSelf|EcsUp|EcsIsEntity);
-    test_int(terms[0].first.trav, EcsChildOf);
     test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
@@ -3705,68 +3435,6 @@ void Parser_pred_entity_no_args_2_terms_w_explicit_self_superset(void) {
 
     ecs_term_t *terms = filter_terms(&f);
     test_first(terms[0], Pred, EcsSelf|EcsUp|EcsIsEntity);
-    test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
-    test_int(terms[0].oper, EcsAnd);
-    test_int(terms[0].inout, EcsInOutDefault);
-
-    test_first(terms[1], Pred2, EcsSelf|EcsIsEntity);
-    test_src(terms[1], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
-    test_int(terms[1].oper, EcsAnd);
-    test_int(terms[1].inout, EcsInOutDefault);
-
-    ecs_filter_fini(&f);
-
-    ecs_fini(world);
-}
-
-void Parser_pred_entity_no_args_2_terms_w_explicit_superset_relation(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Pred);
-    ECS_TAG(world, Pred2);
-
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
-        .storage = &f,
-        .expr = "Pred:up(ChildOf), Pred2"
-    }));
-
-    test_int(filter_count(&f), 2);
-
-    ecs_term_t *terms = filter_terms(&f);
-    test_first(terms[0], Pred, EcsUp|EcsIsEntity);
-    test_int(terms[0].first.trav, EcsChildOf);
-    test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
-    test_int(terms[0].oper, EcsAnd);
-    test_int(terms[0].inout, EcsInOutDefault);
-
-    test_first(terms[1], Pred2, EcsSelf|EcsIsEntity);
-    test_src(terms[1], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
-    test_int(terms[1].oper, EcsAnd);
-    test_int(terms[1].inout, EcsInOutDefault);
-
-    ecs_filter_fini(&f);
-
-    ecs_fini(world);
-}
-
-void Parser_pred_entity_no_args_2_terms_w_explicit_self_superset_relation(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Pred);
-    ECS_TAG(world, Pred2);
-
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
-        .storage = &f,
-        .expr = "Pred:self|up(ChildOf), Pred2"
-    }));
-
-    test_int(filter_count(&f), 2);
-
-    ecs_term_t *terms = filter_terms(&f);
-    test_first(terms[0], Pred, EcsSelf|EcsUp|EcsIsEntity);
-    test_int(terms[0].first.trav, EcsChildOf);
     test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
@@ -5332,7 +5000,6 @@ void Parser_override_tag(void) {
     test_src(terms[0], EcsThis, EcsSelf|EcsUp|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].id_flags, ECS_OVERRIDE);
 
     ecs_filter_fini(&f);
 
@@ -5359,7 +5026,6 @@ void Parser_override_pair(void) {
     test_second(terms[0], Tgt, EcsSelf|EcsIsEntity);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].id_flags, ECS_PAIR|ECS_OVERRIDE);
 
     ecs_filter_fini(&f);
 
@@ -5549,7 +5215,7 @@ void Parser_cascade_desc(void) {
     test_src(terms[0], EcsThis, EcsUp|EcsCascade|EcsDesc|EcsIsVariable);
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
-    test_int(terms[0].src.trav, EcsIsA);
+    test_int(terms[0].trav, EcsChildOf);
 
     ecs_filter_fini(&f);
 

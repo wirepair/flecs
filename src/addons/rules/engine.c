@@ -661,7 +661,7 @@ bool flecs_rule_up_select(
     const ecs_filter_t *filter = &ctx->rule->filter;
 
     /* Early out if traversal relationship doesn't exist */
-    op_ctx->trav = filter->terms[op->term_index].src.trav;
+    op_ctx->trav = filter->terms[op->term_index].trav;
     if (!op_ctx->idr_trav) {
         op_ctx->idr_trav = flecs_id_record_get(ctx->world, 
             ecs_pair(op_ctx->trav, EcsWildcard));
@@ -804,7 +804,7 @@ bool flecs_rule_up_with(
     ecs_iter_t *it = ctx->it;
 
     /* Early out if traversal relationship doesn't exist */
-    op_ctx->trav = filter->terms[op->term_index].src.trav;
+    op_ctx->trav = filter->terms[op->term_index].trav;
     if (!op_ctx->idr_trav) {
         op_ctx->idr_trav = flecs_id_record_get(ctx->world, 
             ecs_pair(op_ctx->trav, EcsWildcard));
@@ -814,7 +814,7 @@ bool flecs_rule_up_with(
     }
 
     if (!redo) {
-        op_ctx->trav = filter->terms[op->term_index].src.trav;
+        op_ctx->trav = filter->terms[op->term_index].trav;
         op_ctx->with = flecs_rule_op_get_id(op, ctx);
         op_ctx->idr_with = flecs_id_record_get(ctx->world, op_ctx->with);
 
@@ -2649,7 +2649,7 @@ void flecs_rule_iter_fini_ctx(
         case EcsRuleUpId:
         case EcsRuleSelfUpId: {
             ecs_trav_up_cache_t *cache = &ctx[i].is.up.cache;
-            if (cache->dir == EcsDown) {
+            if (cache->dir == EcsTravDown) {
                 flecs_rule_down_cache_fini(a, cache);
             } else {
                 flecs_rule_up_cache_fini(cache);

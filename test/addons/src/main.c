@@ -40,8 +40,6 @@ void Parser_pair_implicit_subject_pred_w_up(void);
 void Parser_pair_implicit_subject_obj_w_up(void);
 void Parser_pair_implicit_subject_pred_w_self_up(void);
 void Parser_pair_implicit_subject_obj_w_self_up(void);
-void Parser_pair_implicit_subject_pred_w_up_trav(void);
-void Parser_pair_implicit_subject_obj_w_up_trav(void);
 void Parser_pair_implicit_subject_pred_w_invalid_flags(void);
 void Parser_pair_implicit_subject_obj_w_invalid_flags(void);
 void Parser_pair_explicit_subject(void);
@@ -122,13 +120,9 @@ void Parser_1_digit_pair_implicit_subj(void);
 void Parser_1_digit_pair_explicit_subj(void);
 void Parser_pred_implicit_subject_self(void);
 void Parser_pred_implicit_subject_superset(void);
-void Parser_pred_implicit_subject_subset(void);
 void Parser_pred_implicit_subject_superset_inclusive(void);
-void Parser_pred_implicit_subject_subset_inclusive(void);
 void Parser_pred_implicit_subject_superset_cascade(void);
-void Parser_pred_implicit_subject_subset_cascade(void);
 void Parser_pred_implicit_subject_superset_inclusive_cascade(void);
-void Parser_pred_implicit_subject_subset_inclusive_cascade(void);
 void Parser_pred_implicit_subject_implicit_superset_cascade(void);
 void Parser_pred_implicit_subject_implicit_superset_inclusive_cascade(void);
 void Parser_pred_implicit_subject_implicit_superset_cascade_w_rel(void);
@@ -149,16 +143,10 @@ void Parser_obj_entity_w_explicit_superset_relation(void);
 void Parser_obj_entity_w_explicit_self_superset_relation(void);
 void Parser_pred_entity_w_explicit_self(void);
 void Parser_pred_entity_w_explicit_self_superset(void);
-void Parser_pred_entity_w_explicit_superset_relation(void);
-void Parser_pred_entity_w_explicit_self_superset_relation(void);
 void Parser_pred_entity_no_args_w_explicit_self(void);
 void Parser_pred_entity_no_args_w_explicit_self_superset(void);
-void Parser_pred_entity_no_args_w_explicit_superset_relation(void);
-void Parser_pred_entity_no_args_w_explicit_self_superset_relation(void);
 void Parser_pred_entity_no_args_2_terms_w_explicit_self(void);
 void Parser_pred_entity_no_args_2_terms_w_explicit_self_superset(void);
-void Parser_pred_entity_no_args_2_terms_w_explicit_superset_relation(void);
-void Parser_pred_entity_no_args_2_terms_w_explicit_self_superset_relation(void);
 void Parser_newline(void);
 void Parser_2_newlines(void);
 void Parser_3_newlines(void);
@@ -615,8 +603,6 @@ void SystemMisc_system_readeactivate_w_2_systems(void);
 void SystemMisc_add_to_system_in_progress(void);
 void SystemMisc_redefine_null_signature(void);
 void SystemMisc_redefine_0_signature(void);
-void SystemMisc_one_named_column_of_two(void);
-void SystemMisc_two_named_columns_of_two(void);
 void SystemMisc_redeclare_system_explicit_id(void);
 void SystemMisc_redeclare_system_explicit_id_null_expr(void);
 void SystemMisc_redeclare_system_explicit_id_no_name(void);
@@ -1155,11 +1141,6 @@ void RulesComponentInheritance_1_var_src_not(void);
 void RulesComponentInheritance_1_this_src_not_written(void);
 void RulesComponentInheritance_1_var_src_not_written(void);
 void RulesComponentInheritance_first_self(void);
-void RulesComponentInheritance_first_down(void);
-void RulesComponentInheritance_first_self_down(void);
-void RulesComponentInheritance_first_rel_self(void);
-void RulesComponentInheritance_first_rel_down(void);
-void RulesComponentInheritance_first_rel_self_down(void);
 
 // Testsuite 'RulesRecycled'
 void RulesRecycled_recycled_vars(void);
@@ -1344,6 +1325,7 @@ void RulesTraversal_this_self_cascade_childof_w_parent_flag(void);
 void RulesTraversal_this_cascade_childof_w_parent_flag(void);
 void RulesTraversal_this_written_self_cascade_childof_w_parent_flag(void);
 void RulesTraversal_this_written_cascade_childof_w_parent_flag(void);
+void RulesTraversal_this_up_trav_unused_rel(void);
 
 // Testsuite 'SystemPeriodic'
 void SystemPeriodic_1_type_1_component(void);
@@ -1927,14 +1909,6 @@ bake_test_case Parser_testcases[] = {
         Parser_pair_implicit_subject_obj_w_self_up
     },
     {
-        "pair_implicit_subject_pred_w_up_trav",
-        Parser_pair_implicit_subject_pred_w_up_trav
-    },
-    {
-        "pair_implicit_subject_obj_w_up_trav",
-        Parser_pair_implicit_subject_obj_w_up_trav
-    },
-    {
         "pair_implicit_subject_pred_w_invalid_flags",
         Parser_pair_implicit_subject_pred_w_invalid_flags
     },
@@ -2255,32 +2229,16 @@ bake_test_case Parser_testcases[] = {
         Parser_pred_implicit_subject_superset
     },
     {
-        "pred_implicit_subject_subset",
-        Parser_pred_implicit_subject_subset
-    },
-    {
         "pred_implicit_subject_superset_inclusive",
         Parser_pred_implicit_subject_superset_inclusive
-    },
-    {
-        "pred_implicit_subject_subset_inclusive",
-        Parser_pred_implicit_subject_subset_inclusive
     },
     {
         "pred_implicit_subject_superset_cascade",
         Parser_pred_implicit_subject_superset_cascade
     },
     {
-        "pred_implicit_subject_subset_cascade",
-        Parser_pred_implicit_subject_subset_cascade
-    },
-    {
         "pred_implicit_subject_superset_inclusive_cascade",
         Parser_pred_implicit_subject_superset_inclusive_cascade
-    },
-    {
-        "pred_implicit_subject_subset_inclusive_cascade",
-        Parser_pred_implicit_subject_subset_inclusive_cascade
     },
     {
         "pred_implicit_subject_implicit_superset_cascade",
@@ -2363,14 +2321,6 @@ bake_test_case Parser_testcases[] = {
         Parser_pred_entity_w_explicit_self_superset
     },
     {
-        "pred_entity_w_explicit_superset_relation",
-        Parser_pred_entity_w_explicit_superset_relation
-    },
-    {
-        "pred_entity_w_explicit_self_superset_relation",
-        Parser_pred_entity_w_explicit_self_superset_relation
-    },
-    {
         "pred_entity_no_args_w_explicit_self",
         Parser_pred_entity_no_args_w_explicit_self
     },
@@ -2379,28 +2329,12 @@ bake_test_case Parser_testcases[] = {
         Parser_pred_entity_no_args_w_explicit_self_superset
     },
     {
-        "pred_entity_no_args_w_explicit_superset_relation",
-        Parser_pred_entity_no_args_w_explicit_superset_relation
-    },
-    {
-        "pred_entity_no_args_w_explicit_self_superset_relation",
-        Parser_pred_entity_no_args_w_explicit_self_superset_relation
-    },
-    {
         "pred_entity_no_args_2_terms_w_explicit_self",
         Parser_pred_entity_no_args_2_terms_w_explicit_self
     },
     {
         "pred_entity_no_args_2_terms_w_explicit_self_superset",
         Parser_pred_entity_no_args_2_terms_w_explicit_self_superset
-    },
-    {
-        "pred_entity_no_args_2_terms_w_explicit_superset_relation",
-        Parser_pred_entity_no_args_2_terms_w_explicit_superset_relation
-    },
-    {
-        "pred_entity_no_args_2_terms_w_explicit_self_superset_relation",
-        Parser_pred_entity_no_args_2_terms_w_explicit_self_superset_relation
     },
     {
         "newline",
@@ -4205,14 +4139,6 @@ bake_test_case SystemMisc_testcases[] = {
     {
         "redefine_0_signature",
         SystemMisc_redefine_0_signature
-    },
-    {
-        "one_named_column_of_two",
-        SystemMisc_one_named_column_of_two
-    },
-    {
-        "two_named_columns_of_two",
-        SystemMisc_two_named_columns_of_two
     },
     {
         "redeclare_system_explicit_id",
@@ -6340,26 +6266,6 @@ bake_test_case RulesComponentInheritance_testcases[] = {
     {
         "first_self",
         RulesComponentInheritance_first_self
-    },
-    {
-        "first_down",
-        RulesComponentInheritance_first_down
-    },
-    {
-        "first_self_down",
-        RulesComponentInheritance_first_self_down
-    },
-    {
-        "first_rel_self",
-        RulesComponentInheritance_first_rel_self
-    },
-    {
-        "first_rel_down",
-        RulesComponentInheritance_first_rel_down
-    },
-    {
-        "first_rel_self_down",
-        RulesComponentInheritance_first_rel_self_down
     }
 };
 
@@ -7076,6 +6982,10 @@ bake_test_case RulesTraversal_testcases[] = {
     {
         "this_written_cascade_childof_w_parent_flag",
         RulesTraversal_this_written_cascade_childof_w_parent_flag
+    },
+    {
+        "this_up_trav_unused_rel",
+        RulesTraversal_this_up_trav_unused_rel
     }
 };
 
@@ -8766,7 +8676,7 @@ static bake_test_suite suites[] = {
         "Parser",
         NULL,
         NULL,
-        235,
+        223,
         Parser_testcases
     },
     {
@@ -8794,7 +8704,7 @@ static bake_test_suite suites[] = {
         "SystemMisc",
         NULL,
         NULL,
-        68,
+        66,
         SystemMisc_testcases
     },
     {
@@ -8829,7 +8739,7 @@ static bake_test_suite suites[] = {
         "RulesComponentInheritance",
         NULL,
         NULL,
-        36,
+        31,
         RulesComponentInheritance_testcases
     },
     {
@@ -8857,7 +8767,7 @@ static bake_test_suite suites[] = {
         "RulesTraversal",
         NULL,
         NULL,
-        92,
+        93,
         RulesTraversal_testcases
     },
     {

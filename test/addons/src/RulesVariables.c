@@ -4877,7 +4877,7 @@ void RulesVariables_2_set_src_this_w_up(void) {
     ecs_rule_t *f = ecs_rule(world, {
         .terms[0] = { .id = Foo },
         .terms[1] = { .id = Bar },
-        .terms[2] = { .id = Hello, .src.flags = EcsUp, .src.trav = EcsChildOf },
+        .terms[2] = { .id = Hello, .src.flags = EcsUp, .trav = EcsChildOf },
     });
 
     ecs_entity_t prefab = ecs_new(world, Bar);
@@ -4955,7 +4955,7 @@ void RulesVariables_2_set_src_this_self_w_up(void) {
     ecs_rule_t *f = ecs_rule(world, {
         .terms[0] = { .id = Foo, .src.flags = EcsSelf },
         .terms[1] = { .id = Bar, .src.flags = EcsSelf },
-        .terms[2] = { .id = Hello, .src.flags = EcsUp, .src.trav = EcsChildOf },
+        .terms[2] = { .id = Hello, .src.flags = EcsUp, .trav = EcsChildOf },
     });
 
     ecs_entity_t prefab = ecs_new(world, Bar);
@@ -5024,7 +5024,7 @@ void RulesVariables_2_set_src_this_component_w_up(void) {
     ecs_rule_t *f = ecs_rule(world, {
         .terms[0] = { .id = ecs_id(Position) },
         .terms[1] = { .id = ecs_id(Velocity) },
-        .terms[2] = { .id = ecs_id(Mass), .src.flags = EcsUp, .src.trav = EcsChildOf },
+        .terms[2] = { .id = ecs_id(Mass), .src.flags = EcsUp, .trav = EcsChildOf },
     });
 
     ecs_entity_t prefab = ecs_set(world, 0, Velocity, {3, 4});
@@ -5135,7 +5135,7 @@ void RulesVariables_2_set_src_this_self_component_w_up(void) {
     ecs_rule_t *f = ecs_rule(world, {
         .terms[0] = { .id = ecs_id(Position), .src.flags = EcsSelf },
         .terms[1] = { .id = ecs_id(Velocity), .src.flags = EcsSelf },
-        .terms[2] = { .id = ecs_id(Mass), .src.flags = EcsUp, .src.trav = EcsChildOf },
+        .terms[2] = { .id = ecs_id(Mass), .src.flags = EcsUp, .trav = EcsChildOf },
     });
 
     ecs_entity_t prefab = ecs_set(world, 0, Velocity, {3, 4});
@@ -5304,7 +5304,7 @@ void RulesVariables_2_set_src_this_self_w_exclusive_wildcard(void) {
     ecs_rule_t *f = ecs_rule(world, {
         .terms[0] = { .id = Foo, .src.flags = EcsSelf },
         .terms[1] = { .id = ecs_pair(EcsChildOf, EcsWildcard), .src.flags = EcsSelf },
-        .terms[2] = { .id = Bar, .src.flags = EcsUp },
+        .terms[2] = { .id = Bar, .src.flags = EcsUp, .trav = EcsIsA },
     });
 
     ecs_entity_t prefab = ecs_new(world, Bar);

@@ -1086,13 +1086,12 @@ void Filter_filter_1_term_acyclic_reflexive_same_subj_obj_var(void);
 void Filter_filter_1_term_non_acyclic_superset(void);
 void Filter_filter_1_term_dont_inherit_default_set(void);
 void Filter_filter_1_term_dont_inherit_pair_default_set(void);
-void Filter_filter_1_term_cascade_implicit_isa(void);
+void Filter_filter_1_term_cascade_implicit_trav(void);
 void Filter_filter_1_term_cascade_isa(void);
 void Filter_filter_1_term_cascade_childof(void);
 void Filter_filter_1_term_cascade_down(void);
 void Filter_filter_1_term_optional_only(void);
 void Filter_filter_1_term_transitive_pair(void);
-void Filter_filter_1_term_transitive_pair_explicit_self_tgt(void);
 void Filter_filter_1_variable_as_pred_only(void);
 void Filter_filter_1_variable_as_pred_w_subj(void);
 void Filter_filter_1_variable_as_pred_w_pair(void);
@@ -1155,15 +1154,6 @@ void Filter_filter_w_inherited_id(void);
 void Filter_filter_w_inherited_pair(void);
 void Filter_filter_w_non_inherited_id(void);
 void Filter_filter_w_non_inherited_pair(void);
-void Filter_filter_w_first_rel(void);
-void Filter_filter_w_first_rel_self(void);
-void Filter_filter_w_first_rel_down(void);
-void Filter_filter_w_first_rel_self_down(void);
-void Filter_filter_w_first_rel_reflexive(void);
-void Filter_filter_w_first_rel_reflexive_self(void);
-void Filter_filter_w_first_rel_reflexive_down(void);
-void Filter_filter_w_first_rel_reflexive_self_down(void);
-void Filter_filter_w_first_rel_non_traversable(void);
 void Filter_filter_w_first_wildcard_inout_none(void);
 void Filter_filter_w_first_var_inout_none(void);
 void Filter_filter_w_pair_wildcard_inout_none(void);
@@ -1178,13 +1168,11 @@ void Filter_term_w_pair_id(void);
 void Filter_term_w_pred_obj(void);
 void Filter_term_w_pair_finalize_twice(void);
 void Filter_term_w_role(void);
-void Filter_term_w_pred_role(void);
 void Filter_term_w_self(void);
 void Filter_term_w_superset(void);
-void Filter_term_w_subset(void);
 void Filter_term_w_self_superset(void);
-void Filter_term_w_superset_custom_relation(void);
-void Filter_term_w_self_superset_custom_relation(void);
+void Filter_term_w_superset_custom_trav(void);
+void Filter_term_w_self_superset_custom_trav(void);
 void Filter_term_iter_component(void);
 void Filter_term_iter_w_pred(void);
 void Filter_term_iter_tag(void);
@@ -1270,7 +1258,6 @@ void Filter_filter_iter_superset_after_clear(void);
 void Filter_filter_iter_superset_after_delete(void);
 void Filter_filter_iter_2_terms_superset_2_rel_instances(void);
 void Filter_filter_iter_2_terms_superset_2_rel_instances_match_2nd(void);
-void Filter_filter_iter_superset_parent_w_isa(void);
 void Filter_filter_iter_superset_isa_after_remove_parent(void);
 void Filter_filter_iter_superset_isa_create_table_after_iter(void);
 void Filter_filter_iter_superset_2_relations(void);
@@ -6812,8 +6799,8 @@ bake_test_case Filter_testcases[] = {
         Filter_filter_1_term_dont_inherit_pair_default_set
     },
     {
-        "filter_1_term_cascade_implicit_isa",
-        Filter_filter_1_term_cascade_implicit_isa
+        "filter_1_term_cascade_implicit_trav",
+        Filter_filter_1_term_cascade_implicit_trav
     },
     {
         "filter_1_term_cascade_isa",
@@ -6834,10 +6821,6 @@ bake_test_case Filter_testcases[] = {
     {
         "filter_1_term_transitive_pair",
         Filter_filter_1_term_transitive_pair
-    },
-    {
-        "filter_1_term_transitive_pair_explicit_self_tgt",
-        Filter_filter_1_term_transitive_pair_explicit_self_tgt
     },
     {
         "filter_1_variable_as_pred_only",
@@ -7088,42 +7071,6 @@ bake_test_case Filter_testcases[] = {
         Filter_filter_w_non_inherited_pair
     },
     {
-        "filter_w_first_rel",
-        Filter_filter_w_first_rel
-    },
-    {
-        "filter_w_first_rel_self",
-        Filter_filter_w_first_rel_self
-    },
-    {
-        "filter_w_first_rel_down",
-        Filter_filter_w_first_rel_down
-    },
-    {
-        "filter_w_first_rel_self_down",
-        Filter_filter_w_first_rel_self_down
-    },
-    {
-        "filter_w_first_rel_reflexive",
-        Filter_filter_w_first_rel_reflexive
-    },
-    {
-        "filter_w_first_rel_reflexive_self",
-        Filter_filter_w_first_rel_reflexive_self
-    },
-    {
-        "filter_w_first_rel_reflexive_down",
-        Filter_filter_w_first_rel_reflexive_down
-    },
-    {
-        "filter_w_first_rel_reflexive_self_down",
-        Filter_filter_w_first_rel_reflexive_self_down
-    },
-    {
-        "filter_w_first_rel_non_traversable",
-        Filter_filter_w_first_rel_non_traversable
-    },
-    {
         "filter_w_first_wildcard_inout_none",
         Filter_filter_w_first_wildcard_inout_none
     },
@@ -7180,10 +7127,6 @@ bake_test_case Filter_testcases[] = {
         Filter_term_w_role
     },
     {
-        "term_w_pred_role",
-        Filter_term_w_pred_role
-    },
-    {
         "term_w_self",
         Filter_term_w_self
     },
@@ -7192,20 +7135,16 @@ bake_test_case Filter_testcases[] = {
         Filter_term_w_superset
     },
     {
-        "term_w_subset",
-        Filter_term_w_subset
-    },
-    {
         "term_w_self_superset",
         Filter_term_w_self_superset
     },
     {
-        "term_w_superset_custom_relation",
-        Filter_term_w_superset_custom_relation
+        "term_w_superset_custom_trav",
+        Filter_term_w_superset_custom_trav
     },
     {
-        "term_w_self_superset_custom_relation",
-        Filter_term_w_self_superset_custom_relation
+        "term_w_self_superset_custom_trav",
+        Filter_term_w_self_superset_custom_trav
     },
     {
         "term_iter_component",
@@ -7546,10 +7485,6 @@ bake_test_case Filter_testcases[] = {
     {
         "filter_iter_2_terms_superset_2_rel_instances_match_2nd",
         Filter_filter_iter_2_terms_superset_2_rel_instances_match_2nd
-    },
-    {
-        "filter_iter_superset_parent_w_isa",
-        Filter_filter_iter_superset_parent_w_isa
     },
     {
         "filter_iter_superset_isa_after_remove_parent",
@@ -13172,7 +13107,7 @@ static bake_test_suite suites[] = {
         "Filter",
         NULL,
         NULL,
-        301,
+        288,
         Filter_testcases
     },
     {

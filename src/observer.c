@@ -115,7 +115,7 @@ void flecs_register_observer_for_id(
 {
     ecs_id_t term_id = observer->register_id;
     ecs_term_t *term = &observer->filter.terms[0];
-    ecs_entity_t trav = term->src.trav;
+    ecs_entity_t trav = term->trav;
 
     int i;
     for (i = 0; i < observer->event_count; i ++) {
@@ -159,7 +159,7 @@ void flecs_uni_observer_register(
         flecs_register_observer_for_id(world, observable, observer,
             offsetof(ecs_event_id_record_t, self));
     } else if (flags & EcsUp) {
-        ecs_assert(term->src.trav != 0, ECS_INTERNAL_ERROR, NULL);
+        ecs_assert(term->trav != 0, ECS_INTERNAL_ERROR, NULL);
         flecs_register_observer_for_id(world, observable, observer,
             offsetof(ecs_event_id_record_t, up));
     }
@@ -174,7 +174,7 @@ void flecs_unregister_observer_for_id(
 {
     ecs_id_t term_id = observer->register_id;
     ecs_term_t *term = &observer->filter.terms[0];
-    ecs_entity_t trav = term->src.trav;
+    ecs_entity_t trav = term->trav;
 
     int i;
     for (i = 0; i < observer->event_count; i ++) {
@@ -363,7 +363,7 @@ void flecs_uni_observer_invoke(
     }
 
     ecs_assert(trav == 0 || it->sources[0] != 0, ECS_INTERNAL_ERROR, NULL);
-    if (trav && term->src.trav != trav) {
+    if (trav && term->trav != trav) {
         return;
     }
 
@@ -666,7 +666,7 @@ int flecs_uni_observer_init(
         observer->last_event_id = &observer->last_event_id_storage;
     }
     observer->register_id = flecs_from_public_id(world, term->id);
-    term->field_index = desc->term_index;
+    term->field_index = flecs_ito(int16_t, desc->term_index);
 
     if (ecs_id_is_tag(world, term->id)) {
         /* If id is a tag, downgrade OnSet/UnSet to OnAdd/OnRemove. */
@@ -743,7 +743,7 @@ int flecs_multi_observer_init(
     ecs_entity_t old_scope = ecs_set_scope(world, observer->filter.entity);
 
     for (i = 0; i < term_count; i ++) {
-        if (filter->terms[i].src.flags & EcsFilter) {
+        if (filter->terms[i].inout == EcsInOutFilter) {
             continue;
         }
 

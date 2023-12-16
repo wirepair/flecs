@@ -1466,7 +1466,8 @@ void Hierarchies_rematch_after_add_to_recycled_parent(void) {
     ECS_COMPONENT(world, Position);
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag, Position(parent)");
+    ecs_query_t *q = ecs_query_new(world, "Tag, Position(up)");
+    test_assert(q != NULL);
 
     ecs_entity_t parent = ecs_new(world, 0);
     test_assert(parent != 0);
@@ -1510,7 +1511,7 @@ void Hierarchies_cascade_after_recycled_parent_change(void) {
     ECS_COMPONENT(world, Position);
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag, ?Position(parent|cascade)");
+    ecs_query_t *q = ecs_query_new(world, "Tag, ?Position(cascade)");
 
     ecs_entity_t parent = ecs_new(world, 0);
     test_assert(parent != 0);

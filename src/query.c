@@ -836,7 +836,7 @@ uint64_t flecs_query_group_by_cascade(
 {
     (void)id;
     ecs_term_t *term = ctx;
-    ecs_entity_t rel = term->src.trav;
+    ecs_entity_t rel = term->trav;
     int32_t depth = flecs_relation_depth(world, rel, table);
     return flecs_ito(uint64_t, depth);
 }
@@ -1396,8 +1396,8 @@ void flecs_query_for_each_component_monitor(
         ecs_term_id_t *src = &term->src;
 
         if (src->flags & EcsUp) {
-            callback(world, ecs_pair(src->trav, EcsWildcard), query);
-            if (src->trav != EcsIsA) {
+            callback(world, ecs_pair(term->trav, EcsWildcard), query);
+            if (term->trav != EcsIsA) {
                 callback(world, ecs_pair(EcsIsA, EcsWildcard), query);
             }
             callback(world, term->id, query);
@@ -1451,8 +1451,8 @@ int flecs_query_process_signature(
             ECS_UNSUPPORTED, NULL);
         ecs_check(is_first_ok, ECS_UNSUPPORTED, NULL);
         ecs_check(is_second_ok,  ECS_UNSUPPORTED, NULL);
-        ecs_check(!(src->flags & EcsFilter), ECS_INVALID_PARAMETER,
-            "invalid usage of Filter for query");
+        ecs_check(term->inout != EcsInOutFilter, ECS_INVALID_PARAMETER,
+            "invalid usage of InOutFilter for query");
 
         if (inout != EcsIn && inout != EcsInOutNone) {
             /* Non-this terms default to EcsIn */

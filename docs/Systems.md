@@ -355,9 +355,9 @@ C descriptor API:
 ecs_pipeline_init(world, &(ecs_pipeline_desc_t){
     .query.filter.terms = {
         { .id = EcsSystem },
-        { .id = EcsPhase, .src.flags = EcsCascade, .src.trav = EcsDependsOn },
-        { .id = EcsDisabled, .src.flags = EcsUp, .src.trav = EcsDependsOn, .oper = EcsNot },
-        { .id = EcsDisabled, .src.flags = EcsUp, .src.trav = EcsChildOf, .oper = EcsNot }
+        { .id = EcsPhase, .src.flags = EcsCascade, .trav = EcsDependsOn },
+        { .id = EcsDisabled, .src.flags = EcsUp, .trav = EcsDependsOn, .oper = EcsNot },
+        { .id = EcsDisabled, .src.flags = EcsUp, .trav = EcsChildOf, .oper = EcsNot }
     }
 });
 ```

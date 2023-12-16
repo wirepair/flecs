@@ -1341,7 +1341,7 @@ void Query_query_from_entity_w_superset(void) {
     ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
         .filter.terms = {
             { .id = ecs_id(Velocity), .src.name = "Game" },
-            { .id = ecs_id(Mass), .src.flags = EcsUp }
+            { .id = ecs_id(Mass), .src.flags = EcsUp, .trav = EcsIsA }
         }
     });
 
@@ -2851,7 +2851,7 @@ void Query_query_change_parent_term(void) {
     ecs_entity_t parent = ecs_new(world, Position);
     ecs_new_w_pair(world, EcsChildOf, parent);
 
-    ecs_query_t *q = ecs_query_new(world, "[in] Position(parent)");
+    ecs_query_t *q = ecs_query_new(world, "[in] Position(up)");
     test_assert(q != NULL);
     test_assert(ecs_query_changed(q, 0) == true);
     test_assert(ecs_query_changed(q, 0) == true);
@@ -2882,7 +2882,7 @@ void Query_query_change_prefab_term(void) {
     ecs_entity_t base = ecs_new(world, Position);
     ecs_new_w_pair(world, EcsIsA, base);
 
-    ecs_query_t *q = ecs_query_new(world, "[in] Position(up)");
+    ecs_query_t *q = ecs_query_new(world, "[in] Position(up(IsA))");
     test_assert(q != NULL);
     test_assert(ecs_query_changed(q, 0) == true);
     test_assert(ecs_query_changed(q, 0) == true);
@@ -2914,7 +2914,7 @@ void Query_query_change_parent_term_w_tag(void) {
     ecs_add_id(world, parent, EcsPrefab);
     ecs_new_w_pair(world, EcsChildOf, parent);
 
-    ecs_query_t *q = ecs_query_new(world, "[in] Position(parent), ?Prefab");
+    ecs_query_t *q = ecs_query_new(world, "[in] Position(up), ?Prefab");
     test_assert(q != NULL);
     test_assert(ecs_query_changed(q, 0) == true);
     test_assert(ecs_query_changed(q, 0) == true);
@@ -2946,7 +2946,7 @@ void Query_query_change_prefab_term_w_tag(void) {
     ecs_add_id(world, base, EcsPrefab);
     ecs_new_w_pair(world, EcsIsA, base);
 
-    ecs_query_t *q = ecs_query_new(world, "[in] Position(up)");
+    ecs_query_t *q = ecs_query_new(world, "[in] Position(up(IsA))");
     test_assert(q != NULL);
     test_assert(ecs_query_changed(q, 0) == true);
     test_assert(ecs_query_changed(q, 0) == true);
@@ -2990,10 +2990,10 @@ void Query_query_change_skip_non_instanced(void) {
     ecs_add(world, e3, Tag);
     ecs_add(world, e4, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Position(up), [out] Velocity");
+    ecs_query_t *q = ecs_query_new(world, "Position(up(IsA)), [out] Velocity");
     test_assert(q != NULL);
 
-    ecs_query_t *q_r = ecs_query_new(world, "Position(up), [in] Velocity");
+    ecs_query_t *q_r = ecs_query_new(world, "Position(up(IsA)), [in] Velocity");
     test_assert(q_r != NULL);
 
     test_assert(ecs_query_changed(q_r, 0) == true);
@@ -3524,7 +3524,7 @@ void Query_query_changed_w_only_parent(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {{
             .id = ecs_id(Position),
-            .src.flags = EcsParent
+            .src.flags = EcsUp
         }}
     });
 
@@ -3566,7 +3566,7 @@ void Query_query_changed_w_only_parent_after_set(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {{
             .id = ecs_id(Position),
-            .src.flags = EcsParent
+            .src.flags = EcsUp
         }}
     });
 
@@ -3622,7 +3622,7 @@ void Query_query_changed_w_only_parent_after_out_term(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {{
             .id = ecs_id(Position),
-            .src.flags = EcsParent
+            .src.flags = EcsUp
         }}
     });
 
@@ -3693,13 +3693,13 @@ void Query_query_changed_w_only_parent_after_parent_out_term(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {{
             .id = ecs_id(Position),
-            .src.flags = EcsParent
+            .src.flags = EcsUp
         }}
     });
 
     ecs_query_t *q_write = ecs_query(world, {
         .filter.terms = {
-            { ecs_id(Position), .src.flags = EcsParent, .inout = EcsOut }
+            { ecs_id(Position), .src.flags = EcsUp, .inout = EcsOut }
         }
     });
 
@@ -3944,7 +3944,7 @@ void Query_subquery_unmatch(void) {
     ecs_add(world, e2, Position);
     ecs_add_pair(world, e2, EcsChildOf, parent);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Position(parent)");
+    ecs_query_t *q = ecs_query_new(world, "Position, Position(up)");
     test_assert(q != NULL);
 
     ecs_query_t *sq = ecs_query_init(world, &(ecs_query_desc_t){
@@ -4022,7 +4022,7 @@ void Query_subquery_rematch(void) {
     ecs_add(world, e2, Position);
     ecs_add_pair(world, e2, EcsChildOf, parent);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Position(parent)");
+    ecs_query_t *q = ecs_query_new(world, "Position, Position(up)");
     test_assert(q != NULL);
 
     ecs_query_t *sq = ecs_query_init(world, &(ecs_query_desc_t){
@@ -4115,7 +4115,7 @@ void Query_subquery_rematch_w_parent_optional(void) {
     ecs_add(world, e2, Position);
     ecs_add_pair(world, e2, EcsChildOf, parent);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, ?Position(parent)");
+    ecs_query_t *q = ecs_query_new(world, "Position, ?Position(up)");
     test_assert(q != NULL);
 
     ecs_query_t *sq = ecs_query_init(world, &(ecs_query_desc_t){
@@ -4167,7 +4167,7 @@ void Query_subquery_rematch_w_sub_optional(void) {
     ecs_add(world, e2, Position);
     ecs_add_pair(world, e2, EcsChildOf, parent);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, ?Position(parent)");
+    ecs_query_t *q = ecs_query_new(world, "Position, ?Position(up)");
     test_assert(q != NULL);
 
     ecs_query_t *sq = ecs_query_init(world, &(ecs_query_desc_t){
@@ -4357,7 +4357,7 @@ void Query_query_optional_shared(void) {
 
     ecs_entity_t e3 = ecs_new(world, Position);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, ?Velocity(up)");
+    ecs_query_t *q = ecs_query_new(world, "Position, ?Velocity(up(IsA))");
     test_assert(q != NULL);
 
     ecs_iter_t it = ecs_query_iter(world, q);
@@ -4410,7 +4410,7 @@ void Query_query_optional_shared_nested(void) {
 
     ecs_entity_t e3 = ecs_new(world, Position);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, ?Velocity(up)");
+    ecs_query_t *q = ecs_query_new(world, "Position, ?Velocity(up(IsA))");
     test_assert(q != NULL);
 
     ecs_iter_t it = ecs_query_iter(world, q);
@@ -4455,7 +4455,7 @@ void Query_query_optional_any(void) {
 
     ecs_entity_t e3 = ecs_new(world, Position);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, ?Velocity(self|up)");
+    ecs_query_t *q = ecs_query_new(world, "Position, ?Velocity(self|up(IsA))");
     test_assert(q != NULL);
 
     ecs_iter_t it = ecs_query_iter(world, q);
@@ -4500,7 +4500,7 @@ void Query_query_rematch_optional_after_add(void) {
     ecs_add(world, e2, Velocity);
     ecs_entity_t e3 = ecs_new(world, Position);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, ?Velocity(up)");
+    ecs_query_t *q = ecs_query_new(world, "Position, ?Velocity(up(IsA))");
     test_assert(q != NULL);
 
     /* First iteration, base doesn't have Velocity but query should match with
@@ -4592,7 +4592,7 @@ void Query_get_shared_tag(void) {
     ecs_entity_t base = ecs_new(world, Tag);
     ecs_entity_t instance = ecs_new_w_pair(world, EcsIsA, base);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(up)");
+    ecs_query_t *q = ecs_query_new(world, "Tag(up(IsA))");
 
     int count = 0;
     ecs_iter_t it = ecs_query_iter(world, q);
@@ -5575,7 +5575,7 @@ void Query_query_optional_shared_tag(void) {
     ecs_entity_t e3 = ecs_new(world, TagA);
     ecs_add_pair(world, e3, EcsIsA, e2);
 
-    ecs_query_t *q = ecs_query_new(world, "TagA, ?TagB(self|up)");
+    ecs_query_t *q = ecs_query_new(world, "TagA, ?TagB(self|up(IsA))");
     test_assert(q != NULL);
 
     ecs_iter_t it = ecs_query_iter(world, q);
@@ -6511,7 +6511,7 @@ void Query_query_w_component_from_parent_from_non_this(void) {
     ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
         .filter.terms = {
             { TagA },
-            { TagB, .src.id = child, .src.trav = EcsChildOf, .src.flags = EcsUp }
+            { TagB, .src.id = child, .trav = EcsChildOf, .src.flags = EcsUp }
         }
     });
     test_assert(q != NULL);
@@ -6629,7 +6629,7 @@ void Query_isa_superset(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(up)");
+    ecs_query_t *q = ecs_query_new(world, "Tag(up(IsA))");
     test_assert(q != NULL);
 
     ecs_entity_t base = ecs_new(world, Tag);
@@ -6650,7 +6650,7 @@ void Query_isa_superset_2_lvls(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(up)");
+    ecs_query_t *q = ecs_query_new(world, "Tag(up(IsA))");
     test_assert(q != NULL);
 
     ecs_entity_t base = ecs_new(world, Tag);
@@ -6678,7 +6678,7 @@ void Query_isa_superset_3_lvls(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(up)");
+    ecs_query_t *q = ecs_query_new(world, "Tag(up(IsA))");
     test_assert(q != NULL);
 
     ecs_entity_t base = ecs_new(world, Tag);
@@ -6712,7 +6712,7 @@ void Query_isa_superset_2_lvls_owned(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(up)");
+    ecs_query_t *q = ecs_query_new(world, "Tag(up(IsA))");
     test_assert(q != NULL);
 
     ecs_entity_t base = ecs_new(world, Tag);
@@ -6743,7 +6743,7 @@ void Query_isa_superset_3_lvls_owned(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(up)");
+    ecs_query_t *q = ecs_query_new(world, "Tag(up(IsA))");
     test_assert(q != NULL);
 
     ecs_entity_t base = ecs_new(world, Tag);
@@ -6781,7 +6781,7 @@ void Query_isa_superset_owned_empty_table_after_match(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(up)");
+    ecs_query_t *q = ecs_query_new(world, "Tag(up(IsA))");
     test_assert(q != NULL);
 
     ecs_entity_t base = ecs_new(world, Tag);
@@ -6834,7 +6834,7 @@ void Query_isa_self_superset(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(self|up)");
+    ecs_query_t *q = ecs_query_new(world, "Tag(self|up(IsA))");
     test_assert(q != NULL);
 
     ecs_entity_t base = ecs_new(world, Tag);
@@ -6860,7 +6860,7 @@ void Query_childof_superset(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(up(ChildOf))");
+    ecs_query_t *q = ecs_query_new(world, "Tag(up)");
     test_assert(q != NULL);
 
     ecs_entity_t base = ecs_new(world, Tag);
@@ -6935,8 +6935,8 @@ void Query_superset_2_relations(void) {
 
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
-            { .id = TagA, .src.trav = EcsChildOf, .src.flags = EcsUp },
-            { .id = TagA, .src.trav = EcsIsA, .src.flags = EcsUp },
+            { .id = TagA, .trav = EcsChildOf, .src.flags = EcsUp },
+            { .id = TagA, .trav = EcsIsA, .src.flags = EcsUp },
         }
     });
 
@@ -6972,8 +6972,8 @@ void Query_superset_2_relations_instanced(void) {
 
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
-            { .id = TagA, .src.trav = EcsChildOf, .src.flags = EcsUp },
-            { .id = TagA, .src.trav = EcsIsA, .src.flags = EcsUp },
+            { .id = TagA, .trav = EcsChildOf, .src.flags = EcsUp },
+            { .id = TagA, .trav = EcsIsA, .src.flags = EcsUp },
         },
         .filter.instanced = true
     });
@@ -7010,8 +7010,8 @@ void Query_superset_2_relations_w_component(void) {
 
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
-            { .id = ecs_id(Position), .src.trav = EcsChildOf, .src.flags = EcsUp },
-            { .id = ecs_id(Position), .src.trav = EcsIsA, .src.flags = EcsUp },
+            { .id = ecs_id(Position), .trav = EcsChildOf, .src.flags = EcsUp },
+            { .id = ecs_id(Position), .trav = EcsIsA, .src.flags = EcsUp },
         }
     });
 
@@ -7071,8 +7071,8 @@ void Query_superset_2_relations_instanced_w_component(void) {
 
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
-            { .id = ecs_id(Position), .src.trav = EcsChildOf, .src.flags = EcsUp },
-            { .id = ecs_id(Position), .src.trav = EcsIsA, .src.flags = EcsUp },
+            { .id = ecs_id(Position), .trav = EcsChildOf, .src.flags = EcsUp },
+            { .id = ecs_id(Position), .trav = EcsIsA, .src.flags = EcsUp },
         },
         .filter.instanced = true
     });
@@ -7117,7 +7117,7 @@ void Query_parent(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(parent)");
+    ecs_query_t *q = ecs_query_new(world, "Tag(up)");
     test_assert(q != NULL);
 
     ecs_entity_t base = ecs_new(world, Tag);
@@ -7145,7 +7145,7 @@ void Query_existing_isa_cascade(void) {
     ecs_entity_t e2 = ecs_new_w_pair(world, EcsIsA, e1);
     ecs_entity_t e3 = ecs_new_w_pair(world, EcsIsA, e2);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(cascade)");
+    ecs_query_t *q = ecs_query_new(world, "Tag(cascade(IsA))");
     test_assert(q != NULL);
 
     ecs_add_id(world, e1, Bar); /* mix up order */
@@ -7179,7 +7179,7 @@ void Query_new_isa_cascade(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(cascade)");
+    ecs_query_t *q = ecs_query_new(world, "Tag(cascade(IsA))");
     test_assert(q != NULL);
 
     ecs_entity_t e0 = ecs_new(world, Tag);
@@ -7217,7 +7217,7 @@ void Query_childof_cascade(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(cascade(ChildOf))");
+    ecs_query_t *q = ecs_query_new(world, "Tag(cascade)");
     test_assert(q != NULL);
 
     ecs_entity_t e0 = ecs_new(world, Tag);
@@ -7255,7 +7255,7 @@ void Query_parent_cascade(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag(parent|cascade)");
+    ecs_query_t *q = ecs_query_new(world, "Tag(cascade)");
     test_assert(q != NULL);
 
     ecs_entity_t e0 = ecs_new(world, Tag);
@@ -7773,7 +7773,7 @@ void Query_childof_rematch(void) {
     ecs_entity_t base_2 = ecs_set(world, 0, Position, {30, 40});
     ecs_entity_t inst = ecs_new_w_pair(world, EcsChildOf, base_1);
 
-    ecs_query_t *q = ecs_query_new(world, "Position(parent)");
+    ecs_query_t *q = ecs_query_new(world, "Position(up)");
     test_assert(q != NULL);
 
     ecs_iter_t it = ecs_query_iter(world, q);
@@ -7858,7 +7858,7 @@ void Query_childof_unmatch(void) {
     ecs_entity_t base_1 = ecs_set(world, 0, Position, {10, 20});
     ecs_entity_t inst = ecs_new_w_pair(world, EcsChildOf, base_1);
 
-    ecs_query_t *q = ecs_query_new(world, "Position(parent)");
+    ecs_query_t *q = ecs_query_new(world, "Position(up)");
     test_assert(q != NULL);
 
     ecs_iter_t it = ecs_query_iter(world, q);
@@ -7966,7 +7966,7 @@ void Query_childof_rematch_2_lvls(void) {
     ecs_entity_t base = ecs_new_w_pair(world, EcsChildOf, base_1);
     ecs_entity_t inst = ecs_new_w_pair(world, EcsChildOf, base);
 
-    ecs_query_t *q = ecs_query_new(world, "Position(parent)");
+    ecs_query_t *q = ecs_query_new(world, "Position(up)");
     test_assert(q != NULL);
 
     ecs_iter_t it = ecs_query_iter(world, q);
@@ -8024,7 +8024,7 @@ void Query_cascade_rematch_2_lvls(void) {
     ecs_add_pair(world, e_2, EcsChildOf, e_1);
     ecs_add_pair(world, e_1, EcsChildOf, e_0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position(cascade(ChildOf))");
+    ecs_query_t *q = ecs_query_new(world, "Position(cascade)");
     test_assert(q != NULL);
 
     ecs_iter_t it = ecs_query_iter(world, q);
@@ -8208,7 +8208,7 @@ void Query_cascade_desc_rematch_2_lvls(void) {
     ecs_add_pair(world, e_2, EcsChildOf, e_1);
     ecs_add_pair(world, e_1, EcsChildOf, e_0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position(cascade|desc(ChildOf))");
+    ecs_query_t *q = ecs_query_new(world, "Position(cascade|desc)");
     test_assert(q != NULL);
 
     ecs_iter_t it = ecs_query_iter(world, q);
@@ -8387,7 +8387,7 @@ void Query_childof_rematch_from_isa(void) {
     ecs_entity_t base = ecs_new_w_pair(world, EcsIsA, base_1);
     ecs_entity_t inst = ecs_new_w_pair(world, EcsChildOf, base);
 
-    ecs_query_t *q = ecs_query_new(world, "Position(parent)");
+    ecs_query_t *q = ecs_query_new(world, "Position(up)");
     test_assert(q != NULL);
 
     ecs_iter_t it = ecs_query_iter(world, q);
@@ -8422,7 +8422,7 @@ void Query_rematch_optional_ref(void) {
     ECS_TAG(world, Tag);
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag, ?Position(parent)");
+    ecs_query_t *q = ecs_query_new(world, "Tag, ?Position(up)");
     test_assert(q != NULL);
 
     ecs_entity_t parent = ecs_set(world, 0, Position, {10, 20});
@@ -8469,7 +8469,7 @@ void Query_rematch_optional_ref_w_2_refs(void) {
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag, Velocity(parent), ?Position(parent)");
+    ecs_query_t *q = ecs_query_new(world, "Tag, Velocity(up), ?Position(up)");
     test_assert(q != NULL);
 
     ecs_entity_t parent = ecs_set(world, 0, Position, {10, 20});
@@ -8530,7 +8530,7 @@ void Query_rematch_optional_ref_tag_w_ref_component(void) {
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
 
-    ecs_query_t *q = ecs_query_new(world, "TagA, ?Position(parent), TagB(parent)");
+    ecs_query_t *q = ecs_query_new(world, "TagA, ?Position(up), TagB(up)");
     test_assert(q != NULL);
 
     ecs_entity_t parent = ecs_set(world, 0, Position, {10, 20});
@@ -8974,7 +8974,7 @@ void Query_query_w_invalid_filter_flag(void) {
     test_expect_abort();
     ecs_query(world, {
         .filter.terms = {
-            { .id = ecs_id(Position), .src.flags = EcsFilter }
+            { .inout = EcsInOutFilter, .id = ecs_id(Position) }
         }
     });
 }

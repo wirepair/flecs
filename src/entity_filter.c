@@ -466,7 +466,7 @@ void flecs_entity_filter_init(
                 continue;
             }
 
-            if (terms[i].src.trav == rel) {
+            if (terms[i].trav == rel) {
                 ef.flat_tree_column = table->column_map[column];
                 ecs_assert(ef.flat_tree_column != -1, 
                     ECS_INTERNAL_ERROR, NULL);

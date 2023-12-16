@@ -1262,7 +1262,7 @@ void SortingEntireTable_sort_shared_component(void) {
     ecs_entity_t e9 = ecs_new_w_pair(world, EcsIsA, base_1);
 
     ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
-        .filter.expr = "Position(self|up)",
+        .filter.expr = "Position(self|up(IsA))",
         .filter.instanced = true,
         .order_by_component = ecs_id(Position),
         .order_by = ecs_compare(Position),

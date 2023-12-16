@@ -30,9 +30,7 @@
 
 #define TOK_SELF "self"
 #define TOK_UP "up"
-#define TOK_DOWN "down"
 #define TOK_CASCADE "cascade"
-#define TOK_PARENT "parent"
 #define TOK_DESC "desc"
 
 #define TOK_OVERRIDE "OVERRIDE"
@@ -375,14 +373,10 @@ uint8_t flecs_parse_set_token(
         return EcsSelf;
     } else if (!ecs_os_strcmp(token, TOK_UP)) {
         return EcsUp;
-    } else if (!ecs_os_strcmp(token, TOK_DOWN)) {
-        return EcsDown;
     } else if (!ecs_os_strcmp(token, TOK_CASCADE)) {
         return EcsCascade;
     } else if (!ecs_os_strcmp(token, TOK_DESC)) {
         return EcsDesc;
-    } else if (!ecs_os_strcmp(token, TOK_PARENT)) {
-        return EcsParent;
     } else {
         return 0;
     }
@@ -396,9 +390,12 @@ const char* flecs_parse_term_flags(
     int64_t column,
     const char *ptr,
     char *token,
+    ecs_term_t *term,
     ecs_term_id_t *id,
     char tok_end)
 {
+    ecs_assert(term != NULL, ECS_INTERNAL_ERROR, NULL);
+
     char token_buf[ECS_MAX_TOKEN_SIZE] = {0};
     if (!token) {
         token = token_buf;
@@ -434,8 +431,8 @@ const char* flecs_parse_term_flags(
                     return NULL;
                 }         
 
-                id->trav = ecs_lookup_fullpath(world, token);
-                if (!id->trav) {
+                term->trav = ecs_lookup_fullpath(world, token);
+                if (!term->trav) {
                     ecs_parser_error(name, expr, column, 
                         "unresolved identifier '%s'", token);
                     return NULL;
@@ -540,7 +537,7 @@ const char* flecs_parse_arguments(
 
                 ptr = ecs_parse_ws(ptr + 1);
                 ptr = flecs_parse_term_flags(world, name, expr, (ptr - expr), ptr,
-                    NULL, term_id, TOK_PAREN_CLOSE);
+                    NULL, term, term_id, TOK_PAREN_CLOSE);
                 if (!ptr) {
                     return NULL;
                 }
@@ -549,12 +546,10 @@ const char* flecs_parse_arguments(
             } else if (!ecs_os_strcmp(token, TOK_CASCADE) ||
                 !ecs_os_strcmp(token, TOK_DESC) ||
                 !ecs_os_strcmp(token, TOK_SELF) || 
-                !ecs_os_strcmp(token, TOK_UP) || 
-                !ecs_os_strcmp(token, TOK_DOWN) || 
-                !(ecs_os_strcmp(token, TOK_PARENT)))
+                !ecs_os_strcmp(token, TOK_UP))
             {
                 ptr = flecs_parse_term_flags(world, name, expr, (ptr - expr), ptr, 
-                    token, term_id, TOK_PAREN_CLOSE);
+                    token, term, term_id, TOK_PAREN_CLOSE);
                 if (!ptr) {
                     return NULL;
                 }
@@ -568,10 +563,6 @@ const char* flecs_parse_arguments(
 
             if (ptr[0] == TOK_AND) {
                 ptr = ecs_parse_ws(ptr + 1);
-
-                if (term) {
-                    term->id_flags = ECS_PAIR;
-                }
 
             } else if (ptr[0] == TOK_PAREN_CLOSE) {
                 ptr = ecs_parse_ws(ptr + 1);
@@ -690,8 +681,8 @@ const char* flecs_parse_term(
     }
 
 flecs_parse_role:
-    term.id_flags = flecs_parse_role(name, expr, (ptr - expr), token);
-    if (!term.id_flags) {
+    term.id = flecs_parse_role(name, expr, (ptr - expr), token);
+    if (!term.id) {
         goto error;
     }
 
@@ -726,7 +717,7 @@ parse_predicate:
     if (ptr[0] == TOK_COLON) {
         ptr = ecs_parse_ws(ptr + 1);
         ptr = flecs_parse_term_flags(world, name, expr, (ptr - expr), ptr, NULL, 
-            &term.first, TOK_COLON);
+            &term, &term.first, TOK_COLON);
         if (!ptr) {
             goto error;
         }
@@ -835,7 +826,7 @@ parse_pair:
     if (ptr[0] == TOK_COLON) {
         ptr = ecs_parse_ws(ptr + 1);
         ptr = flecs_parse_term_flags(world, name, expr, (ptr - expr), ptr,
-            NULL, &term.first, TOK_PAREN_CLOSE);
+            NULL, &term, &term.first, TOK_PAREN_CLOSE);
         if (!ptr) {
             goto error;
         }
@@ -878,7 +869,7 @@ parse_pair_predicate:
         if (ptr[0] == TOK_COLON) {
             ptr = ecs_parse_ws(ptr + 1);
             ptr = flecs_parse_term_flags(world, name, expr, (ptr - expr), ptr,
-                NULL, &term.second, TOK_PAREN_CLOSE);
+                NULL, &term, &term.second, TOK_PAREN_CLOSE);
             if (!ptr) {
                 goto error;
             }
@@ -907,8 +898,8 @@ parse_pair_object:
         goto error;
     }
 
-    if (term.id_flags == 0) {
-        term.id_flags = ECS_PAIR;
+    if (term.id == 0) {
+        term.id = ECS_PAIR;
     }
 
     if (ptr[0] == TOK_AND) {
@@ -1102,15 +1093,15 @@ char* ecs_parse_term(
     }
 
     /* Process role */
-    if (term->id_flags == ECS_AND) {
+    if (term->id == ECS_AND) {
         term->oper = EcsAndFrom;
-        term->id_flags = 0;
-    } else if (term->id_flags == ECS_OR) {
+        term->id = 0;
+    } else if (term->id == ECS_OR) {
         term->oper = EcsOrFrom;
-        term->id_flags = 0;
-    } else if (term->id_flags == ECS_NOT) {
+        term->id = 0;
+    } else if (term->id == ECS_NOT) {
         term->oper = EcsNotFrom;
-        term->id_flags = 0;
+        term->id = 0;
     }
 
     ptr = ecs_parse_ws(ptr);

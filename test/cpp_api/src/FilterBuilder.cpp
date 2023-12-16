@@ -413,7 +413,7 @@ void FilterBuilder_isa_superset_term(void) {
     flecs::world ecs;
 
     auto q = ecs.filter_builder<Self>()
-        .term<Other>().src().up()
+        .term<Other>().src().up(flecs::IsA)
         .build();
 
     auto base = ecs.entity().set<Other>({10});
@@ -443,7 +443,7 @@ void FilterBuilder_isa_self_superset_term(void) {
     flecs::world ecs;
 
     auto q = ecs.filter_builder<Self>()
-        .term<Other>().src().self().up()
+        .term<Other>().src().self().up(flecs::IsA)
         .build();
 
     auto base = ecs.entity().set<Other>({10});
@@ -484,7 +484,7 @@ void FilterBuilder_childof_superset_term(void) {
     flecs::world ecs;
 
     auto q = ecs.filter_builder<Self>()
-        .term<Other>().src().up(flecs::ChildOf)
+        .term<Other>().src().up()
         .build();
 
     auto base = ecs.entity().set<Other>({10});
@@ -514,7 +514,7 @@ void FilterBuilder_childof_self_superset_term(void) {
     flecs::world ecs;
 
     auto q = ecs.filter_builder<Self>()
-        .term<Other>().src().self().up(flecs::ChildOf)
+        .term<Other>().src().self().up()
         .build();
 
     auto base = ecs.entity().set<Other>({10});
@@ -555,7 +555,7 @@ void FilterBuilder_isa_superset_term_w_each(void) {
     flecs::world ecs;
 
     auto q = ecs.filter_builder<Self, Other>()
-        .arg(2).src().up()
+        .arg(2).src().up(flecs::IsA)
         .build();
 
     auto base = ecs.entity().set<Other>({10});
@@ -580,7 +580,7 @@ void FilterBuilder_isa_self_superset_term_w_each(void) {
     flecs::world ecs;
 
     auto q = ecs.filter_builder<Self, Other>()
-        .arg(2).src().self().up()
+        .arg(2).src().self().up(flecs::IsA)
         .build();
 
     auto base = ecs.entity().set<Other>({10});
@@ -607,7 +607,7 @@ void FilterBuilder_childof_superset_term_w_each(void) {
     flecs::world ecs;
 
     auto q = ecs.filter_builder<Self, Other>()
-        .arg(2).src().up(flecs::ChildOf)
+        .arg(2).src().up()
         .build();
 
     auto base = ecs.entity().set<Other>({10});
@@ -632,7 +632,7 @@ void FilterBuilder_childof_self_superset_term_w_each(void) {
     flecs::world ecs;
 
     auto q = ecs.filter_builder<Self, Other>()
-        .arg(2).src().self().up(flecs::ChildOf)
+        .arg(2).src().self().up()
         .build();
 
     auto base = ecs.entity().set<Other>({10});
@@ -659,7 +659,7 @@ void FilterBuilder_isa_superset_shortcut(void) {
     flecs::world ecs;
 
     auto q = ecs.filter_builder<Self, Other>()
-        .arg(2).up()
+        .arg(2).up(flecs::IsA)
         .build();
 
     auto base = ecs.entity().set<Other>({10});
@@ -711,7 +711,7 @@ void FilterBuilder_childof_superset_shortcut(void) {
     flecs::world ecs;
 
     auto q = ecs.filter_builder<Self, Other>()
-        .arg(2).up(flecs::ChildOf)
+        .arg(2).up()
         .build();
 
     auto base = ecs.entity().set<Other>({10});
@@ -736,7 +736,7 @@ void FilterBuilder_childof_superset_shortcut_w_self(void) {
     flecs::world ecs;
 
     auto q = ecs.filter_builder<Self, Other>()
-        .arg(2).self().up(flecs::ChildOf)
+        .arg(2).self().up()
         .build();
 
     auto base = ecs.entity().set<Other>({10});

@@ -35,6 +35,7 @@ using flags32_t = ecs_flags32_t;
 enum inout_kind_t {
     InOutDefault = EcsInOutDefault,
     InOutNone = EcsInOutNone,
+    InOutFilter = EcsInOutFilter,
     InOut = EcsInOut,
     In = EcsIn,
     Out = EcsOut
@@ -89,13 +90,10 @@ static const flecs::entity_t OnTableDelete = EcsOnTableDelete;
 /* Builtin term flags */
 static const uint32_t Self = EcsSelf;
 static const uint32_t Up = EcsUp;
-static const uint32_t Down = EcsDown;
 static const uint32_t Cascade = EcsCascade;
 static const uint32_t Desc = EcsDesc;
-static const uint32_t Parent = EcsParent;
 static const uint32_t IsVariable = EcsIsVariable;
 static const uint32_t IsEntity = EcsIsEntity;
-static const uint32_t Filter = EcsFilter;
 static const uint32_t TraverseFlags = EcsTraverseFlags;
 
 /* Builtin entity ids */

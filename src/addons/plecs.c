@@ -639,12 +639,8 @@ const char* plecs_set_mask_to_name(
         return "self";
     } else if (flags == EcsUp) {
         return "up";
-    } else if (flags == EcsDown) {
-        return "down";
     } else if (flags == EcsCascade || flags == (EcsUp|EcsCascade)) {
         return "cascade";
-    } else if (flags == EcsParent) {
-        return "parent";
     }
     return NULL;
 }
@@ -760,11 +756,11 @@ int plecs_create_term(
     }
 
     if (subj) {
-        ecs_id_t id;
+        ecs_id_t id, flags = term->id & ECS_ID_FLAGS_MASK;
         if (!obj) {
-            id = term->id_flags | pred;
+            id = flags | pred;
         } else {
-            id = term->id_flags | ecs_pair(pred, obj);
+            id = flags | ecs_pair(pred, obj);
             state->last_object = obj;
         }
         state->last_assign_id = id;

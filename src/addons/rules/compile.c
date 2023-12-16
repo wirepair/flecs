@@ -986,7 +986,7 @@ void flecs_rule_insert_inheritance(
     ecs_rule_op_t trav_op = {0};
     trav_op.kind = EcsRuleTrav;
     trav_op.field_index = -1;
-    trav_op.first.entity = term->first.trav;
+    trav_op.first.entity = EcsIsA;
     trav_op.second.entity = term->first.id;
     trav_op.src.var = tvar;
     trav_op.flags = EcsRuleIsSelf;
@@ -1422,8 +1422,8 @@ int flecs_rule_compile_term(
         ecs_assert(ecs_term_id_is_set(&term->second), ECS_INTERNAL_ERROR, NULL);
         op.kind = EcsRuleTrav;
     } else {
-        /* Ignore cascade & parent flags */
-        ecs_flags32_t trav_flags = EcsTraverseFlags & ~(EcsCascade|EcsParent);
+        /* Ignore cascade flag */
+        ecs_flags32_t trav_flags = EcsTraverseFlags & ~EcsCascade;
         if (term->flags & (EcsTermMatchAny|EcsTermMatchAnySrc)) {
             op.kind = EcsRuleAndAny;
         } else if ((term->src.flags & trav_flags) == EcsUp) {

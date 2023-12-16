@@ -7,7 +7,7 @@ void RulesTraversal_this_self_up_childof(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(self|up(ChildOf))"
+        .expr = "Foo(self|up)"
     });
 
     test_assert(r != NULL);
@@ -104,7 +104,7 @@ void RulesTraversal_this_up_childof(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(up(ChildOf))"
+        .expr = "Foo(up)"
     });
 
     test_assert(r != NULL);
@@ -189,7 +189,7 @@ void RulesTraversal_this_written_self_up_childof(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(self|up(ChildOf))"
+        .expr = "Tag(self), Foo(self|up)"
     });
 
     test_assert(r != NULL);
@@ -307,7 +307,7 @@ void RulesTraversal_this_written_up_childof(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(up(ChildOf))"
+        .expr = "Tag(self), Foo(up)"
     });
 
     test_assert(r != NULL);
@@ -407,7 +407,7 @@ void RulesTraversal_var_self_up_childof(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo($x:self|up(ChildOf))"
+        .expr = "Foo($x:self|up)"
     });
 
     test_assert(r != NULL);
@@ -512,7 +512,7 @@ void RulesTraversal_var_up_childof(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo($x:up(ChildOf))"
+        .expr = "Foo($x:up)"
     });
 
     test_assert(r != NULL);
@@ -600,7 +600,7 @@ void RulesTraversal_var_written_self_up_childof(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag($x:self), Foo($x:self|up(ChildOf))"
+        .expr = "Tag($x:self), Foo($x:self|up)"
     });
 
     test_assert(r != NULL);
@@ -728,7 +728,7 @@ void RulesTraversal_var_written_up_childof(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag($x:self), Foo($x:up(ChildOf))"
+        .expr = "Tag($x:self), Foo($x:up)"
     });
 
     test_assert(r != NULL);
@@ -831,7 +831,7 @@ void RulesTraversal_set_var_self_up_childof(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo($x:self|up(ChildOf))"
+        .expr = "Foo($x:self|up)"
     });
 
     test_assert(r != NULL);
@@ -932,7 +932,7 @@ void RulesTraversal_set_var_up_childof(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo($x:up(ChildOf))"
+        .expr = "Foo($x:up)"
     });
 
     test_assert(r != NULL);
@@ -1028,7 +1028,7 @@ void RulesTraversal_set_var_written_self_up_childof(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag($x:self), Foo($x:self|up(ChildOf))"
+        .expr = "Tag($x:self), Foo($x:self|up)"
     });
 
     test_assert(r != NULL);
@@ -1140,7 +1140,7 @@ void RulesTraversal_set_var_written_up_childof(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag($x:self), Foo($x:up(ChildOf))"
+        .expr = "Tag($x:self), Foo($x:up)"
     });
 
     test_assert(r != NULL);
@@ -1245,7 +1245,7 @@ void RulesTraversal_ent_self_up_childof(void) {
     ecs_entity_t e = ecs_new_entity(world, "ent");
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(ent:self|up(ChildOf))"
+        .expr = "Foo(ent:self|up)"
     });
 
     test_assert(r != NULL);
@@ -1301,7 +1301,7 @@ void RulesTraversal_ent_up_childof(void) {
     ecs_entity_t e = ecs_new_entity(world, "ent");
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(ent:up(ChildOf))"
+        .expr = "Foo(ent:up)"
     });
 
     test_assert(r != NULL);
@@ -1446,7 +1446,7 @@ void RulesTraversal_implicit_this_up_isa(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(up)"
+        .expr = "Foo(up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -1635,7 +1635,7 @@ void RulesTraversal_implicit_var_up_isa(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo($x:up)"
+        .expr = "Foo($x:up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -1724,7 +1724,7 @@ void RulesTraversal_implicit_ent_self_up_isa(void) {
     ecs_entity_t e = ecs_new_entity(world, "ent");
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(ent:self|up)"
+        .expr = "Foo(ent:self|up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -1780,7 +1780,7 @@ void RulesTraversal_implicit_ent_up_isa(void) {
     ecs_entity_t e = ecs_new_entity(world, "ent");
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(ent:up)"
+        .expr = "Foo(ent:up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -1827,7 +1827,7 @@ void RulesTraversal_self_up_2_targets(void) {
     ECS_TAG(world, Foo);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(self|up)"
+        .expr = "Foo(self|up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -1881,7 +1881,7 @@ void RulesTraversal_up_2_targets(void) {
     ECS_TAG(world, Foo);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(up)"
+        .expr = "Foo(up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -1928,7 +1928,7 @@ void RulesTraversal_self_up_2_targets_diamond(void) {
     ECS_TAG(world, Foo);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(self|up)"
+        .expr = "Foo(self|up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -1994,7 +1994,7 @@ void RulesTraversal_up_2_targets_diamond(void) {
     ECS_TAG(world, Foo);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(up)"
+        .expr = "Foo(up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -2055,7 +2055,7 @@ void RulesTraversal_written_self_up_2_targets(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(self|up)"
+        .expr = "Tag(self), Foo(self|up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -2119,7 +2119,7 @@ void RulesTraversal_written_up_2_targets(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(up)"
+        .expr = "Tag(self), Foo(up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -2175,7 +2175,7 @@ void RulesTraversal_written_self_up_2_targets_diamond(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(self|up)"
+        .expr = "Tag(self), Foo(self|up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -2256,7 +2256,7 @@ void RulesTraversal_written_up_2_targets_diamond(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(up)"
+        .expr = "Tag(self), Foo(up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -2329,7 +2329,7 @@ void RulesTraversal_2_self_up_terms(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag, Foo(self|up)"
+        .expr = "Tag, Foo(self|up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -2381,7 +2381,7 @@ void RulesTraversal_2_self_up_terms_2_targets(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag, Foo(self|up)"
+        .expr = "Tag, Foo(self|up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -2445,7 +2445,7 @@ void RulesTraversal_self_up_empty_table(void) {
     ECS_TAG(world, Foo);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(self|up)"
+        .expr = "Foo(self|up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -2474,7 +2474,7 @@ void RulesTraversal_up_empty_table(void) {
     ECS_TAG(world, Foo);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(up)"
+        .expr = "Foo(up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -2497,7 +2497,7 @@ void RulesTraversal_self_up_all_owned(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self|up)"
+        .expr = "Tag(self|up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -2565,7 +2565,7 @@ void RulesTraversal_up_all_owned(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(up)"
+        .expr = "Tag(up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -2627,7 +2627,7 @@ void RulesTraversal_this_self_up_childof_inherited(void) {
     ECS_TAG(world, Foo);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(self|up(ChildOf))"
+        .expr = "Foo(self|up)"
     });
 
     test_assert(r != NULL);
@@ -2662,7 +2662,7 @@ void RulesTraversal_this_up_childof_inherited(void) {
     ECS_TAG(world, Foo);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(up(ChildOf))"
+        .expr = "Foo(up)"
     });
 
     test_assert(r != NULL);
@@ -2692,7 +2692,7 @@ void RulesTraversal_this_written_self_up_childof_inherited(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(self|up(ChildOf))"
+        .expr = "Tag(self), Foo(self|up)"
     });
 
     test_assert(r != NULL);
@@ -2734,7 +2734,7 @@ void RulesTraversal_this_written_up_childof_inherited(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(up(ChildOf))"
+        .expr = "Tag(self), Foo(up)"
     });
 
     test_assert(r != NULL);
@@ -2767,7 +2767,7 @@ void RulesTraversal_var_self_up_childof_inherited(void) {
     ECS_TAG(world, Foo);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo($x:self|up(ChildOf))"
+        .expr = "Foo($x:self|up)"
     });
 
     test_assert(r != NULL);
@@ -2805,7 +2805,7 @@ void RulesTraversal_var_up_childof_inherited(void) {
     ECS_TAG(world, Foo);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo($x:up(ChildOf))"
+        .expr = "Foo($x:up)"
     });
 
     test_assert(r != NULL);
@@ -2838,7 +2838,7 @@ void RulesTraversal_var_written_self_up_childof_inherited(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag($x:self), Foo($x:self|up(ChildOf))"
+        .expr = "Tag($x:self), Foo($x:self|up)"
     });
 
     test_assert(r != NULL);
@@ -2883,7 +2883,7 @@ void RulesTraversal_var_written_up_childof_inherited(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag($x:self), Foo($x:up(ChildOf))"
+        .expr = "Tag($x:self), Foo($x:up)"
     });
 
     test_assert(r != NULL);
@@ -2925,7 +2925,7 @@ void RulesTraversal_ent_self_up_childof_inherited(void) {
     ecs_set_name(world, child, "child");
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(parent.child:self|up(ChildOf))"
+        .expr = "Foo(parent.child:self|up)"
     });
 
     test_assert(r != NULL);
@@ -2967,7 +2967,7 @@ void RulesTraversal_ent_up_childof_inherited(void) {
     ecs_set_name(world, child, "child");
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(parent.child:up(ChildOf))"
+        .expr = "Foo(parent.child:up)"
     });
 
     test_assert(r != NULL);
@@ -3012,7 +3012,7 @@ void RulesTraversal_ent_written_self_up_childof_inherited(void) {
     ecs_set_with(world, 0);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(parent.child:self|up(ChildOf))"
+        .expr = "Foo(parent.child:self|up)"
     });
 
     test_assert(r != NULL);
@@ -3057,7 +3057,7 @@ void RulesTraversal_ent_written_up_childof_inherited(void) {
     ecs_set_with(world, 0);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(parent.child:up(ChildOf))"
+        .expr = "Foo(parent.child:up)"
     });
 
     test_assert(r != NULL);
@@ -3094,7 +3094,7 @@ void RulesTraversal_this_self_up_childof_component(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Position(self|up(ChildOf))"
+        .expr = "Position(self|up)"
     });
 
     test_assert(r != NULL);
@@ -3247,7 +3247,7 @@ void RulesTraversal_this_up_childof_component(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Position(up(ChildOf))"
+        .expr = "Position(up)"
     });
 
     test_assert(r != NULL);
@@ -3374,7 +3374,7 @@ void RulesTraversal_this_written_self_up_childof_component(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Position(self|up(ChildOf))"
+        .expr = "Tag(self), Position(self|up)"
     });
 
     test_assert(r != NULL);
@@ -3549,7 +3549,7 @@ void RulesTraversal_this_written_up_childof_component(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Position(up(ChildOf))"
+        .expr = "Tag(self), Position(up)"
     });
 
     test_assert(r != NULL);
@@ -3692,7 +3692,7 @@ void RulesTraversal_var_self_up_childof_component(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Position($x:self|up(ChildOf))"
+        .expr = "Position($x:self|up)"
     });
 
     test_assert(r != NULL);
@@ -3855,7 +3855,7 @@ void RulesTraversal_var_up_childof_component(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Position($x:up(ChildOf))"
+        .expr = "Position($x:up)"
     });
 
     test_assert(r != NULL);
@@ -3985,7 +3985,7 @@ void RulesTraversal_var_written_self_up_childof_component(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag($x:self), Position($x:self|up(ChildOf))"
+        .expr = "Tag($x:self), Position($x:self|up)"
     });
 
     test_assert(r != NULL);
@@ -4173,7 +4173,7 @@ void RulesTraversal_var_written_up_childof_component(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag($x:self), Position($x:up(ChildOf))"
+        .expr = "Tag($x:self), Position($x:up)"
     });
 
     test_assert(r != NULL);
@@ -4318,7 +4318,7 @@ void RulesTraversal_this_self_up_childof_recycled_parent(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(self|up(ChildOf))"
+        .expr = "Foo(self|up)"
     });
 
     test_assert(r != NULL);
@@ -4424,7 +4424,7 @@ void RulesTraversal_this_up_childof_recycled_parent(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(up(ChildOf))"
+        .expr = "Foo(up)"
     });
 
     test_assert(r != NULL);
@@ -4518,7 +4518,7 @@ void RulesTraversal_this_written_self_up_childof_recycled_parent(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(self|up(ChildOf))"
+        .expr = "Tag(self), Foo(self|up)"
     });
 
     test_assert(r != NULL);
@@ -4645,7 +4645,7 @@ void RulesTraversal_this_written_up_childof_recycled_parent(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(up(ChildOf))"
+        .expr = "Tag(self), Foo(up)"
     });
 
     test_assert(r != NULL);
@@ -4754,7 +4754,7 @@ void RulesTraversal_this_self_up_childof_recycled_parent_component(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Position(self|up(ChildOf))"
+        .expr = "Position(self|up)"
     });
 
     test_assert(r != NULL);
@@ -4916,7 +4916,7 @@ void RulesTraversal_this_up_childof_recycled_parent_component(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Position(up(ChildOf))"
+        .expr = "Position(up)"
     });
 
     test_assert(r != NULL);
@@ -5052,7 +5052,7 @@ void RulesTraversal_this_written_self_up_childof_recycled_parent_component(void)
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Position(self|up(ChildOf))"
+        .expr = "Tag(self), Position(self|up)"
     });
 
     test_assert(r != NULL);
@@ -5236,7 +5236,7 @@ void RulesTraversal_this_written_up_childof_recycled_parent_component(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Position(up(ChildOf))"
+        .expr = "Tag(self), Position(up)"
     });
 
     test_assert(r != NULL);
@@ -5389,7 +5389,7 @@ void RulesTraversal_this_self_up_childof_pair(void) {
     ECS_TAG(world, Tgt);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Rel(self|up(ChildOf), Tgt)"
+        .expr = "Rel(self|up, Tgt)"
     });
 
     test_assert(r != NULL);
@@ -5487,7 +5487,7 @@ void RulesTraversal_this_up_childof_pair(void) {
     ECS_TAG(world, Tgt);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Rel(up(ChildOf), Tgt)"
+        .expr = "Rel(up, Tgt)"
     });
 
     test_assert(r != NULL);
@@ -5573,7 +5573,7 @@ void RulesTraversal_this_written_self_up_childof_pair(void) {
     ECS_TAG(world, Tgt);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Rel(self|up(ChildOf), Tgt)"
+        .expr = "Tag(self), Rel(self|up, Tgt)"
     });
 
     test_assert(r != NULL);
@@ -5692,7 +5692,7 @@ void RulesTraversal_this_written_up_childof_pair(void) {
     ECS_TAG(world, Tgt);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Rel(up(ChildOf), Tgt)"
+        .expr = "Tag(self), Rel(up, Tgt)"
     });
 
     test_assert(r != NULL);
@@ -5795,7 +5795,7 @@ void RulesTraversal_this_self_up_childof_pair_wildcard(void) {
     ECS_TAG(world, TgtC);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Rel(self|up(ChildOf), *)"
+        .expr = "Rel(self|up, *)"
     });
 
     test_assert(r != NULL);
@@ -5901,7 +5901,7 @@ void RulesTraversal_this_up_childof_pair_wildcard(void) {
     ECS_TAG(world, TgtC);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Rel(up(ChildOf), *)"
+        .expr = "Rel(up, *)"
     });
 
     test_assert(r != NULL);
@@ -5996,7 +5996,7 @@ void RulesTraversal_this_written_self_up_childof_pair_wildcard(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Rel(self|up(ChildOf), *)"
+        .expr = "Tag(self), Rel(self|up, *)"
     });
 
     test_assert(r != NULL);
@@ -6125,7 +6125,7 @@ void RulesTraversal_this_written_up_childof_pair_wildcard(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Rel(up(ChildOf), *)"
+        .expr = "Tag(self), Rel(up, *)"
     });
 
     test_assert(r != NULL);
@@ -6237,7 +6237,7 @@ void RulesTraversal_this_self_up_childof_pair_tgt_var(void) {
     ECS_TAG(world, TgtC);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Rel(self|up(ChildOf), $x)"
+        .expr = "Rel(self|up, $x)"
     });
 
     test_assert(r != NULL);
@@ -6357,7 +6357,7 @@ void RulesTraversal_this_written_self_up_childof_pair_tgt_var(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Rel(self|up(ChildOf), $x)"
+        .expr = "Tag(self), Rel(self|up, $x)"
     });
 
     test_assert(r != NULL);
@@ -6498,7 +6498,7 @@ void RulesTraversal_this_self_up_childof_pair_rel_var(void) {
     ECS_TAG(world, Tgt);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "$x(self|up(ChildOf), Tgt)"
+        .expr = "$x(self|up, Tgt)"
     });
 
     test_assert(r != NULL);
@@ -6618,7 +6618,7 @@ void RulesTraversal_this_written_self_up_childof_pair_rel_var(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), $x(self|up(ChildOf), Tgt)"
+        .expr = "Tag(self), $x(self|up, Tgt)"
     });
 
     test_assert(r != NULL);
@@ -6760,7 +6760,7 @@ void RulesTraversal_this_self_up_childof_pair_for_var_written(void) {
     ECS_ENTITY(world, ent, (Rel, TagA), (Rel, TagB), (Rel, TagC));
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Rel(ent, $x), $x(self|up)"
+        .expr = "Rel(ent, $x), $x(self|up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -6849,7 +6849,7 @@ void RulesTraversal_this_up_childof_pair_for_var_written(void) {
     ECS_ENTITY(world, ent, (Rel, TagA), (Rel, TagB), (Rel, TagC));
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Rel(ent, $x), $x(up)"
+        .expr = "Rel(ent, $x), $x(up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -6909,7 +6909,7 @@ void RulesTraversal_this_written_self_up_childof_pair_for_var_written(void) {
     ECS_TAG(world, TagC);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Rel(self, $x), $x(self|up(ChildOf))"
+        .expr = "Rel(self, $x), $x(self|up)"
     });
 
     test_assert(r != NULL);
@@ -6992,7 +6992,7 @@ void RulesTraversal_this_self_up_childof_pair_for_var_written_n_targets(void) {
     ECS_ENTITY(world, ent, (Rel, TagA), (Rel, TagB), (Rel, TagC));
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Rel(ent, $x), $x(self|up)"
+        .expr = "Rel(ent, $x), $x(self|up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -7125,7 +7125,7 @@ void RulesTraversal_this_written_self_up_childof_pair_for_var_written_n_targets(
     ECS_TAG(world, TagC);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Rel(self, $x), $x(self|up)"
+        .expr = "Rel(self, $x), $x(self|up(IsA))"
     });
 
     test_assert(r != NULL);
@@ -7243,7 +7243,7 @@ void RulesTraversal_not_up_disabled(void) {
     ecs_rule_t *f = ecs_rule(world, {
         .terms = {
             { TagA },
-            { .id = EcsDisabled, .src.flags = EcsUp, .src.trav = EcsChildOf, .oper = EcsNot }
+            { .id = EcsDisabled, .src.flags = EcsUp, .oper = EcsNot }
         }
     });
     test_assert(f != NULL);
@@ -7293,7 +7293,7 @@ void RulesTraversal_up_2_rel_instances(void) {
 
     ecs_rule_t *f = ecs_rule(world, {
         .terms = {
-            {TagC, .src.flags = EcsUp, .src.trav = Rel }
+            {TagC, .src.flags = EcsUp, .trav = Rel }
         }
     });
 
@@ -7333,7 +7333,7 @@ void RulesTraversal_up_2_rel_instances_match_2nd(void) {
 
     ecs_rule_t *f = ecs_rule(world, {
         .terms = {
-            { TagC, .src.flags = EcsUp, .src.trav = Rel }
+            { TagC, .src.flags = EcsUp, .trav = Rel }
         }
     });
 
@@ -7408,7 +7408,7 @@ void RulesTraversal_this_self_cascade_childof(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(self|cascade(ChildOf))"
+        .expr = "Foo(self|cascade)"
     });
 
     test_assert(r != NULL);
@@ -7505,7 +7505,7 @@ void RulesTraversal_this_cascade_childof(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(cascade(ChildOf))"
+        .expr = "Foo(cascade)"
     });
 
     test_assert(r != NULL);
@@ -7590,7 +7590,7 @@ void RulesTraversal_this_written_self_cascade_childof(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(self|cascade(ChildOf))"
+        .expr = "Tag(self), Foo(self|cascade)"
     });
 
     test_assert(r != NULL);
@@ -7708,7 +7708,7 @@ void RulesTraversal_this_written_cascade_childof(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(cascade(ChildOf))"
+        .expr = "Tag(self), Foo(cascade)"
     });
 
     test_assert(r != NULL);
@@ -7808,7 +7808,7 @@ void RulesTraversal_this_self_cascade_childof_w_parent_flag(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(self|cascade|parent)"
+        .expr = "Foo(self|cascade)"
     });
 
     test_assert(r != NULL);
@@ -7905,7 +7905,7 @@ void RulesTraversal_this_cascade_childof_w_parent_flag(void) {
     ECS_TAG(world, Bar);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Foo(cascade|parent)"
+        .expr = "Foo(cascade)"
     });
 
     test_assert(r != NULL);
@@ -7990,7 +7990,7 @@ void RulesTraversal_this_written_self_cascade_childof_w_parent_flag(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(self|cascade|parent)"
+        .expr = "Tag(self), Foo(self|cascade)"
     });
 
     test_assert(r != NULL);
@@ -8108,7 +8108,7 @@ void RulesTraversal_this_written_cascade_childof_w_parent_flag(void) {
     ECS_TAG(world, Tag);
 
     ecs_rule_t *r = ecs_rule(world, {
-        .expr = "Tag(self), Foo(cascade|parent)"
+        .expr = "Tag(self), Foo(cascade)"
     });
 
     test_assert(r != NULL);
@@ -8195,6 +8195,35 @@ void RulesTraversal_this_written_cascade_childof_w_parent_flag(void) {
     test_uint(Foo, ecs_field_id(&it, 2));
 
     test_bool(false, ecs_rule_next(&it));
+
+    ecs_rule_fini(r);
+
+    ecs_fini(world);
+}
+
+void RulesTraversal_this_up_trav_unused_rel(void) {
+    ecs_world_t *world = ecs_init();
+
+    ECS_TAG(world, Foo);
+    ECS_ENTITY(world, Rel, Traversable);
+
+    ecs_rule_t *r = ecs_rule(world, {
+        .expr = "Foo(up(Rel))"
+    });
+
+    test_assert(r != NULL);
+
+    {
+        ecs_iter_t it = ecs_rule_iter(world, r);
+        test_bool(false, ecs_rule_next(&it));
+    }
+
+    ecs_new(world, Foo);
+    
+    {
+        ecs_iter_t it = ecs_rule_iter(world, r);
+        test_bool(false, ecs_rule_next(&it));
+    }
 
     ecs_rule_fini(r);
 

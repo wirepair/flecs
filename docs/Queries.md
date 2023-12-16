@@ -1800,8 +1800,6 @@ Traversal behavior can be customized with the following bitflags, in addition to
 |----------|----------------|---------------|-------------------|-------------|
 | Self     | `self`         | `EcsSelf`     | `flecs::Self`     | Match self |
 | Up       | `up`           | `EcsUp`       | `flecs::Up`       | Match by traversing upwards |
-| Down     | `down`         | `EcsDown`     | `flecs::Down`     | Match by traversing downwards (derived, cannot be set) |
-| Parent   | `parent`       | `EcsParent`   | `flecs::Parent`   | Short for up(ChildOf) |
 | Cascade  | `cascade`      | `EcsCascade`  | `flecs::Cascade`  | Same as Up, but iterate in breadth-first order |
 | Desc     | `desc`         | `EcsDesc`     | `flecs::Desc`     | Combine with Cascade to iterate hierarchy bottom to top |
 
@@ -1944,7 +1942,7 @@ ecs_filter_t *f_2 = ecs_filter(world, {
   .terms = {{
     .id = ecs_id(Position),       // match Position
     .src.flags = EcsSelf | EcsUp  // first match self, traverse upwards while not found
-    .src.trav = EcsIsA,           // traverse using the IsA relationship
+    .trav = EcsIsA,           // traverse using the IsA relationship
   }}
 });
 ```
@@ -2068,7 +2066,7 @@ Position, ?Position(parent)
 By adding the `cascade` keyword, a query will iterate the `ChildOf` hierarchy top-down. The `cascade` feature is only supported by cached queries:
 
 ```
-Position, ?Position(parent|cascade)
+Position, ?Position(cascade)
 ```
 
 Relationship traversal can be combined with fixed [source](#source) terms, by using a colon (`:`) to separate the traversal flags and the source identifier. The following query matches if the `my_widget` entity has a parent with the `Window` component:

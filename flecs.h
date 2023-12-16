@@ -2904,6 +2904,7 @@ typedef struct ecs_iterable_t {
 typedef enum ecs_inout_kind_t {
     EcsInOutDefault,  /**< InOut for regular terms, In for shared terms */
     EcsInOutNone,     /**< Term is neither read nor written */
+    EcsInOutFilter,   /**< Same as InOutNOne + prevents term from triggering observers */
     EcsInOut,         /**< Term is both read and written */
     EcsIn,            /**< Term is only read */
     EcsOut,           /**< Term is only written */
@@ -2923,16 +2924,12 @@ typedef enum ecs_oper_kind_t {
 /* Term id flags  */
 #define EcsSelf                       (1u << 1)  /**< Match on self */
 #define EcsUp                         (1u << 2)  /**< Match by traversing upwards */
-#define EcsDown                       (1u << 3)  /**< Match by traversing downwards (derived, cannot be set) */
-#define EcsTraverseAll                (1u << 4)  /**< Match all entities encountered through traversal */
-#define EcsCascade                    (1u << 5)  /**< Sort results breadth first */
-#define EcsDesc                       (1u << 6)  /**< Iterate groups in descending order  */
-#define EcsParent                     (1u << 7)  /**< Short for up(ChildOf) */
-#define EcsIsVariable                 (1u << 8)  /**< Term id is a variable */
-#define EcsIsEntity                   (1u << 9)  /**< Term id is an entity */
-#define EcsIsName                     (1u << 10) /**< Term id is a name (don't attempt to lookup as entity) */
-#define EcsFilter                     (1u << 11) /**< Prevent observer from triggering on term */
-#define EcsTraverseFlags              (EcsUp|EcsDown|EcsTraverseAll|EcsSelf|EcsCascade|EcsDesc|EcsParent)
+#define EcsCascade                    (1u << 3)  /**< Sort results breadth first */
+#define EcsDesc                       (1u << 4)  /**< Iterate groups in descending order  */
+#define EcsIsVariable                 (1u << 5)  /**< Term id is a variable */
+#define EcsIsEntity                   (1u << 6)  /**< Term id is an entity */
+#define EcsIsName                     (1u << 7)  /**< Term id is a name (don't attempt to lookup as entity) */
+#define EcsTraverseFlags              (EcsUp|EcsSelf|EcsCascade|EcsDesc)
 
 /* Term flags discovered & set during filter creation. Mostly used internally to
  * store information relevant to queries. */
@@ -2964,10 +2961,6 @@ typedef struct ecs_term_id_t {
                                  * the API assumes ownership over the string and
                                  * will free it when the term is destroyed. */
 
-    ecs_entity_t trav;          /**< Relationship to traverse when looking for the
-                                 * component. The relationship must have
-                                 * the Traversable property. Default is IsA. */
-
     ecs_flags32_t flags;        /**< Term flags */
 } ecs_term_id_t;
 
@@ -2981,16 +2974,17 @@ struct ecs_term_t {
     ecs_term_id_t src;          /**< Source of term */
     ecs_term_id_t first;        /**< Component or first element of pair */
     ecs_term_id_t second;       /**< Second element of pair */
-    
+
+    ecs_entity_t trav;          /**< Relationship to traverse when looking for the
+                                 * component. The relationship must have
+                                 * the Traversable property. Default is IsA. */
+
     ecs_inout_kind_t inout;     /**< Access to contents matched by term */
     ecs_oper_kind_t oper;       /**< Operator of term */
 
-    ecs_id_t id_flags;          /**< Id flags of term id */
-    char *name;                 /**< Name of term */
-
-    int32_t field_index;        /**< Index of field for term in iterator */
     ecs_id_record_t *idr;       /**< Cached pointer to internal index */
 
+    int16_t field_index;        /**< Index of field for term in iterator */
     ecs_flags16_t flags;        /**< Flags that help eval, set by ecs_filter_init */
 
     bool move;                  /**< Used by internals */
@@ -15804,6 +15798,7 @@ using flags32_t = ecs_flags32_t;
 enum inout_kind_t {
     InOutDefault = EcsInOutDefault,
     InOutNone = EcsInOutNone,
+    InOutFilter = EcsInOutFilter,
     InOut = EcsInOut,
     In = EcsIn,
     Out = EcsOut
@@ -15858,13 +15853,10 @@ static const flecs::entity_t OnTableDelete = EcsOnTableDelete;
 /* Builtin term flags */
 static const uint32_t Self = EcsSelf;
 static const uint32_t Up = EcsUp;
-static const uint32_t Down = EcsDown;
 static const uint32_t Cascade = EcsCascade;
 static const uint32_t Desc = EcsDesc;
-static const uint32_t Parent = EcsParent;
 static const uint32_t IsVariable = EcsIsVariable;
 static const uint32_t IsEntity = EcsIsEntity;
-static const uint32_t Filter = EcsFilter;
 static const uint32_t TraverseFlags = EcsTraverseFlags;
 
 /* Builtin entity ids */
@@ -27158,61 +27150,6 @@ struct term_id_builder_i {
         return *this;
     }
 
-    /* The up flag indicates that the term identifier may be substituted by
-     * traversing a relationship upwards. For example: substitute the identifier
-     * with its parent by traversing the ChildOf relationship. */
-    Base& up(flecs::entity_t trav = 0) {
-        this->assert_term_id();
-        m_term_id->flags |= flecs::Up;
-        if (trav) {
-            m_term_id->trav = trav;
-        }
-        return *this;
-    }
-
-    template <typename Trav>
-    Base& up() {
-        return this->up(_::cpp_type<Trav>::id(this->world_v()));
-    }
-
-    /* The cascade flag is like up, but returns results in breadth-first order.
-     * Only supported for flecs::query */
-    Base& cascade(flecs::entity_t trav = 0) {
-        this->assert_term_id();
-        m_term_id->flags |= flecs::Cascade;
-        if (trav) {
-            m_term_id->trav = trav;
-        }
-        return *this;
-    }
-
-    template <typename Trav>
-    Base& cascade() {
-        return this->cascade(_::cpp_type<Trav>::id(this->world_v()));
-    }
-
-    /* Use with cascade to iterate results in descending (bottom -> top) order */
-    Base& desc() {
-        this->assert_term_id();
-        m_term_id->flags |= flecs::Desc;
-        return *this;
-    }
-
-    /* The parent flag is short for up(flecs::ChildOf) */
-    Base& parent() {
-        this->assert_term_id();
-        m_term_id->flags |= flecs::Parent;
-        return *this;
-    }
-
-    /* Specify relationship to traverse, and flags to indicate direction */
-    Base& trav(flecs::entity_t trav, flecs::flags32_t flags = 0) {
-        this->assert_term_id();
-        m_term_id->trav = trav;
-        m_term_id->flags |= flags;
-        return *this;
-    }
-
     /* Specify value of identifier by id */
     Base& id(flecs::entity_t id) {
         this->assert_term_id();
@@ -27259,16 +27196,16 @@ struct term_id_builder_i {
     }
 
     ecs_term_id_t *m_term_id;
-    
+
 protected:
     virtual flecs::world_t* world_v() = 0;
 
-private:
     void assert_term_id() {
         ecs_assert(m_term_id != NULL, ECS_INVALID_PARAMETER, 
             "no active term (call .term() first)");
     }
 
+private:
     operator Base&() {
         return *static_cast<Base*>(this);
     }
@@ -27396,10 +27333,63 @@ struct term_builder_i : term_id_builder_i<Base> {
         return *this;
     }
 
-    /** Set role of term. */
-    Base& role(id_t role) {
+    /* The up flag indicates that the term identifier may be substituted by
+     * traversing a relationship upwards. For example: substitute the identifier
+     * with its parent by traversing the ChildOf relationship. */
+    Base& up(flecs::entity_t trav = 0) {
+        this->assert_term_id();
+        this->m_term_id->flags |= flecs::Up;
+        if (trav) {
+            m_term->trav = trav;
+        }
+        return *this;
+    }
+
+    template <typename Trav>
+    Base& up() {
+        return this->up(_::cpp_type<Trav>::id(this->world_v()));
+    }
+
+    /* The cascade flag is like up, but returns results in breadth-first order.
+     * Only supported for flecs::query */
+    Base& cascade(flecs::entity_t trav = 0) {
+        this->assert_term_id();
+        this->m_term_id->flags |= flecs::Cascade;
+        if (trav) {
+            m_term->trav = trav;
+        }
+        return *this;
+    }
+
+    template <typename Trav>
+    Base& cascade() {
+        return this->cascade(_::cpp_type<Trav>::id(this->world_v()));
+    }
+
+    /* Use with cascade to iterate results in descending (bottom -> top) order */
+    Base& desc() {
+        this->assert_term_id();
+        this->m_term_id->flags |= flecs::Desc;
+        return *this;
+    }
+
+    /* Same as up(), exists for backwards compatibility */
+    Base& parent() {
+        return this->up();
+    }
+
+    /* Specify relationship to traverse, and flags to indicate direction */
+    Base& trav(flecs::entity_t trav, flecs::flags32_t flags = 0) {
+        this->assert_term_id();
+        m_term->trav = trav;
+        this->m_term_id->flags |= flags;
+        return *this;
+    }
+
+    /** Set id flags for term. */
+    Base& id_flags(id_t flags) {
         this->assert_term();
-        m_term->id_flags = role;
+        m_term->id |= flags;
         return *this;
     }
 
@@ -27533,7 +27523,7 @@ struct term_builder_i : term_id_builder_i<Base> {
 
     /* Filter terms are not triggered on by observers */
     Base& filter() {
-        m_term->src.flags |= flecs::Filter;
+        m_term->inout = EcsInOutFilter;
         return *this;
     }
 

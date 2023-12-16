@@ -220,7 +220,7 @@ ecs_trav_down_t* flecs_rule_get_down_cache(
 {
     ecs_world_t *world = ctx->it->real_world;
     ecs_assert(!(cache->dir & EcsUp), ECS_INTERNAL_ERROR, NULL);
-    cache->dir = EcsDown;
+    cache->dir = EcsTravDown;
 
     ecs_allocator_t *a = flecs_rule_get_allocator(ctx->it);
     ecs_map_init_if(&cache->src, a);

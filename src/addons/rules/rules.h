@@ -138,10 +138,15 @@ typedef struct {
     bool ready;
 } ecs_trav_up_t;
 
+typedef enum {
+    EcsTravUp,
+    EcsTravDown
+} ecs_trav_direction_t;
+
 typedef struct {
     ecs_map_t src;        /* map<entity, trav_down_t> or map<table_id, trav_up_t> */
     ecs_id_t with;
-    ecs_flags32_t dir;
+    ecs_trav_direction_t dir;
 } ecs_trav_up_cache_t;
 
 /* And up context */

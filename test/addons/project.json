@@ -45,8 +45,6 @@
                 "pair_implicit_subject_obj_w_up",
                 "pair_implicit_subject_pred_w_self_up",
                 "pair_implicit_subject_obj_w_self_up",
-                "pair_implicit_subject_pred_w_up_trav",
-                "pair_implicit_subject_obj_w_up_trav",
                 "pair_implicit_subject_pred_w_invalid_flags",
                 "pair_implicit_subject_obj_w_invalid_flags",
                 "pair_explicit_subject",
@@ -127,13 +125,9 @@
                 "1_digit_pair_explicit_subj",
                 "pred_implicit_subject_self",
                 "pred_implicit_subject_superset",
-                "pred_implicit_subject_subset",
                 "pred_implicit_subject_superset_inclusive",
-                "pred_implicit_subject_subset_inclusive",
                 "pred_implicit_subject_superset_cascade",
-                "pred_implicit_subject_subset_cascade",
                 "pred_implicit_subject_superset_inclusive_cascade",
-                "pred_implicit_subject_subset_inclusive_cascade",
                 "pred_implicit_subject_implicit_superset_cascade",         
                 "pred_implicit_subject_implicit_superset_inclusive_cascade",
                 "pred_implicit_subject_implicit_superset_cascade_w_rel",         
@@ -154,16 +148,10 @@
                 "obj_entity_w_explicit_self_superset_relation",
                 "pred_entity_w_explicit_self",
                 "pred_entity_w_explicit_self_superset",
-                "pred_entity_w_explicit_superset_relation",
-                "pred_entity_w_explicit_self_superset_relation",
                 "pred_entity_no_args_w_explicit_self",
                 "pred_entity_no_args_w_explicit_self_superset",
-                "pred_entity_no_args_w_explicit_superset_relation",
-                "pred_entity_no_args_w_explicit_self_superset_relation",
                 "pred_entity_no_args_2_terms_w_explicit_self",
                 "pred_entity_no_args_2_terms_w_explicit_self_superset",
-                "pred_entity_no_args_2_terms_w_explicit_superset_relation",
-                "pred_entity_no_args_2_terms_w_explicit_self_superset_relation",
                 "newline",
                 "2_newlines",
                 "3_newlines",
@@ -628,8 +616,6 @@
                 "add_to_system_in_progress",
                 "redefine_null_signature",
                 "redefine_0_signature",
-                "one_named_column_of_two",
-                "two_named_columns_of_two",
                 "redeclare_system_explicit_id",
                 "redeclare_system_explicit_id_null_expr",
                 "redeclare_system_explicit_id_no_name",
@@ -1177,12 +1163,7 @@
                 "1_var_src_not",
                 "1_this_src_not_written",
                 "1_var_src_not_written",
-                "first_self",
-                "first_down",
-                "first_self_down",
-                "first_rel_self",
-                "first_rel_down",
-                "first_rel_self_down"
+                "first_self"
             ]
         }, {
             "id": "RulesRecycled",
@@ -1374,7 +1355,8 @@
                 "this_self_cascade_childof_w_parent_flag",
                 "this_cascade_childof_w_parent_flag",
                 "this_written_self_cascade_childof_w_parent_flag",
-                "this_written_cascade_childof_w_parent_flag"
+                "this_written_cascade_childof_w_parent_flag",
+                "this_up_trav_unused_rel"
             ]
         }, {
             "id": "SystemPeriodic",

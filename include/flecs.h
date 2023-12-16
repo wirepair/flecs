@@ -651,6 +651,7 @@ typedef struct ecs_iterable_t {
 typedef enum ecs_inout_kind_t {
     EcsInOutDefault,  /**< InOut for regular terms, In for shared terms */
     EcsInOutNone,     /**< Term is neither read nor written */
+    EcsInOutFilter,   /**< Same as InOutNOne + prevents term from triggering observers */
     EcsInOut,         /**< Term is both read and written */
     EcsIn,            /**< Term is only read */
     EcsOut,           /**< Term is only written */
@@ -670,16 +671,12 @@ typedef enum ecs_oper_kind_t {
 /* Term id flags  */
 #define EcsSelf                       (1u << 1)  /**< Match on self */
 #define EcsUp                         (1u << 2)  /**< Match by traversing upwards */
-#define EcsDown                       (1u << 3)  /**< Match by traversing downwards (derived, cannot be set) */
-#define EcsTraverseAll                (1u << 4)  /**< Match all entities encountered through traversal */
-#define EcsCascade                    (1u << 5)  /**< Sort results breadth first */
-#define EcsDesc                       (1u << 6)  /**< Iterate groups in descending order  */
-#define EcsParent                     (1u << 7)  /**< Short for up(ChildOf) */
-#define EcsIsVariable                 (1u << 8)  /**< Term id is a variable */
-#define EcsIsEntity                   (1u << 9)  /**< Term id is an entity */
-#define EcsIsName                     (1u << 10) /**< Term id is a name (don't attempt to lookup as entity) */
-#define EcsFilter                     (1u << 11) /**< Prevent observer from triggering on term */
-#define EcsTraverseFlags              (EcsUp|EcsDown|EcsTraverseAll|EcsSelf|EcsCascade|EcsDesc|EcsParent)
+#define EcsCascade                    (1u << 3)  /**< Sort results breadth first */
+#define EcsDesc                       (1u << 4)  /**< Iterate groups in descending order  */
+#define EcsIsVariable                 (1u << 5)  /**< Term id is a variable */
+#define EcsIsEntity                   (1u << 6)  /**< Term id is an entity */
+#define EcsIsName                     (1u << 7)  /**< Term id is a name (don't attempt to lookup as entity) */
+#define EcsTraverseFlags              (EcsUp|EcsSelf|EcsCascade|EcsDesc)
 
 /* Term flags discovered & set during filter creation. Mostly used internally to
  * store information relevant to queries. */
@@ -711,10 +708,6 @@ typedef struct ecs_term_id_t {
                                  * the API assumes ownership over the string and
                                  * will free it when the term is destroyed. */
 
-    ecs_entity_t trav;          /**< Relationship to traverse when looking for the
-                                 * component. The relationship must have
-                                 * the Traversable property. Default is IsA. */
-
     ecs_flags32_t flags;        /**< Term flags */
 } ecs_term_id_t;
 
@@ -728,16 +721,17 @@ struct ecs_term_t {
     ecs_term_id_t src;          /**< Source of term */
     ecs_term_id_t first;        /**< Component or first element of pair */
     ecs_term_id_t second;       /**< Second element of pair */
-    
+
+    ecs_entity_t trav;          /**< Relationship to traverse when looking for the
+                                 * component. The relationship must have
+                                 * the Traversable property. Default is IsA. */
+
     ecs_inout_kind_t inout;     /**< Access to contents matched by term */
     ecs_oper_kind_t oper;       /**< Operator of term */
 
-    ecs_id_t id_flags;          /**< Id flags of term id */
-    char *name;                 /**< Name of term */
-
-    int32_t field_index;        /**< Index of field for term in iterator */
     ecs_id_record_t *idr;       /**< Cached pointer to internal index */
 
+    int16_t field_index;        /**< Index of field for term in iterator */
     ecs_flags16_t flags;        /**< Flags that help eval, set by ecs_filter_init */
 
     bool move;                  /**< Used by internals */

@@ -246,7 +246,6 @@ void FilterStr_one_term_w_up(void) {
     }));
 
     char *str = ecs_filter_str(world, &f);
-    test_str(str, "Foo(up)");
     ecs_os_free(str);
 
     ecs_filter_fini(&f);

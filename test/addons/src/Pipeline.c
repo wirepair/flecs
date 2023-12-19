@@ -2415,7 +2415,7 @@ void Pipeline_on_merge_activate_system_before_merge(void) {
     // system is annotated with TagA but writes both TagA, TagB
     ecs_system(world, {
         .entity = ecs_entity(world, { .add = { ecs_dependson(EcsOnUpdate) }}),
-        .query.filter.terms = {{ TagA, .inout = EcsOut, .src.flags = EcsIsEntity }},
+        .query.filter.terms = {{ TagA, .inout = EcsOut, .src.id = EcsIsEntity }},
         .callback = sys_add_tag
     });
 
@@ -2724,7 +2724,7 @@ void Pipeline_2_startup_systems_w_merge(void) {
 
     ecs_system(world, {
         .entity = ecs_entity(world, { .add = { ecs_dependson(EcsOnStart) }}),
-        .query.filter = { .terms = {{ ecs_id(Position), .src.flags = EcsIsEntity, .inout = EcsOut }}},
+        .query.filter = { .terms = {{ ecs_id(Position), .src.id = EcsIsEntity, .inout = EcsOut }}},
         .callback = SysA
     });
 
@@ -2773,7 +2773,7 @@ void Pipeline_inactive_last_system_merge_count(void) {
         }),
         .query.filter.terms = {
             { TagA },
-            { TagB, .src.flags = EcsIsEntity, .inout = EcsOut }
+            { TagB, .src.id = EcsIsEntity, .inout = EcsOut }
         },
         .callback = SysA
     });
@@ -2784,7 +2784,7 @@ void Pipeline_inactive_last_system_merge_count(void) {
         }),
         .query.filter.terms = {
             { TagB },
-            { TagC, .src.flags = EcsIsEntity, .inout = EcsOut }
+            { TagC, .src.id = EcsIsEntity, .inout = EcsOut }
         },
         .callback = SysB
     });
@@ -2819,7 +2819,7 @@ void Pipeline_inactive_middle_system_merge_count(void) {
         }),
         .query.filter.terms = {
             { TagA },
-            { TagB, .src.flags = EcsIsEntity, .inout = EcsOut }
+            { TagB, .src.id = EcsIsEntity, .inout = EcsOut }
         },
         .callback = SysA
     });
@@ -2830,7 +2830,7 @@ void Pipeline_inactive_middle_system_merge_count(void) {
         }),
         .query.filter.terms = {
             { TagB },
-            { TagC, .src.flags = EcsIsEntity, .inout = EcsOut }
+            { TagC, .src.id = EcsIsEntity, .inout = EcsOut }
         },
         .callback = SysC
     });
@@ -2841,7 +2841,7 @@ void Pipeline_inactive_middle_system_merge_count(void) {
         }),
         .query.filter.terms = {
             { TagC },
-            { TagD, .src.flags = EcsIsEntity, .inout = EcsOut }
+            { TagD, .src.id = EcsIsEntity, .inout = EcsOut }
         },
         .callback = SysD
     });
@@ -2895,7 +2895,7 @@ void Pipeline_last_no_readonly_system_merge_count(void) {
         }),
         .query.filter.terms = {
             { TagA },
-            { TagB, .src.flags = EcsIsEntity, .inout = EcsOut }
+            { TagB, .src.id = EcsIsEntity, .inout = EcsOut }
         },
         .callback = SysA
     });
@@ -2985,7 +2985,7 @@ void Pipeline_builtin_pipeline_w_self_system_term(void) {
     ecs_query_t *q = p->poly;
     const ecs_filter_t *f = ecs_query_get_filter(q);
     test_assert(f != NULL);
-    test_assert((f->terms[0].src.flags & EcsTraverseFlags) == EcsSelf);
+    test_assert((f->terms[0].src.id & EcsTraverseFlags) == EcsSelf);
 
     ecs_fini(world);
 }
@@ -3010,7 +3010,7 @@ void Pipeline_custom_pipeline_w_self_system_term(void) {
     ecs_query_t *q = p->poly;
     const ecs_filter_t *f = ecs_query_get_filter(q);
     test_assert(f != NULL);
-    test_assert((f->terms[0].src.flags & EcsTraverseFlags) == EcsSelf);
+    test_assert((f->terms[0].src.id & EcsTraverseFlags) == EcsSelf);
 
     ecs_fini(world);
 }

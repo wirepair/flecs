@@ -228,7 +228,7 @@ void flecs_bootstrap_hierarchy(ecs_world_t *world) {
         .entity = ecs_entity(world, {.add = {ecs_childof(EcsFlecsInternals)}}),
         .filter.terms[0] = {
             .id = ecs_pair(ecs_id(EcsIdentifier), EcsSymbol), 
-            .src.flags = EcsSelf 
+            .src.id = EcsSelf 
         },
         .callback = flecs_on_set_symbol,
         .events = {EcsOnSet},

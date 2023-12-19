@@ -378,8 +378,8 @@ bool ecs_field_is_readonly(
             return true;
         }
 
-        ecs_term_id_t *src = &term->src;
-        if (!(src->flags & EcsSelf)) {
+        ecs_term_ref_t *src = &term->src;
+        if (!(src->id & EcsSelf)) {
             return true;
         }
     }

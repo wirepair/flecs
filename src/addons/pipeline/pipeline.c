@@ -130,17 +130,17 @@ bool flecs_pipeline_check_term(
 {
     (void)world;
 
-    ecs_term_id_t *src = &term->src;
-    if (src->flags & EcsInOutNone) {
+    ecs_term_ref_t *src = &term->src;
+    if (term->inout == EcsInOutNone || term->inout == EcsInOutFilter) {
         return false;
     }
 
     ecs_id_t id = term->id;
-    ecs_oper_kind_t oper = term->oper;
-    ecs_inout_kind_t inout = term->inout;
+    int16_t oper = term->oper;
+    int16_t inout = term->inout;
     bool from_any = ecs_term_match_0(term);
     bool from_this = ecs_term_match_this(term);
-    bool is_shared = !from_any && (!from_this || !(src->flags & EcsSelf));
+    bool is_shared = !from_any && (!from_this || !(src->id & EcsSelf));
 
     ecs_write_kind_t ws = flecs_pipeline_get_write_state(write_state, id);
 
@@ -700,10 +700,10 @@ void flecs_run_startup_systems(
         .query = {
             .filter.terms = {
                 { .id = EcsSystem },
-                { .id = EcsPhase, .src.flags = EcsCascade, .trav = EcsDependsOn },
+                { .id = EcsPhase, .src.id = EcsCascade, .trav = EcsDependsOn },
                 { .id = ecs_dependson(EcsOnStart), .trav = EcsDependsOn },
-                { .id = EcsDisabled, .src.flags = EcsUp, .trav = EcsDependsOn, .oper = EcsNot },
-                { .id = EcsDisabled, .src.flags = EcsUp, .trav = EcsChildOf, .oper = EcsNot }
+                { .id = EcsDisabled, .src.id = EcsUp, .trav = EcsDependsOn, .oper = EcsNot },
+                { .id = EcsDisabled, .src.id = EcsUp, .trav = EcsChildOf, .oper = EcsNot }
             },
             .order_by = flecs_entity_compare
         }
@@ -921,10 +921,10 @@ void FlecsPipelineImport(
         .query = {
             .filter.terms = {
                 { .id = EcsSystem },
-                { .id = EcsPhase, .src.flags = EcsCascade, .trav = EcsDependsOn },
+                { .id = EcsPhase, .src.id = EcsCascade, .trav = EcsDependsOn },
                 { .id = ecs_dependson(EcsOnStart), .trav = EcsDependsOn, .oper = EcsNot },
-                { .id = EcsDisabled, .src.flags = EcsUp, .trav = EcsDependsOn, .oper = EcsNot },
-                { .id = EcsDisabled, .src.flags = EcsUp, .trav = EcsChildOf, .oper = EcsNot }
+                { .id = EcsDisabled, .src.id = EcsUp, .trav = EcsDependsOn, .oper = EcsNot },
+                { .id = EcsDisabled, .src.id = EcsUp, .trav = EcsChildOf, .oper = EcsNot }
             },
             .order_by = flecs_entity_compare
         }

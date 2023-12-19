@@ -222,7 +222,7 @@ void FilterStr_one_term_w_self(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .terms = {{ .id = Foo, .src.flags = EcsSelf }}
+        .terms = {{ .id = Foo, .src.id = EcsSelf }}
     }));
 
     char *str = ecs_filter_str(world, &f);
@@ -242,7 +242,7 @@ void FilterStr_one_term_w_up(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .terms = {{ .id = Foo, .src.flags = EcsUp }}
+        .terms = {{ .id = Foo, .src.id = EcsUp }}
     }));
 
     char *str = ecs_filter_str(world, &f);
@@ -261,7 +261,7 @@ void FilterStr_one_term_w_0(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .terms = {{ .id = Foo, .src.flags = EcsIsEntity }}
+        .terms = {{ .id = Foo, .src.id = EcsIsEntity }}
     }));
 
     char *str = ecs_filter_str(world, &f);
@@ -341,7 +341,7 @@ void FilterStr_one_term_w_src_var(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .terms = {{ Tag, .src.flags = EcsIsVariable, .src.name = "Var" }}
+        .terms = {{ Tag, .src.id = EcsIsVariable, .src.name = "Var" }}
     }));
 
     char *str = ecs_filter_str(world, &f);
@@ -359,7 +359,7 @@ void FilterStr_one_term_w_first_var(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .terms = {{ .first.flags = EcsIsVariable, .first.name = "Var" }}
+        .terms = {{ .first.id = EcsIsVariable, .first.name = "Var" }}
     }));
 
     char *str = ecs_filter_str(world, &f);
@@ -379,7 +379,7 @@ void FilterStr_one_term_w_second_var(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .terms = {{ .first.id = Rel, .second.flags = EcsIsVariable, .second.name = "Var" }}
+        .terms = {{ .first.id = Rel, .second.id = EcsIsVariable, .second.name = "Var" }}
     }));
 
     char *str = ecs_filter_str(world, &f);
@@ -399,7 +399,7 @@ void FilterStr_one_term_w_first_var_entity_src(void) {
     ecs_filter_t f = ECS_FILTER_INIT;
     test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
         .storage = &f,
-        .terms = {{ .first.flags = EcsIsVariable, .first.name = "Var", .src.id = Src }}
+        .terms = {{ .first.id = EcsIsVariable, .first.name = "Var", .src.id = Src }}
     }));
 
     char *str = ecs_filter_str(world, &f);
@@ -422,7 +422,7 @@ void FilterStr_one_term_w_pair_w_0_entity(void) {
         .storage = &f,
         .terms = {
             { .first.id = Rel, .second.id = Tgt, .src = {
-                .id = 0, .flags = EcsIsEntity
+                .id = EcsIsEntity
             } }
         }
     }));

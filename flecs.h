@@ -796,6 +796,8 @@ typedef struct ecs_allocator_t ecs_allocator_t;
 #define ECS_PAIR_SECOND(e)            (ecs_entity_t_lo(e))
 #define ECS_HAS_RELATION(e, rel)      (ECS_HAS_ID_FLAG(e, PAIR) && (ECS_PAIR_FIRST(e) == rel))
 
+#define ECS_TERM_REF_FLAGS(ref)       ((ref)->id & EcsTermRefFlags)
+#define ECS_TERM_REF_ID(ref)          ((ref)->id & ~EcsTermRefFlags)
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Convert between C typenames and variables
@@ -2922,14 +2924,16 @@ typedef enum ecs_oper_kind_t {
 } ecs_oper_kind_t;
 
 /* Term id flags  */
-#define EcsSelf                       (1u << 1)  /**< Match on self */
-#define EcsUp                         (1u << 2)  /**< Match by traversing upwards */
-#define EcsCascade                    (1u << 3)  /**< Sort results breadth first */
-#define EcsDesc                       (1u << 4)  /**< Iterate groups in descending order  */
-#define EcsIsVariable                 (1u << 5)  /**< Term id is a variable */
-#define EcsIsEntity                   (1u << 6)  /**< Term id is an entity */
-#define EcsIsName                     (1u << 7)  /**< Term id is a name (don't attempt to lookup as entity) */
-#define EcsTraverseFlags              (EcsUp|EcsSelf|EcsCascade|EcsDesc)
+#define EcsSelf                       (1llu << 63)  /**< Match on self */
+#define EcsUp                         (1llu << 62)  /**< Match by traversing upwards */
+#define EcsTrav                       (1llu << 61)  /**< Traverse relationship transitively */
+#define EcsCascade                    (1llu << 60)  /**< Sort results breadth first */
+#define EcsDesc                       (1llu << 59)  /**< Iterate groups in descending order  */
+#define EcsIsVariable                 (1llu << 58)  /**< Term id is a variable */
+#define EcsIsEntity                   (1llu << 57)  /**< Term id is an entity */
+#define EcsIsName                     (1llu << 56)  /**< Term id is a name (don't attempt to lookup as entity) */
+#define EcsTraverseFlags              (EcsSelf|EcsUp|EcsTrav|EcsCascade|EcsDesc)
+#define EcsTermRefFlags               (EcsTraverseFlags|EcsIsVariable|EcsIsEntity|EcsIsName)
 
 /* Term flags discovered & set during filter creation. Mostly used internally to
  * store information relevant to queries. */
@@ -2947,8 +2951,10 @@ typedef enum ecs_oper_kind_t {
 #define EcsTermMatchDisabled          (1u << 7)
 #define EcsTermMatchPrefab            (1u << 8)
 
-/** Type that describes a single identifier in a term */
-typedef struct ecs_term_id_t {
+#define EcsTermMove                   (1u << 9)
+
+/** Type that describes a reference to an entity or variable in a term. */
+typedef struct ecs_term_ref_t {
     ecs_entity_t id;            /**< Entity id. If left to 0 and flags does not 
                                  * specify whether id is an entity or a variable
                                  * the id will be initialized to EcsThis. 
@@ -2960,9 +2966,7 @@ typedef struct ecs_term_id_t {
                                  * entity name. When ecs_term_t::move is true,
                                  * the API assumes ownership over the string and
                                  * will free it when the term is destroyed. */
-
-    ecs_flags32_t flags;        /**< Term flags */
-} ecs_term_id_t;
+} ecs_term_ref_t;
 
 /** Type that describes a term (single element in a query) */
 struct ecs_term_t {
@@ -2971,23 +2975,21 @@ struct ecs_term_t {
                                  * first/second members, which provide more
                                  * flexibility. */
 
-    ecs_term_id_t src;          /**< Source of term */
-    ecs_term_id_t first;        /**< Component or first element of pair */
-    ecs_term_id_t second;       /**< Second element of pair */
+    ecs_term_ref_t src;          /**< Source of term */
+    ecs_term_ref_t first;        /**< Component or first element of pair */
+    ecs_term_ref_t second;       /**< Second element of pair */
 
     ecs_entity_t trav;          /**< Relationship to traverse when looking for the
                                  * component. The relationship must have
                                  * the Traversable property. Default is IsA. */
 
-    ecs_inout_kind_t inout;     /**< Access to contents matched by term */
-    ecs_oper_kind_t oper;       /**< Operator of term */
-
-    ecs_id_record_t *idr;       /**< Cached pointer to internal index */
+    int16_t inout;              /**< Access to contents matched by term */
+    int16_t oper;               /**< Operator of term */
 
     int16_t field_index;        /**< Index of field for term in iterator */
     ecs_flags16_t flags;        /**< Flags that help eval, set by ecs_filter_init */
 
-    bool move;                  /**< Used by internals */
+    ecs_id_record_t *idr;       /**< Cached pointer to internal index */
 };
 
 /** Use $this variable to initialize user-allocated filter object */
@@ -6777,7 +6779,7 @@ bool ecs_children_next(
  */
 FLECS_API 
 bool ecs_term_id_is_set(
-    const ecs_term_id_t *id);
+    const ecs_term_ref_t *id);
 
 /** Test whether a term is set.
  * This operation can be used to test whether a term has been initialized with
@@ -8377,7 +8379,7 @@ int32_t ecs_search_relation(
     int32_t offset,
     ecs_id_t id,
     ecs_entity_t rel,
-    ecs_flags32_t flags, /* EcsSelf and/or EcsUp */
+    ecs_flags64_t flags, /* EcsSelf and/or EcsUp */
     ecs_entity_t *subject_out,
     ecs_id_t *id_out,
     struct ecs_table_record_t **tr_out);
@@ -15389,7 +15391,7 @@ char* ecs_parse_term(
     const char *expr,
     const char *ptr,
     ecs_term_t *term_out,
-    ecs_term_id_t *extra_args);
+    ecs_term_ref_t *extra_args);
 
 #ifdef __cplusplus
 }
@@ -15851,13 +15853,16 @@ static const flecs::entity_t OnTableCreate = EcsOnTableCreate;
 static const flecs::entity_t OnTableDelete = EcsOnTableDelete;
 
 /* Builtin term flags */
-static const uint32_t Self = EcsSelf;
-static const uint32_t Up = EcsUp;
-static const uint32_t Cascade = EcsCascade;
-static const uint32_t Desc = EcsDesc;
-static const uint32_t IsVariable = EcsIsVariable;
-static const uint32_t IsEntity = EcsIsEntity;
-static const uint32_t TraverseFlags = EcsTraverseFlags;
+static const uint64_t Self = EcsSelf;
+static const uint64_t Up = EcsUp;
+static const uint64_t Trav = EcsTrav;
+static const uint64_t Cascade = EcsCascade;
+static const uint64_t Desc = EcsDesc;
+static const uint64_t IsVariable = EcsIsVariable;
+static const uint64_t IsEntity = EcsIsEntity;
+static const uint64_t IsName = EcsIsName;
+static const uint64_t TraverseFlags = EcsTraverseFlags;
+static const uint64_t TermRefFlags = EcsTermRefFlags;
 
 /* Builtin entity ids */
 static const flecs::entity_t Flecs = EcsFlecs;
@@ -21882,8 +21887,7 @@ struct entity_view : public id {
 
         ecs_filter_desc_t desc = {};
         desc.terms[0].first.id = rel;
-        desc.terms[0].second.id = m_id;
-        desc.terms[0].second.flags = EcsIsEntity;
+        desc.terms[0].second.id = m_id|EcsIsEntity;
         desc.terms[1].id = flecs::Prefab;
         desc.terms[1].oper = EcsOptional;
         desc.storage = &f;
@@ -27146,7 +27150,7 @@ struct term_id_builder_i {
     /* The self flag indicates the term identifier itself is used */
     Base& self() {
         this->assert_term_id();
-        m_term_id->flags |= flecs::Self;
+        m_term_id->id |= flecs::Self;
         return *this;
     }
 
@@ -27167,15 +27171,14 @@ struct term_id_builder_i {
      */
     Base& entity(flecs::entity_t entity) {
         this->assert_term_id();
-        m_term_id->flags = flecs::IsEntity;
-        m_term_id->id = entity;
+        m_term_id->id = entity | flecs::IsEntity;
         return *this;
     }
 
     /* Specify value of identifier by name */
     Base& name(const char *name) {
         this->assert_term_id();
-        m_term_id->flags |= flecs::IsEntity;
+        m_term_id->id |= flecs::IsEntity;
         m_term_id->name = const_cast<char*>(name);
         return *this;
     }
@@ -27183,7 +27186,7 @@ struct term_id_builder_i {
     /* Specify identifier is a variable (resolved at query evaluation time) */
     Base& var(const char *var_name) {
         this->assert_term_id();
-        m_term_id->flags |= flecs::IsVariable;
+        m_term_id->id |= flecs::IsVariable;
         m_term_id->name = const_cast<char*>(var_name);
         return *this;
     }
@@ -27191,11 +27194,11 @@ struct term_id_builder_i {
     /* Override term id flags */
     Base& flags(flecs::flags32_t flags) {
         this->assert_term_id();
-        m_term_id->flags = flags;
+        m_term_id->id = flags;
         return *this;
     }
 
-    ecs_term_id_t *m_term_id;
+    ecs_term_ref_t *m_term_id;
 
 protected:
     virtual flecs::world_t* world_v() = 0;
@@ -27338,7 +27341,7 @@ struct term_builder_i : term_id_builder_i<Base> {
      * with its parent by traversing the ChildOf relationship. */
     Base& up(flecs::entity_t trav = 0) {
         this->assert_term_id();
-        this->m_term_id->flags |= flecs::Up;
+        this->m_term_id->id |= flecs::Up;
         if (trav) {
             m_term->trav = trav;
         }
@@ -27354,7 +27357,7 @@ struct term_builder_i : term_id_builder_i<Base> {
      * Only supported for flecs::query */
     Base& cascade(flecs::entity_t trav = 0) {
         this->assert_term_id();
-        this->m_term_id->flags |= flecs::Cascade;
+        this->m_term_id->id |= flecs::Cascade;
         if (trav) {
             m_term->trav = trav;
         }
@@ -27369,7 +27372,7 @@ struct term_builder_i : term_id_builder_i<Base> {
     /* Use with cascade to iterate results in descending (bottom -> top) order */
     Base& desc() {
         this->assert_term_id();
-        this->m_term_id->flags |= flecs::Desc;
+        this->m_term_id->id |= flecs::Desc;
         return *this;
     }
 
@@ -27382,7 +27385,7 @@ struct term_builder_i : term_id_builder_i<Base> {
     Base& trav(flecs::entity_t trav, flecs::flags32_t flags = 0) {
         this->assert_term_id();
         m_term->trav = trav;
-        this->m_term_id->flags |= flags;
+        this->m_term_id->id |= flags;
         return *this;
     }
 
@@ -27565,19 +27568,18 @@ struct term final : term_builder_i<term> {
     term()
         : term_builder_i<term>(&value)
         , value({})
-        , m_world(nullptr) { value.move = true; }
+        , m_world(nullptr) { value.flags |= EcsTermMove; }
 
     term(flecs::world_t *world_ptr) 
         : term_builder_i<term>(&value)
         , value({})
-        , m_world(world_ptr) { value.move = true; }
+        , m_world(world_ptr) { value.flags |= EcsTermMove; }
 
     term(flecs::world_t *world_ptr, ecs_term_t t)
         : term_builder_i<term>(&value)
         , value({})
         , m_world(world_ptr) {
             value = t;
-            value.move = false;
             this->set_term(&value);
         }
 
@@ -27590,7 +27592,6 @@ struct term final : term_builder_i<term> {
             } else {
                 value.first.id = id;
             }
-            value.move = false;
             this->set_term(&value);
         }
 
@@ -27599,7 +27600,6 @@ struct term final : term_builder_i<term> {
         , value({})
         , m_world(world_ptr) {
             value.id = ecs_pair(r, o);
-            value.move = false;
             this->set_term(&value);
         }
 
@@ -27612,7 +27612,7 @@ struct term final : term_builder_i<term> {
             } else {
                 value.first.id = id;
             }
-            value.move = true; 
+            value.flags |= EcsTermMove;
         }
 
     term(id_t r, id_t o) 
@@ -27620,7 +27620,7 @@ struct term final : term_builder_i<term> {
         , value({})
         , m_world(nullptr) { 
             value.id = ecs_pair(r, o);
-            value.move = true; 
+            value.flags |= EcsTermMove;
         }
 
     term(const term& t) : term_builder_i<term>(&value) {
@@ -27683,15 +27683,15 @@ struct term final : term_builder_i<term> {
     }
 
     flecs::entity get_src() {
-        return flecs::entity(m_world, value.src.id);
+        return flecs::entity(m_world, ECS_TERM_REF_ID(&value.src));
     }
 
     flecs::entity get_first() {
-        return flecs::entity(m_world, value.first.id);
+        return flecs::entity(m_world, ECS_TERM_REF_ID(&value.first));
     }
 
     flecs::entity get_second() {
-        return flecs::entity(m_world, value.second.id);
+        return flecs::entity(m_world, ECS_TERM_REF_ID(&value.second));
     }
 
     ecs_term_t move() { /* explicit move to ecs_term_t */

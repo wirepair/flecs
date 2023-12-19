@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
                 { 
                     .id = ecs_id(Dirty), 
                     .inout = EcsIn,
-                    .src.flags = EcsUp 
+                    .src.id = EcsUp 
                 },
                 { .id = ecs_id(Position) }
             },

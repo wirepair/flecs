@@ -38,13 +38,13 @@ int main(int argc, char *argv[]) {
         .terms = {
             { 
                 .first.id = Likes, 
-                .src = { .name = "X", .flags = EcsIsVariable },
-                .second = { .name = "Y", .flags = EcsIsVariable }
+                .src = { .name = "X", .id = EcsIsVariable },
+                .second = { .name = "Y", .id = EcsIsVariable }
             },
             { 
                 .first.id = Likes, 
-                .src = { .name = "Y", .flags = EcsIsVariable },
-                .second = { .name = "X", .flags = EcsIsVariable }
+                .src = { .name = "Y", .id = EcsIsVariable },
+                .second = { .name = "X", .id = EcsIsVariable }
             }
         }
     });

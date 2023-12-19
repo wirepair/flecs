@@ -2352,7 +2352,7 @@ void SerializeIterToJson_serialize_table_w_var_labels(void) {
     ecs_rule_t *f = ecs_rule(world, {
         .terms = {
             { .id = ecs_id(Position) },
-            { .first.id = EcsChildOf, .second.name = "p", .second.flags = EcsIsVariable }
+            { .first.id = EcsChildOf, .second.name = "p", .second.id = EcsIsVariable }
         }
     });
 
@@ -2451,7 +2451,7 @@ void SerializeIterToJson_serialize_table_w_private(void) {
     ecs_rule_t *f = ecs_rule(world, {
         .terms = {
             { .id = ecs_id(Position) },
-            { .first.id = EcsChildOf, .second.name = "p", .second.flags = EcsIsVariable }
+            { .first.id = EcsChildOf, .second.name = "p", .second.id = EcsIsVariable }
         }
     });
 

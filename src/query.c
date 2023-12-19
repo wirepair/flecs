@@ -124,7 +124,7 @@ ecs_query_table_match_t* flecs_query_find_group_insertion_node(
 
     if (query->cascade_by) {
         desc = (query->filter.terms[
-            query->cascade_by - 1].src.flags & EcsDesc) != 0;
+            query->cascade_by - 1].src.id & EcsDesc) != 0;
     }
 
     /* Find closest smaller group id */
@@ -447,7 +447,7 @@ void flecs_query_get_column_for_term(
 
     if (term->oper != EcsNot) {
         if (!src) {
-            if (term->src.flags != EcsIsEntity) {
+            if (ECS_TERM_REF_FLAGS(&term->src) != EcsIsEntity) {
                 table = match->table;
                 column = match->storage_columns[field];
                 if (column == -2) {
@@ -1171,10 +1171,10 @@ void flecs_query_build_sorted_table_range(
                 ecs_assert(r != NULL, ECS_INTERNAL_ERROR, NULL);
                 ecs_assert(r->table != NULL, ECS_INTERNAL_ERROR, NULL);
 
-                if (term->src.flags & EcsUp) {
+                if (term->src.id & EcsUp) {
                     ecs_entity_t base = 0;
                     ecs_search_relation(world, r->table, 0, id, 
-                        EcsIsA, term->src.flags & EcsTraverseFlags, &base, 0, 0);
+                        EcsIsA, term->src.id & EcsTraverseFlags, &base, 0, 0);
                     if (base && base != src) { /* Component could be inherited */
                         r = flecs_entities_get(world, base);
                     }
@@ -1371,7 +1371,7 @@ bool flecs_query_has_refs(
     ecs_term_t *terms = query->filter.terms;
     int32_t i, count = query->filter.term_count;
     for (i = 0; i < count; i ++) {
-        if (terms[i].src.flags & (EcsUp | EcsIsEntity)) {
+        if (terms[i].src.id & (EcsUp | EcsIsEntity)) {
             return true;
         }
     }
@@ -1393,29 +1393,29 @@ void flecs_query_for_each_component_monitor(
 
     for (i = 0; i < count; i++) {
         ecs_term_t *term = &terms[i];
-        ecs_term_id_t *src = &term->src;
+        ecs_term_ref_t *src = &term->src;
 
-        if (src->flags & EcsUp) {
+        if (src->id & EcsUp) {
             callback(world, ecs_pair(term->trav, EcsWildcard), query);
             if (term->trav != EcsIsA) {
                 callback(world, ecs_pair(EcsIsA, EcsWildcard), query);
             }
             callback(world, term->id, query);
 
-        } else if (src->flags & EcsSelf && !ecs_term_match_this(term)) {
+        } else if (src->id & EcsSelf && !ecs_term_match_this(term)) {
             callback(world, term->id, query);
         }
     }
 }
 
 static
-bool flecs_query_is_term_id_supported(
-    ecs_term_id_t *term_id)
+bool flecs_query_is_term_ref_supported(
+    ecs_term_ref_t *ref)
 {
-    if (!(term_id->flags & EcsIsVariable)) {
+    if (!(ref->id & EcsIsVariable)) {
         return true;
     }
-    if (ecs_id_is_wildcard(term_id->id)) {
+    if (ecs_id_is_wildcard(ref->id)) {
         return true;
     }
     return false;
@@ -1431,14 +1431,14 @@ int flecs_query_process_signature(
 
     for (i = 0; i < count; i ++) {
         ecs_term_t *term = &terms[i];
-        ecs_term_id_t *first = &term->first;
-        ecs_term_id_t *src = &term->src;
-        ecs_term_id_t *second = &term->second;
-        ecs_inout_kind_t inout = term->inout;
+        ecs_term_ref_t *first = &term->first;
+        ecs_term_ref_t *src = &term->src;
+        ecs_term_ref_t *second = &term->second;
+        int16_t inout = term->inout;
 
-        bool is_src_ok = flecs_query_is_term_id_supported(src);
-        bool is_first_ok = flecs_query_is_term_id_supported(first);
-        bool is_second_ok = flecs_query_is_term_id_supported(second);
+        bool is_src_ok = flecs_query_is_term_ref_supported(src);
+        bool is_first_ok = flecs_query_is_term_ref_supported(first);
+        bool is_second_ok = flecs_query_is_term_ref_supported(second);
 
         (void)first;
         (void)second;
@@ -1461,13 +1461,13 @@ int flecs_query_process_signature(
             }
 
             bool match_non_this = !ecs_term_match_this(term) || 
-                (term->src.flags & EcsUp);
+                (term->src.id & EcsUp);
             if (match_non_this && inout != EcsInOutDefault) {
                 query->flags |= EcsQueryHasNonThisOutTerms;
             }
         }
 
-        if (src->flags & EcsCascade) {
+        if (src->id & EcsCascade) {
             /* Query can only have one cascade column */
             ecs_assert(query->cascade_by == 0, ECS_INVALID_PARAMETER, NULL);
             query->cascade_by = i + 1;
@@ -2133,7 +2133,7 @@ ecs_query_t* ecs_query_init(
 
         for (t = 0; t < term_count; t ++) {
             ecs_term_t *term = &terms[t];
-            if (term->src.id == entity) {
+            if (ECS_TERM_REF_ID(&term->src) == entity) {
                 ecs_add_id(world, entity, term->id);
             }
         }        
@@ -2403,7 +2403,7 @@ void flecs_query_mark_columns_dirty(
 
         for (i = 0; i < count; i ++) {
             ecs_term_t *term = &terms[i];
-            ecs_inout_kind_t inout = term->inout;
+            int16_t inout = term->inout;
             if (inout == EcsIn || inout == EcsInOutNone) {
                 /* Don't mark readonly terms dirty */
                 continue;

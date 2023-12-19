@@ -669,14 +669,16 @@ typedef enum ecs_oper_kind_t {
 } ecs_oper_kind_t;
 
 /* Term id flags  */
-#define EcsSelf                       (1u << 1)  /**< Match on self */
-#define EcsUp                         (1u << 2)  /**< Match by traversing upwards */
-#define EcsCascade                    (1u << 3)  /**< Sort results breadth first */
-#define EcsDesc                       (1u << 4)  /**< Iterate groups in descending order  */
-#define EcsIsVariable                 (1u << 5)  /**< Term id is a variable */
-#define EcsIsEntity                   (1u << 6)  /**< Term id is an entity */
-#define EcsIsName                     (1u << 7)  /**< Term id is a name (don't attempt to lookup as entity) */
-#define EcsTraverseFlags              (EcsUp|EcsSelf|EcsCascade|EcsDesc)
+#define EcsSelf                       (1llu << 63)  /**< Match on self */
+#define EcsUp                         (1llu << 62)  /**< Match by traversing upwards */
+#define EcsTrav                       (1llu << 61)  /**< Traverse relationship transitively */
+#define EcsCascade                    (1llu << 60)  /**< Sort results breadth first */
+#define EcsDesc                       (1llu << 59)  /**< Iterate groups in descending order  */
+#define EcsIsVariable                 (1llu << 58)  /**< Term id is a variable */
+#define EcsIsEntity                   (1llu << 57)  /**< Term id is an entity */
+#define EcsIsName                     (1llu << 56)  /**< Term id is a name (don't attempt to lookup as entity) */
+#define EcsTraverseFlags              (EcsSelf|EcsUp|EcsTrav|EcsCascade|EcsDesc)
+#define EcsTermRefFlags               (EcsTraverseFlags|EcsIsVariable|EcsIsEntity|EcsIsName)
 
 /* Term flags discovered & set during filter creation. Mostly used internally to
  * store information relevant to queries. */
@@ -694,8 +696,10 @@ typedef enum ecs_oper_kind_t {
 #define EcsTermMatchDisabled          (1u << 7)
 #define EcsTermMatchPrefab            (1u << 8)
 
-/** Type that describes a single identifier in a term */
-typedef struct ecs_term_id_t {
+#define EcsTermMove                   (1u << 9)
+
+/** Type that describes a reference to an entity or variable in a term. */
+typedef struct ecs_term_ref_t {
     ecs_entity_t id;            /**< Entity id. If left to 0 and flags does not 
                                  * specify whether id is an entity or a variable
                                  * the id will be initialized to EcsThis. 
@@ -707,9 +711,7 @@ typedef struct ecs_term_id_t {
                                  * entity name. When ecs_term_t::move is true,
                                  * the API assumes ownership over the string and
                                  * will free it when the term is destroyed. */
-
-    ecs_flags32_t flags;        /**< Term flags */
-} ecs_term_id_t;
+} ecs_term_ref_t;
 
 /** Type that describes a term (single element in a query) */
 struct ecs_term_t {
@@ -718,23 +720,21 @@ struct ecs_term_t {
                                  * first/second members, which provide more
                                  * flexibility. */
 
-    ecs_term_id_t src;          /**< Source of term */
-    ecs_term_id_t first;        /**< Component or first element of pair */
-    ecs_term_id_t second;       /**< Second element of pair */
+    ecs_term_ref_t src;          /**< Source of term */
+    ecs_term_ref_t first;        /**< Component or first element of pair */
+    ecs_term_ref_t second;       /**< Second element of pair */
 
     ecs_entity_t trav;          /**< Relationship to traverse when looking for the
                                  * component. The relationship must have
                                  * the Traversable property. Default is IsA. */
 
-    ecs_inout_kind_t inout;     /**< Access to contents matched by term */
-    ecs_oper_kind_t oper;       /**< Operator of term */
-
-    ecs_id_record_t *idr;       /**< Cached pointer to internal index */
+    int16_t inout;              /**< Access to contents matched by term */
+    int16_t oper;               /**< Operator of term */
 
     int16_t field_index;        /**< Index of field for term in iterator */
     ecs_flags16_t flags;        /**< Flags that help eval, set by ecs_filter_init */
 
-    bool move;                  /**< Used by internals */
+    ecs_id_record_t *idr;       /**< Cached pointer to internal index */
 };
 
 /** Use $this variable to initialize user-allocated filter object */
@@ -3947,7 +3947,7 @@ bool ecs_children_next(
  */
 FLECS_API 
 bool ecs_term_id_is_set(
-    const ecs_term_id_t *id);
+    const ecs_term_ref_t *id);
 
 /** Test whether a term is set.
  * This operation can be used to test whether a term has been initialized with
@@ -5547,7 +5547,7 @@ int32_t ecs_search_relation(
     int32_t offset,
     ecs_id_t id,
     ecs_entity_t rel,
-    ecs_flags32_t flags, /* EcsSelf and/or EcsUp */
+    ecs_flags64_t flags, /* EcsSelf and/or EcsUp */
     ecs_entity_t *subject_out,
     ecs_id_t *id_out,
     struct ecs_table_record_t **tr_out);

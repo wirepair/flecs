@@ -257,15 +257,15 @@ const char* ecs_parse_identifier(
 static
 int flecs_parse_identifier(
     const char *token,
-    ecs_term_id_t *out)
+    ecs_term_ref_t *out)
 {
     const char *tptr = token;
     if (tptr[0] == TOK_VARIABLE && tptr[1]) {
-        out->flags |= EcsIsVariable;
+        out->id |= EcsIsVariable;
         tptr ++;
     }
     if (tptr[0] == TOK_EXPR_STRING && tptr[1]) {
-        out->flags |= EcsIsName;
+        out->id |= EcsIsName;
         tptr ++;
         if (tptr[0] == TOK_NOT) {
             /* Already parsed */
@@ -277,7 +277,7 @@ int flecs_parse_identifier(
     out->name = name;
 
     ecs_size_t len = ecs_os_strlen(name);
-    if (out->flags & EcsIsName) {
+    if (out->id & EcsIsName) {
         if (name[len - 1] != TOK_EXPR_STRING) {
             ecs_parser_error(NULL, token, 0, "missing '\"' at end of string");
             return -1;
@@ -333,7 +333,7 @@ const char* flecs_parse_annotation(
     const char *sig,
     int64_t column,
     const char *ptr, 
-    ecs_inout_kind_t *inout_kind_out)
+    int16_t *inout_kind_out)
 {
     char token[ECS_MAX_TOKEN_SIZE];
 
@@ -366,7 +366,7 @@ const char* flecs_parse_annotation(
 }
 
 static
-uint8_t flecs_parse_set_token(
+ecs_flags64_t flecs_parse_set_token(
     const char *token)
 {
     if (!ecs_os_strcmp(token, TOK_SELF)) {
@@ -391,7 +391,7 @@ const char* flecs_parse_term_flags(
     const char *ptr,
     char *token,
     ecs_term_t *term,
-    ecs_term_id_t *id,
+    ecs_term_ref_t *ref,
     char tok_end)
 {
     ecs_assert(term != NULL, ECS_INTERNAL_ERROR, NULL);
@@ -406,20 +406,20 @@ const char* flecs_parse_term_flags(
     }
 
     do {
-        uint8_t tok = flecs_parse_set_token(token);
+        ecs_flags64_t tok = flecs_parse_set_token(token);
         if (!tok) {
             ecs_parser_error(name, expr, column, 
                 "invalid set token '%s'", token);
             return NULL;
         }
 
-        if (id->flags & tok) {
+        if (ref->id & tok) {
             ecs_parser_error(name, expr, column, 
                 "duplicate set token '%s'", token);
             return NULL;            
         }
         
-        id->flags |= tok;
+        ref->id |= tok;
 
         if (ptr[0] == TOK_PAREN_OPEN) {
             ptr ++;
@@ -489,14 +489,14 @@ const char* flecs_parse_arguments(
     const char *ptr,
     char *token,
     ecs_term_t *term,
-    ecs_term_id_t *extra_args)
+    ecs_term_ref_t *extra_args)
 {
     (void)column;
 
     int32_t arg = 0;
 
     if (extra_args) {
-        ecs_os_memset_n(extra_args, 0, ecs_term_id_t, ECS_PARSER_MAX_ARGS);
+        ecs_os_memset_n(extra_args, 0, ecs_term_ref_t, ECS_PARSER_MAX_ARGS);
     }
 
     if (!term) {
@@ -516,20 +516,20 @@ const char* flecs_parse_arguments(
                 return NULL;
             }
 
-            ecs_term_id_t *term_id = NULL;
+            ecs_term_ref_t *term_ref = NULL;
 
             if (arg == 0) {
-                term_id = &term->src;
+                term_ref = &term->src;
             } else if (arg == 1) {
-                term_id = &term->second;
+                term_ref = &term->second;
             } else {
-                term_id = &extra_args[arg - 2];
+                term_ref = &extra_args[arg - 2];
             }
 
             /* If token is a colon, the token is an identifier followed by a
              * set expression. */
             if (ptr[0] == TOK_COLON) {
-                if (flecs_parse_identifier(token, term_id)) {
+                if (flecs_parse_identifier(token, term_ref)) {
                     ecs_parser_error(name, expr, (ptr - expr), 
                         "invalid identifier '%s'", token);
                     return NULL;
@@ -537,7 +537,7 @@ const char* flecs_parse_arguments(
 
                 ptr = ecs_parse_ws(ptr + 1);
                 ptr = flecs_parse_term_flags(world, name, expr, (ptr - expr), ptr,
-                    NULL, term, term_id, TOK_PAREN_CLOSE);
+                    NULL, term, term_ref, TOK_PAREN_CLOSE);
                 if (!ptr) {
                     return NULL;
                 }
@@ -549,13 +549,13 @@ const char* flecs_parse_arguments(
                 !ecs_os_strcmp(token, TOK_UP))
             {
                 ptr = flecs_parse_term_flags(world, name, expr, (ptr - expr), ptr, 
-                    token, term, term_id, TOK_PAREN_CLOSE);
+                    token, term, term_ref, TOK_PAREN_CLOSE);
                 if (!ptr) {
                     return NULL;
                 }
 
             /* Regular identifier */
-            } else if (flecs_parse_identifier(token, term_id)) {
+            } else if (flecs_parse_identifier(token, term_ref)) {
                 ecs_parser_error(name, expr, (ptr - expr), 
                     "invalid identifier '%s'", token);
                 return NULL;
@@ -609,11 +609,11 @@ const char* flecs_parse_term(
     const char *name,
     const char *expr,
     ecs_term_t *term_out,
-    ecs_term_id_t *extra_args)
+    ecs_term_ref_t *extra_args)
 {
     const char *ptr = expr;
     char token[ECS_MAX_TOKEN_SIZE] = {0};
-    ecs_term_t term = { .move = true /* parser never owns resources */ };
+    ecs_term_t term = { .flags = EcsTermMove /* parser never owns resources */ };
 
     ptr = ecs_parse_ws(ptr);
 
@@ -627,7 +627,7 @@ const char* flecs_parse_term(
     }
 
     if (flecs_valid_operator_char(ptr[0])) {
-        term.oper = flecs_parse_operator(ptr[0]);
+        term.oper = flecs_ito(int16_t, flecs_parse_operator(ptr[0]));
         ptr = ecs_parse_ws(ptr + 1);
     }
 
@@ -660,16 +660,14 @@ const char* flecs_parse_term(
     /* Open query scope */
     } else if (ptr[0] == TOK_SCOPE_OPEN) {
         term.first.id = EcsScopeOpen;
-        term.src.id = 0;
-        term.src.flags = EcsIsEntity;
+        term.src.id = EcsIsEntity;
         term.inout = EcsInOutNone;
         goto parse_done;
 
     /* Close query scope */
     } else if (ptr[0] == TOK_SCOPE_CLOSE) {
         term.first.id = EcsScopeClose;
-        term.src.id = 0;
-        term.src.flags = EcsIsEntity;
+        term.src.id = EcsIsEntity;
         term.inout = EcsInOutNone;
         ptr = ecs_parse_ws(ptr + 1);
         goto parse_done;
@@ -751,8 +749,7 @@ parse_predicate:
     if (ptr[0] == TOK_PAREN_OPEN) {
         ptr ++;
         if (ptr[0] == TOK_PAREN_CLOSE) {
-            term.src.flags = EcsIsEntity;
-            term.src.id = 0;
+            term.src.id = EcsIsEntity;
             ptr ++;
             ptr = ecs_parse_ws(ptr);
         } else {
@@ -767,13 +764,13 @@ parse_predicate:
 
 parse_eq:
     term.src = term.first;
-    term.first = (ecs_term_id_t){0};
+    term.first = (ecs_term_ref_t){0};
     term.first.id = EcsPredEq;
     goto parse_right_operand;
 
 parse_neq:
     term.src = term.first;
-    term.first = (ecs_term_id_t){0};
+    term.first = (ecs_term_ref_t){0};
     term.first.id = EcsPredEq;
     if (term.oper != EcsAnd) {
         ecs_parser_error(name, expr, (ptr - expr), 
@@ -785,7 +782,7 @@ parse_neq:
     
 parse_match:
     term.src = term.first;
-    term.first = (ecs_term_id_t){0};
+    term.first = (ecs_term_ref_t){0};
     term.first.id = EcsPredMatch;
     goto parse_right_operand;
 
@@ -808,8 +805,8 @@ parse_right_operand:
             goto error;
         }
 
-        term.src.flags &= ~EcsTraverseFlags;
-        term.src.flags |= EcsSelf;
+        term.src.id &= ~EcsTraverseFlags;
+        term.src.id |= EcsSelf;
         term.inout = EcsInOutNone;
     } else {
         ecs_parser_error(name, expr, (ptr - expr), 
@@ -841,11 +838,11 @@ parse_pair:
         }
         
         term.src.id = EcsThis;
-        term.src.flags |= EcsIsVariable;
+        term.src.id |= EcsIsVariable;
         goto parse_pair_predicate;
     } else if (ptr[0] == TOK_PAREN_CLOSE) {
         term.src.id = EcsThis;
-        term.src.flags |= EcsIsVariable;
+        term.src.id |= EcsIsVariable;
         goto parse_pair_predicate;
     } else {
         flecs_parser_unexpected_char(name, expr, ptr, ptr[0]);
@@ -953,13 +950,13 @@ char* ecs_parse_term(
     const char *expr,
     const char *ptr,
     ecs_term_t *term,
-    ecs_term_id_t *extra_args)
+    ecs_term_ref_t *extra_args)
 {
     ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(ptr != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(term != NULL, ECS_INVALID_PARAMETER, NULL);
 
-    ecs_term_id_t *src = &term->src;
+    ecs_term_ref_t *src = &term->src;
 
     if (ptr != expr) {
         if (ptr[0]) {
@@ -1005,9 +1002,9 @@ char* ecs_parse_term(
             if (term->second.name) {
                 term->src = term->second;       
             } else {
-                term->src.id = EcsThis;
+                term->src.id = EcsThis | (term->src.id & EcsTermRefFlags);
+                term->src.id |= EcsIsVariable;
                 term->src.name = NULL;
-                term->src.flags |= EcsIsVariable;
             }
 
             const char *var_name = strrchr(term->first.name, '.');
@@ -1018,7 +1015,7 @@ char* ecs_parse_term(
             }
 
             term->second.name = ecs_os_strdup(var_name);
-            term->second.flags |= EcsIsVariable;
+            term->second.id |= EcsIsVariable;
         }
     }
 
@@ -1054,14 +1051,14 @@ char* ecs_parse_term(
             goto error;
         }
 
-        if (src->flags != 0) {
+        if ((src->id & EcsTermRefFlags) != 0) {
             ecs_parser_error(name, expr, (ptr - expr), 
                 "invalid combination of 0 with non-default subject");
             goto error;
         }
 
-        src->flags = EcsIsEntity;
-        src->id = 0;
+        src->id = EcsIsEntity;
+
         /* Safe, parser owns string */
         ecs_os_free(ECS_CONST_CAST(char*, term->first.name));
         term->first.name = NULL;
@@ -1078,18 +1075,17 @@ char* ecs_parse_term(
 
     /* Automatically assign This if entity is not assigned and the set is
      * nothing */
-    if (!(src->flags & EcsIsEntity)) {
+    if (!(src->id & EcsIsEntity)) {
         if (!src->name) {
             if (!src->id) {
-                src->id = EcsThis;
-                src->flags |= EcsIsVariable;
+                src->id = EcsThis | (src->id & EcsTermRefFlags);
+                src->id |= EcsIsVariable;
             }
         }
     }
 
     if (src->name && !ecs_os_strcmp(src->name, "0")) {
-        src->id = 0;
-        src->flags = EcsIsEntity;
+        src->id = EcsIsEntity;
     }
 
     /* Process role */

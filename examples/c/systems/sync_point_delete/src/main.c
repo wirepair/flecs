@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
     //          { 
     //              .id = EcsWildcard, 
     //              .inout = EcsOut, 
-    //              .src.flags = EcsIsEntity 
+    //              .src.id = EcsIsEntity 
     //          }
     //      },
     //      .entity = {

@@ -166,7 +166,7 @@ ecs_trav_up_t* flecs_rule_get_up_cache(
     ecs_map_init_if(&cache->src, a);
 
     ecs_assert(cache->dir != EcsTravDown, ECS_INTERNAL_ERROR, NULL);
-    cache->dir = EcsUp;
+    cache->dir = EcsTravUp;
     cache->with = with;
 
     ecs_assert(idr_with != NULL, ECS_INTERNAL_ERROR, NULL);

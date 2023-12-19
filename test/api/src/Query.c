@@ -399,7 +399,7 @@ void Query_wildcard_query_2nd_term_self(void) {
     ecs_add_pair(world, e3, Rel, TgtC);
 
     ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
-        .filter.terms = {{ Tag }, { ecs_pair(Rel, EcsWildcard), .src.flags = EcsSelf }}
+        .filter.terms = {{ Tag }, { ecs_pair(Rel, EcsWildcard), .src.id = EcsSelf }}
     });
     test_assert(q != NULL);
 
@@ -1341,7 +1341,7 @@ void Query_query_from_entity_w_superset(void) {
     ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
         .filter.terms = {
             { .id = ecs_id(Velocity), .src.name = "Game" },
-            { .id = ecs_id(Mass), .src.flags = EcsUp, .trav = EcsIsA }
+            { .id = ecs_id(Mass), .src.id = EcsUp, .trav = EcsIsA }
         }
     });
 
@@ -1912,7 +1912,7 @@ void Query_query_switch_from_nothing(void) {
     ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){ .filter = {
         .terms = {
             {Tag},
-            { ecs_pair(Movement, EcsWildcard), .src.flags = EcsIsEntity }
+            { ecs_pair(Movement, EcsWildcard), .src.id = EcsIsEntity }
         }
     }});
     test_assert(q != NULL);
@@ -1943,7 +1943,7 @@ void Query_query_case_from_nothing(void) {
     ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){ .filter = {
         .terms = {
             {Tag},
-            {ecs_pair(Movement, Walking), .src.flags = EcsIsEntity }
+            {ecs_pair(Movement, Walking), .src.id = EcsIsEntity }
         }
     }});
     test_assert(q != NULL);
@@ -2009,7 +2009,7 @@ void Query_query_disabled_from_nothing(void) {
     ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){ .filter = {
         .terms = {
             {TagA},
-            {TagB, .src.flags = EcsIsEntity}
+            {TagB, .src.id = EcsIsEntity}
         }
     }});
     test_assert(q != NULL);
@@ -3190,7 +3190,7 @@ void Query_query_changed_no_source(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { TagA },
-            { TagB, .src.flags = EcsIsEntity, .inout = EcsOut }
+            { TagB, .src.id = EcsIsEntity, .inout = EcsOut }
         }
     });
     test_assert(q != NULL);
@@ -3217,7 +3217,7 @@ void Query_query_changed_no_source_component(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { ecs_id(Position), .inout = EcsIn },
-            { ecs_id(Velocity), .src.flags = EcsIsEntity, .inout = EcsOut }
+            { ecs_id(Velocity), .src.id = EcsIsEntity, .inout = EcsOut }
         }
     });
     test_assert(q != NULL);
@@ -3524,7 +3524,7 @@ void Query_query_changed_w_only_parent(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {{
             .id = ecs_id(Position),
-            .src.flags = EcsUp
+            .src.id = EcsUp
         }}
     });
 
@@ -3566,7 +3566,7 @@ void Query_query_changed_w_only_parent_after_set(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {{
             .id = ecs_id(Position),
-            .src.flags = EcsUp
+            .src.id = EcsUp
         }}
     });
 
@@ -3622,7 +3622,7 @@ void Query_query_changed_w_only_parent_after_out_term(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {{
             .id = ecs_id(Position),
-            .src.flags = EcsUp
+            .src.id = EcsUp
         }}
     });
 
@@ -3693,13 +3693,13 @@ void Query_query_changed_w_only_parent_after_parent_out_term(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {{
             .id = ecs_id(Position),
-            .src.flags = EcsUp
+            .src.id = EcsUp
         }}
     });
 
     ecs_query_t *q_write = ecs_query(world, {
         .filter.terms = {
-            { ecs_id(Position), .src.flags = EcsUp, .inout = EcsOut }
+            { ecs_id(Position), .src.id = EcsUp, .inout = EcsOut }
         }
     });
 
@@ -6511,7 +6511,7 @@ void Query_query_w_component_from_parent_from_non_this(void) {
     ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
         .filter.terms = {
             { TagA },
-            { TagB, .src.id = child, .trav = EcsChildOf, .src.flags = EcsUp }
+            { TagB, .src.id = child|EcsUp, .trav = EcsChildOf }
         }
     });
     test_assert(q != NULL);
@@ -6935,8 +6935,8 @@ void Query_superset_2_relations(void) {
 
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
-            { .id = TagA, .trav = EcsChildOf, .src.flags = EcsUp },
-            { .id = TagA, .trav = EcsIsA, .src.flags = EcsUp },
+            { .id = TagA, .trav = EcsChildOf, .src.id = EcsUp },
+            { .id = TagA, .trav = EcsIsA, .src.id = EcsUp },
         }
     });
 
@@ -6972,8 +6972,8 @@ void Query_superset_2_relations_instanced(void) {
 
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
-            { .id = TagA, .trav = EcsChildOf, .src.flags = EcsUp },
-            { .id = TagA, .trav = EcsIsA, .src.flags = EcsUp },
+            { .id = TagA, .trav = EcsChildOf, .src.id = EcsUp },
+            { .id = TagA, .trav = EcsIsA, .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -7010,8 +7010,8 @@ void Query_superset_2_relations_w_component(void) {
 
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
-            { .id = ecs_id(Position), .trav = EcsChildOf, .src.flags = EcsUp },
-            { .id = ecs_id(Position), .trav = EcsIsA, .src.flags = EcsUp },
+            { .id = ecs_id(Position), .trav = EcsChildOf, .src.id = EcsUp },
+            { .id = ecs_id(Position), .trav = EcsIsA, .src.id = EcsUp },
         }
     });
 
@@ -7071,8 +7071,8 @@ void Query_superset_2_relations_instanced_w_component(void) {
 
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
-            { .id = ecs_id(Position), .trav = EcsChildOf, .src.flags = EcsUp },
-            { .id = ecs_id(Position), .trav = EcsIsA, .src.flags = EcsUp },
+            { .id = ecs_id(Position), .trav = EcsChildOf, .src.id = EcsUp },
+            { .id = ecs_id(Position), .trav = EcsIsA, .src.id = EcsUp },
         },
         .filter.instanced = true
     });

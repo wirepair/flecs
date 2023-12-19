@@ -204,8 +204,7 @@ struct entity_view : public id {
 
         ecs_filter_desc_t desc = {};
         desc.terms[0].first.id = rel;
-        desc.terms[0].second.id = m_id;
-        desc.terms[0].second.flags = EcsIsEntity;
+        desc.terms[0].second.id = m_id|EcsIsEntity;
         desc.terms[1].id = flecs::Prefab;
         desc.terms[1].oper = EcsOptional;
         desc.storage = &f;

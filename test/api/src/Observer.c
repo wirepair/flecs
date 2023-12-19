@@ -2632,7 +2632,7 @@ void Observer_observer_superset_wildcard(void) {
     ecs_entity_t t = ecs_observer_init(world, &(ecs_observer_desc_t){
         .filter.terms = {{ 
             .id = ecs_pair(Rel, EcsWildcard), 
-            .src.flags = EcsUp, 
+            .src.id = EcsUp, 
             .trav = EcsIsA
         }},
         .events = {EcsOnAdd},
@@ -2687,7 +2687,7 @@ void Observer_observer_superset_wildcard_add_isa(void) {
     ecs_entity_t t = ecs_observer_init(world, &(ecs_observer_desc_t){
         .filter.terms = {{ 
             .id = ecs_pair(Rel, EcsWildcard), 
-            .src.flags = EcsUp,
+            .src.id = EcsUp,
             .trav = EcsIsA
         }},
         .events = {EcsOnAdd},
@@ -2732,7 +2732,7 @@ void Observer_observer_superset_wildcard_add_isa_at_offset(void) {
     ecs_entity_t t = ecs_observer_init(world, &(ecs_observer_desc_t){
         .filter.terms = {{ 
             .id = ecs_pair(Rel, EcsWildcard), 
-            .src.flags = EcsUp,
+            .src.id = EcsUp,
             .trav = EcsIsA 
         }},
         .events = {EcsOnAdd},
@@ -3219,7 +3219,7 @@ void Observer_propagate_after_on_delete_clear_action(void) {
     ecs_observer(world, {
         .filter.terms = {{ 
             .id = ecs_pair(Rel, EcsWildcard), 
-            .src.flags = EcsUp, 
+            .src.id = EcsUp, 
             .trav = EcsChildOf 
         }},
         .events = { EcsOnRemove },
@@ -3252,7 +3252,7 @@ void Observer_on_add_after_batch_w_exclusive_adds(void) {
     ecs_observer(world, {
         .filter.terms = {{ 
             ecs_pair(Rel, EcsWildcard), 
-            .src.flags = EcsSelf
+            .src.id = EcsSelf
         }},
         .events = {EcsOnAdd},
         .callback = Observer,
@@ -3288,7 +3288,7 @@ void Observer_propagate_match_relationship_w_self_up(void) {
 
     Probe ctx = {0};
     ecs_observer(world, {
-        .filter.terms = {{ TagB, .src.flags = EcsSelf|EcsUp, .trav = EcsIsA }},
+        .filter.terms = {{ TagB, .src.id = EcsSelf|EcsUp, .trav = EcsIsA }},
         .events = {EcsOnAdd},
         .callback = Observer,
         .ctx = &ctx
@@ -3318,7 +3318,7 @@ void Observer_propagate_match_relationship_w_up(void) {
 
     Probe ctx = {0};
     ecs_observer(world, {
-        .filter.terms = {{ TagB, .src.flags = EcsUp, .trav = EcsIsA }},
+        .filter.terms = {{ TagB, .src.id = EcsUp, .trav = EcsIsA }},
         .events = {EcsOnAdd},
         .callback = Observer,
         .ctx = &ctx
@@ -3822,7 +3822,7 @@ void Observer_on_remove_target_from_base_at_offset(void) {
     Probe ctx = { 0 };
     ecs_entity_t o = ecs_observer(world, {
         .filter.terms = {
-            { .id = ecs_pair(R, EcsWildcard), .src.flags = EcsUp, .trav = EcsIsA },
+            { .id = ecs_pair(R, EcsWildcard), .src.id = EcsUp, .trav = EcsIsA },
             { .id = C },
         },
         .events = { EcsOnRemove },
@@ -3870,7 +3870,7 @@ void Observer_on_remove_target_component_from_base_at_offset(void) {
     Probe ctx = { 0 };
     ecs_entity_t o = ecs_observer(world, {
         .filter.terms = {
-            { .id = ecs_pair(ecs_id(Position), EcsWildcard), .src.flags = EcsUp, .trav = EcsIsA },
+            { .id = ecs_pair(ecs_id(Position), EcsWildcard), .src.id = EcsUp, .trav = EcsIsA },
             { .id = C },
         },
         .events = { EcsOnRemove },
@@ -3937,7 +3937,7 @@ void Observer_wildcard_propagate_w_other_table(void) {
     });
 
     ecs_observer(world, {
-        .filter.terms = {{ ecs_pair(rel, EcsWildcard), .src.flags = EcsUp }},
+        .filter.terms = {{ ecs_pair(rel, EcsWildcard), .src.id = EcsUp }},
         .events = {EcsWildcard},
         .callback = Observer_dummy
     });
@@ -3959,7 +3959,7 @@ void Observer_cache_test_1(void) {
     Probe ctx = {0};
 
     ecs_observer(world, {
-        .filter.terms = {{ tag, .src.flags = EcsUp, .trav = EcsChildOf }},
+        .filter.terms = {{ tag, .src.id = EcsUp, .trav = EcsChildOf }},
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = Observer,
         .ctx = &ctx
@@ -4026,13 +4026,13 @@ void Observer_cache_test_2(void) {
     Probe ctx_2 = {0};
 
     ecs_observer(world, {
-        .filter.terms = {{ tag_1, .src.flags = EcsUp, .trav = EcsChildOf }},
+        .filter.terms = {{ tag_1, .src.id = EcsUp, .trav = EcsChildOf }},
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = Observer,
         .ctx = &ctx_1
     });
     ecs_observer(world, {
-        .filter.terms = {{ tag_2, .src.flags = EcsUp, .trav = EcsChildOf }},
+        .filter.terms = {{ tag_2, .src.id = EcsUp, .trav = EcsChildOf }},
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = Observer,
         .ctx = &ctx_2
@@ -4088,13 +4088,13 @@ void Observer_cache_test_3(void) {
     Probe ctx_2 = {0};
 
     ecs_observer(world, {
-        .filter.terms = {{ tag_1, .src.flags = EcsUp, .trav = EcsChildOf }},
+        .filter.terms = {{ tag_1, .src.id = EcsUp, .trav = EcsChildOf }},
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = Observer,
         .ctx = &ctx_1
     });
     ecs_observer(world, {
-        .filter.terms = {{ tag_2, .src.flags = EcsUp, .trav = EcsChildOf }},
+        .filter.terms = {{ tag_2, .src.id = EcsUp, .trav = EcsChildOf }},
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = Observer,
         .ctx = &ctx_2
@@ -4154,19 +4154,19 @@ void Observer_cache_test_4(void) {
     Probe *ctx_2 = ecs_os_calloc_t(Probe);
 
     ecs_observer(world, {
-        .filter.terms = {{ tag_0, .src.flags = EcsUp, .trav = EcsChildOf }},
+        .filter.terms = {{ tag_0, .src.id = EcsUp, .trav = EcsChildOf }},
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = Observer,
         .ctx = ctx_0
     });
     ecs_observer(world, {
-        .filter.terms = {{ tag_1, .src.flags = EcsUp, .trav = EcsChildOf }},
+        .filter.terms = {{ tag_1, .src.id = EcsUp, .trav = EcsChildOf }},
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = Observer,
         .ctx = ctx_1
     });
     ecs_observer(world, {
-        .filter.terms = {{ tag_2, .src.flags = EcsUp, .trav = EcsChildOf }},
+        .filter.terms = {{ tag_2, .src.id = EcsUp, .trav = EcsChildOf }},
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = Observer,
         .ctx = ctx_2
@@ -4262,13 +4262,13 @@ void Observer_cache_test_5(void) {
     Probe ctx_2 = {0};
 
     ecs_observer(world, {
-        .filter.terms = {{ tag_1, .src.flags = EcsUp, .trav = EcsChildOf }},
+        .filter.terms = {{ tag_1, .src.id = EcsUp, .trav = EcsChildOf }},
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = Observer,
         .ctx = &ctx_1
     });
     ecs_observer(world, {
-        .filter.terms = {{ tag_2, .src.flags = EcsUp, .trav = EcsChildOf }},
+        .filter.terms = {{ tag_2, .src.id = EcsUp, .trav = EcsChildOf }},
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = Observer,
         .ctx = &ctx_2
@@ -4344,7 +4344,7 @@ void Observer_cache_test_6(void) {
 
     Probe ctx_1 = {0};
     ecs_observer(world, {
-        .filter.terms = {{ tag_1, .src.flags = EcsUp, .trav = EcsChildOf }},
+        .filter.terms = {{ tag_1, .src.id = EcsUp, .trav = EcsChildOf }},
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = Observer,
         .ctx = &ctx_1
@@ -4388,7 +4388,7 @@ void Observer_cache_test_7(void) {
 
     Probe ctx_1 = {0};
     ecs_observer(world, {
-        .filter.terms = {{ tag_1, .src.flags = EcsUp, .trav = EcsChildOf }},
+        .filter.terms = {{ tag_1, .src.id = EcsUp, .trav = EcsChildOf }},
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = Observer,
         .ctx = &ctx_1
@@ -4460,7 +4460,7 @@ void Observer_cache_test_9(void) {
 
     Probe ctx = {0};
     ecs_observer(world, {
-        .filter.terms = {{ ecs_id(Position), .src.flags = EcsUp, .trav = EcsIsA }},
+        .filter.terms = {{ ecs_id(Position), .src.id = EcsUp, .trav = EcsIsA }},
         .events = { EcsOnRemove },
         .callback = Observer,
         .ctx = &ctx
@@ -4872,7 +4872,7 @@ void Observer_multi_observer_table_fill_w_singleton(void) {
 
     ecs_observer(world, {
         .filter.terms = {
-            { .id = ecs_id(Position), .src.flags = EcsIsEntity, .src.id = ecs_id(Position) },
+            { .id = ecs_id(Position), .src.id = ecs_id(Position)|EcsIsEntity },
             { .id = ecs_id(Velocity) },
         },
         .filter.flags = EcsFilterNoData,

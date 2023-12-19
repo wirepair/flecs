@@ -13,16 +13,13 @@ ecs_term_t* filter_terms(ecs_filter_t *f) {
 }
 
 #define test_first(column, e, flgs)\
-    test_int(column.first.id, e);\
-    test_int(column.first.flags, flgs);
+    test_int(column.first.id, e | flgs);
 
 #define test_src(column, e, flgs)\
-    test_int(column.src.id, e);\
-    test_int(column.src.flags, flgs);
+    test_int(column.src.id, e | flgs);
 
 #define test_second(column, e, flgs)\
-    test_int(column.second.id, e);\
-    test_int(column.second.flags, flgs);
+    test_int(column.second.id, e | flgs);
 
 #define test_first_var(column, e, flgs, str)\
     test_first(column, e, flgs|EcsIsVariable);\
@@ -4477,12 +4474,10 @@ void Parser_neq_var_name(void) {
 
     ecs_term_t *terms = filter_terms(&f);
     test_first(terms[0], EcsPredEq, EcsSelf|EcsIsEntity);
-    test_uint(terms[0].src.flags, (EcsSelf|EcsIsVariable));
+    test_uint(terms[0].src.id, (EcsSelf|EcsIsVariable));
     test_str(terms[0].src.name, "x");
-    test_uint(terms[0].src.id, 0);
-    test_uint(terms[0].second.flags, (EcsSelf|EcsIsName));
+    test_uint(terms[0].second.id, (EcsSelf|EcsIsName));
     test_str(terms[0].second.name, "Second");
-    test_uint(terms[0].second.id, 0);
     test_int(terms[0].oper, EcsNot);
 
     ecs_filter_fini(&f);
@@ -4525,12 +4520,10 @@ void Parser_match_var_name(void) {
 
     ecs_term_t *terms = filter_terms(&f);
     test_first(terms[0], EcsPredMatch, EcsSelf|EcsIsEntity);
-    test_uint(terms[0].src.flags, (EcsSelf|EcsIsVariable));
+    test_uint(terms[0].src.id, (EcsSelf|EcsIsVariable));
     test_str(terms[0].src.name, "x");
-    test_uint(terms[0].src.id, 0);
-    test_uint(terms[0].second.flags, (EcsSelf|EcsIsName));
+    test_uint(terms[0].second.id, (EcsSelf|EcsIsName));
     test_str(terms[0].second.name, "Second");
-    test_uint(terms[0].second.id, 0);
     test_int(terms[0].oper, EcsAnd);
 
     ecs_filter_fini(&f);
@@ -4584,12 +4577,10 @@ void Parser_nmatch_var_name(void) {
 
     ecs_term_t *terms = filter_terms(&f);
     test_first(terms[0], EcsPredMatch, EcsSelf|EcsIsEntity);
-    test_uint(terms[0].src.flags, (EcsSelf|EcsIsVariable));
+    test_uint(terms[0].src.id, (EcsSelf|EcsIsVariable));
     test_str(terms[0].src.name, "x");
-    test_uint(terms[0].src.id, 0);
-    test_uint(terms[0].second.flags, (EcsSelf|EcsIsName));
+    test_uint(terms[0].second.id, (EcsSelf|EcsIsName));
     test_str(terms[0].second.name, "Second");
-    test_uint(terms[0].second.id, 0);
     test_int(terms[0].oper, EcsNot);
 
     ecs_filter_fini(&f);

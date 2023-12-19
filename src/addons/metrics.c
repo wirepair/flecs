@@ -558,7 +558,7 @@ int flecs_member_metric_init(
         .events = { EcsOnAdd },
         .filter.terms[0] = {
             .id = id,
-            .src.flags = EcsSelf,
+            .src.id = EcsSelf,
             .inout = EcsInOutNone
         },
         .callback = flecs_metrics_on_member_metric,
@@ -593,7 +593,7 @@ int flecs_id_metric_init(
         .events = { EcsOnAdd },
         .filter.terms[0] = {
             .id = desc->id,
-            .src.flags = EcsSelf,
+            .src.id = EcsSelf,
             .inout = EcsInOutNone
         },
         .callback = flecs_metrics_on_id_metric,
@@ -668,7 +668,7 @@ int flecs_oneof_metric_init(
         .events = { EcsMonitor },
         .filter.terms[0] = {
             .id = desc->id,
-            .src.flags = EcsSelf,
+            .src.id = EcsSelf,
             .inout = EcsInOutNone
         },
         .callback = flecs_metrics_on_oneof_metric,

@@ -5479,7 +5479,7 @@ void RulesBasic_match_empty_tables_trivial(void) {
     ecs_delete(world, e2);
 
     ecs_rule_t *f = ecs_rule(world, {
-        .terms = {{ ecs_id(Position), .src.flags = EcsSelf }},
+        .terms = {{ ecs_id(Position), .src.id = EcsSelf }},
         .flags = EcsFilterMatchEmptyTables
     });
 

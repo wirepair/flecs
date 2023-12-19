@@ -938,7 +938,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -1009,7 +1009,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl_w_init(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -1088,7 +1088,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl_w_init_comp_after_tree_fixed(vo
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_pair(rel, ecs_id(Position)) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -1157,7 +1157,7 @@ void FixedHierarchies_query_w_parent_field_2_lvl(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -1256,7 +1256,7 @@ void FixedHierarchies_query_w_cascade_field_2_lvl(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp|EcsCascade },
+            { .id = ecs_id(Position), .src.id = EcsUp|EcsCascade },
         },
         .filter.instanced = true
     });
@@ -1353,8 +1353,8 @@ void FixedHierarchies_query_w_parent_field_1_fixed_1_regular(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
-            { .id = ecs_id(Velocity), .src.flags = EcsUp }
+            { .id = ecs_id(Position), .src.id = EcsUp },
+            { .id = ecs_id(Velocity), .src.id = EcsUp }
         },
         .filter.instanced = true
     });
@@ -1434,7 +1434,7 @@ void FixedHierarchies_query_w_parent_field_only_fixed_1_lvls(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -1489,7 +1489,7 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_no_match(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -1525,7 +1525,7 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_2_no_match(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -1559,7 +1559,7 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_no_match_match(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -1608,7 +1608,7 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_match_no_match(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -1664,9 +1664,9 @@ void FixedHierarchies_query_w_parent_field_2_fixed_2_lvls(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
-            { .id = ecs_id(Velocity), .src.flags = EcsUp },
-            { .id = ecs_id(Mass), .src.flags = EcsSelf|EcsUp }
+            { .id = ecs_id(Position), .src.id = EcsUp },
+            { .id = ecs_id(Velocity), .src.id = EcsUp },
+            { .id = ecs_id(Mass), .src.id = EcsSelf|EcsUp }
         },
         .filter.instanced = true
     });
@@ -1792,7 +1792,7 @@ void FixedHierarchies_query_next_table(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -1860,7 +1860,7 @@ void FixedHierarchies_query_next_table_1_elem(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -1913,7 +1913,7 @@ void FixedHierarchies_query_next_table_1_elem_no_match(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -1937,7 +1937,7 @@ void FixedHierarchies_query_nested_make_fixed(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp|EcsCascade },
+            { .id = ecs_id(Position), .src.id = EcsUp|EcsCascade },
         },
         .filter.instanced = true
     });
@@ -1997,7 +1997,7 @@ void FixedHierarchies_query_nested_make_fixed_w_optional(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .oper = EcsOptional, .src.flags = EcsUp|EcsCascade },
+            { .id = ecs_id(Position), .oper = EcsOptional, .src.id = EcsUp|EcsCascade },
         },
         .filter.instanced = true
     });
@@ -2067,7 +2067,7 @@ void FixedHierarchies_query_nested_make_fixed_w_optional_match_children_only(voi
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .oper = EcsOptional, .src.flags = EcsUp|EcsCascade },
+            { .id = ecs_id(Position), .oper = EcsOptional, .src.id = EcsUp|EcsCascade },
         },
         .filter.instanced = true
     });
@@ -2111,7 +2111,7 @@ void FixedHierarchies_query_nested_w_2_parents_make_fixed(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .oper = EcsOptional, .src.flags = EcsUp|EcsCascade },
+            { .id = ecs_id(Position), .oper = EcsOptional, .src.id = EcsUp|EcsCascade },
         },
         .filter.instanced = true
     });
@@ -2221,7 +2221,7 @@ void FixedHierarchies_query_table_w_3_parents(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .oper = EcsOptional, .src.flags = EcsUp|EcsCascade },
+            { .id = ecs_id(Position), .oper = EcsOptional, .src.id = EcsUp|EcsCascade },
         },
         .filter.instanced = true
     });
@@ -2364,7 +2364,7 @@ void FixedHierarchies_query_w_parent_change_detection_1st(void) {
             },
             { 
                 .id = ecs_id(Position), 
-                .src.flags = EcsUp|EcsCascade,
+                .src.id = EcsUp|EcsCascade,
                 .inout = EcsIn
             },
         },
@@ -2476,7 +2476,7 @@ void FixedHierarchies_query_w_parent_change_detection_2nd(void) {
             },
             { 
                 .id = ecs_id(Position), 
-                .src.flags = EcsUp|EcsCascade,
+                .src.id = EcsUp|EcsCascade,
                 .inout = EcsIn
             },
         },
@@ -2588,7 +2588,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
             },
             { 
                 .id = ecs_id(Position), 
-                .src.flags = EcsUp|EcsCascade,
+                .src.id = EcsUp|EcsCascade,
                 .inout = EcsIn
             },
         },
@@ -2734,7 +2734,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
             },
             { 
                 .id = ecs_id(Position), 
-                .src.flags = EcsUp|EcsCascade,
+                .src.id = EcsUp|EcsCascade,
                 .inout = EcsIn
             },
         },
@@ -2882,7 +2882,7 @@ void FixedHierarchies_query_w_parent_change_detection_1st_populate_when_changed(
             },
             { 
                 .id = ecs_id(Position), 
-                .src.flags = EcsUp|EcsCascade,
+                .src.id = EcsUp|EcsCascade,
                 .inout = EcsIn
             },
         },
@@ -2980,7 +2980,7 @@ void FixedHierarchies_query_w_parent_change_detection_2nd_populate_when_changed(
             },
             { 
                 .id = ecs_id(Position), 
-                .src.flags = EcsUp|EcsCascade,
+                .src.id = EcsUp|EcsCascade,
                 .inout = EcsIn
             },
         },
@@ -3076,7 +3076,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_populate_when_c
             },
             { 
                 .id = ecs_id(Position), 
-                .src.flags = EcsUp|EcsCascade,
+                .src.id = EcsUp|EcsCascade,
                 .inout = EcsIn
             },
         },
@@ -3183,7 +3183,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent_pop
             },
             { 
                 .id = ecs_id(Position), 
-                .src.flags = EcsUp|EcsCascade,
+                .src.id = EcsUp|EcsCascade,
                 .inout = EcsIn
             },
         },
@@ -3311,7 +3311,7 @@ void FixedHierarchies_staged_query_w_parent_field_1_lvl(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -3391,7 +3391,7 @@ void FixedHierarchies_staged_query_w_parent_field_2_lvl(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
+            { .id = ecs_id(Position), .src.id = EcsUp },
         },
         .filter.instanced = true
     });
@@ -3493,8 +3493,8 @@ void FixedHierarchies_staged_query_w_parent_field_1_fixed_1_regular(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp },
-            { .id = ecs_id(Velocity), .src.flags = EcsUp }
+            { .id = ecs_id(Position), .src.id = EcsUp },
+            { .id = ecs_id(Velocity), .src.id = EcsUp }
         },
         .filter.instanced = true
     });
@@ -3583,7 +3583,7 @@ void FixedHierarchies_staged_query_w_cascade_field_2_lvl(void) {
     ecs_query_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
-            { .id = ecs_id(Position), .src.flags = EcsUp|EcsCascade },
+            { .id = ecs_id(Position), .src.id = EcsUp|EcsCascade },
         },
         .filter.instanced = true
     });

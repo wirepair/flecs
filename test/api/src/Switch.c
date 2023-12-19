@@ -1663,7 +1663,7 @@ void Switch_delete_case_trigger_after_delete_switch(void) {
     Probe ctx = {0};
 
     ecs_observer_init(world, &(ecs_observer_desc_t){
-        .filter.terms[0] = { .id = ecs_pair(Movement, Walking), .src.flags = EcsSelf },
+        .filter.terms[0] = { .id = ecs_pair(Movement, Walking), .src.id = EcsSelf },
         .events = {EcsOnAdd},
         .callback = Trigger,
         .ctx = &ctx

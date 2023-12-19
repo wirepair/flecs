@@ -560,7 +560,7 @@ static
 ecs_entity_t plecs_ensure_term_id(
     ecs_world_t *world,
     plecs_state_t *state,
-    ecs_term_id_t *term_id,
+    ecs_term_ref_t *term_id,
     const char *expr,
     int64_t column,
     ecs_entity_t pred,
@@ -568,7 +568,7 @@ ecs_entity_t plecs_ensure_term_id(
 {
     ecs_entity_t result = 0;
     const char *name = term_id->name;
-    if (term_id->flags & EcsIsVariable) {
+    if (term_id->id & EcsIsVariable) {
         if (name != NULL) {
             ecs_expr_var_t *var = ecs_vars_lookup(&state->vars, name);
             if (!var) {
@@ -632,7 +632,7 @@ bool plecs_pred_is_subj(
 /* Set masks aren't useful in plecs, so translate them back to entity names */
 static
 const char* plecs_set_mask_to_name(
-    ecs_flags32_t flags) 
+    ecs_entity_t flags) 
 {
     flags &= EcsTraverseFlags;
     if (flags == EcsSelf) {
@@ -706,7 +706,7 @@ int plecs_create_term(
 
     const char *subj_name = term->src.name;
     if (!subj_name) {
-        subj_name = plecs_set_mask_to_name(term->src.flags);
+        subj_name = plecs_set_mask_to_name(term->src.id);
     }
 
     if (!ecs_term_id_is_set(&term->first)) {

@@ -1003,7 +1003,7 @@ void DisableRest(ecs_iter_t *it) {
 
     ecs_iter_t rit = ecs_term_iter(world, &(ecs_term_t){
         .id = ecs_id(EcsRest),
-        .src.flags = EcsSelf
+        .src.id = EcsSelf
     });
 
     if (it->event == EcsOnAdd) {

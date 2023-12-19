@@ -191,7 +191,7 @@ int32_t flecs_search_relation_w_idr(
     int32_t offset,
     ecs_id_t id,
     ecs_entity_t rel,
-    ecs_flags32_t flags,
+    ecs_flags64_t flags,
     ecs_entity_t *subject_out,
     ecs_id_t *id_out,
     struct ecs_table_record_t **tr_out,
@@ -234,7 +234,7 @@ int32_t ecs_search_relation(
     int32_t offset,
     ecs_id_t id,
     ecs_entity_t rel,
-    ecs_flags32_t flags,
+    ecs_flags64_t flags,
     ecs_entity_t *subject_out,
     ecs_id_t *id_out,
     struct ecs_table_record_t **tr_out)

@@ -118,7 +118,7 @@ char* ecs_parse_term(
     const char *expr,
     const char *ptr,
     ecs_term_t *term_out,
-    ecs_term_id_t *extra_args);
+    ecs_term_ref_t *extra_args);
 
 #ifdef __cplusplus
 }

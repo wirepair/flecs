@@ -1948,9 +1948,9 @@ bool flecs_rule_setfixed(
     int32_t i;
     for (i = 0; i < filter->term_count; i ++) {
         ecs_term_t *term = &filter->terms[i];
-        ecs_term_id_t *src = &term->src;
-        if (src->flags & EcsIsEntity) {
-            it->sources[term->field_index] = src->id;
+        ecs_term_ref_t *src = &term->src;
+        if (src->id & EcsIsEntity) {
+            it->sources[term->field_index] = ECS_TERM_REF_ID(src);
         }
     }
 

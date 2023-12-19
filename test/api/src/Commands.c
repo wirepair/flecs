@@ -1931,7 +1931,7 @@ void Commands_merge_cleanup_ops_before_delete(void) {
     ecs_observer_init(world, &(ecs_observer_desc_t){
         .filter.terms[0] = {
             .id = ecs_id(Counter),
-            .src.flags = EcsSelf
+            .src.id = EcsSelf
         },
         .events = {EcsOnRemove},
         .callback = remove_counter
@@ -1966,7 +1966,7 @@ void Commands_merge_nested_cleanup_ops_before_delete(void) {
     ecs_observer_init(world, &(ecs_observer_desc_t){
         .filter.terms[0] = {
             .id = Tag,
-            .src.flags = EcsSelf
+            .src.id = EcsSelf
         },
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = update_counter
@@ -1975,7 +1975,7 @@ void Commands_merge_nested_cleanup_ops_before_delete(void) {
     ecs_observer_init(world, &(ecs_observer_desc_t){
         .filter.terms[0] = {
             .id = ecs_id(Counter),
-            .src.flags = EcsSelf
+            .src.id = EcsSelf
         },
         .events = {EcsOnRemove},
         .callback = remove_counter

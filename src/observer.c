@@ -150,7 +150,7 @@ void flecs_uni_observer_register(
     ecs_observer_t *observer)
 {
     ecs_term_t *term = &observer->filter.terms[0];
-    ecs_flags32_t flags = term->src.flags;
+    ecs_flags64_t flags = ECS_TERM_REF_FLAGS(&term->src);
 
     if ((flags & (EcsSelf|EcsUp)) == (EcsSelf|EcsUp)) {
         flecs_register_observer_for_id(world, observable, observer,
@@ -216,7 +216,7 @@ void flecs_unregister_observer(
     }
 
     ecs_term_t *term = &observer->filter.terms[0];
-    ecs_flags32_t flags = term->src.flags;
+    ecs_flags64_t flags = ECS_TERM_REF_FLAGS(&term->src);
 
     if ((flags & (EcsSelf|EcsUp)) == (EcsSelf|EcsUp)) {
         flecs_unregister_observer_for_id(world, observable, observer,
@@ -296,8 +296,8 @@ void flecs_observer_invoke(
     if (match_this && (simple_result || instanced || table_only)) {
         callback(it);
     } else {
-        ecs_entity_t observer_src = term->src.id;
-        if (observer_src && !(term->src.flags & EcsIsEntity)) {
+        ecs_entity_t observer_src = ECS_TERM_REF_ID(&term->src);
+        if (observer_src && !(term->src.id & EcsIsEntity)) {
             observer_src = 0;
         }
 
@@ -751,7 +751,7 @@ int flecs_multi_observer_init(
         child_desc.term_index = filter->terms[i].field_index;
         *term = filter->terms[i];
 
-        ecs_oper_kind_t oper = term->oper;
+        int16_t oper = term->oper;
         ecs_id_t id = term->id;
 
         /* AndFrom & OrFrom terms insert multiple observers */
@@ -790,8 +790,7 @@ int flecs_multi_observer_init(
         if (optional_only) {
             term->id = EcsAny;
             term->first.id = EcsAny;
-            term->src.id = EcsThis;
-            term->src.flags = EcsIsVariable;
+            term->src.id = EcsThis | EcsIsVariable;
             term->second.id = 0;
         } else if (term->oper == EcsOptional) {
             continue;

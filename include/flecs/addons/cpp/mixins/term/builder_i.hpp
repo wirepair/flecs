@@ -26,7 +26,7 @@ struct term_id_builder_i {
     /* The self flag indicates the term identifier itself is used */
     Base& self() {
         this->assert_term_id();
-        m_term_id->flags |= flecs::Self;
+        m_term_id->id |= flecs::Self;
         return *this;
     }
 
@@ -47,15 +47,14 @@ struct term_id_builder_i {
      */
     Base& entity(flecs::entity_t entity) {
         this->assert_term_id();
-        m_term_id->flags = flecs::IsEntity;
-        m_term_id->id = entity;
+        m_term_id->id = entity | flecs::IsEntity;
         return *this;
     }
 
     /* Specify value of identifier by name */
     Base& name(const char *name) {
         this->assert_term_id();
-        m_term_id->flags |= flecs::IsEntity;
+        m_term_id->id |= flecs::IsEntity;
         m_term_id->name = const_cast<char*>(name);
         return *this;
     }
@@ -63,7 +62,7 @@ struct term_id_builder_i {
     /* Specify identifier is a variable (resolved at query evaluation time) */
     Base& var(const char *var_name) {
         this->assert_term_id();
-        m_term_id->flags |= flecs::IsVariable;
+        m_term_id->id |= flecs::IsVariable;
         m_term_id->name = const_cast<char*>(var_name);
         return *this;
     }
@@ -71,11 +70,11 @@ struct term_id_builder_i {
     /* Override term id flags */
     Base& flags(flecs::flags32_t flags) {
         this->assert_term_id();
-        m_term_id->flags = flags;
+        m_term_id->id = flags;
         return *this;
     }
 
-    ecs_term_id_t *m_term_id;
+    ecs_term_ref_t *m_term_id;
 
 protected:
     virtual flecs::world_t* world_v() = 0;
@@ -218,7 +217,7 @@ struct term_builder_i : term_id_builder_i<Base> {
      * with its parent by traversing the ChildOf relationship. */
     Base& up(flecs::entity_t trav = 0) {
         this->assert_term_id();
-        this->m_term_id->flags |= flecs::Up;
+        this->m_term_id->id |= flecs::Up;
         if (trav) {
             m_term->trav = trav;
         }
@@ -234,7 +233,7 @@ struct term_builder_i : term_id_builder_i<Base> {
      * Only supported for flecs::query */
     Base& cascade(flecs::entity_t trav = 0) {
         this->assert_term_id();
-        this->m_term_id->flags |= flecs::Cascade;
+        this->m_term_id->id |= flecs::Cascade;
         if (trav) {
             m_term->trav = trav;
         }
@@ -249,7 +248,7 @@ struct term_builder_i : term_id_builder_i<Base> {
     /* Use with cascade to iterate results in descending (bottom -> top) order */
     Base& desc() {
         this->assert_term_id();
-        this->m_term_id->flags |= flecs::Desc;
+        this->m_term_id->id |= flecs::Desc;
         return *this;
     }
 
@@ -262,7 +261,7 @@ struct term_builder_i : term_id_builder_i<Base> {
     Base& trav(flecs::entity_t trav, flecs::flags32_t flags = 0) {
         this->assert_term_id();
         m_term->trav = trav;
-        this->m_term_id->flags |= flags;
+        this->m_term_id->id |= flags;
         return *this;
     }
 

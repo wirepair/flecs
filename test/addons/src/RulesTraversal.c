@@ -7243,7 +7243,7 @@ void RulesTraversal_not_up_disabled(void) {
     ecs_rule_t *f = ecs_rule(world, {
         .terms = {
             { TagA },
-            { .id = EcsDisabled, .src.flags = EcsUp, .oper = EcsNot }
+            { .id = EcsDisabled, .src.id = EcsUp, .oper = EcsNot }
         }
     });
     test_assert(f != NULL);
@@ -7293,7 +7293,7 @@ void RulesTraversal_up_2_rel_instances(void) {
 
     ecs_rule_t *f = ecs_rule(world, {
         .terms = {
-            {TagC, .src.flags = EcsUp, .trav = Rel }
+            {TagC, .src.id = EcsUp, .trav = Rel }
         }
     });
 
@@ -7333,7 +7333,7 @@ void RulesTraversal_up_2_rel_instances_match_2nd(void) {
 
     ecs_rule_t *f = ecs_rule(world, {
         .terms = {
-            { TagC, .src.flags = EcsUp, .trav = Rel }
+            { TagC, .src.id = EcsUp, .trav = Rel }
         }
     });
 

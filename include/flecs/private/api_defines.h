@@ -290,6 +290,8 @@ typedef struct ecs_allocator_t ecs_allocator_t;
 #define ECS_PAIR_SECOND(e)            (ecs_entity_t_lo(e))
 #define ECS_HAS_RELATION(e, rel)      (ECS_HAS_ID_FLAG(e, PAIR) && (ECS_PAIR_FIRST(e) == rel))
 
+#define ECS_TERM_REF_FLAGS(ref)       ((ref)->id & EcsTermRefFlags)
+#define ECS_TERM_REF_ID(ref)          ((ref)->id & ~EcsTermRefFlags)
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Convert between C typenames and variables

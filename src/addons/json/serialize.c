@@ -2275,13 +2275,13 @@ int ecs_world_to_json_buf(
         if (!serialize_builtin) {
             filter_desc.terms[term_id].id = ecs_pair(EcsChildOf, EcsFlecs);
             filter_desc.terms[term_id].oper = EcsNot;
-            filter_desc.terms[term_id].src.flags = EcsSelf | EcsUp;
+            filter_desc.terms[term_id].src.id = EcsSelf | EcsUp;
             term_id ++;
         }
         if (!serialize_modules) {
             filter_desc.terms[term_id].id = EcsModule;
             filter_desc.terms[term_id].oper = EcsNot;
-            filter_desc.terms[term_id].src.flags = EcsSelf | EcsUp;
+            filter_desc.terms[term_id].src.id = EcsSelf | EcsUp;
         }
     }
 

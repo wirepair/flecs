@@ -1381,14 +1381,14 @@ ecs_table_t *flecs_traverse_from_expr(
                 break;
             }
 
-            if (!(term.first.flags & (EcsSelf|EcsUp))) {
-                term.first.flags = EcsSelf;
+            if (!(term.first.id & (EcsSelf|EcsUp))) {
+                term.first.id |= EcsSelf;
             }
-            if (!(term.second.flags & (EcsSelf|EcsUp))) {
-                term.second.flags = EcsSelf;
+            if (!(term.second.id & (EcsSelf|EcsUp))) {
+                term.second.id |= EcsSelf;
             }
-            if (!(term.src.flags & (EcsSelf|EcsUp))) {
-                term.src.flags = EcsSelf;
+            if (!(term.src.id & (EcsSelf|EcsUp))) {
+                term.src.id |= EcsSelf;
             }
 
             if (ecs_term_finalize(world, &term)) {
@@ -4174,7 +4174,7 @@ int32_t ecs_count_id(
     int32_t count = 0;
     ecs_iter_t it = ecs_term_iter(world, &(ecs_term_t) { 
         .id = id,
-        .src.flags = EcsSelf,
+        .src.id = EcsSelf,
         .flags = EcsTermMatchDisabled|EcsTermMatchPrefab
     });
 

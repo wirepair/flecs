@@ -33,8 +33,8 @@ static
 bool flecs_rule_is_builtin_pred(
     ecs_term_t *term)
 {
-    if (term->first.flags & EcsIsEntity) {
-        ecs_entity_t id = term->first.id;
+    if (term->first.id & EcsIsEntity) {
+        ecs_entity_t id = ECS_TERM_REF_ID(&term->first);
         if (id == EcsPredEq || id == EcsPredMatch || id == EcsPredLookup) {
             return true;
         }
@@ -217,25 +217,25 @@ bool ecs_rule_var_is_entity(
 
 static
 const char* flecs_term_id_var_name(
-    ecs_term_id_t *term_id)
+    ecs_term_ref_t *ref)
 {
-    if (!(term_id->flags & EcsIsVariable)) {
+    if (!(ref->id & EcsIsVariable)) {
         return NULL;
     }
 
-    if (term_id->id == EcsThis) {
+    if (ECS_TERM_REF_ID(ref) == EcsThis) {
         return EcsThisName;
     }
 
-    return term_id->name;
+    return ref->name;
 }
 
 static
 bool flecs_term_id_is_wildcard(
-    ecs_term_id_t *term_id)
+    ecs_term_ref_t *ref)
 {
-    if ((term_id->flags & EcsIsVariable) && 
-        ((term_id->id == EcsWildcard) || (term_id->id == EcsAny))) 
+    if ((ref->id & EcsIsVariable) && 
+        ((ECS_TERM_REF_ID(ref) == EcsWildcard) || (ECS_TERM_REF_ID(ref) == EcsAny))) 
     {
         return true;
     }
@@ -329,7 +329,7 @@ ecs_var_id_t flecs_rule_add_var(
 static
 ecs_var_id_t flecs_rule_add_var_for_term_id(
     ecs_rule_t *rule,
-    ecs_term_id_t *term_id,
+    ecs_term_ref_t *term_id,
     ecs_vec_t *vars,
     ecs_var_kind_t kind)
 {
@@ -373,11 +373,11 @@ int flecs_rule_discover_vars(
 
     for (i = 0; i < count; i ++) {
         ecs_term_t *term = &terms[i];
-        ecs_term_id_t *first = &term->first;
-        ecs_term_id_t *second = &term->second;
-        ecs_term_id_t *src = &term->src;
+        ecs_term_ref_t *first = &term->first;
+        ecs_term_ref_t *second = &term->second;
+        ecs_term_ref_t *src = &term->src;
 
-        if (first->id == EcsScopeOpen) {
+        if (ECS_TERM_REF_ID(first) == EcsScopeOpen) {
             /* Keep track of which variables are first used in scope, so that we
              * can mark them as anonymous. Terms inside a scope are collapsed 
              * into a single result, which means that outside of the scope the
@@ -387,7 +387,7 @@ int flecs_rule_discover_vars(
             }
             scope ++;
             continue;
-        } else if (first->id == EcsScopeClose) {
+        } else if (ECS_TERM_REF_ID(first) == EcsScopeClose) {
             if (!--scope) {
                 /* Any new variables declared after entering a scope should be
                  * marked as anonymous. */
@@ -414,7 +414,7 @@ int flecs_rule_discover_vars(
             }
         }
 
-        if ((src->flags & EcsIsVariable) && (src->id != EcsThis)) {
+        if ((src->id & EcsIsVariable) && (ECS_TERM_REF_ID(src) != EcsThis)) {
             const char *var_name = flecs_term_id_var_name(src);
             if (var_name) {
                 ecs_var_id_t var_id = flecs_rule_find_var_id(
@@ -463,7 +463,7 @@ int flecs_rule_discover_vars(
                     anonymous_count ++;
                 }
             }
-        } else if ((src->flags & EcsIsVariable) && (src->id == EcsThis)) {
+        } else if ((src->id & EcsIsVariable) && (ECS_TERM_REF_ID(src) == EcsThis)) {
             if (flecs_rule_is_builtin_pred(term) && term->oper == EcsOr) {
                 flecs_rule_add_var(rule, EcsThisName, vars, EcsVarEntity);
             }
@@ -478,7 +478,7 @@ int flecs_rule_discover_vars(
             }
         }
 
-        if (src->flags & EcsIsVariable && second->flags & EcsIsVariable) {
+        if (src->id & EcsIsVariable && second->id & EcsIsVariable) {
             if (term->flags & EcsTermTransitive) {
                 /* Anonymous variable to store temporary id for finding 
                  * targets for transitive relationship, see compile_term. */
@@ -488,10 +488,10 @@ int flecs_rule_discover_vars(
 
         /* Track if a This entity variable is used before a potential This table 
          * variable. If this happens, the rule has no This table variable */
-        if (src->id == EcsThis) {
+        if (ECS_TERM_REF_ID(src) == EcsThis) {
             table_this = true;
         }
-        if (first->id == EcsThis || second->id == EcsThis) {
+        if (ECS_TERM_REF_ID(first) == EcsThis || ECS_TERM_REF_ID(second) == EcsThis) {
             if (!table_this) {
                 entity_before_table_this = true;
             }
@@ -980,21 +980,24 @@ void flecs_rule_insert_inheritance(
     /* Anonymous variable to store the resolved component ids */
     ecs_var_id_t tvar = flecs_rule_add_var(rule, NULL, NULL, EcsVarTable);
     ecs_var_id_t evar = flecs_rule_add_var(rule, NULL, NULL, EcsVarEntity);
-    flecs_set_var_label(&rule->vars[tvar], ecs_get_name(rule->filter.world, term->first.id));
-    flecs_set_var_label(&rule->vars[evar], ecs_get_name(rule->filter.world, term->first.id));
+
+    flecs_set_var_label(&rule->vars[tvar], ecs_get_name(rule->filter.world, 
+        ECS_TERM_REF_ID(&term->first)));
+    flecs_set_var_label(&rule->vars[evar], ecs_get_name(rule->filter.world, 
+        ECS_TERM_REF_ID(&term->first)));
 
     ecs_rule_op_t trav_op = {0};
     trav_op.kind = EcsRuleTrav;
     trav_op.field_index = -1;
     trav_op.first.entity = EcsIsA;
-    trav_op.second.entity = term->first.id;
+    trav_op.second.entity = ECS_TERM_REF_ID(&term->first);
     trav_op.src.var = tvar;
     trav_op.flags = EcsRuleIsSelf;
     trav_op.flags |= (EcsRuleIsEntity << EcsRuleFirst);
     trav_op.flags |= (EcsRuleIsEntity << EcsRuleSecond);
     trav_op.flags |= (EcsRuleIsVar << EcsRuleSrc);
     trav_op.written |= (1ull << tvar);
-    if (term->first.flags & EcsSelf) {
+    if (term->first.id & EcsSelf) {
         trav_op.match_flags |= EcsTermReflexive;
     }
     flecs_rule_op_insert(&trav_op, ctx);
@@ -1007,11 +1010,11 @@ void flecs_rule_insert_inheritance(
 }
 
 static
-void flecs_rule_compile_term_id(
+void flecs_rule_compile_term_ref(
     ecs_world_t *world,
     ecs_rule_t *rule,
     ecs_rule_op_t *op,
-    ecs_term_id_t *term_id,
+    ecs_term_ref_t *term_ref,
     ecs_rule_ref_t *ref,
     ecs_flags8_t ref_kind,
     ecs_var_kind_t kind,
@@ -1020,18 +1023,18 @@ void flecs_rule_compile_term_id(
 {
     (void)world;
 
-    if (!ecs_term_id_is_set(term_id)) {
+    if (!ecs_term_id_is_set(term_ref)) {
         return;
     }
 
-    if (term_id->flags & EcsIsVariable) {
+    if (term_ref->id & EcsIsVariable) {
         op->flags |= (ecs_flags8_t)(EcsRuleIsVar << ref_kind);
-        const char *name = flecs_term_id_var_name(term_id);
+        const char *name = flecs_term_id_var_name(term_ref);
         if (name) {
             ref->var = flecs_rule_most_specific_var(rule, name, kind, ctx);
             ecs_assert(ref->var != EcsVarNone, ECS_INTERNAL_ERROR, NULL);
         } else if (create_wildcard_vars) {
-            bool is_wildcard = flecs_term_id_is_wildcard(term_id);
+            bool is_wildcard = flecs_term_id_is_wildcard(term_ref);
             if (is_wildcard && (kind == EcsVarAny)) {
                 ref->var = flecs_rule_add_var(rule, NULL, NULL, EcsVarTable);
             } else {
@@ -1039,15 +1042,15 @@ void flecs_rule_compile_term_id(
             }
             if (is_wildcard) {
                 flecs_set_var_label(&rule->vars[ref->var], 
-                    ecs_get_name(world, term_id->id));
+                    ecs_get_name(world, ECS_TERM_REF_ID(term_ref)));
             }
             ecs_assert(ref->var != EcsVarNone, ECS_INTERNAL_ERROR, NULL);
         }
     }
 
-    if (term_id->flags & EcsIsEntity) {
+    if (term_ref->id & EcsIsEntity) {
         op->flags |= (ecs_flags8_t)(EcsRuleIsEntity << ref_kind);
-        ref->entity = term_id->id;
+        ref->entity = ECS_TERM_REF_ID(term_ref);
     }
 }
 
@@ -1210,7 +1213,7 @@ int flecs_rule_compile_builtin_pred(
     ecs_rule_op_t *op,
     ecs_write_flags_t write_state)
 {
-    ecs_entity_t id = term->first.id;
+    ecs_entity_t id = ECS_TERM_REF_ID(&term->first);
 
     ecs_rule_op_kind_t eq[] = {EcsRulePredEq, EcsRulePredNeq};
     ecs_rule_op_kind_t eq_name[] = {EcsRulePredEqName, EcsRulePredNeqName};
@@ -1219,7 +1222,7 @@ int flecs_rule_compile_builtin_pred(
     ecs_flags16_t flags_2nd = flecs_rule_ref_flags(op->flags, EcsRuleSecond);
 
     if (id == EcsPredEq) {
-        if (term->second.flags & EcsIsName) {
+        if (term->second.id & EcsIsName) {
             op->kind = flecs_ito(uint8_t, eq_name[term->oper == EcsNot]);
         } else {
             op->kind = flecs_ito(uint8_t, eq[term->oper == EcsNot]);
@@ -1286,12 +1289,12 @@ int flecs_rule_ensure_scope_vars(
     /* If the scope uses variables as entity that have only been written as
      * table, resolve them as entities before entering the scope. */
     ecs_term_t *cur = term;
-    while(cur->first.id != EcsScopeClose) {
+    while(ECS_TERM_REF_ID(&cur->first) != EcsScopeClose) {
         /* Dummy operation to obtain variable information for term */
         ecs_rule_op_t op = {0};
-        flecs_rule_compile_term_id(world, rule, &op, &cur->first, 
+        flecs_rule_compile_term_ref(world, rule, &op, &cur->first, 
             &op.first, EcsRuleFirst, EcsVarEntity, ctx, false);
-        flecs_rule_compile_term_id(world, rule, &op, &cur->second, 
+        flecs_rule_compile_term_ref(world, rule, &op, &cur->second, 
             &op.second, EcsRuleSecond, EcsVarEntity, ctx, false);
 
         if (op.flags & (EcsRuleIsVar << EcsRuleFirst)) {
@@ -1351,9 +1354,9 @@ int flecs_rule_compile_term(
 {
     ecs_filter_t *filter = &rule->filter;
     bool first_term = term == filter->terms;
-    bool first_is_var = term->first.flags & EcsIsVariable;
-    bool second_is_var = term->second.flags & EcsIsVariable;
-    bool src_is_var = term->src.flags & EcsIsVariable;
+    bool first_is_var = term->first.id & EcsIsVariable;
+    bool second_is_var = term->second.id & EcsIsVariable;
+    bool src_is_var = term->src.id & EcsIsVariable;
     bool builtin_pred = flecs_rule_is_builtin_pred(term);
     bool is_not = (term->oper == EcsNot) && !builtin_pred;
     bool is_or = flecs_rule_term_is_or(filter, term);
@@ -1378,9 +1381,9 @@ int flecs_rule_compile_term(
         ctx->ctrlflow->in_or = true;
     }
 
-    if (!term->src.id && term->src.flags & EcsIsEntity) {
+    if (!ECS_TERM_REF_ID(&term->src) && term->src.id & EcsIsEntity) {
         /* If the term has a 0 source, check if it's a scope open/close */
-        if (term->first.id == EcsScopeOpen) {
+        if (ECS_TERM_REF_ID(&term->first) == EcsScopeOpen) {
             if (flecs_rule_ensure_scope_vars(world, rule, ctx, term)) {
                 goto error;
             }
@@ -1391,7 +1394,7 @@ int flecs_rule_compile_term(
                 ctx->scope_is_not &= (ecs_flags32_t)~(1ull << ctx->scope);
             }
             flecs_rule_compile_push(ctx);
-        } else if (term->first.id == EcsScopeClose) {
+        } else if (ECS_TERM_REF_ID(&term->first) == EcsScopeClose) {
             flecs_rule_compile_pop(ctx);
             if (ctx->scope_is_not & (ecs_flags32_t)(1ull << (ctx->scope))) {
                 ctx->cur->lbl_query = -1;
@@ -1404,7 +1407,8 @@ int flecs_rule_compile_term(
     }
 
     if (builtin_pred) {
-        if (term->second.id == EcsWildcard || term->second.id == EcsAny) {
+        ecs_entity_t second_id = ECS_TERM_REF_ID(&term->second);
+        if (second_id == EcsWildcard || second_id == EcsAny) {
             /* Noop */
             return 0;
         }
@@ -1423,12 +1427,12 @@ int flecs_rule_compile_term(
         op.kind = EcsRuleTrav;
     } else {
         /* Ignore cascade flag */
-        ecs_flags32_t trav_flags = EcsTraverseFlags & ~EcsCascade;
+        ecs_entity_t trav_flags = EcsTraverseFlags & ~EcsCascade;
         if (term->flags & (EcsTermMatchAny|EcsTermMatchAnySrc)) {
             op.kind = EcsRuleAndAny;
-        } else if ((term->src.flags & trav_flags) == EcsUp) {
+        } else if ((term->src.id & trav_flags) == EcsUp) {
             op.kind = EcsRuleUp;
-        } else if ((term->src.flags & trav_flags) == (EcsSelf|EcsUp)) {
+        } else if ((term->src.id & trav_flags) == (EcsSelf|EcsUp)) {
             op.kind = EcsRuleSelfUp;
         }
     }
@@ -1451,18 +1455,19 @@ int flecs_rule_compile_term(
     ecs_write_flags_t write_state = ctx->written;
 
     /* Resolve component inheritance if necessary */
-    ecs_var_id_t first_var = EcsVarNone, second_var = EcsVarNone, src_var = EcsVarNone;
+    ecs_var_id_t first_var = EcsVarNone, second_var = EcsVarNone, 
+        src_var = EcsVarNone;
 
     /* Resolve variables and entities for operation arguments */
-    flecs_rule_compile_term_id(world, rule, &op, &term->first, 
+    flecs_rule_compile_term_ref(world, rule, &op, &term->first, 
         &op.first, EcsRuleFirst, EcsVarEntity, ctx, true);
-    flecs_rule_compile_term_id(world, rule, &op, &term->second, 
+    flecs_rule_compile_term_ref(world, rule, &op, &term->second, 
         &op.second, EcsRuleSecond, EcsVarEntity, ctx, true);
 
     if (first_is_var) first_var = op.first.var;
     if (second_is_var) second_var = op.second.var;
 
-    flecs_rule_compile_term_id(world, rule, &op, &term->src, 
+    flecs_rule_compile_term_ref(world, rule, &op, &term->src, 
         &op.src, EcsRuleSrc, EcsVarAny, ctx, true);
     if (src_is_var) src_var = op.src.var;
     bool src_written = flecs_rule_is_written(src_var, ctx->written);
@@ -1483,7 +1488,7 @@ int flecs_rule_compile_term(
     /* If the query starts with a Not or Optional term, insert an operation that
      * matches all entities. */
     if (first_term && src_is_var && !src_written) {
-        bool pred_match = builtin_pred && term->first.id == EcsPredMatch;
+        bool pred_match = builtin_pred && ECS_TERM_REF_ID(&term->first) == EcsPredMatch;
         if (term->oper == EcsNot || term->oper == EcsOptional || pred_match) {
             ecs_rule_op_t match_any = {0};
             match_any.kind = EcsAnd;
@@ -1519,7 +1524,7 @@ int flecs_rule_compile_term(
         /* Or terms are required to have the same source, so we don't have to
          * worry about the last term in the chain. */
         if (rule->vars[src_var].kind == EcsVarTable) {
-            flecs_rule_compile_term_id(world, rule, &op, &term->src, 
+            flecs_rule_compile_term_ref(world, rule, &op, &term->src, 
                     &op.src, EcsRuleSrc, EcsVarEntity, ctx, true);
             src_var = op.src.var;
         }
@@ -1601,7 +1606,7 @@ int flecs_rule_compile_term(
         op.flags |= (EcsRuleIsVar << EcsRuleFirst);
     }
 
-    if (term->src.flags & EcsSelf) {
+    if (term->src.id & EcsSelf) {
         op.flags |= EcsRuleIsSelf;
     }
 
@@ -1733,11 +1738,11 @@ bool flecs_rule_term_is_unknown(
     ecs_rule_compile_ctx_t *ctx) 
 {
     ecs_rule_op_t dummy = {0};
-    flecs_rule_compile_term_id(NULL, rule, &dummy, &term->first, 
+    flecs_rule_compile_term_ref(NULL, rule, &dummy, &term->first, 
         &dummy.first, EcsRuleFirst, EcsVarEntity, ctx, false);
-    flecs_rule_compile_term_id(NULL, rule, &dummy, &term->second, 
+    flecs_rule_compile_term_ref(NULL, rule, &dummy, &term->second, 
         &dummy.second, EcsRuleSecond, EcsVarEntity, ctx, false);
-    flecs_rule_compile_term_id(NULL, rule, &dummy, &term->src, 
+    flecs_rule_compile_term_ref(NULL, rule, &dummy, &term->src, 
         &dummy.src, EcsRuleSrc, EcsVarAny, ctx, false);
 
     bool has_vars = dummy.flags & 
@@ -1795,7 +1800,8 @@ int32_t flecs_rule_term_next_known(
         }
 
         /* Don't reorder terms before/after scopes */
-        if (term->first.id == EcsScopeOpen || term->first.id == EcsScopeClose) {
+        ecs_entity_t first_id = ECS_TERM_REF_ID(&term->first);
+        if (first_id == EcsScopeOpen || first_id == EcsScopeClose) {
             return -1;
         }
 
@@ -1830,7 +1836,7 @@ int32_t flecs_rule_insert_trivial_search(
         }
 
         /* We can only add trivial terms to plan if they no up traversal */
-        if ((term->src.flags & EcsTraverseFlags) != EcsSelf) {
+        if ((term->src.id & EcsTraverseFlags) != EcsSelf) {
             break;
         }
 
@@ -1917,7 +1923,7 @@ void flecs_rule_insert_populate(
                 break;
             }
 
-            if (term->src.flags & EcsUp) {
+            if (term->src.id & EcsUp) {
                 break;
             }
         }
@@ -1964,7 +1970,7 @@ int flecs_rule_compile(
     int32_t i, term_count = filter->term_count;
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
-        if (term->src.flags & EcsIsEntity) {
+        if (term->src.id & EcsIsEntity) {
             ecs_rule_op_t set_fixed = {0};
             set_fixed.kind = EcsRuleSetFixed;
             flecs_rule_op_insert(&set_fixed, &ctx);
@@ -1978,7 +1984,7 @@ int flecs_rule_compile(
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
         if (flecs_rule_term_fixed_id(filter, term) || 
-           (term->src.flags & EcsIsEntity && !term->src.id)) 
+           (term->src.id & EcsIsEntity && !(term->src.id & ~EcsTermRefFlags))) 
         {
             ecs_rule_op_t set_ids = {0};
             set_ids.kind = EcsRuleSetIds;

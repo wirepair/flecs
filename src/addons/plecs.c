@@ -709,7 +709,7 @@ int plecs_create_term(
         subj_name = plecs_set_mask_to_name(term->src.id);
     }
 
-    if (!ecs_term_id_is_set(&term->first)) {
+    if (!ecs_term_ref_is_set(&term->first)) {
         ecs_parser_error(name, expr, column, "missing term in expression");
         return -1;
     }
@@ -729,7 +729,7 @@ int plecs_create_term(
 
     subj = plecs_ensure_entity(world, state, subj_name, pred, true);
 
-    if (ecs_term_id_is_set(&term->second)) {
+    if (ecs_term_ref_is_set(&term->second)) {
         obj = plecs_ensure_term_id(world, state, &term->second, expr, column, 
             pred, !state->assign_stmt && !state->with_stmt);
         if (!obj) {
@@ -1707,7 +1707,8 @@ const char *plecs_parse_plecs_term(
         decl_id = state->last_predicate;
     }
 
-    ptr = ecs_parse_term(world, name, expr, ptr, &term, NULL);
+    ecs_stage_t *stage = flecs_stage_from_readonly_world(world);
+    ptr = ecs_parse_term(world, stage, name, expr, ptr, &term, NULL);
     if (!ptr) {
         return NULL;
     }
@@ -1722,7 +1723,6 @@ const char *plecs_parse_plecs_term(
     }
 
     if (plecs_create_term(world, &term, name, expr, (ptr - expr), state)) {
-        ecs_term_fini(&term);
         return NULL; /* Failed to create term */
     }
 
@@ -1731,8 +1731,6 @@ const char *plecs_parse_plecs_term(
     }
 
     state->decl_type = false;
-
-    ecs_term_fini(&term);
 
     return ptr;
 }
@@ -2003,7 +2001,6 @@ int flecs_plecs_parse(
     ecs_entity_t instance)
 {
     const char *ptr = expr;
-    ecs_term_t term = {0};
     plecs_state_t state = {0};
 
     if (!expr) {
@@ -2091,7 +2088,6 @@ error:
     ecs_vars_fini(&state.vars);
     ecs_set_scope(world, state.scope[0]);
     ecs_set_with(world, prev_with);
-    ecs_term_fini(&term);
     return -1;
 }
 

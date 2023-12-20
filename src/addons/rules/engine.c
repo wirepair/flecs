@@ -1538,7 +1538,7 @@ const char* flecs_rule_name_arg(
     ecs_rule_run_ctx_t *ctx)
 {
     int8_t term_index = op->term_index;
-    ecs_term_t *term = &ctx->rule->filter.terms[term_index];
+    const ecs_term_t *term = &ctx->rule->filter.terms[term_index];
     return term->second.name;
 }
 
@@ -1947,8 +1947,8 @@ bool flecs_rule_setfixed(
 
     int32_t i;
     for (i = 0; i < filter->term_count; i ++) {
-        ecs_term_t *term = &filter->terms[i];
-        ecs_term_ref_t *src = &term->src;
+        const ecs_term_t *term = &filter->terms[i];
+        const ecs_term_ref_t *src = &term->src;
         if (src->id & EcsIsEntity) {
             it->sources[term->field_index] = ECS_TERM_REF_ID(src);
         }
@@ -1974,7 +1974,7 @@ bool flecs_rule_setids(
 
     int32_t i;
     for (i = 0; i < filter->term_count; i ++) {
-        ecs_term_t *term = &filter->terms[i];
+        const ecs_term_t *term = &filter->terms[i];
         it->ids[term->field_index] = term->id;
     }
 

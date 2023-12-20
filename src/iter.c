@@ -369,7 +369,7 @@ bool ecs_field_is_readonly(
 {
     ecs_check(it->flags & EcsIterIsValid, ECS_INVALID_PARAMETER, NULL);
     ecs_assert(index >= 1, ECS_INVALID_PARAMETER, NULL);
-    ecs_term_t *term = &it->terms[index - 1];
+    const ecs_term_t *term = &it->terms[index - 1];
 
     if (term->inout == EcsIn) {
         return true;
@@ -378,7 +378,7 @@ bool ecs_field_is_readonly(
             return true;
         }
 
-        ecs_term_ref_t *src = &term->src;
+        const ecs_term_ref_t *src = &term->src;
         if (!(src->id & EcsSelf)) {
             return true;
         }
@@ -393,7 +393,7 @@ bool ecs_field_is_writeonly(
 {
     ecs_check(it->flags & EcsIterIsValid, ECS_INVALID_PARAMETER, NULL);
     ecs_assert(index >= 1, ECS_INVALID_PARAMETER, NULL);
-    ecs_term_t *term = &it->terms[index - 1];
+    const ecs_term_t *term = &it->terms[index - 1];
     return term->inout == EcsOut;
 error:
     return false;
@@ -755,7 +755,7 @@ void ecs_iter_set_var(
 {
     ecs_check(it != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(var_id >= 0, ECS_INVALID_PARAMETER, NULL);
-    ecs_check(var_id < FLECS_VARIABLE_COUNT_MAX, ECS_INVALID_PARAMETER, NULL);
+    ecs_check(var_id < FLECS_QUERY_VARIABLE_COUNT_MAX, ECS_INVALID_PARAMETER, NULL);
     ecs_check(var_id < it->variable_count, ECS_INVALID_PARAMETER, NULL);
     ecs_check(entity != 0, ECS_INVALID_PARAMETER, NULL);
     /* Can't set variable while iterating */
@@ -802,7 +802,7 @@ void ecs_iter_set_var_as_range(
 {
     ecs_check(it != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(var_id >= 0, ECS_INVALID_PARAMETER, NULL);
-    ecs_check(var_id < FLECS_VARIABLE_COUNT_MAX, ECS_INVALID_PARAMETER, NULL);
+    ecs_check(var_id < FLECS_QUERY_VARIABLE_COUNT_MAX, ECS_INVALID_PARAMETER, NULL);
     ecs_check(var_id < it->variable_count, ECS_INVALID_PARAMETER, NULL);
     ecs_check(range != 0, ECS_INVALID_PARAMETER, NULL);
     ecs_check(range->table != NULL, ECS_INVALID_PARAMETER, NULL);

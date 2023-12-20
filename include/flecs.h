@@ -233,21 +233,35 @@
 #define FLECS_ID_DESC_MAX (32)
 #endif
 
-/** \def FLECS_TERM_DESC_MAX 
- * Maximum number of terms in ecs_filter_desc_t */
-#define FLECS_TERM_DESC_MAX (16)
-
 /** \def FLECS_EVENT_DESC_MAX
  * Maximum number of events in ecs_observer_desc_t */
+#ifndef FLECS_EVENT_DESC_MAX
 #define FLECS_EVENT_DESC_MAX (8)
+#endif
 
-/** \def FLECS_VARIABLE_COUNT_MAX
+/** \def FLECS_TERM_COUNT_MAX 
+ * Maximum number of terms in queries. Should not be set higher than 64. */
+#ifndef FLECS_TERM_COUNT_MAX
+#define FLECS_TERM_COUNT_MAX (16)
+#endif
+
+/** \def FLECS_TERM_ARG_COUNT_MAX 
+ * Maximum number of arguments for a term. */
+#ifndef FLECS_TERM_ARG_COUNT_MAX
+#define FLECS_TERM_ARG_COUNT_MAX (16)
+#endif
+
+/** \def FLECS_QUERY_VARIABLE_COUNT_MAX
  * Maximum number of query variables per query */
-#define FLECS_VARIABLE_COUNT_MAX (64)
+#ifndef FLECS_QUERY_VARIABLE_COUNT_MAX
+#define FLECS_QUERY_VARIABLE_COUNT_MAX (64)
+#endif
 
 /** \def FLECS_QUERY_SCOPE_NESTING_MAX 
  * Maximum nesting depth of query scopes */
+#ifndef FLECS_QUERY_SCOPE_NESTING_MAX
 #define FLECS_QUERY_SCOPE_NESTING_MAX (8)
+#endif
 
 /** @} */
 
@@ -330,6 +344,9 @@ typedef struct {
  * ensure isolation between tests, the C++ API has a `flecs::reset` function
  * that forces the API to ignore the old component ids. */
 typedef struct ecs_world_t ecs_world_t;
+
+/** A stage enables modification while iterating and from multiple threads */
+typedef struct ecs_stage_t ecs_stage_t;
 
 /** A table stores entities and components for a specific type. */
 typedef struct ecs_table_t ecs_table_t;
@@ -696,8 +713,6 @@ typedef enum ecs_oper_kind_t {
 #define EcsTermMatchDisabled          (1u << 7)
 #define EcsTermMatchPrefab            (1u << 8)
 
-#define EcsTermMove                   (1u << 9)
-
 /** Type that describes a reference to an entity or variable in a term. */
 typedef struct ecs_term_ref_t {
     ecs_entity_t id;            /**< Entity id. If left to 0 and flags does not 
@@ -743,21 +758,25 @@ FLECS_API extern ecs_filter_t ECS_FILTER_INIT;
 /** Filters alllow for ad-hoc quick filtering of entity tables. */
 struct ecs_filter_t {
     ecs_header_t hdr;
+
+    ecs_term_t terms[FLECS_TERM_COUNT_MAX]; /**< Query terms */
+    int32_t sizes[FLECS_TERM_COUNT_MAX]; /**< Component sizes. Indexed by field */
     
     int8_t term_count;        /**< Number of elements in terms array */
     int8_t field_count;       /**< Number of fields in iterator for filter */
     ecs_flags32_t flags;      /**< Filter flags */
     ecs_flags64_t data_fields; /**< Bitset with fields that have data */
-    
-    ecs_term_t *terms;         /**< Array containing terms for filter */
+
     char *variable_names[1];   /**< Placeholder variable names array */
-    int32_t *sizes;            /**< Field size (same for each result) */
+    char *tokens;              /**< Buffer with string tokens used by terms */
+    int16_t tokens_len;
 
     /* Mixins */
     ecs_entity_t entity;       /**< Entity associated with filter (optional) */
     ecs_iterable_t iterable;   /**< Iterable mixin */
     ecs_poly_dtor_t dtor;      /**< Dtor mixin */
     ecs_world_t *world;        /**< World mixin */
+    ecs_stage_t *stage;
 };
 
 /* An observer reacts to events matching a filter */
@@ -958,14 +977,8 @@ typedef struct ecs_filter_desc_t {
     int32_t _canary;
 
     /** Terms of the filter. If a filter has more terms than 
-     * FLECS_TERM_DESC_MAX use terms_buffer */
-    ecs_term_t terms[FLECS_TERM_DESC_MAX];
-
-    /** For filters with lots of terms an outside array can be provided. */
-    ecs_term_t *terms_buffer;
-
-    /** Number of terms in array provided in terms_buffer. */
-    int32_t terms_buffer_count;
+     * FLECS_TERM_COUNT_MAX use terms_buffer */
+    ecs_term_t terms[FLECS_TERM_COUNT_MAX];
 
     /** External storage to prevent allocation of the filter object */
     ecs_filter_t *storage;
@@ -3946,7 +3959,7 @@ bool ecs_children_next(
  * @return True when set, false when not set.
  */
 FLECS_API 
-bool ecs_term_id_is_set(
+bool ecs_term_ref_is_set(
     const ecs_term_ref_t *id);
 
 /** Test whether a term is set.
@@ -4021,42 +4034,6 @@ int ecs_term_finalize(
     const ecs_world_t *world,
     ecs_term_t *term);
 
-/** Copy resources of a term to another term.
- * This operation copies one term to another term. If the source term contains
- * allocated resources (such as identifiers), they will be duplicated so that
- * no memory is shared between the terms.
- *
- * @param src The term to copy from.
- * @return The destination term.
- */
-FLECS_API 
-ecs_term_t ecs_term_copy(
-    const ecs_term_t *src);
-
-/** Move resources of a term to another term.
- * Same as copy, but moves resources from src, if src->move is set to true. If
- * src->move is not set to true, this operation will do a copy.
- *
- * The conditional move reduces redundant allocations in scenarios where a list 
- * of terms is partially created with allocated resources.
- *
- * @param src The term to move from.
- * @return The destination term.
- */
-FLECS_API 
-ecs_term_t ecs_term_move(
-    ecs_term_t *src);    
-
-/** Free resources of term.
- * This operation frees all resources (such as identifiers) of a term. The term
- * itself is not freed.
- *
- * @param term The term to free.
- */
-FLECS_API
-void ecs_term_fini(
-    ecs_term_t *term);
-
 /** Initialize filter 
  * A filter is a lightweight object that can be used to query for entities in
  * a world. Filters, as opposed to queries, do not cache results. They are 
@@ -4092,24 +4069,6 @@ ecs_filter_t * ecs_filter_init(
  */
 FLECS_API
 void ecs_filter_fini(
-    ecs_filter_t *filter); 
-
-/** Finalize filter.
- * When manually assigning an array of terms to the filter struct (so not when
- * using ecs_filter_init), this operation should be used to ensure that all 
- * terms are assigned properly and all (derived) fields have been set.
- *
- * When ecs_filter_init is used to create the filter, this function should not
- * be called. The purpose of this operation is to support creation of filters
- * without allocating memory.
- *
- * @param filter The filter to finalize.
- * @return Zero if filter is valid, non-zero if it contains errors.
- * @
- */
-FLECS_API 
-int ecs_filter_finalize(
-    const ecs_world_t *world,
     ecs_filter_t *filter); 
 
 /** Find index for $this variable.

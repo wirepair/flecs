@@ -439,7 +439,7 @@ void flecs_query_get_column_for_term(
 {
     const ecs_filter_t *filter = &query->filter;
     ecs_world_t *world = filter->world;
-    ecs_term_t *term = &filter->terms[t];
+    const ecs_term_t *term = &filter->terms[t];
     int32_t field = term->field_index;
     ecs_entity_t src = match->sources[field];
     ecs_table_t *table = NULL;
@@ -1792,7 +1792,7 @@ void flecs_query_order_by(
 
     if (order_by_component) {
         for (i = 0; i < count; i ++) {
-            ecs_term_t *term = &filter->terms[i];
+            const ecs_term_t *term = &filter->terms[i];
             
             /* Only And terms are supported */
             if (term->id == order_by_component && term->oper == EcsAnd) {
@@ -2070,8 +2070,8 @@ ecs_query_t* ecs_query_init(
 
         /* ecs_filter_init could have moved away resources from the terms array
          * in the descriptor, so use the terms array from the filter. */
-        observer_desc.filter.terms_buffer = result->filter.terms;
-        observer_desc.filter.terms_buffer_count = result->filter.term_count;
+        ecs_os_memcpy_n(observer_desc.filter.terms, result->filter.terms, 
+            ecs_term_t, FLECS_TERM_COUNT_MAX);
         observer_desc.filter.expr = NULL; /* Already parsed */
 
         entity = ecs_observer_init(world, &observer_desc);
@@ -2561,7 +2561,7 @@ repeat:
         filter->field_count);
 
     for (t = 0; t < term_count; t ++) {
-        ecs_term_t *term = &filter->terms[t];
+        const ecs_term_t *term = &filter->terms[t];
         int32_t field = term->field_index;
         if (!ecs_term_match_this(term)) {
             continue;

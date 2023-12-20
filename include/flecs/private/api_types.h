@@ -20,9 +20,6 @@ extern "C" {
 //// Opaque types
 ////////////////////////////////////////////////////////////////////////////////
 
-/** A stage enables modification while iterating and from multiple threads */
-typedef struct ecs_stage_t ecs_stage_t;
-
 /** Table data */
 typedef struct ecs_data_t ecs_data_t;
 
@@ -246,7 +243,7 @@ struct ecs_iter_t {
     /* Matched data */
     ecs_entity_t *entities;       /* Entity identifiers */
     void **ptrs;                  /* Pointers to components. Array if from this, pointer if not. */
-    ecs_size_t *sizes;            /* Component sizes */
+    const ecs_size_t *sizes;      /* Component sizes */
     ecs_table_t *table;           /* Current table */
     ecs_table_t *other_table;     /* Prev or next table when adding/removing */
     ecs_id_t *ids;                /* (Component) ids */
@@ -266,7 +263,7 @@ struct ecs_iter_t {
     ecs_id_t event_id;            /* The (component) id for the event */
 
     /* Query information */
-    ecs_term_t *terms;            /* Terms of query being evaluated */
+    const ecs_term_t *terms;      /* Terms of query being evaluated */
     int32_t table_count;          /* Active table count for query */
     int32_t term_index;           /* Index of term that emitted an event.
                                    * This field will be set to the 'index' field

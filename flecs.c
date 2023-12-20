@@ -965,7 +965,7 @@ typedef struct flecs_flat_monitor_t {
 /* Flat table term */
 typedef struct flecs_flat_table_term_t {
     int32_t field_index; /* Iterator field index */
-    ecs_term_t *term;
+    const ecs_term_t *term;
     ecs_vec_t monitor;
 } flecs_flat_table_term_t;
 
@@ -1260,6 +1260,11 @@ struct ecs_stage_t {
     /* Caches for rule creation */
     ecs_vec_t variables;
     ecs_vec_t operations;
+
+    /* Temporary token storage for DSL parser. This allows for parsing and 
+     * interpreting a term without having to do allocations. */
+    char parser_tokens[1024];
+    char *parser_token; /* Pointer to next token */
 };
 
 /* Component monitor */
@@ -1959,7 +1964,7 @@ ecs_stage_t* flecs_stage_from_world(
     ecs_world_t **world_ptr);
 
 /* Get current thread-specific stage from readonly world */
-const ecs_stage_t* flecs_stage_from_readonly_world(
+ecs_stage_t* flecs_stage_from_readonly_world(
     const ecs_world_t *world);
 
 /* Get component callbacks */
@@ -4779,7 +4784,9 @@ ecs_table_t *flecs_traverse_from_expr(
     const char *ptr = expr;
     if (ptr) {
         ecs_term_t term = {0};
-        while (ptr[0] && (ptr = ecs_parse_term(world, name, expr, ptr, &term, NULL))){
+        while (ptr[0] && (ptr = ecs_parse_term(
+            world, &world->stages[0], name, expr, ptr, &term, NULL)))
+        {
             if (!ecs_term_is_initialized(&term)) {
                 break;
             }
@@ -4795,7 +4802,6 @@ ecs_table_t *flecs_traverse_from_expr(
             }
 
             if (ecs_term_finalize(world, &term)) {
-                ecs_term_fini(&term);
                 if (error) {
                     *error = true;
                 }
@@ -4803,7 +4809,6 @@ ecs_table_t *flecs_traverse_from_expr(
             }
 
             if (!ecs_id_is_valid(world, term.id)) {
-                ecs_term_fini(&term);
                 ecs_parser_error(name, expr, (ptr - expr), 
                     "invalid term for add expression");
                 return NULL;
@@ -4813,8 +4818,6 @@ ecs_table_t *flecs_traverse_from_expr(
                 /* Regular AND expression */
                 table = flecs_find_table_add(world, table, term.id, diff);
             }
-
-            ecs_term_fini(&term);
         }
 
         if (!ptr) {
@@ -4833,6 +4836,7 @@ ecs_table_t *flecs_traverse_from_expr(
 static
 void flecs_defer_from_expr(
     ecs_world_t *world,
+    ecs_stage_t *stage,
     ecs_entity_t entity,
     const char *name,
     const char *expr,
@@ -4842,7 +4846,9 @@ void flecs_defer_from_expr(
     const char *ptr = expr;
     if (ptr) {
         ecs_term_t term = {0};
-        while (ptr[0] && (ptr = ecs_parse_term(world, name, expr, ptr, &term, NULL))) {
+        while (ptr[0] && (ptr = ecs_parse_term(
+            world, stage, name, expr, ptr, &term, NULL))) 
+        {
             if (!ecs_term_is_initialized(&term)) {
                 break;
             }
@@ -4852,7 +4858,6 @@ void flecs_defer_from_expr(
             }
 
             if (!ecs_id_is_valid(world, term.id)) {
-                ecs_term_fini(&term);
                 ecs_parser_error(name, expr, (ptr - expr), 
                     "invalid term for add expression");
                 return;
@@ -4866,8 +4871,6 @@ void flecs_defer_from_expr(
                     ecs_remove_id(world, entity, term.id);
                 }
             }
-
-            ecs_term_fini(&term);
         }
     }
 }
@@ -5032,7 +5035,8 @@ void flecs_deferred_add_remove(
     /* Add components from the 'add_expr' expression */
     if (desc->add_expr) {
 #ifdef FLECS_PARSER
-        flecs_defer_from_expr(world, entity, name, desc->add_expr, true, true);
+        flecs_defer_from_expr(world, (ecs_stage_t*)world , entity, name,
+            desc->add_expr, true, true);
 #else
         ecs_abort(ECS_UNSUPPORTED, "parser addon is not available");
 #endif
@@ -8832,7 +8836,7 @@ void flecs_entity_filter_init(
     ecs_vec_reset_t(a, sw_terms, flecs_switch_term_t);
     ecs_vec_reset_t(a, bs_terms, flecs_bitset_term_t);
     ecs_vec_reset_t(a, ft_terms, flecs_flat_table_term_t);
-    ecs_term_t *terms = filter->terms;
+    const ecs_term_t *terms = filter->terms;
     int32_t i, term_count = filter->term_count;
     bool has_filter = false;
     ef.flat_tree_column = -1;
@@ -9878,7 +9882,6 @@ int flecs_term_id_lookup(
     const ecs_world_t *world,
     ecs_entity_t scope,
     ecs_term_ref_t *ref,
-    bool free_name,
     ecs_filter_finalize_ctx_t *ctx)
 {
     const char *name = ref->name;
@@ -9889,14 +9892,15 @@ int flecs_term_id_lookup(
     if (ref->id & EcsIsVariable) {
         if (!ecs_os_strcmp(name, "This") || !ecs_os_strcmp(name, "this")) {
             ref->id = EcsThis | ECS_TERM_REF_FLAGS(ref);
-            if (free_name) {
-                /* Safe, if free_name is true the filter owns the name */
-                ecs_os_free(ECS_CONST_CAST(char*, ref->name));
-            }
             ref->name = NULL;
+            return 0;
         }
         return 0;
     } else if (ref->id & EcsIsName) {
+        if (ref->name == NULL) {
+            flecs_filter_error(ctx, "IsName flag specified without name");
+            return -1;
+        }
         return 0;
     }
 
@@ -9919,6 +9923,7 @@ int flecs_term_id_lookup(
         if (ctx->filter && (ctx->filter->flags & EcsFilterUnresolvedByName)) {
             ref->id |= EcsIsName;
             ref->id &= ~EcsIsEntity;
+            return 0;
         } else {
             flecs_filter_error(ctx, "unresolved identifier '%s'", name);
             return -1;
@@ -9951,12 +9956,8 @@ int flecs_term_id_lookup(
             return -1;
         }
 
-        if (free_name) {
-            /* Safe, if free_name is true, the filter owns the name */
-            ecs_os_free(ECS_CONST_CAST(char*, name));
-        }
-
         ref->name = NULL;
+        return 0;
     }
 
     return 0;
@@ -10022,10 +10023,10 @@ int flecs_term_ids_finalize(
     }
 
     /* Lookup term identifiers by name */
-    if (flecs_term_id_lookup(world, 0, src, term->flags & EcsTermMove, ctx)) {
+    if (flecs_term_id_lookup(world, 0, src, ctx)) {
         return -1;
     }
-    if (flecs_term_id_lookup(world, 0, first, term->flags & EcsTermMove, ctx)) {
+    if (flecs_term_id_lookup(world, 0, first, ctx)) {
         return -1;
     }
 
@@ -10039,7 +10040,7 @@ int flecs_term_ids_finalize(
         oneof = flecs_get_oneof(world, first_id);
     }
 
-    if (flecs_term_id_lookup(world, oneof, &term->second, term->flags & EcsTermMove, ctx)) {
+    if (flecs_term_id_lookup(world, oneof, &term->second, ctx)) {
         return -1;
     }
 
@@ -10254,10 +10255,10 @@ int flecs_term_verify(
         return flecs_term_verify_eq_pred(term, ctx);
     }
 
-    if (ecs_term_id_is_set(second) && !ECS_HAS_ID_FLAG(flags, PAIR)) {
+    if (ecs_term_ref_is_set(second) && !ECS_HAS_ID_FLAG(flags, PAIR)) {
         flecs_filter_error(ctx, "expected PAIR flag for term with pair");
         return -1;
-    } else if (!ecs_term_id_is_set(second) && ECS_HAS_ID_FLAG(flags, PAIR)) {
+    } else if (!ecs_term_ref_is_set(second) && ECS_HAS_ID_FLAG(flags, PAIR)) {
         if (first_id != EcsChildOf) {
             flecs_filter_error(ctx, "unexpected PAIR flag for term without pair");
             return -1;
@@ -10267,12 +10268,12 @@ int flecs_term_verify(
         }
     }
 
-    if (!ecs_term_id_is_set(src)) {
+    if (!ecs_term_ref_is_set(src)) {
         flecs_filter_error(ctx, "term.src is not initialized");
         return -1;
     }
 
-    if (!ecs_term_id_is_set(first)) {
+    if (!ecs_term_ref_is_set(first)) {
         flecs_filter_error(ctx, "term.first is not initialized");
         return -1;
     }
@@ -10340,7 +10341,7 @@ int flecs_term_verify(
     }
 
     if (first_id) {
-        if (ecs_term_id_is_set(second)) {
+        if (ecs_term_ref_is_set(second)) {
             ecs_flags64_t mask = EcsIsEntity | EcsIsVariable;
             if ((src->id & mask) == (second->id & mask)) {
                 bool is_same = false;
@@ -10520,7 +10521,7 @@ int flecs_term_finalize(
         ecs_table_t *first_table = first_record ? first_record->table : NULL;
         if (first_table) {
             /* Add traversal flags for transitive relationships */
-            if (ecs_term_id_is_set(second) && !((second_flags & EcsTraverseFlags) == EcsSelf)) {
+            if (ecs_term_ref_is_set(second) && !((second_flags & EcsTraverseFlags) == EcsSelf)) {
                 if (!((src->id & EcsIsVariable) && (src_id == EcsAny))) {
                     if (!((second->id & EcsIsVariable) && (second_id == EcsAny))) {
                         if (ecs_table_has_id(world, first_table, EcsTransitive)) {
@@ -10747,7 +10748,7 @@ ecs_flags32_t ecs_id_get_flags(
     }
 }
 
-bool ecs_term_id_is_set(
+bool ecs_term_ref_is_set(
     const ecs_term_ref_t *ref)
 {
     return ECS_TERM_REF_ID(ref) != 0 || ref->name != NULL || ref->id & EcsIsEntity;
@@ -10756,7 +10757,7 @@ bool ecs_term_id_is_set(
 bool ecs_term_is_initialized(
     const ecs_term_t *term)
 {
-    return term->id != 0 || ecs_term_id_is_set(&term->first);
+    return term->id != 0 || ecs_term_ref_is_set(&term->first);
 }
 
 bool ecs_term_match_this(
@@ -10780,44 +10781,6 @@ int ecs_term_finalize(
     ctx.world = world;
     ctx.term = term;
     return flecs_term_finalize(world, term, &ctx);
-}
-
-ecs_term_t ecs_term_copy(
-    const ecs_term_t *src)
-{
-    ecs_term_t dst = *src;
-    dst.first.name = ecs_os_strdup(src->first.name);
-    dst.src.name = ecs_os_strdup(src->src.name);
-    dst.second.name = ecs_os_strdup(src->second.name);
-    return dst;
-}
-
-ecs_term_t ecs_term_move(
-    ecs_term_t *src)
-{
-    if (src->flags & EcsTermMove) {
-        ecs_term_t dst = *src;
-        src->first.name = NULL;
-        src->src.name = NULL;
-        src->second.name = NULL;
-        return dst;
-    } else {
-        ecs_term_t dst = ecs_term_copy(src);
-        return dst;
-    }
-}
-
-void ecs_term_fini(
-    ecs_term_t *term)
-{
-    /* Safe, values are owned by term */
-    ecs_os_free(ECS_CONST_CAST(char*, term->first.name));
-    ecs_os_free(ECS_CONST_CAST(char*, term->src.name));
-    ecs_os_free(ECS_CONST_CAST(char*, term->second.name));
-
-    term->first.name = NULL;
-    term->src.name = NULL;
-    term->second.name = NULL;
 }
 
 static
@@ -10858,7 +10821,67 @@ ecs_term_t* flecs_filter_or_other_type(
     }
 }
 
-int ecs_filter_finalize(
+static
+char* flecs_filter_append_token(
+    char *dst,
+    const char *src)
+{
+    int32_t len = ecs_os_strlen(src);
+    ecs_os_strncpy(dst, src, len + 1);
+    return dst + len + 1;
+}
+
+static
+void flecs_filter_populate_tokens(
+    ecs_filter_t *f,
+    ecs_filter_finalize_ctx_t *ctx)
+{
+    int32_t i, term_count = f->term_count;
+    
+    /* Step 1: determine size of token buffer */
+    int32_t len = 0;
+    for (i = 0; i < term_count; i ++) {
+        ecs_term_t *term = &f->terms[i];
+        
+        if (term->first.name) {
+            len += ecs_os_strlen(term->first.name);
+        }
+        if (term->second.name) {
+            len += ecs_os_strlen(term->second.name);
+        }
+        if (term->src.name) {
+            len += ecs_os_strlen(term->src.name);
+        }
+    }
+
+    /* Step 2: reassign term tokens to buffer */
+    if (len) {
+        f->tokens = flecs_alloc(&f->stage->allocator, len);
+        f->tokens_len = len;
+        char *token = f->tokens, *next;
+
+        for (i = 0; i < term_count; i ++) {
+            ecs_term_t *term = &f->terms[i];
+            if (term->first.name) {
+                next = flecs_filter_append_token(token, term->first.name);
+                term->first.name = token;
+                token = next;
+            }
+            if (term->second.name) {
+                next = flecs_filter_append_token(token, term->second.name);
+                term->second.name = token;
+                token = next;
+            }
+            if (term->src.name) {
+                next = flecs_filter_append_token(token, term->src.name);
+                term->src.name = token;
+                token = next;
+            }
+        }
+    }
+}
+
+int flecs_filter_finalize(
     const ecs_world_t *world,
     ecs_filter_t *f)
 {
@@ -11066,8 +11089,6 @@ int ecs_filter_finalize(
                 }
             }
         }
-    } else {
-        f->sizes = NULL;
     }
 
     ecs_assert(filter_terms <= term_count, ECS_INTERNAL_ERROR, NULL);
@@ -11108,6 +11129,10 @@ int ecs_filter_finalize(
         }
     }
 
+    /* Store remaining string tokens in terms (after entity lookups) in single
+     * token buffer which simplifies memory management & reduces allocations. */
+    flecs_filter_populate_tokens(f, &ctx);
+
     return 0;
 }
 
@@ -11134,31 +11159,24 @@ static
 void flecs_filter_fini(
     ecs_filter_t *filter)
 {
-    if (filter->terms) {
-        int i, count = filter->term_count;
-        for (i = 0; i < count; i ++) {
-            ecs_term_t *term = &filter->terms[i];
-            if (term->idr) {
-                if (!(filter->world->flags & EcsWorldQuit)) {
-                    if (ecs_os_has_threading()) {
-                        ecs_os_adec(&term->idr->keep_alive);
-                    } else {
-                        term->idr->keep_alive --;
-                    }
+    int i, count = filter->term_count;
+    for (i = 0; i < count; i ++) {
+        ecs_term_t *term = &filter->terms[i];
+        if (term->idr) {
+            if (!(filter->world->flags & EcsWorldQuit)) {
+                if (ecs_os_has_threading()) {
+                    ecs_os_adec(&term->idr->keep_alive);
+                } else {
+                    term->idr->keep_alive --;
                 }
             }
-            ecs_term_fini(&filter->terms[i]);
-        }
-
-        if (filter->flags & EcsFilterOwnsTermsStorage) {
-            /* Memory allocated for both terms & sizes */
-            ecs_os_free(filter->terms);
-        } else {
-            ecs_os_free(filter->sizes);
         }
     }
 
-    filter->terms = NULL;
+    if (filter->tokens) {
+        flecs_free(
+            &filter->stage->allocator, filter->tokens_len, filter->tokens);
+    }
 
     if (filter->flags & EcsFilterOwnsStorage) {
         ecs_os_free(filter);
@@ -11183,163 +11201,118 @@ ecs_filter_t* ecs_filter_init(
     ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(desc != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(desc->_canary == 0, ECS_INVALID_PARAMETER, NULL);
-    flecs_stage_from_world(&world);
+    ecs_stage_t *stage = flecs_stage_from_world(&world);
 
     ecs_filter_t *f = desc->storage;
-    int32_t i, term_count = desc->terms_buffer_count, storage_count = 0, expr_count = 0;
-    const ecs_term_t *terms = desc->terms_buffer;
-    ecs_term_t *storage_terms = NULL, *expr_terms = NULL;
-
     if (f) {
         ecs_check(f->hdr.magic == ecs_filter_t_magic, 
             ECS_INVALID_PARAMETER, NULL);
-        storage_count = f->term_count;
-        storage_terms = f->terms;
         ecs_poly_init(f, ecs_filter_t);
     } else {
         f = ecs_poly_new(ecs_filter_t);
         f->flags |= EcsFilterOwnsStorage;
-    }
-    if (!storage_terms) {
-        f->flags |= EcsFilterOwnsTermsStorage;
     }
 
     ECS_BIT_COND(f->flags, EcsFilterIsInstanced, desc->instanced);
     ECS_BIT_SET(f->flags, EcsFilterMatchAnything);
     f->flags |= desc->flags;
     f->world = world;
+    f->stage = stage;
 
-    /* If terms_buffer was not set, count number of initialized terms in
-     * static desc::terms array */
-    if (!terms) {
-        ecs_check(term_count == 0, ECS_INVALID_PARAMETER, NULL);
-        terms = desc->terms;
-        for (i = 0; i < FLECS_TERM_DESC_MAX; i ++) {
-            if (!ecs_term_is_initialized(&terms[i])) {
-                break;
-            }
-            term_count ++;
+    ecs_entity_t entity = desc->entity;
+    const char *expr = desc->expr;
+
+    /* Count number of initialized terms in desc->terms */
+    int32_t i, term_count = 0;
+    for (i = 0; i < FLECS_TERM_COUNT_MAX; i ++) {
+        if (!ecs_term_is_initialized(&desc->terms[i])) {
+            break;
         }
-    } else {
-        ecs_check(term_count != 0, ECS_INVALID_PARAMETER, NULL);
+        term_count ++;
     }
 
-    /* If expr is set, parse query expression */
-    const char *expr = desc->expr;
-    ecs_entity_t entity = desc->entity;
-    if (expr) {
+    /* Copy terms from array to filter */
+    if (term_count) {
+        ecs_os_memcpy_n(&f->terms, desc->terms, ecs_term_t, term_count);
+    }
+
+    /* Parse query expression if set */
+    if (expr && expr[0]) {
 #ifdef FLECS_PARSER
-        const char *name = NULL;
+        const char *filter_name = entity ? ecs_get_name(world, entity) : NULL;
         const char *ptr = desc->expr;
-        ecs_term_t term = {0};
-        ecs_term_ref_t extra_args[ECS_PARSER_MAX_ARGS];
-        int32_t expr_size = 0;
+        ecs_term_ref_t extra_args[FLECS_TERM_ARG_COUNT_MAX];
+        ecs_os_memset_n(extra_args, 0, ecs_term_ref_t, 
+            FLECS_TERM_ARG_COUNT_MAX);
 
-        ecs_os_memset_n(extra_args, 0, ecs_term_ref_t, ECS_PARSER_MAX_ARGS);
+        do {
+            if (term_count == FLECS_TERM_COUNT_MAX) {
+                ecs_err("max number of terms (%d) reached, increase "
+                    "FLECS_TERM_COUNT_MAX to support more",
+                    FLECS_TERM_COUNT_MAX);
+                goto error;
+            }
 
-        if (entity) {
-            name = ecs_get_name(world, entity);
-        }
+            /* Parse next term */
+            ecs_term_t *term = &f->terms[term_count];
+            ptr = ecs_parse_term(world, stage, filter_name, expr, ptr, 
+                term, extra_args);
+            if (!ptr) {
+                /* Parser error */
+                goto error;
+            }
 
-        while (ptr[0] && 
-            (ptr = ecs_parse_term(world, name, expr, ptr, &term, extra_args)))
-        {
-            if (!ecs_term_is_initialized(&term)) {
+            if (!ecs_term_is_initialized(term)) {
+                /* Last term parsed */
                 break;
             }
 
+            term_count ++;
+
+            /* Unpack terms with more than two args into multiple terms so that:
+             *   Rel(X, Y, Z)
+             * becomes:
+             *   Rel(X, Y), Rel(Y, Z) */
             int32_t arg = 0;
+            while (ecs_term_ref_is_set(&extra_args[arg ++])) {
+                ecs_assert(arg <= FLECS_TERM_ARG_COUNT_MAX, 
+                    ECS_INTERNAL_ERROR, NULL);
 
-            do {
-                ecs_assert(arg <= ECS_PARSER_MAX_ARGS, ECS_INTERNAL_ERROR, NULL);
-
-                if (expr_count == expr_size) {
-                    expr_size = expr_size ? expr_size * 2 : 8;
-                    expr_terms = ecs_os_realloc_n(expr_terms, ecs_term_t, expr_size);
+                if (term_count == FLECS_TERM_COUNT_MAX) {
+                    ecs_err("max number of terms (%d) reached, increase "
+                        "FLECS_TERM_COUNT_MAX to support more",
+                        FLECS_TERM_COUNT_MAX);
+                    goto error;
                 }
 
-                ecs_term_t *expr_term = &expr_terms[expr_count ++];
-                *expr_term = term;
+                term = &f->terms[term_count ++];
+                *term = term[-1];
+                term->src = term[-1].second;
+                term->second = extra_args[arg - 1];
 
-                if (arg) {
-                    expr_term->src = expr_term[-1].second;
-                    expr_term->second = extra_args[arg - 1];
-
-                    if (expr_term->first.name != NULL) {
-                        expr_term->first.name = ecs_os_strdup(
-                            expr_term->first.name);
-                    }
-                    if (expr_term->src.name != NULL) {
-                        expr_term->src.name = ecs_os_strdup(
-                            expr_term->src.name);
-                    }
+                if (term->first.name != NULL) {
+                    term->first.name = term->first.name;
                 }
-            } while (ecs_term_id_is_set(&extra_args[arg ++]));
-
-            if (ptr[0] == '\n') {
-                break;
+                if (term->src.name != NULL) {
+                    term->src.name = term->src.name;
+                }
             }
 
-            ecs_os_memset_n(extra_args, 0, ecs_term_ref_t, ECS_PARSER_MAX_ARGS);
-        }
-
-        if (!ptr) {
-            /* Set terms in filter object to make sur they get cleaned up */
-            f->terms = expr_terms;
-            f->term_count = flecs_ito(int8_t, expr_count);
-            f->flags |= EcsFilterOwnsTermsStorage;
-            goto error;
-        }
+            if (arg) {
+                ecs_os_memset_n(extra_args, 0, ecs_term_ref_t, 
+                    FLECS_TERM_ARG_COUNT_MAX);
+            }
+        } while (ptr[0] && ptr[0] != '\n');
 #else
         (void)expr;
         ecs_abort(ECS_UNSUPPORTED, "parser addon is not available");
 #endif
     }
 
-    /* If storage is provided, make sure it's large enough */
-    ecs_check(!storage_terms || storage_count >= (term_count + expr_count),
-        ECS_INVALID_PARAMETER, NULL);
-
-    if (term_count || expr_count) {
-        /* Allocate storage for terms and sizes array */
-        if (!storage_terms) {
-            ecs_assert(f->flags & EcsFilterOwnsTermsStorage, 
-                ECS_INTERNAL_ERROR, NULL);
-            f->term_count = flecs_ito(int8_t, term_count + expr_count);
-            ecs_size_t terms_size = ECS_SIZEOF(ecs_term_t) * f->term_count;
-            ecs_size_t sizes_size = ECS_SIZEOF(int32_t) * f->term_count;
-            f->terms = ecs_os_calloc(terms_size + sizes_size);
-            f->sizes = ECS_OFFSET(f->terms, terms_size);
-        } else {
-            f->terms = storage_terms;
-            f->term_count = flecs_ito(int8_t, storage_count);
-            f->sizes = ecs_os_calloc_n(ecs_size_t, term_count);
-        }
-
-        /* Copy terms to filter storage */
-        for (i = 0; i < term_count; i ++) {
-            f->terms[i] = ecs_term_copy(&terms[i]);
-            /* Allow freeing resources from expr parser during finalization */
-            f->terms[i].flags |= EcsTermMove;
-        }
-
-        /* Move expr terms to filter storage */
-        for (i = 0; i < expr_count; i ++) {
-            f->terms[i + term_count] = ecs_term_move(&expr_terms[i]);
-            /* Allow freeing resources from expr parser during finalization */
-            f->terms[i + term_count].flags |= EcsTermMove;
-        }
-        ecs_os_free(expr_terms);
-    }
-
     /* Ensure all fields are consistent and properly filled out */
-    if (ecs_filter_finalize(world, f)) {
+    f->term_count = term_count;
+    if (flecs_filter_finalize(world, f)) {
         goto error;
-    }
-
-    /* Any allocated resources remaining in terms are now owned by filter */
-    for (i = 0; i < f->term_count; i ++) {
-        f->terms[i].flags &= (uint16_t)~EcsTermMove;
     }
 
     f->variable_names[0] = NULL;
@@ -11367,20 +11340,10 @@ void ecs_filter_copy(
         return;
     }
 
+    printf("copy\n");
+
     if (src) {
         *dst = *src;
-
-        int32_t i, term_count = src->term_count;
-        ecs_size_t terms_size = ECS_SIZEOF(ecs_term_t) * term_count;
-        ecs_size_t sizes_size = ECS_SIZEOF(int32_t) * term_count;
-        dst->terms = ecs_os_malloc(terms_size + sizes_size);
-        dst->sizes = ECS_OFFSET(dst->terms, terms_size);
-        dst->flags |= EcsFilterOwnsTermsStorage;
-        ecs_os_memcpy_n(dst->sizes, src->sizes, int32_t, term_count);
-
-        for (i = 0; i < term_count; i ++) {
-            dst->terms[i] = ecs_term_copy(&src->terms[i]);
-        }
     } else {
         ecs_os_memset_t(dst, 0, ecs_filter_t);
     }
@@ -11394,18 +11357,12 @@ void ecs_filter_move(
         return;
     }
 
+    printf("move\n");
+
     if (src) {
         *dst = *src;
-        if (src->flags & EcsFilterOwnsTermsStorage) {
-            dst->terms = src->terms;
-            dst->sizes = src->sizes;
-            dst->flags |= EcsFilterOwnsTermsStorage;
-        } else {
-            ecs_filter_copy(dst, src);
-        }
-        src->terms = NULL;
-        src->sizes = NULL;
-        src->term_count = 0;
+        ecs_filter_copy(dst, src);
+        ecs_os_memset_t(src, 0, ecs_filter_t);
     } else {
         ecs_os_memset_t(dst, 0, ecs_filter_t);
     }
@@ -11440,7 +11397,6 @@ void flecs_filter_str_add_id(
 
     ecs_flags64_t flags = ECS_TERM_REF_FLAGS(ref);
     if (!(flags & EcsTraverseFlags)) {
-        printf("set default\n");
         /* If flags haven't been set yet, initialize with defaults. This can
          * happen if an error is thrown while the term is being finalized */
         flags |= default_traverse_flags;
@@ -11493,8 +11449,8 @@ void flecs_term_str_w_strbuf(
     uint64_t def_second_mask = EcsSelf;
 
     bool src_set = !ecs_term_match_0(term);
-    bool first_set = ecs_term_id_is_set(first);
-    bool second_set = ecs_term_id_is_set(second);
+    bool first_set = ecs_term_ref_is_set(first);
+    bool second_set = ecs_term_ref_is_set(second);
 
     if (first_id == EcsScopeOpen) {
         ecs_strbuf_appendlit(buf, "{");
@@ -11604,11 +11560,11 @@ char* flecs_filter_str(
     ecs_check(filter != NULL, ECS_INVALID_PARAMETER, NULL);
 
     ecs_strbuf_t buf = ECS_STRBUF_INIT;
-    ecs_term_t *terms = filter->terms;
+    const ecs_term_t *terms = filter->terms;
     int32_t i, count = filter->term_count;
 
     for (i = 0; i < count; i ++) {
-        ecs_term_t *term = &terms[i];
+        const ecs_term_t *term = &terms[i];
 
         if (term_start_out && ctx) {
             if (ctx->term_index == i) {
@@ -11904,7 +11860,7 @@ bool flecs_filter_match_table(
     int32_t skip_term,
     ecs_flags32_t iter_flags)
 {
-    ecs_term_t *terms = filter->terms;
+    const ecs_term_t *terms = filter->terms;
     int32_t i, count = filter->term_count;
     int32_t match_count = 1;
     bool result = true;
@@ -11914,7 +11870,7 @@ bool flecs_filter_match_table(
     }
 
     for (i = 0; i < count; i ++) {
-        ecs_term_t *term = &terms[i];
+        const ecs_term_t *term = &terms[i];
         int16_t oper = term->oper;
         if (i == skip_term) {
             if (oper != EcsAndFrom && oper != EcsOrFrom && oper != EcsNotFrom) {
@@ -11922,7 +11878,7 @@ bool flecs_filter_match_table(
             }
         }
 
-        ecs_term_ref_t *src = &term->src;
+        const ecs_term_ref_t *src = &term->src;
         const ecs_table_t *match_table = table;
         int32_t t_i = term->field_index;
 
@@ -12040,7 +11996,7 @@ void term_iter_init_wildcard(
 static
 void term_iter_init(
     const ecs_world_t *world,
-    ecs_term_t *term,
+    const ecs_term_t *term,
     ecs_term_iter_t *iter,
     bool empty_tables)
 {    
@@ -12419,12 +12375,12 @@ int32_t ecs_filter_pivot_term(
     ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(filter != NULL, ECS_INVALID_PARAMETER, NULL);
 
-    ecs_term_t *terms = filter->terms;
+    const ecs_term_t *terms = filter->terms;
     int32_t i, term_count = filter->term_count;
     int32_t pivot_term = -1, min_count = -1, self_pivot_term = -1;
 
     for (i = 0; i < term_count; i ++) {
-        ecs_term_t *term = &terms[i];
+        const ecs_term_t *term = &terms[i];
         ecs_id_t id = term->id;
 
         if ((term->oper != EcsAnd) || (i && (term[-1].oper == EcsOr))) {
@@ -12507,7 +12463,7 @@ ecs_iter_t flecs_filter_iter_w_flags(
     if (ECS_BIT_IS_SET(flags, EcsIterIgnoreThis)) {
         term_iter_init_no_data(&iter->term_iter);
     } else if (ECS_BIT_IS_SET(filter->flags, EcsFilterMatchThis)) {
-        ecs_term_t *terms = filter->terms;
+        const ecs_term_t *terms = filter->terms;
         int32_t pivot_term = -1;
         ecs_check(terms != NULL, ECS_INVALID_PARAMETER, NULL);
 
@@ -13197,7 +13153,7 @@ bool ecs_field_is_readonly(
 {
     ecs_check(it->flags & EcsIterIsValid, ECS_INVALID_PARAMETER, NULL);
     ecs_assert(index >= 1, ECS_INVALID_PARAMETER, NULL);
-    ecs_term_t *term = &it->terms[index - 1];
+    const ecs_term_t *term = &it->terms[index - 1];
 
     if (term->inout == EcsIn) {
         return true;
@@ -13206,7 +13162,7 @@ bool ecs_field_is_readonly(
             return true;
         }
 
-        ecs_term_ref_t *src = &term->src;
+        const ecs_term_ref_t *src = &term->src;
         if (!(src->id & EcsSelf)) {
             return true;
         }
@@ -13221,7 +13177,7 @@ bool ecs_field_is_writeonly(
 {
     ecs_check(it->flags & EcsIterIsValid, ECS_INVALID_PARAMETER, NULL);
     ecs_assert(index >= 1, ECS_INVALID_PARAMETER, NULL);
-    ecs_term_t *term = &it->terms[index - 1];
+    const ecs_term_t *term = &it->terms[index - 1];
     return term->inout == EcsOut;
 error:
     return false;
@@ -13583,7 +13539,7 @@ void ecs_iter_set_var(
 {
     ecs_check(it != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(var_id >= 0, ECS_INVALID_PARAMETER, NULL);
-    ecs_check(var_id < FLECS_VARIABLE_COUNT_MAX, ECS_INVALID_PARAMETER, NULL);
+    ecs_check(var_id < FLECS_QUERY_VARIABLE_COUNT_MAX, ECS_INVALID_PARAMETER, NULL);
     ecs_check(var_id < it->variable_count, ECS_INVALID_PARAMETER, NULL);
     ecs_check(entity != 0, ECS_INVALID_PARAMETER, NULL);
     /* Can't set variable while iterating */
@@ -13630,7 +13586,7 @@ void ecs_iter_set_var_as_range(
 {
     ecs_check(it != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(var_id >= 0, ECS_INVALID_PARAMETER, NULL);
-    ecs_check(var_id < FLECS_VARIABLE_COUNT_MAX, ECS_INVALID_PARAMETER, NULL);
+    ecs_check(var_id < FLECS_QUERY_VARIABLE_COUNT_MAX, ECS_INVALID_PARAMETER, NULL);
     ecs_check(var_id < it->variable_count, ECS_INVALID_PARAMETER, NULL);
     ecs_check(range != 0, ECS_INVALID_PARAMETER, NULL);
     ecs_check(range->table != NULL, ECS_INVALID_PARAMETER, NULL);
@@ -14713,14 +14669,14 @@ void flecs_emit_forward_id(
     it->sources[0] = tgt;
     it->event_id = id;
     it->ptrs[0] = NULL;
-    it->sizes[0] = 0;
+    ECS_CONST_CAST(int32_t*, it->sizes)[0] = 0; /* safe, owned by observer */
 
     int32_t storage_i = ecs_table_type_to_column_index(tgt_table, column);
     if (storage_i != -1) {
         ecs_assert(idr->type_info != NULL, ECS_INTERNAL_ERROR, NULL);
         ecs_column_t *c = &tgt_table->data.columns[storage_i];
         it->ptrs[0] = ecs_vec_get(&c->data, c->ti->size, offset);
-        it->sizes[0] = c->ti->size;
+        ECS_CONST_CAST(int32_t*, it->sizes)[0] = c->ti->size; /* safe, see above */
     }
 
     ecs_table_record_t *tr = flecs_id_record_get_table(idr, table);
@@ -15404,7 +15360,7 @@ repeat_event:
         int32_t column = tr->index, storage_i;
         it.columns[0] = column + 1;
         it.ptrs[0] = NULL;
-        it.sizes[0] = 0;
+        ECS_CONST_CAST(int32_t*, it.sizes)[0] = 0; /* safe, owned by observer */
         it.event_id = id;
         it.ids[0] = id;
 
@@ -15416,7 +15372,8 @@ repeat_event:
                 ecs_column_t *c = &columns[storage_i];
                 ecs_size_t size = c->ti->size;
                 void *ptr = ecs_vec_get(&c->data, size, offset);
-                it.sizes[0] = size;
+                /* safe, owned by observer */
+                ECS_CONST_CAST(int32_t*, it.sizes)[0] = size;
 
                 if (override_ptr) {
                     if (event == EcsOnAdd) {
@@ -15804,8 +15761,7 @@ void flecs_unregister_observer(
     ecs_observer_t *observer)
 {
     ecs_assert(observer != NULL, ECS_INTERNAL_ERROR, NULL);
-    if (!observer->filter.terms) {
-        ecs_assert(observer->filter.term_count == 0, ECS_INTERNAL_ERROR, NULL);
+    if (observer->filter.term_count == 0) {
         return;
     }
 
@@ -16306,13 +16262,12 @@ int flecs_multi_observer_init(
     child_desc.ctx = observer;
     child_desc.ctx_free = NULL;
     child_desc.filter.expr = NULL;
-    child_desc.filter.terms_buffer = NULL;
-    child_desc.filter.terms_buffer_count = 0;
     child_desc.binding_ctx = NULL;
     child_desc.binding_ctx_free = NULL;
     child_desc.yield_existing = false;
     ecs_os_zeromem(&child_desc.entity);
     ecs_os_zeromem(&child_desc.filter.terms);
+    ecs_os_zeromem(&child_desc.filter);
     ecs_os_memcpy_n(child_desc.events, observer->events, 
         ecs_entity_t, observer->event_count);
 
@@ -17823,7 +17778,7 @@ void flecs_query_get_column_for_term(
 {
     const ecs_filter_t *filter = &query->filter;
     ecs_world_t *world = filter->world;
-    ecs_term_t *term = &filter->terms[t];
+    const ecs_term_t *term = &filter->terms[t];
     int32_t field = term->field_index;
     ecs_entity_t src = match->sources[field];
     ecs_table_t *table = NULL;
@@ -19176,7 +19131,7 @@ void flecs_query_order_by(
 
     if (order_by_component) {
         for (i = 0; i < count; i ++) {
-            ecs_term_t *term = &filter->terms[i];
+            const ecs_term_t *term = &filter->terms[i];
             
             /* Only And terms are supported */
             if (term->id == order_by_component && term->oper == EcsAnd) {
@@ -19454,8 +19409,8 @@ ecs_query_t* ecs_query_init(
 
         /* ecs_filter_init could have moved away resources from the terms array
          * in the descriptor, so use the terms array from the filter. */
-        observer_desc.filter.terms_buffer = result->filter.terms;
-        observer_desc.filter.terms_buffer_count = result->filter.term_count;
+        ecs_os_memcpy_n(observer_desc.filter.terms, result->filter.terms, 
+            ecs_term_t, FLECS_TERM_COUNT_MAX);
         observer_desc.filter.expr = NULL; /* Already parsed */
 
         entity = ecs_observer_init(world, &observer_desc);
@@ -19945,7 +19900,7 @@ repeat:
         filter->field_count);
 
     for (t = 0; t < term_count; t ++) {
-        ecs_term_t *term = &filter->terms[t];
+        const ecs_term_t *term = &filter->terms[t];
         int32_t field = term->field_index;
         if (!ecs_term_match_this(term)) {
             continue;
@@ -22074,7 +22029,7 @@ ECS_DECLARE(EcsUri);
 
 /* -- Private functions -- */
 
-const ecs_stage_t* flecs_stage_from_readonly_world(
+ecs_stage_t* flecs_stage_from_readonly_world(
     const ecs_world_t *world)
 {
     ecs_assert(ecs_poly_is(world, ecs_world_t) ||
@@ -22083,8 +22038,7 @@ const ecs_stage_t* flecs_stage_from_readonly_world(
                NULL);
 
     if (ecs_poly_is(world, ecs_world_t)) {
-        return &world->stages[0];
-
+        return ECS_CONST_CAST(ecs_stage_t*, &world->stages[0]);
     } else if (ecs_poly_is(world, ecs_stage_t)) {
         return ECS_CONST_CAST(ecs_stage_t*, world);
     }
@@ -30700,10 +30654,10 @@ const char* ecs_parse_identifier(
 
 static
 int flecs_parse_identifier(
-    const char *token,
+    char **token,
     ecs_term_ref_t *out)
 {
-    const char *tptr = token;
+    char *tptr = *token;
     if (tptr[0] == TOK_VARIABLE && tptr[1]) {
         out->id |= EcsIsVariable;
         tptr ++;
@@ -30717,18 +30671,20 @@ int flecs_parse_identifier(
         }
     }
 
-    char *name = ecs_os_strdup(tptr);
+    char *name = tptr;
     out->name = name;
 
     ecs_size_t len = ecs_os_strlen(name);
     if (out->id & EcsIsName) {
         if (name[len - 1] != TOK_EXPR_STRING) {
-            ecs_parser_error(NULL, token, 0, "missing '\"' at end of string");
+            ecs_parser_error(NULL, *token, 0, "missing '\"' at end of string");
             return -1;
         } else {
             name[len - 1] = '\0';
         }
     }
+
+    (*token) += (name - *token) + len + 1;
 
     return 0;
 }
@@ -30931,7 +30887,7 @@ const char* flecs_parse_arguments(
     const char *expr,
     int64_t column,
     const char *ptr,
-    char *token,
+    char **token,
     ecs_term_t *term,
     ecs_term_ref_t *extra_args)
 {
@@ -30940,7 +30896,7 @@ const char* flecs_parse_arguments(
     int32_t arg = 0;
 
     if (extra_args) {
-        ecs_os_memset_n(extra_args, 0, ecs_term_ref_t, ECS_PARSER_MAX_ARGS);
+        ecs_os_memset_n(extra_args, 0, ecs_term_ref_t, FLECS_TERM_ARG_COUNT_MAX);
     }
 
     if (!term) {
@@ -30949,13 +30905,13 @@ const char* flecs_parse_arguments(
 
     do {
         if (flecs_valid_token_start_char(ptr[0])) {
-            if ((arg == ECS_PARSER_MAX_ARGS) || (!extra_args && arg == 2)) {
+            if ((arg == FLECS_TERM_ARG_COUNT_MAX) || (!extra_args && arg == 2)) {
                 ecs_parser_error(name, expr, (ptr - expr), 
                     "too many arguments in term");
                 return NULL;
             }
 
-            ptr = ecs_parse_identifier(name, expr, ptr, token);
+            ptr = ecs_parse_identifier(name, expr, ptr, *token);
             if (!ptr) {
                 return NULL;
             }
@@ -30975,7 +30931,7 @@ const char* flecs_parse_arguments(
             if (ptr[0] == TOK_COLON) {
                 if (flecs_parse_identifier(token, term_ref)) {
                     ecs_parser_error(name, expr, (ptr - expr), 
-                        "invalid identifier '%s'", token);
+                        "invalid identifier '%s'", *token);
                     return NULL;
                 }
 
@@ -30987,13 +30943,13 @@ const char* flecs_parse_arguments(
                 }
 
             /* Check for term flags */
-            } else if (!ecs_os_strcmp(token, TOK_CASCADE) ||
-                !ecs_os_strcmp(token, TOK_DESC) ||
-                !ecs_os_strcmp(token, TOK_SELF) || 
-                !ecs_os_strcmp(token, TOK_UP))
+            } else if (!ecs_os_strcmp(*token, TOK_CASCADE) ||
+                !ecs_os_strcmp(*token, TOK_DESC) ||
+                !ecs_os_strcmp(*token, TOK_SELF) || 
+                !ecs_os_strcmp(*token, TOK_UP))
             {
                 ptr = flecs_parse_term_flags(world, name, expr, (ptr - expr), ptr, 
-                    token, term, term_ref, TOK_PAREN_CLOSE);
+                    *token, term, term_ref, TOK_PAREN_CLOSE);
                 if (!ptr) {
                     return NULL;
                 }
@@ -31001,7 +30957,7 @@ const char* flecs_parse_arguments(
             /* Regular identifier */
             } else if (flecs_parse_identifier(token, term_ref)) {
                 ecs_parser_error(name, expr, (ptr - expr), 
-                    "invalid identifier '%s'", token);
+                    "invalid identifier '%s'", *token);
                 return NULL;
             }
 
@@ -31050,20 +31006,21 @@ void flecs_parser_unexpected_char(
 static
 const char* flecs_parse_term(
     const ecs_world_t *world,
+    ecs_stage_t *stage,
     const char *name,
     const char *expr,
     ecs_term_t *term_out,
     ecs_term_ref_t *extra_args)
 {
     const char *ptr = expr;
-    char token[ECS_MAX_TOKEN_SIZE] = {0};
-    ecs_term_t term = { .flags = EcsTermMove /* parser never owns resources */ };
+    ecs_term_t term = {0};
 
     ptr = ecs_parse_ws(ptr);
 
     /* Inout specifiers always come first */
     if (ptr[0] == TOK_BRACKET_OPEN) {
-        ptr = flecs_parse_annotation(name, expr, (ptr - expr), ptr + 1, &term.inout);
+        ptr = flecs_parse_annotation(
+            name, expr, (ptr - expr), ptr + 1, &term.inout);
         if (!ptr) {
             goto error;
         }
@@ -31078,7 +31035,7 @@ const char* flecs_parse_term(
     /* If next token is the start of an identifier, it could be either a type
      * role, source or component identifier */
     if (flecs_valid_identifier_start_char(ptr[0])) {
-        ptr = ecs_parse_identifier(name, expr, ptr, token);
+        ptr = ecs_parse_identifier(name, expr, ptr, stage->parser_token);
         if (!ptr) {
             goto error;
         }
@@ -31123,7 +31080,7 @@ const char* flecs_parse_term(
     }
 
 flecs_parse_role:
-    term.id = flecs_parse_role(name, expr, (ptr - expr), token);
+    term.id = flecs_parse_role(name, expr, (ptr - expr), stage->parser_token);
     if (!term.id) {
         goto error;
     }
@@ -31132,7 +31089,7 @@ flecs_parse_role:
 
     /* If next token is the source token, this is an empty source */
     if (flecs_valid_token_start_char(ptr[0])) {
-        ptr = ecs_parse_identifier(name, expr, ptr, token);
+        ptr = ecs_parse_identifier(name, expr, ptr, stage->parser_token);
         if (!ptr) {
             goto error;
         }
@@ -31149,9 +31106,9 @@ flecs_parse_role:
     }
 
 parse_predicate:
-    if (flecs_parse_identifier(token, &term.first)) {
+    if (flecs_parse_identifier(&stage->parser_token, &term.first)) {
         ecs_parser_error(name, expr, (ptr - expr), 
-            "invalid identifier '%s'", token); 
+            "invalid identifier '%s'", stage->parser_token); 
         goto error;
     }
 
@@ -31198,7 +31155,8 @@ parse_predicate:
             ptr = ecs_parse_ws(ptr);
         } else {
             ptr = flecs_parse_arguments(
-                world, name, expr, (ptr - expr), ptr, token, &term, extra_args);
+                world, name, expr, (ptr - expr), ptr, &stage->parser_token, 
+                &term, extra_args);
         }
 
         goto parse_done;
@@ -31232,20 +31190,20 @@ parse_match:
 
 parse_right_operand:
     if (flecs_valid_token_start_char(ptr[0])) {
-        ptr = ecs_parse_identifier(name, expr, ptr, token);
+        ptr = ecs_parse_identifier(name, expr, ptr, stage->parser_token);
         if (!ptr) {
             goto error;
         }
 
         if (term.first.id == EcsPredMatch) {
-            if (token[0] == '"' && token[1] == '!') {
+            if (stage->parser_token[0] == '"' && stage->parser_token[1] == '!') {
                 term.oper = EcsNot;
             }
         }
 
-        if (flecs_parse_identifier(token, &term.second)) {
+        if (flecs_parse_identifier(&stage->parser_token, &term.second)) {
             ecs_parser_error(name, expr, (ptr - expr), 
-                "invalid identifier '%s'", token); 
+                "invalid identifier '%s'", stage->parser_token); 
             goto error;
         }
 
@@ -31259,7 +31217,7 @@ parse_right_operand:
     }
     goto parse_done;
 parse_pair:
-    ptr = ecs_parse_identifier(name, expr, ptr + 1, token);
+    ptr = ecs_parse_identifier(name, expr, ptr + 1, stage->parser_token);
     if (!ptr) {
         goto error;
     }
@@ -31294,15 +31252,15 @@ parse_pair:
     }
 
 parse_pair_predicate:
-    if (flecs_parse_identifier(token, &term.first)) {
+    if (flecs_parse_identifier(&stage->parser_token, &term.first)) {
         ecs_parser_error(name, expr, (ptr - expr), 
-            "invalid identifier '%s'", token); 
+            "invalid identifier '%s'", stage->parser_token); 
         goto error;
     }
 
     ptr = ecs_parse_ws(ptr);
     if (flecs_valid_token_start_char(ptr[0])) {
-        ptr = ecs_parse_identifier(name, expr, ptr, token);
+        ptr = ecs_parse_identifier(name, expr, ptr, stage->parser_token);
         if (!ptr) {
             goto error;
         }
@@ -31333,9 +31291,9 @@ parse_pair_predicate:
     }
 
 parse_pair_object:
-    if (flecs_parse_identifier(token, &term.second)) {
+    if (flecs_parse_identifier(&stage->parser_token, &term.second)) {
         ecs_parser_error(name, expr, (ptr - expr), 
-            "invalid identifier '%s'", token); 
+            "invalid identifier '%s'", stage->parser_token); 
         goto error;
     }
 
@@ -31346,7 +31304,7 @@ parse_pair_object:
     if (ptr[0] == TOK_AND) {
         ptr = ecs_parse_ws(ptr + 1);
         ptr = flecs_parse_arguments(
-            world, name, expr, (ptr - expr), ptr, token, NULL, extra_args);
+            world, name, expr, (ptr - expr), ptr, &stage->parser_token, NULL, extra_args);
         if (!ptr) {
             goto error;
         }
@@ -31362,7 +31320,6 @@ parse_done:
     return ptr;
 
 error:
-    ecs_term_fini(&term);
     *term_out = (ecs_term_t){0};
     return NULL;
 }
@@ -31390,6 +31347,7 @@ bool flecs_is_valid_end_of_term(
 
 char* ecs_parse_term(
     const ecs_world_t *world,
+    ecs_stage_t *stage,
     const char *name,
     const char *expr,
     const char *ptr,
@@ -31417,6 +31375,9 @@ char* ecs_parse_term(
                     "invalid preceding token");
             }
         }
+    } else {
+        /* If this is first term in expression, reset token buffer */
+        stage->parser_token = stage->parser_tokens;
     }
 
     ptr = ecs_parse_ws_eol(ptr);
@@ -31430,17 +31391,14 @@ char* ecs_parse_term(
     }
 
     /* Parse next element */
-    ptr = flecs_parse_term(world, name, ptr, term, extra_args);
+    ptr = flecs_parse_term(world, stage, name, ptr, term, extra_args);
     if (!ptr) {
         goto error;
     }
 
     /* Check for $() notation */
     if (term->first.name && !ecs_os_strcmp(term->first.name, "$")) {
-        if (term->src.name) {
-            /* Safe, parser owns name */
-            ecs_os_free(ECS_CONST_CAST(char*, term->first.name));
-            
+        if (term->src.name) {            
             term->first = term->src;
 
             if (term->second.name) {
@@ -31458,7 +31416,7 @@ char* ecs_parse_term(
                 var_name = term->first.name;
             }
 
-            term->second.name = ecs_os_strdup(var_name);
+            term->second.name = var_name;
             term->second.id |= EcsIsVariable;
         }
     }
@@ -31502,9 +31460,6 @@ char* ecs_parse_term(
         }
 
         src->id = EcsIsEntity;
-
-        /* Safe, parser owns string */
-        ecs_os_free(ECS_CONST_CAST(char*, term->first.name));
         term->first.name = NULL;
     }
 
@@ -31548,9 +31503,6 @@ char* ecs_parse_term(
 
     return ECS_CONST_CAST(char*, ptr);
 error:
-    if (term) {
-        ecs_term_fini(term);
-    }
     return NULL;
 }
 
@@ -32265,7 +32217,7 @@ int plecs_create_term(
         subj_name = plecs_set_mask_to_name(term->src.id);
     }
 
-    if (!ecs_term_id_is_set(&term->first)) {
+    if (!ecs_term_ref_is_set(&term->first)) {
         ecs_parser_error(name, expr, column, "missing term in expression");
         return -1;
     }
@@ -32285,7 +32237,7 @@ int plecs_create_term(
 
     subj = plecs_ensure_entity(world, state, subj_name, pred, true);
 
-    if (ecs_term_id_is_set(&term->second)) {
+    if (ecs_term_ref_is_set(&term->second)) {
         obj = plecs_ensure_term_id(world, state, &term->second, expr, column, 
             pred, !state->assign_stmt && !state->with_stmt);
         if (!obj) {
@@ -33263,7 +33215,8 @@ const char *plecs_parse_plecs_term(
         decl_id = state->last_predicate;
     }
 
-    ptr = ecs_parse_term(world, name, expr, ptr, &term, NULL);
+    ecs_stage_t *stage = flecs_stage_from_readonly_world(world);
+    ptr = ecs_parse_term(world, stage, name, expr, ptr, &term, NULL);
     if (!ptr) {
         return NULL;
     }
@@ -33278,7 +33231,6 @@ const char *plecs_parse_plecs_term(
     }
 
     if (plecs_create_term(world, &term, name, expr, (ptr - expr), state)) {
-        ecs_term_fini(&term);
         return NULL; /* Failed to create term */
     }
 
@@ -33287,8 +33239,6 @@ const char *plecs_parse_plecs_term(
     }
 
     state->decl_type = false;
-
-    ecs_term_fini(&term);
 
     return ptr;
 }
@@ -33559,7 +33509,6 @@ int flecs_plecs_parse(
     ecs_entity_t instance)
 {
     const char *ptr = expr;
-    ecs_term_t term = {0};
     plecs_state_t state = {0};
 
     if (!expr) {
@@ -33647,7 +33596,6 @@ error:
     ecs_vars_fini(&state.vars);
     ecs_set_scope(world, state.scope[0]);
     ecs_set_with(world, prev_with);
-    ecs_term_fini(&term);
     return -1;
 }
 
@@ -55596,15 +55544,13 @@ int ecs_meta_set_string(
         ecs_id_t id = 0;
 #ifdef FLECS_PARSER
         ecs_term_t term = {0};
-        if (ecs_parse_term(cursor->world, NULL, value, value, &term, NULL)) {
+        ecs_stage_t *stage = flecs_stage_from_readonly_world(cursor->world);
+        if (ecs_parse_term(cursor->world, stage, NULL, value, value, &term, NULL)) {
             if (ecs_term_finalize(cursor->world, &term)) {
-                ecs_term_fini(&term);
                 goto error;
             }
             id = term.id;
-            ecs_term_fini(&term);
         } else {
-            ecs_term_fini(&term);
             goto error;
         }
 #endif
@@ -60072,8 +60018,8 @@ typedef struct {
 } ecs_trav_up_t;
 
 typedef enum {
-    EcsTravUp,
-    EcsTravDown
+    EcsTravUp = 1,
+    EcsTravDown = 2
 } ecs_trav_direction_t;
 
 typedef struct {
@@ -61809,7 +61755,7 @@ void flecs_rule_compile_term_ref(
 {
     (void)world;
 
-    if (!ecs_term_id_is_set(term_ref)) {
+    if (!ecs_term_ref_is_set(term_ref)) {
         return;
     }
 
@@ -62209,7 +62155,7 @@ int flecs_rule_compile_term(
 
     /* If rule is transitive, use Trav(ersal) instruction */
     if (term->flags & EcsTermTransitive) {
-        ecs_assert(ecs_term_id_is_set(&term->second), ECS_INTERNAL_ERROR, NULL);
+        ecs_assert(ecs_term_ref_is_set(&term->second), ECS_INTERNAL_ERROR, NULL);
         op.kind = EcsRuleTrav;
     } else {
         /* Ignore cascade flag */
@@ -64472,7 +64418,7 @@ const char* flecs_rule_name_arg(
     ecs_rule_run_ctx_t *ctx)
 {
     int8_t term_index = op->term_index;
-    ecs_term_t *term = &ctx->rule->filter.terms[term_index];
+    const ecs_term_t *term = &ctx->rule->filter.terms[term_index];
     return term->second.name;
 }
 
@@ -64881,8 +64827,8 @@ bool flecs_rule_setfixed(
 
     int32_t i;
     for (i = 0; i < filter->term_count; i ++) {
-        ecs_term_t *term = &filter->terms[i];
-        ecs_term_ref_t *src = &term->src;
+        const ecs_term_t *term = &filter->terms[i];
+        const ecs_term_ref_t *src = &term->src;
         if (src->id & EcsIsEntity) {
             it->sources[term->field_index] = ECS_TERM_REF_ID(src);
         }
@@ -64908,7 +64854,7 @@ bool flecs_rule_setids(
 
     int32_t i;
     for (i = 0; i < filter->term_count; i ++) {
-        ecs_term_t *term = &filter->terms[i];
+        const ecs_term_t *term = &filter->terms[i];
         it->ids[term->field_index] = term->id;
     }
 
@@ -66053,7 +65999,7 @@ ecs_trav_down_t* flecs_rule_get_down_cache(
     bool self)
 {
     ecs_world_t *world = ctx->it->real_world;
-    ecs_assert(!(cache->dir & EcsUp), ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(cache->dir != EcsTravUp, ECS_INTERNAL_ERROR, NULL);
     cache->dir = EcsTravDown;
 
     ecs_allocator_t *a = flecs_rule_get_allocator(ctx->it);
@@ -66309,13 +66255,14 @@ bool flecs_rule_trivial_init(
     ecs_world_t *world,
     const ecs_filter_t *filter)
 {
+    const ecs_term_t *terms = filter->terms;
     int32_t t, count = filter->term_count;
-    ecs_term_t *terms = filter->terms;
 
     for (t = 0; t < count; t ++) {
-        ecs_term_t *term = &terms[t];
+        const ecs_term_t *term = &terms[t];
         if (!term->idr) {
-            term->idr = flecs_id_record_get(world, term->id);
+            ECS_CONST_CAST(ecs_term_t*, term)->idr = 
+                flecs_id_record_get(world, term->id);
             if (!term->idr) {
                 /* Id doesn't exist, so query can't match */
                 return false;
@@ -66334,9 +66281,9 @@ bool flecs_rule_trivial_test(
 {
     if (first) {
         const ecs_filter_t *filter = &rule->filter;
-        int32_t t;
-        ecs_term_t *terms = filter->terms;
+        const ecs_term_t *terms = filter->terms;
         ecs_iter_t *it = ctx->it;
+        int32_t t;
 
         if (!flecs_rule_trivial_init(ctx->world, filter)) {
             return false;
@@ -66346,7 +66293,7 @@ bool flecs_rule_trivial_test(
         ecs_assert(table != NULL, ECS_INVALID_OPERATION, NULL);
 
         for (t = 0; t < term_count; t ++) {
-            ecs_term_t *term = &terms[t];
+            const ecs_term_t *term = &terms[t];
             const ecs_table_record_t *tr = flecs_id_record_get_table(
                 term->idr, table);
             if (!tr) {
@@ -66378,7 +66325,7 @@ bool flecs_rule_trivial_search_init(
     bool first)
 {
     if (first) {
-        ecs_term_t *terms = filter->terms;
+        const ecs_term_t *terms = filter->terms;
         if (!flecs_rule_trivial_init(ctx->world, filter)) {
             return false;
         }
@@ -66405,9 +66352,9 @@ bool flecs_rule_trivial_search(
     int32_t term_count)
 {
     const ecs_filter_t *filter = &rule->filter;
-    int32_t t;
-    ecs_term_t *terms = filter->terms;
+    const ecs_term_t *terms = filter->terms;
     ecs_iter_t *it = ctx->it;
+    int32_t t;
 
     if (!flecs_rule_trivial_search_init(ctx, op_ctx, filter, first)) {
         return false;
@@ -66426,7 +66373,7 @@ bool flecs_rule_trivial_search(
         }
 
         for (t = 1; t < term_count; t ++) {
-            ecs_term_t *term = &terms[t];
+            const ecs_term_t *term = &terms[t];
             const ecs_table_record_t *tr_with = flecs_id_record_get_table(
                 term->idr, table);
             if (!tr_with) {
@@ -66505,9 +66452,9 @@ bool flecs_rule_trivial_search_nodata(
     int32_t term_count)
 {
     const ecs_filter_t *filter = &rule->filter;
-    int32_t t;
-    ecs_term_t *terms = filter->terms;
+    const ecs_term_t *terms = filter->terms;
     ecs_iter_t *it = ctx->it;
+    int32_t t;
 
     if (!flecs_rule_trivial_search_init(ctx, op_ctx, filter, first)) {
         return false;
@@ -66526,7 +66473,7 @@ bool flecs_rule_trivial_search_nodata(
         }
 
         for (t = 1; t < term_count; t ++) {
-            ecs_term_t *term = &terms[t];
+            const ecs_term_t *term = &terms[t];
             const ecs_table_record_t *tr_with = flecs_id_record_get_table(
                 term->idr, table);
             if (!tr_with) {

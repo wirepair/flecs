@@ -139,8 +139,8 @@ typedef struct {
 } ecs_trav_up_t;
 
 typedef enum {
-    EcsTravUp,
-    EcsTravDown
+    EcsTravUp = 1,
+    EcsTravDown = 2
 } ecs_trav_direction_t;
 
 typedef struct {

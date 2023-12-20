@@ -124,7 +124,7 @@ typedef struct flecs_flat_monitor_t {
 /* Flat table term */
 typedef struct flecs_flat_table_term_t {
     int32_t field_index; /* Iterator field index */
-    ecs_term_t *term;
+    const ecs_term_t *term;
     ecs_vec_t monitor;
 } flecs_flat_table_term_t;
 
@@ -419,6 +419,11 @@ struct ecs_stage_t {
     /* Caches for rule creation */
     ecs_vec_t variables;
     ecs_vec_t operations;
+
+    /* Temporary token storage for DSL parser. This allows for parsing and 
+     * interpreting a term without having to do allocations. */
+    char parser_tokens[1024];
+    char *parser_token; /* Pointer to next token */
 };
 
 /* Component monitor */

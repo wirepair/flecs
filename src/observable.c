@@ -560,14 +560,14 @@ void flecs_emit_forward_id(
     it->sources[0] = tgt;
     it->event_id = id;
     it->ptrs[0] = NULL;
-    it->sizes[0] = 0;
+    ECS_CONST_CAST(int32_t*, it->sizes)[0] = 0; /* safe, owned by observer */
 
     int32_t storage_i = ecs_table_type_to_column_index(tgt_table, column);
     if (storage_i != -1) {
         ecs_assert(idr->type_info != NULL, ECS_INTERNAL_ERROR, NULL);
         ecs_column_t *c = &tgt_table->data.columns[storage_i];
         it->ptrs[0] = ecs_vec_get(&c->data, c->ti->size, offset);
-        it->sizes[0] = c->ti->size;
+        ECS_CONST_CAST(int32_t*, it->sizes)[0] = c->ti->size; /* safe, see above */
     }
 
     ecs_table_record_t *tr = flecs_id_record_get_table(idr, table);
@@ -1251,7 +1251,7 @@ repeat_event:
         int32_t column = tr->index, storage_i;
         it.columns[0] = column + 1;
         it.ptrs[0] = NULL;
-        it.sizes[0] = 0;
+        ECS_CONST_CAST(int32_t*, it.sizes)[0] = 0; /* safe, owned by observer */
         it.event_id = id;
         it.ids[0] = id;
 
@@ -1263,7 +1263,8 @@ repeat_event:
                 ecs_column_t *c = &columns[storage_i];
                 ecs_size_t size = c->ti->size;
                 void *ptr = ecs_vec_get(&c->data, size, offset);
-                it.sizes[0] = size;
+                /* safe, owned by observer */
+                ECS_CONST_CAST(int32_t*, it.sizes)[0] = size;
 
                 if (override_ptr) {
                     if (event == EcsOnAdd) {

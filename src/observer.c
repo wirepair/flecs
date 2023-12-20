@@ -210,8 +210,7 @@ void flecs_unregister_observer(
     ecs_observer_t *observer)
 {
     ecs_assert(observer != NULL, ECS_INTERNAL_ERROR, NULL);
-    if (!observer->filter.terms) {
-        ecs_assert(observer->filter.term_count == 0, ECS_INTERNAL_ERROR, NULL);
+    if (observer->filter.term_count == 0) {
         return;
     }
 
@@ -712,13 +711,12 @@ int flecs_multi_observer_init(
     child_desc.ctx = observer;
     child_desc.ctx_free = NULL;
     child_desc.filter.expr = NULL;
-    child_desc.filter.terms_buffer = NULL;
-    child_desc.filter.terms_buffer_count = 0;
     child_desc.binding_ctx = NULL;
     child_desc.binding_ctx_free = NULL;
     child_desc.yield_existing = false;
     ecs_os_zeromem(&child_desc.entity);
     ecs_os_zeromem(&child_desc.filter.terms);
+    ecs_os_zeromem(&child_desc.filter);
     ecs_os_memcpy_n(child_desc.events, observer->events, 
         ecs_entity_t, observer->event_count);
 

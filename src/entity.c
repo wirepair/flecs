@@ -1376,7 +1376,9 @@ ecs_table_t *flecs_traverse_from_expr(
     const char *ptr = expr;
     if (ptr) {
         ecs_term_t term = {0};
-        while (ptr[0] && (ptr = ecs_parse_term(world, name, expr, ptr, &term, NULL))){
+        while (ptr[0] && (ptr = ecs_parse_term(
+            world, &world->stages[0], name, expr, ptr, &term, NULL)))
+        {
             if (!ecs_term_is_initialized(&term)) {
                 break;
             }
@@ -1392,7 +1394,6 @@ ecs_table_t *flecs_traverse_from_expr(
             }
 
             if (ecs_term_finalize(world, &term)) {
-                ecs_term_fini(&term);
                 if (error) {
                     *error = true;
                 }
@@ -1400,7 +1401,6 @@ ecs_table_t *flecs_traverse_from_expr(
             }
 
             if (!ecs_id_is_valid(world, term.id)) {
-                ecs_term_fini(&term);
                 ecs_parser_error(name, expr, (ptr - expr), 
                     "invalid term for add expression");
                 return NULL;
@@ -1410,8 +1410,6 @@ ecs_table_t *flecs_traverse_from_expr(
                 /* Regular AND expression */
                 table = flecs_find_table_add(world, table, term.id, diff);
             }
-
-            ecs_term_fini(&term);
         }
 
         if (!ptr) {
@@ -1430,6 +1428,7 @@ ecs_table_t *flecs_traverse_from_expr(
 static
 void flecs_defer_from_expr(
     ecs_world_t *world,
+    ecs_stage_t *stage,
     ecs_entity_t entity,
     const char *name,
     const char *expr,
@@ -1439,7 +1438,9 @@ void flecs_defer_from_expr(
     const char *ptr = expr;
     if (ptr) {
         ecs_term_t term = {0};
-        while (ptr[0] && (ptr = ecs_parse_term(world, name, expr, ptr, &term, NULL))) {
+        while (ptr[0] && (ptr = ecs_parse_term(
+            world, stage, name, expr, ptr, &term, NULL))) 
+        {
             if (!ecs_term_is_initialized(&term)) {
                 break;
             }
@@ -1449,7 +1450,6 @@ void flecs_defer_from_expr(
             }
 
             if (!ecs_id_is_valid(world, term.id)) {
-                ecs_term_fini(&term);
                 ecs_parser_error(name, expr, (ptr - expr), 
                     "invalid term for add expression");
                 return;
@@ -1463,8 +1463,6 @@ void flecs_defer_from_expr(
                     ecs_remove_id(world, entity, term.id);
                 }
             }
-
-            ecs_term_fini(&term);
         }
     }
 }
@@ -1629,7 +1627,8 @@ void flecs_deferred_add_remove(
     /* Add components from the 'add_expr' expression */
     if (desc->add_expr) {
 #ifdef FLECS_PARSER
-        flecs_defer_from_expr(world, entity, name, desc->add_expr, true, true);
+        flecs_defer_from_expr(world, (ecs_stage_t*)world , entity, name,
+            desc->add_expr, true, true);
 #else
         ecs_abort(ECS_UNSUPPORTED, "parser addon is not available");
 #endif

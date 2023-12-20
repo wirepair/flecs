@@ -312,7 +312,7 @@ ECS_DECLARE(EcsUri);
 
 /* -- Private functions -- */
 
-const ecs_stage_t* flecs_stage_from_readonly_world(
+ecs_stage_t* flecs_stage_from_readonly_world(
     const ecs_world_t *world)
 {
     ecs_assert(ecs_poly_is(world, ecs_world_t) ||
@@ -321,8 +321,7 @@ const ecs_stage_t* flecs_stage_from_readonly_world(
                NULL);
 
     if (ecs_poly_is(world, ecs_world_t)) {
-        return &world->stages[0];
-
+        return ECS_CONST_CAST(ecs_stage_t*, &world->stages[0]);
     } else if (ecs_poly_is(world, ecs_stage_t)) {
         return ECS_CONST_CAST(ecs_stage_t*, world);
     }

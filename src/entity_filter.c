@@ -392,7 +392,7 @@ void flecs_entity_filter_init(
     ecs_vec_reset_t(a, sw_terms, flecs_switch_term_t);
     ecs_vec_reset_t(a, bs_terms, flecs_bitset_term_t);
     ecs_vec_reset_t(a, ft_terms, flecs_flat_table_term_t);
-    ecs_term_t *terms = filter->terms;
+    const ecs_term_t *terms = filter->terms;
     int32_t i, term_count = filter->term_count;
     bool has_filter = false;
     ef.flat_tree_column = -1;

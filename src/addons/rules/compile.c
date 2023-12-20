@@ -1023,7 +1023,7 @@ void flecs_rule_compile_term_ref(
 {
     (void)world;
 
-    if (!ecs_term_id_is_set(term_ref)) {
+    if (!ecs_term_ref_is_set(term_ref)) {
         return;
     }
 
@@ -1423,7 +1423,7 @@ int flecs_rule_compile_term(
 
     /* If rule is transitive, use Trav(ersal) instruction */
     if (term->flags & EcsTermTransitive) {
-        ecs_assert(ecs_term_id_is_set(&term->second), ECS_INTERNAL_ERROR, NULL);
+        ecs_assert(ecs_term_ref_is_set(&term->second), ECS_INTERNAL_ERROR, NULL);
         op.kind = EcsRuleTrav;
     } else {
         /* Ignore cascade flag */

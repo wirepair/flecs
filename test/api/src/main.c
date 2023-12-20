@@ -1222,9 +1222,7 @@ void Filter_filter_iter_2_tags_1_optional(void);
 void Filter_filter_iter_2_components_1_optional(void);
 void Filter_filter_iter_in_stage(void);
 void Filter_filter_iter_10_tags(void);
-void Filter_filter_iter_20_tags(void);
 void Filter_filter_iter_10_components(void);
-void Filter_filter_iter_20_components(void);
 void Filter_filter_iter_superset(void);
 void Filter_filter_iter_superset_childof(void);
 void Filter_filter_iter_type_set(void);
@@ -1312,9 +1310,6 @@ void Filter_filter_no_this_component_2_ents_1_not(void);
 void Filter_filter_no_this_component_1_not(void);
 void Filter_filter_iter_entities_optional_flag(void);
 void Filter_filter_iter_frame_offset(void);
-void Filter_filter_1_term_no_alloc(void);
-void Filter_filter_cache_size_terms_no_alloc(void);
-void Filter_filter_lt_cache_size_terms_no_alloc(void);
 void Filter_move_self(void);
 void Filter_match_empty_tables(void);
 void Filter_match_empty_tables_w_no_empty_tables(void);
@@ -1529,9 +1524,7 @@ void Query_iter_valid(void);
 void Query_query_optional_tag(void);
 void Query_query_optional_shared_tag(void);
 void Query_query_iter_10_tags(void);
-void Query_query_iter_20_tags(void);
 void Query_query_iter_10_components(void);
-void Query_query_iter_20_components(void);
 void Query_iter_type_set(void);
 void Query_filter_term(void);
 void Query_2_terms_1_filter(void);
@@ -7343,16 +7336,8 @@ bake_test_case Filter_testcases[] = {
         Filter_filter_iter_10_tags
     },
     {
-        "filter_iter_20_tags",
-        Filter_filter_iter_20_tags
-    },
-    {
         "filter_iter_10_components",
         Filter_filter_iter_10_components
-    },
-    {
-        "filter_iter_20_components",
-        Filter_filter_iter_20_components
     },
     {
         "filter_iter_superset",
@@ -7701,18 +7686,6 @@ bake_test_case Filter_testcases[] = {
     {
         "filter_iter_frame_offset",
         Filter_filter_iter_frame_offset
-    },
-    {
-        "filter_1_term_no_alloc",
-        Filter_filter_1_term_no_alloc
-    },
-    {
-        "filter_cache_size_terms_no_alloc",
-        Filter_filter_cache_size_terms_no_alloc
-    },
-    {
-        "filter_lt_cache_size_terms_no_alloc",
-        Filter_filter_lt_cache_size_terms_no_alloc
     },
     {
         "move_self",
@@ -8561,16 +8534,8 @@ bake_test_case Query_testcases[] = {
         Query_query_iter_10_tags
     },
     {
-        "query_iter_20_tags",
-        Query_query_iter_20_tags
-    },
-    {
         "query_iter_10_components",
         Query_query_iter_10_components
-    },
-    {
-        "query_iter_20_components",
-        Query_query_iter_20_components
     },
     {
         "iter_type_set",
@@ -13107,7 +13072,7 @@ static bake_test_suite suites[] = {
         "Filter",
         NULL,
         NULL,
-        288,
+        283,
         Filter_testcases
     },
     {
@@ -13121,7 +13086,7 @@ static bake_test_suite suites[] = {
         "Query",
         NULL,
         NULL,
-        243,
+        241,
         Query_testcases
     },
     {

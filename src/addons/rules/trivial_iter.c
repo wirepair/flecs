@@ -12,13 +12,14 @@ bool flecs_rule_trivial_init(
     ecs_world_t *world,
     const ecs_filter_t *filter)
 {
+    const ecs_term_t *terms = filter->terms;
     int32_t t, count = filter->term_count;
-    ecs_term_t *terms = filter->terms;
 
     for (t = 0; t < count; t ++) {
-        ecs_term_t *term = &terms[t];
+        const ecs_term_t *term = &terms[t];
         if (!term->idr) {
-            term->idr = flecs_id_record_get(world, term->id);
+            ECS_CONST_CAST(ecs_term_t*, term)->idr = 
+                flecs_id_record_get(world, term->id);
             if (!term->idr) {
                 /* Id doesn't exist, so query can't match */
                 return false;
@@ -37,9 +38,9 @@ bool flecs_rule_trivial_test(
 {
     if (first) {
         const ecs_filter_t *filter = &rule->filter;
-        int32_t t;
-        ecs_term_t *terms = filter->terms;
+        const ecs_term_t *terms = filter->terms;
         ecs_iter_t *it = ctx->it;
+        int32_t t;
 
         if (!flecs_rule_trivial_init(ctx->world, filter)) {
             return false;
@@ -49,7 +50,7 @@ bool flecs_rule_trivial_test(
         ecs_assert(table != NULL, ECS_INVALID_OPERATION, NULL);
 
         for (t = 0; t < term_count; t ++) {
-            ecs_term_t *term = &terms[t];
+            const ecs_term_t *term = &terms[t];
             const ecs_table_record_t *tr = flecs_id_record_get_table(
                 term->idr, table);
             if (!tr) {
@@ -81,7 +82,7 @@ bool flecs_rule_trivial_search_init(
     bool first)
 {
     if (first) {
-        ecs_term_t *terms = filter->terms;
+        const ecs_term_t *terms = filter->terms;
         if (!flecs_rule_trivial_init(ctx->world, filter)) {
             return false;
         }
@@ -108,9 +109,9 @@ bool flecs_rule_trivial_search(
     int32_t term_count)
 {
     const ecs_filter_t *filter = &rule->filter;
-    int32_t t;
-    ecs_term_t *terms = filter->terms;
+    const ecs_term_t *terms = filter->terms;
     ecs_iter_t *it = ctx->it;
+    int32_t t;
 
     if (!flecs_rule_trivial_search_init(ctx, op_ctx, filter, first)) {
         return false;
@@ -129,7 +130,7 @@ bool flecs_rule_trivial_search(
         }
 
         for (t = 1; t < term_count; t ++) {
-            ecs_term_t *term = &terms[t];
+            const ecs_term_t *term = &terms[t];
             const ecs_table_record_t *tr_with = flecs_id_record_get_table(
                 term->idr, table);
             if (!tr_with) {
@@ -208,9 +209,9 @@ bool flecs_rule_trivial_search_nodata(
     int32_t term_count)
 {
     const ecs_filter_t *filter = &rule->filter;
-    int32_t t;
-    ecs_term_t *terms = filter->terms;
+    const ecs_term_t *terms = filter->terms;
     ecs_iter_t *it = ctx->it;
+    int32_t t;
 
     if (!flecs_rule_trivial_search_init(ctx, op_ctx, filter, first)) {
         return false;
@@ -229,7 +230,7 @@ bool flecs_rule_trivial_search_nodata(
         }
 
         for (t = 1; t < term_count; t ++) {
-            ecs_term_t *term = &terms[t];
+            const ecs_term_t *term = &terms[t];
             const ecs_table_record_t *tr_with = flecs_id_record_get_table(
                 term->idr, table);
             if (!tr_with) {

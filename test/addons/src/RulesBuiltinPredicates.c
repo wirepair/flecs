@@ -5,7 +5,7 @@ void RulesBuiltinPredicates_this_eq_id(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this == ent"
     });
 
@@ -30,7 +30,7 @@ void RulesBuiltinPredicates_this_eq_name(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this == \"ent\""
     });
 
@@ -54,7 +54,7 @@ void RulesBuiltinPredicates_this_eq_var(void) {
     ecs_world_t *world = ecs_init();
 
     ecs_log_set_level(-4);
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this == $x"
     });
 
@@ -75,7 +75,7 @@ void RulesBuiltinPredicates_this_eq_id_written(void) {
     ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
     ecs_add(world, ent_3, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this == ent_2"
     });
 
@@ -112,7 +112,7 @@ void RulesBuiltinPredicates_this_eq_id_written_no_match(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     ecs_add(world, ent_4, RelB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelB($this), $this == ent_2"
     });
 
@@ -140,7 +140,7 @@ void RulesBuiltinPredicates_this_eq_name_written(void) {
     ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
     ecs_add(world, ent_3, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this == \"ent_2\""
     });
 
@@ -177,7 +177,7 @@ void RulesBuiltinPredicates_this_eq_name_written_no_match(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     ecs_add(world, ent_4, RelB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelB($this), $this == \"ent_2\""
     });
 
@@ -205,7 +205,7 @@ void RulesBuiltinPredicates_this_eq_var_written(void) {
     ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
     ecs_add_pair(world, ent_3, RelA, ent_2);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this, $x), $this == $x"
     });
 
@@ -235,7 +235,7 @@ void RulesBuiltinPredicates_var_eq_id(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x == ent"
     });
 
@@ -263,7 +263,7 @@ void RulesBuiltinPredicates_var_eq_name(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x == \"ent\""
     });
 
@@ -290,7 +290,7 @@ void RulesBuiltinPredicates_var_eq_var(void) {
     ecs_world_t *world = ecs_init();
 
     ecs_log_set_level(-4);
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x == $y"
     });
 
@@ -311,7 +311,7 @@ void RulesBuiltinPredicates_var_eq_id_written(void) {
     ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
     ecs_add(world, ent_3, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($x), $x == ent_2"
     });
 
@@ -351,7 +351,7 @@ void RulesBuiltinPredicates_var_eq_id_written_no_match(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     ecs_add(world, ent_4, RelB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelB($x), $x == ent_2"
     });
 
@@ -382,7 +382,7 @@ void RulesBuiltinPredicates_var_eq_name_written(void) {
     ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
     ecs_add(world, ent_3, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($x), $x == \"ent_2\""
     });
 
@@ -422,7 +422,7 @@ void RulesBuiltinPredicates_var_eq_name_written_no_match(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     ecs_add(world, ent_4, RelB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelB($x), $x == \"ent_2\""
     });
 
@@ -453,7 +453,7 @@ void RulesBuiltinPredicates_var_eq_var_written(void) {
     ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
     ecs_add_pair(world, ent_3, RelA, ent_2);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($x, $y), $x == $y"
     });
 
@@ -492,7 +492,7 @@ void RulesBuiltinPredicates_this_neq_id(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     ecs_add(world, ent_4, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this != ent_2"
     });
 
@@ -538,7 +538,7 @@ void RulesBuiltinPredicates_this_neq_name(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     ecs_add(world, ent_4, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this != \"ent_2\""
     });
 
@@ -577,7 +577,7 @@ void RulesBuiltinPredicates_this_neq_var(void) {
     ecs_world_t *world = ecs_init();
 
     ecs_log_set_level(-4);
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this != $x"
     });
 
@@ -598,7 +598,7 @@ void RulesBuiltinPredicates_this_neq_id_written(void) {
     ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
     ecs_add(world, ent_3, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this != ent_2"
     });
 
@@ -643,7 +643,7 @@ void RulesBuiltinPredicates_this_neq_id_written_no_match(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     ecs_add(world, ent_4, RelB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelB($this), $this != ent_2"
     });
 
@@ -678,7 +678,7 @@ void RulesBuiltinPredicates_this_neq_name_written(void) {
     ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
     ecs_add(world, ent_3, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this != \"ent_2\""
     });
 
@@ -723,7 +723,7 @@ void RulesBuiltinPredicates_this_neq_name_written_no_match(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     ecs_add(world, ent_4, RelB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelB($this), $this != \"ent_2\""
     });
 
@@ -758,7 +758,7 @@ void RulesBuiltinPredicates_this_neq_var_written(void) {
     ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
     ecs_add_pair(world, ent_3, RelA, ent_2);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this, $x), $this != $x"
     });
 
@@ -803,7 +803,7 @@ void RulesBuiltinPredicates_var_neq_id(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     ecs_add(world, ent_4, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x != ent_2"
     });
 
@@ -852,7 +852,7 @@ void RulesBuiltinPredicates_var_neq_name(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     ecs_add(world, ent_4, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x != \"ent_2\""
     });
 
@@ -894,7 +894,7 @@ void RulesBuiltinPredicates_var_neq_var(void) {
     ecs_world_t *world = ecs_init();
 
     ecs_log_set_level(-4);
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x != $y"
     });
 
@@ -915,7 +915,7 @@ void RulesBuiltinPredicates_var_neq_id_written(void) {
     ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
     ecs_add(world, ent_3, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($x), $x != ent_2"
     });
 
@@ -963,7 +963,7 @@ void RulesBuiltinPredicates_var_neq_id_written_no_match(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     ecs_add(world, ent_4, RelB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelB($x), $x != ent_2"
     });
 
@@ -1001,7 +1001,7 @@ void RulesBuiltinPredicates_var_neq_name_written(void) {
     ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
     ecs_add(world, ent_3, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($x), $x != \"ent_2\""
     });
 
@@ -1049,7 +1049,7 @@ void RulesBuiltinPredicates_var_neq_name_written_no_match(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     ecs_add(world, ent_4, RelB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelB($x), $x != \"ent_2\""
     });
 
@@ -1087,7 +1087,7 @@ void RulesBuiltinPredicates_var_neq_var_written(void) {
     ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
     ecs_add_pair(world, ent_3, RelA, ent_2);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($x, $y), $x != $y"
     });
 
@@ -1136,7 +1136,7 @@ void RulesBuiltinPredicates_this_2_neq_id(void) {
     ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
     ecs_add(world, ent_5, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this != ent_2, $this != ent_3"
     });
 
@@ -1184,7 +1184,7 @@ void RulesBuiltinPredicates_this_2_neq_name(void) {
     ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
     ecs_add(world, ent_5, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this != \"ent_2\", $this != \"ent_3\""
     });
 
@@ -1232,7 +1232,7 @@ void RulesBuiltinPredicates_var_2_neq_id(void) {
     ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
     ecs_add(world, ent_5, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x != ent_2, $x != ent_3"
     });
 
@@ -1283,7 +1283,7 @@ void RulesBuiltinPredicates_var_2_neq_name(void) {
     ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
     ecs_add(world, ent_5, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x != \"ent_2\", $x != \"ent_3\""
     });
 
@@ -1338,7 +1338,7 @@ void RulesBuiltinPredicates_this_2_neq_id_written(void) {
     ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
     ecs_add(world, ent_5, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this != ent_2, $this != ent_3"
     });
 
@@ -1385,7 +1385,7 @@ void RulesBuiltinPredicates_this_2_neq_name_written(void) {
     ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
     ecs_add(world, ent_5, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this != \"ent_2\", $this != \"ent_3\""
     });
 
@@ -1432,7 +1432,7 @@ void RulesBuiltinPredicates_var_2_neq_id_written(void) {
     ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
     ecs_add(world, ent_5, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($x), $x != ent_2, $x != ent_3"
     });
 
@@ -1488,7 +1488,7 @@ void RulesBuiltinPredicates_var_2_neq_name_written(void) {
     ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
     ecs_add(world, ent_5, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($x), $x != \"ent_2\", $x != \"ent_3\""
     });
 
@@ -1539,7 +1539,7 @@ void RulesBuiltinPredicates_this_2_or_id(void) {
     /* ecs_entity_t ent_4 = */ ecs_new_entity(world, "ent_4");
     /* ecs_entity_t ent_5 = */ ecs_new_entity(world, "ent_5");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this == ent_2 || $this == ent_3"
     });
 
@@ -1576,7 +1576,7 @@ void RulesBuiltinPredicates_this_2_or_name(void) {
     /* ecs_entity_t ent_4 = */ ecs_new_entity(world, "ent_4");
     /* ecs_entity_t ent_5 = */ ecs_new_entity(world, "ent_5");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this == \"ent_2\" || $this == \"ent_3\""
     });
 
@@ -1613,7 +1613,7 @@ void RulesBuiltinPredicates_var_2_or_id(void) {
     /* ecs_entity_t ent_4 = */ ecs_new_entity(world, "ent_4");
     /* ecs_entity_t ent_5 = */ ecs_new_entity(world, "ent_5");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x == ent_2 || $x == ent_3"
     });
 
@@ -1652,7 +1652,7 @@ void RulesBuiltinPredicates_var_2_or_name(void) {
     /* ecs_entity_t ent_4 = */ ecs_new_entity(world, "ent_4");
     /* ecs_entity_t ent_5 = */ ecs_new_entity(world, "ent_5");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x == \"ent_2\" || $x == \"ent_3\""
     });
 
@@ -1696,7 +1696,7 @@ void RulesBuiltinPredicates_this_2_or_id_written(void) {
     ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
     ecs_add(world, ent_5, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this == ent_2 || $this == ent_3"
     });
 
@@ -1742,7 +1742,7 @@ void RulesBuiltinPredicates_this_2_or_name_written(void) {
     ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
     ecs_add(world, ent_5, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this == \"ent_2\" || $this == \"ent_3\""
     });
 
@@ -1788,7 +1788,7 @@ void RulesBuiltinPredicates_var_2_or_id_written(void) {
     ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
     ecs_add(world, ent_5, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($x), $x == ent_2 || $x == ent_3"
     });
 
@@ -1837,7 +1837,7 @@ void RulesBuiltinPredicates_var_2_or_name_written(void) {
     ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
     ecs_add(world, ent_5, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($x), $x == \"ent_2\" || $x == \"ent_3\""
     });
 
@@ -1884,7 +1884,7 @@ void RulesBuiltinPredicates_this_match_eq(void) {
     ecs_entity_t ent_6 = ecs_new_entity(world, "ent_6");
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this ~= \"nt_\""
     });
 
@@ -1930,7 +1930,7 @@ void RulesBuiltinPredicates_var_match_eq(void) {
     ecs_entity_t ent_6 = ecs_new_entity(world, "ent_6");
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x ~= \"nt_\""
     });
 
@@ -1989,7 +1989,7 @@ void RulesBuiltinPredicates_this_match_eq_written(void) {
     ecs_add(world, ent_6, RelA);
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this ~= \"nt_\""
     });
 
@@ -2044,7 +2044,7 @@ void RulesBuiltinPredicates_var_match_eq_written(void) {
     ecs_add(world, ent_6, RelA);
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($x), $x ~= \"nt_\""
     });
 
@@ -2101,7 +2101,7 @@ void RulesBuiltinPredicates_this_match_neq(void) {
     ecs_entity_t ent_6 = ecs_new_entity(world, "ent_6");
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this ~= \"!nt_\""
     });
 
@@ -2148,7 +2148,7 @@ void RulesBuiltinPredicates_var_match_neq(void) {
     ecs_entity_t ent_6 = ecs_new_entity(world, "ent_6");
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x ~= \"!nt_\""
     });
 
@@ -2204,7 +2204,7 @@ void RulesBuiltinPredicates_this_match_neq_written(void) {
     ecs_add(world, ent_6, RelA);
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this ~= \"!nt_\""
     });
 
@@ -2257,7 +2257,7 @@ void RulesBuiltinPredicates_var_match_neq_written(void) {
     ecs_add(world, ent_6, RelA);
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x ~= \"!nt_\""
     });
 
@@ -2307,7 +2307,7 @@ void RulesBuiltinPredicates_this_match_2_neq(void) {
     ecs_entity_t ent_6 = ecs_new_entity(world, "ent_6");
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this ~= \"!nt_\", $this ~= \"!_3\""
     });
 
@@ -2354,7 +2354,7 @@ void RulesBuiltinPredicates_var_match_2_neq(void) {
     ecs_entity_t ent_6 = ecs_new_entity(world, "ent_6");
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x ~= \"!nt_\", $x ~= \"!_3\""
     });
 
@@ -2409,7 +2409,7 @@ void RulesBuiltinPredicates_this_match_2_neq_written(void) {
     ecs_add(world, ent_6, RelA);
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this ~= \"!nt_\", $this ~= \"!_3\""
     });
 
@@ -2462,7 +2462,7 @@ void RulesBuiltinPredicates_var_match_2_neq_written(void) {
     ecs_add(world, ent_6, RelA);
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($x), $x ~= \"!nt_\", $x ~= \"!_3\""
     });
 
@@ -2511,7 +2511,7 @@ void RulesBuiltinPredicates_this_match_2_or(void) {
     ecs_entity_t ent_6 = ecs_new_entity(world, "ent_6");
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this ~= \"1\" || $this ~= \"_3\""
     });
 
@@ -2557,7 +2557,7 @@ void RulesBuiltinPredicates_this_match_2_or_written(void) {
     ecs_add(world, ent_6, RelA);
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this ~= \"1\" || $this ~= \"_3\""
     });
 
@@ -2599,7 +2599,7 @@ void RulesBuiltinPredicates_this_match_3_or(void) {
     ecs_entity_t ent_6 = ecs_new_entity(world, "ent_6");
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this ~= \"1\" || $this ~= \"_3\" || $this ~= \"nt_6\""
     });
 
@@ -2650,7 +2650,7 @@ void RulesBuiltinPredicates_this_match_3_or_written(void) {
     ecs_add(world, ent_6, RelA);
     ecs_add(world, ent_6, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), $this ~= \"1\" || $this ~= \"_3\" || $this ~= \"nt_6\""
     });
 
@@ -2687,7 +2687,7 @@ void RulesBuiltinPredicates_this_match_3_or_written(void) {
 void RulesBuiltinPredicates_unresolved_by_name(void) {
     ecs_world_t *world = ecs_init();
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this == ent",
         .flags = EcsFilterUnresolvedByName
     });
@@ -2723,7 +2723,7 @@ void RulesBuiltinPredicates_var_eq_wildcard(void) {
     ecs_entity_t tgt = ecs_new_id(world);
     ecs_entity_t e = ecs_new_w_pair(world, Rel, tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x == *, (Rel, $x)"
     });
 
@@ -2754,7 +2754,7 @@ void RulesBuiltinPredicates_var_eq_any(void) {
     ecs_entity_t tgt = ecs_new_id(world);
     ecs_entity_t e = ecs_new_w_pair(world, Rel, tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x == _, (Rel, $x)"
     });
 
@@ -2785,7 +2785,7 @@ void RulesBuiltinPredicates_var_eq_wildcard_after_write(void) {
     ecs_entity_t tgt = ecs_new_id(world);
     ecs_entity_t e = ecs_new_w_pair(world, Rel, tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "(Rel, $x), $x == *"
     });
 
@@ -2816,7 +2816,7 @@ void RulesBuiltinPredicates_var_eq_any_after_write(void) {
     ecs_entity_t tgt = ecs_new_id(world);
     ecs_entity_t e = ecs_new_w_pair(world, Rel, tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "(Rel, $x), $x == _"
     });
 
@@ -2842,7 +2842,7 @@ void RulesBuiltinPredicates_var_eq_any_after_write(void) {
 void RulesBuiltinPredicates_var_eq_after_var_0_src(void) {
     ecs_world_t *world = ecs_init();
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x(), $x == flecs"
     });
 

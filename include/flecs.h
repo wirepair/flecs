@@ -380,27 +380,6 @@ typedef struct ecs_filter_t ecs_filter_t;
  * times avoid frequent creation/deletion of queries. */
 typedef struct ecs_query_t ecs_query_t;
 
-/** A rule is a query with advanced graph traversal features.
- * Rules are fast uncached queries with support for advanced graph features such
- * as the usage of query variables. A simple example of a rule that matches all
- * spaceship entities docked to a planet:
- *   SpaceShip, (DockedTo, $planet), Planet($planet)
- * 
- * Here, the rule traverses the DockedTo relationship, and matches Planet on the
- * target of this relationship. Through the usage of variables rules can match
- * arbitrary patterns against entity graphs. Other features supported 
- * exclusively by rules are:
- * - Component inheritance
- * - Transitivity
- * 
- * Rules have similar iteration performance to filters, but are slower than 
- * queries. Rules and filters will eventually be merged into a single query
- * implementation. Features still lacking for rules are:
- * - Up traversal
- * - AndFrom, OrFrom, NotFrom operators
- */
-typedef struct ecs_rule_t ecs_rule_t;
-
 /** An observer is a system that is invoked when an event matches its query.
  * Observers allow applications to respond to specific events, such as adding or
  * removing a component. Observers are created by both specifying a query and
@@ -764,12 +743,14 @@ struct ecs_filter_t {
     
     int8_t term_count;        /**< Number of elements in terms array */
     int8_t field_count;       /**< Number of fields in iterator for filter */
+
+    int16_t tokens_len;       /**< Length of tokens buffer */
+
     ecs_flags32_t flags;      /**< Filter flags */
     ecs_flags64_t data_fields; /**< Bitset with fields that have data */
 
     char *variable_names[1];   /**< Placeholder variable names array */
     char *tokens;              /**< Buffer with string tokens used by terms */
-    int16_t tokens_len;
 
     /* Mixins */
     ecs_entity_t entity;       /**< Entity associated with filter (optional) */

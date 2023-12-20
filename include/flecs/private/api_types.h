@@ -183,7 +183,7 @@ typedef struct ecs_rule_op_profile_t {
 
 /** Rule-iterator specific data */
 typedef struct ecs_rule_iter_t {
-    const ecs_rule_t *rule;
+    const ecs_filter_t *rule;
     struct ecs_var_t *vars;              /* Variable storage */
     const struct ecs_rule_var_t *rule_vars;
     const struct ecs_rule_op_t *ops;

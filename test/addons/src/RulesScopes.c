@@ -11,7 +11,7 @@ void RulesScopes_term_w_not_scope_1_term(void) {
 
     ecs_entity_t parent_2 = ecs_new(world, Root);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Root, !{ TagA }"
     });
     test_assert(r != NULL);
@@ -49,7 +49,7 @@ void RulesScopes_term_w_not_scope_2_terms(void) {
     ecs_add(world, parent_3, TagA);
     ecs_add(world, parent_3, TagB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Root, !{ TagA, TagB }"
     });
     test_assert(r != NULL);
@@ -89,7 +89,7 @@ void RulesScopes_term_w_not_scope_1_term_w_not(void) {
 
     ecs_new(world, Root);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Root, !{ !TagA }"
     });
     test_assert(r != NULL);
@@ -127,7 +127,7 @@ void RulesScopes_term_w_not_scope_2_terms_w_not(void) {
     ecs_add(world, parent_3, TagA);
     ecs_add(world, parent_3, TagB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Root, !{ TagA, !TagB }"
     });
     test_assert(r != NULL);
@@ -170,7 +170,7 @@ void RulesScopes_term_w_not_scope_1_term_w_var(void) {
 
     ecs_entity_t parent_3 = ecs_new(world, Root);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Root, !{ ChildOf($child, $this) }"
     });
     test_assert(r != NULL);
@@ -218,7 +218,7 @@ void RulesScopes_term_w_not_scope_2_terms_w_var(void) {
         ecs_new_w_pair(world, EcsChildOf, parent_2);
     }
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Root, !{ ChildOf($child, $this), Position($child) }"
     });
     test_assert(r != NULL);
@@ -252,7 +252,7 @@ void RulesScopes_term_w_not_scope_1_term_w_not_w_var(void) {
 
     ecs_new(world, Root);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Root, !{ !ChildOf($child, $this) }"
     });
     test_assert(r != NULL);
@@ -306,7 +306,7 @@ void RulesScopes_term_w_not_scope_2_terms_w_not_w_var(void) {
         ecs_new_w_pair(world, EcsChildOf, parent_2);
     }
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Root, !{ ChildOf($child, $this), !Position($child) }"
     });
     test_assert(r != NULL);
@@ -343,7 +343,7 @@ void RulesScopes_term_w_not_scope_2_terms_w_or(void) {
     ecs_add(world, e3, TagB);
     ecs_entity_t e4 = ecs_new(world, Root);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Root, !{ TagA || TagB }"
     });
     test_assert(r != NULL);
@@ -383,7 +383,7 @@ void RulesScopes_term_w_not_scope_3_terms_w_or(void) {
     ecs_add(world, e4, TagC);
     ecs_entity_t e5 = ecs_new(world, Root);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Root, !{ TagA || TagB || TagC }"
     });
     test_assert(r != NULL);

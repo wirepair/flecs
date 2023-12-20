@@ -2137,7 +2137,7 @@ void Iter_rule_page_iter_w_fini(void) {
     ECS_COMPONENT(world, Position);
     ECS_TAG(world, Foo);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .terms = {{ ecs_id(Position) }}
     });
 
@@ -2163,7 +2163,7 @@ void Iter_rule_worker_iter_w_fini(void) {
     ECS_COMPONENT(world, Position);
     ECS_TAG(world, Foo);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .terms = {{ ecs_id(Position) }}
     });
 

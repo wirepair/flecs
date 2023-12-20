@@ -78,7 +78,7 @@ extern "C" {
  * @return The rule.
  */
 FLECS_API
-ecs_rule_t* ecs_rule_init(
+ecs_filter_t* ecs_rule_init(
     ecs_world_t *world,
     const ecs_filter_desc_t *desc);
 
@@ -88,17 +88,7 @@ ecs_rule_t* ecs_rule_init(
  */
 FLECS_API
 void ecs_rule_fini(
-    ecs_rule_t *rule);
-
-/** Obtain filter from rule.
- * This operation returns the filter with which the rule was created.
- * 
- * @param rule The rule.
- * @return The filter.
- */
-FLECS_API
-const ecs_filter_t* ecs_rule_get_filter(
-    const ecs_rule_t *rule);
+    ecs_filter_t *rule);
 
 /** Return number of variables in rule.
  * 
@@ -107,7 +97,7 @@ const ecs_filter_t* ecs_rule_get_filter(
  */
 FLECS_API
 int32_t ecs_rule_var_count(
-    const ecs_rule_t *rule);
+    const ecs_filter_t *rule);
 
 /** Find variable index.
  * This operation looks up the index of a variable in the rule. This index can
@@ -119,7 +109,7 @@ int32_t ecs_rule_var_count(
  */
 FLECS_API
 int32_t ecs_rule_find_var(
-    const ecs_rule_t *rule,
+    const ecs_filter_t *rule,
     const char *name);    
 
 /** Get variable name.
@@ -130,7 +120,7 @@ int32_t ecs_rule_find_var(
  */
 FLECS_API
 const char* ecs_rule_var_name(
-    const ecs_rule_t *rule,
+    const ecs_filter_t *rule,
     int32_t var_id);
 
 /** Test if variable is an entity.
@@ -144,7 +134,7 @@ const char* ecs_rule_var_name(
  */
 FLECS_API
 bool ecs_rule_var_is_entity(
-    const ecs_rule_t *rule,
+    const ecs_filter_t *rule,
     int32_t var_id);  
 
 /** Iterate a rule.
@@ -160,7 +150,7 @@ bool ecs_rule_var_is_entity(
 FLECS_API
 ecs_iter_t ecs_rule_iter(
     const ecs_world_t *world,
-    const ecs_rule_t *rule);
+    const ecs_filter_t *rule);
 
 /** Progress rule iterator.
  * 
@@ -190,7 +180,7 @@ bool ecs_rule_next_instanced(
  */
 FLECS_API
 char* ecs_rule_str(
-    const ecs_rule_t *rule);
+    const ecs_filter_t *rule);
 
 /** Convert rule to string with profile.
  * To use this you must set the EcsIterProfile flag on an iterator before 
@@ -202,7 +192,7 @@ char* ecs_rule_str(
  */
 FLECS_API
 char* ecs_rule_str_w_profile(
-    const ecs_rule_t *rule,
+    const ecs_filter_t *rule,
     const ecs_iter_t *it);
 
 /** Populate variables from key-value string.
@@ -218,7 +208,7 @@ char* ecs_rule_str_w_profile(
  */
 FLECS_API
 const char* ecs_rule_parse_vars(
-    ecs_rule_t *rule,
+    ecs_filter_t *rule,
     ecs_iter_t *it,
     const char *expr);
 

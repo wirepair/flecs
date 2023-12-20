@@ -112,7 +112,6 @@ bool flecs_rule_var_is_anonymous(
     return var->anonymous;
 }
 
-static
 ecs_var_id_t flecs_rule_find_var_id(
     const ecs_rule_t *rule,
     const char *name,
@@ -168,51 +167,6 @@ ecs_var_id_t flecs_rule_find_var_id(
     }
 
     return flecs_rule_find_var_id(rule, name, EcsVarTable);
-}
-
-int32_t ecs_rule_var_count(
-    const ecs_rule_t *rule)
-{
-    return rule->var_pub_count;
-}
-
-int32_t ecs_rule_find_var(
-    const ecs_rule_t *rule,
-    const char *name)
-{
-    ecs_var_id_t var_id = flecs_rule_find_var_id(rule, name, EcsVarEntity);
-    if (var_id == EcsVarNone) {
-        if (rule->filter.flags & EcsFilterMatchThis) {
-            if (!ecs_os_strcmp(name, "This")) {
-                name = "this";
-            }
-            if (!ecs_os_strcmp(name, EcsThisName)) {
-                var_id = 0;
-            }
-        }
-        if (var_id == EcsVarNone) {
-            return -1;
-        }
-    }
-    return (int32_t)var_id;
-}
-
-const char* ecs_rule_var_name(
-    const ecs_rule_t *rule,
-    int32_t var_id)
-{
-    if (var_id) {
-        return rule->vars[var_id].name;
-    } else {
-        return EcsThisName;
-    }
-}
-
-bool ecs_rule_var_is_entity(
-    const ecs_rule_t *rule,
-    int32_t var_id)
-{
-    return rule->vars[var_id].kind == EcsVarEntity;
 }
 
 static

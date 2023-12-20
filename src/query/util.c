@@ -1,22 +1,9 @@
  /**
- * @file addons/rules/api.c
- * @brief User facing API for rules.
+ * @file query/util.c
+ * @brief Query utilities.
  */
 
 #include "rules.h"
-#include <ctype.h>
-
-#ifdef FLECS_RULES
-
-static ecs_mixins_t ecs_rule_t_mixins = {
-    .type_name = "ecs_rule_t",
-    .elems = {
-        [EcsMixinWorld] = offsetof(ecs_rule_t, filter.world),
-        [EcsMixinEntity] = offsetof(ecs_rule_t, filter.entity),
-        [EcsMixinIterable] = offsetof(ecs_rule_t, iterable),
-        [EcsMixinDtor] = offsetof(ecs_rule_t, dtor)
-    }
-};
 
 const char* flecs_rule_op_str(
     uint16_t kind)
@@ -67,89 +54,6 @@ const char* flecs_rule_op_str(
     }
 }
 
-/* Implementation for iterable mixin */
-static
-void flecs_rule_iter_mixin_init(
-    const ecs_world_t *world,
-    const ecs_poly_t *poly,
-    ecs_iter_t *iter,
-    ecs_term_t *filter)
-{
-    ecs_poly_assert(poly, ecs_rule_t);
-
-    if (filter) {
-        iter[1] = ecs_rule_iter(world, ECS_CONST_CAST(ecs_rule_t*, poly));
-        iter[0] = ecs_term_chain_iter(&iter[1], filter);
-    } else {
-        iter[0] = ecs_rule_iter(world, ECS_CONST_CAST(ecs_rule_t*, poly));
-    }
-}
-
-static
-void flecs_rule_fini(
-    ecs_rule_t *rule)
-{
-    if (rule->vars != &rule->vars_cache.var) {
-        ecs_os_free(rule->vars);
-    }
-
-    ecs_os_free(rule->ops);
-    ecs_os_free(rule->src_vars);
-    flecs_name_index_fini(&rule->tvar_index);
-    flecs_name_index_fini(&rule->evar_index);
-    ecs_filter_fini(&rule->filter);
-
-    ecs_poly_free(rule, ecs_rule_t);
-}
-
-void ecs_rule_fini(
-    ecs_rule_t *rule)
-{
-    if (rule->filter.entity) {
-        /* If filter is associated with entity, use poly dtor path */
-        ecs_delete(rule->filter.world, rule->filter.entity);
-    } else {
-        flecs_rule_fini(rule);
-    }
-}
-
-ecs_rule_t* ecs_rule_init(
-    ecs_world_t *world, 
-    const ecs_filter_desc_t *const_desc)
-{
-    ecs_rule_t *result = ecs_poly_new(ecs_rule_t);
-    ecs_stage_t *stage = flecs_stage_from_world(&world);
-
-    /* Initialize the query */
-    ecs_filter_desc_t desc = *const_desc;
-    desc.storage = &result->filter; /* Use storage of rule */
-    result->filter = ECS_FILTER_INIT;
-    if (ecs_filter_init(world, &desc) == NULL) {
-        goto error;
-    }
-
-    result->iterable.init = flecs_rule_iter_mixin_init;
-
-    /* Compile filter to operations */
-    if (flecs_rule_compile(world, stage, result)) {
-        goto error;
-    }
-
-    ecs_entity_t entity = const_desc->entity;
-    result->dtor = (ecs_poly_dtor_t)flecs_rule_fini;
-
-    if (entity) {
-        EcsPoly *poly = ecs_poly_bind(world, entity, ecs_rule_t);
-        poly->poly = result;
-        ecs_poly_modified(world, entity, ecs_rule_t);
-    }
-
-    return result;
-error:
-    ecs_rule_fini(result);
-    return NULL;
-}
-
 static
 int32_t flecs_rule_op_ref_str(
     const ecs_rule_t *rule,
@@ -198,14 +102,15 @@ int32_t flecs_rule_op_ref_str(
 }
 
 char* ecs_rule_str_w_profile(
-    const ecs_rule_t *rule,
+    const ecs_filter_t *q,
     const ecs_iter_t *it)
 {
-    ecs_poly_assert(rule, ecs_rule_t);
+    ecs_poly_assert(q, ecs_rule_t);
+    ecs_rule_t *impl = flecs_rule(q);
 
     ecs_strbuf_t buf = ECS_STRBUF_INIT;
-    ecs_rule_op_t *ops = rule->ops;
-    int32_t i, count = rule->op_count, indent = 0;
+    ecs_rule_op_t *ops = impl->ops;
+    int32_t i, count = impl->op_count, indent = 0;
     for (i = 0; i < count; i ++) {
         ecs_rule_op_t *op = &ops[i];
         ecs_flags16_t flags = op->flags;
@@ -240,7 +145,7 @@ char* ecs_rule_str_w_profile(
             ecs_strbuf_appendch(&buf, ' ');
         }
     
-        hidden_chars = flecs_rule_op_ref_str(rule, &op->src, src_flags, &buf);
+        hidden_chars = flecs_rule_op_ref_str(impl, &op->src, src_flags, &buf);
 
         if (op->kind == EcsRuleNot || 
             op->kind == EcsRuleOr || 
@@ -266,11 +171,11 @@ char* ecs_rule_str_w_profile(
         }
 
         ecs_strbuf_appendstr(&buf, "(");
-        flecs_rule_op_ref_str(rule, &op->first, first_flags, &buf);
+        flecs_rule_op_ref_str(impl, &op->first, first_flags, &buf);
 
         if (second_flags) {
             ecs_strbuf_appendstr(&buf, ", ");
-            flecs_rule_op_ref_str(rule, &op->second, second_flags, &buf);
+            flecs_rule_op_ref_str(impl, &op->second, second_flags, &buf);
         } else {
             switch (op->kind) {
             case EcsRulePredEqName:
@@ -279,14 +184,14 @@ char* ecs_rule_str_w_profile(
             case EcsRulePredNeqMatch: {
                 int8_t term_index = op->term_index;
                 ecs_strbuf_appendstr(&buf, ", #[yellow]\"");
-                ecs_strbuf_appendstr(&buf, rule->filter.terms[term_index].second.name);
+                ecs_strbuf_appendstr(&buf, impl->filter.terms[term_index].second.name);
                 ecs_strbuf_appendstr(&buf, "\"#[reset]");
                 break;
             }
             case EcsRuleLookup: {
                 ecs_var_id_t src_id = op->src.var;
                 ecs_strbuf_appendstr(&buf, ", #[yellow]\"");
-                ecs_strbuf_appendstr(&buf, rule->vars[src_id].lookup);
+                ecs_strbuf_appendstr(&buf, impl->vars[src_id].lookup);
                 ecs_strbuf_appendstr(&buf, "\"#[reset]");
                 break;
             }
@@ -309,23 +214,19 @@ char* ecs_rule_str_w_profile(
 }
 
 char* ecs_rule_str(
-    const ecs_rule_t *rule)
+    const ecs_filter_t *q)
 {
-    return ecs_rule_str_w_profile(rule, NULL);
-}
-
-const ecs_filter_t* ecs_rule_get_filter(
-    const ecs_rule_t *rule)
-{
-    return &rule->filter;
+    return ecs_rule_str_w_profile(q, NULL);
 }
 
 const char* ecs_rule_parse_vars(
-    ecs_rule_t *rule,
+    ecs_filter_t *q,
     ecs_iter_t *it,
     const char *expr)
 {
-    ecs_poly_assert(rule, ecs_rule_t);
+    ecs_poly_assert(q, ecs_rule_t);
+    ecs_rule_t *impl = flecs_rule(q);
+
     ecs_check(it != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(expr != NULL, ECS_INVALID_PARAMETER, NULL)
     char token[ECS_MAX_TOKEN_SIZE];
@@ -333,8 +234,8 @@ const char* ecs_rule_parse_vars(
     bool paren = false;
 
     const char *name = NULL;
-    if (rule->filter.entity) {
-        name = ecs_get_name(rule->filter.world, rule->filter.entity);
+    if (impl->filter.entity) {
+        name = ecs_get_name(impl->filter.world, impl->filter.entity);
     }
 
     ptr = ecs_parse_ws_eol(ptr);
@@ -357,7 +258,7 @@ const char* ecs_rule_parse_vars(
             return NULL;
         }
 
-        int var = ecs_rule_find_var(rule, token);
+        int var = ecs_rule_find_var(q, token);
         if (var == -1) {
             ecs_parser_error(name, expr, (ptr - expr), 
                 "unknown variable '%s'", token);
@@ -377,7 +278,7 @@ const char* ecs_rule_parse_vars(
             return NULL;
         }
 
-        ecs_entity_t val = ecs_lookup_fullpath(rule->filter.world, token);
+        ecs_entity_t val = ecs_lookup_fullpath(q->world, token);
         if (!val) {
             ecs_parser_error(name, expr, (ptr - expr), 
                 "unresolved entity '%s'", token);
@@ -416,5 +317,3 @@ const char* ecs_rule_parse_vars(
 error:
     return NULL;
 }
-
-#endif

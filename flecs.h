@@ -2634,27 +2634,6 @@ typedef struct ecs_filter_t ecs_filter_t;
  * times avoid frequent creation/deletion of queries. */
 typedef struct ecs_query_t ecs_query_t;
 
-/** A rule is a query with advanced graph traversal features.
- * Rules are fast uncached queries with support for advanced graph features such
- * as the usage of query variables. A simple example of a rule that matches all
- * spaceship entities docked to a planet:
- *   SpaceShip, (DockedTo, $planet), Planet($planet)
- * 
- * Here, the rule traverses the DockedTo relationship, and matches Planet on the
- * target of this relationship. Through the usage of variables rules can match
- * arbitrary patterns against entity graphs. Other features supported 
- * exclusively by rules are:
- * - Component inheritance
- * - Transitivity
- * 
- * Rules have similar iteration performance to filters, but are slower than 
- * queries. Rules and filters will eventually be merged into a single query
- * implementation. Features still lacking for rules are:
- * - Up traversal
- * - AndFrom, OrFrom, NotFrom operators
- */
-typedef struct ecs_rule_t ecs_rule_t;
-
 /** An observer is a system that is invoked when an event matches its query.
  * Observers allow applications to respond to specific events, such as adding or
  * removing a component. Observers are created by both specifying a query and
@@ -3018,12 +2997,14 @@ struct ecs_filter_t {
     
     int8_t term_count;        /**< Number of elements in terms array */
     int8_t field_count;       /**< Number of fields in iterator for filter */
+
+    int16_t tokens_len;       /**< Length of tokens buffer */
+
     ecs_flags32_t flags;      /**< Filter flags */
     ecs_flags64_t data_fields; /**< Bitset with fields that have data */
 
     char *variable_names[1];   /**< Placeholder variable names array */
     char *tokens;              /**< Buffer with string tokens used by terms */
-    int16_t tokens_len;
 
     /* Mixins */
     ecs_entity_t entity;       /**< Entity associated with filter (optional) */
@@ -3317,7 +3298,7 @@ typedef struct ecs_rule_op_profile_t {
 
 /** Rule-iterator specific data */
 typedef struct ecs_rule_iter_t {
-    const ecs_rule_t *rule;
+    const ecs_filter_t *rule;
     struct ecs_var_t *vars;              /* Variable storage */
     const struct ecs_rule_var_t *rule_vars;
     const struct ecs_rule_op_t *ops;
@@ -14952,7 +14933,7 @@ extern "C" {
  * @return The rule.
  */
 FLECS_API
-ecs_rule_t* ecs_rule_init(
+ecs_filter_t* ecs_rule_init(
     ecs_world_t *world,
     const ecs_filter_desc_t *desc);
 
@@ -14962,17 +14943,7 @@ ecs_rule_t* ecs_rule_init(
  */
 FLECS_API
 void ecs_rule_fini(
-    ecs_rule_t *rule);
-
-/** Obtain filter from rule.
- * This operation returns the filter with which the rule was created.
- * 
- * @param rule The rule.
- * @return The filter.
- */
-FLECS_API
-const ecs_filter_t* ecs_rule_get_filter(
-    const ecs_rule_t *rule);
+    ecs_filter_t *rule);
 
 /** Return number of variables in rule.
  * 
@@ -14981,7 +14952,7 @@ const ecs_filter_t* ecs_rule_get_filter(
  */
 FLECS_API
 int32_t ecs_rule_var_count(
-    const ecs_rule_t *rule);
+    const ecs_filter_t *rule);
 
 /** Find variable index.
  * This operation looks up the index of a variable in the rule. This index can
@@ -14993,7 +14964,7 @@ int32_t ecs_rule_var_count(
  */
 FLECS_API
 int32_t ecs_rule_find_var(
-    const ecs_rule_t *rule,
+    const ecs_filter_t *rule,
     const char *name);    
 
 /** Get variable name.
@@ -15004,7 +14975,7 @@ int32_t ecs_rule_find_var(
  */
 FLECS_API
 const char* ecs_rule_var_name(
-    const ecs_rule_t *rule,
+    const ecs_filter_t *rule,
     int32_t var_id);
 
 /** Test if variable is an entity.
@@ -15018,7 +14989,7 @@ const char* ecs_rule_var_name(
  */
 FLECS_API
 bool ecs_rule_var_is_entity(
-    const ecs_rule_t *rule,
+    const ecs_filter_t *rule,
     int32_t var_id);  
 
 /** Iterate a rule.
@@ -15034,7 +15005,7 @@ bool ecs_rule_var_is_entity(
 FLECS_API
 ecs_iter_t ecs_rule_iter(
     const ecs_world_t *world,
-    const ecs_rule_t *rule);
+    const ecs_filter_t *rule);
 
 /** Progress rule iterator.
  * 
@@ -15064,7 +15035,7 @@ bool ecs_rule_next_instanced(
  */
 FLECS_API
 char* ecs_rule_str(
-    const ecs_rule_t *rule);
+    const ecs_filter_t *rule);
 
 /** Convert rule to string with profile.
  * To use this you must set the EcsIterProfile flag on an iterator before 
@@ -15076,7 +15047,7 @@ char* ecs_rule_str(
  */
 FLECS_API
 char* ecs_rule_str_w_profile(
-    const ecs_rule_t *rule,
+    const ecs_filter_t *rule,
     const ecs_iter_t *it);
 
 /** Populate variables from key-value string.
@@ -15092,7 +15063,7 @@ char* ecs_rule_str_w_profile(
  */
 FLECS_API
 const char* ecs_rule_parse_vars(
-    ecs_rule_t *rule,
+    ecs_filter_t *rule,
     ecs_iter_t *it,
     const char *expr);
 

@@ -27,7 +27,7 @@ void RulesComponentInheritance_1_ent_0_lvl(void) {
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
     ecs_add(world, e1, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Warlock(e1)"
     });
 
@@ -57,7 +57,7 @@ void RulesComponentInheritance_1_ent_1_lvl(void) {
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
     ecs_add(world, e1, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Warrior(e1)"
     });
 
@@ -87,7 +87,7 @@ void RulesComponentInheritance_1_ent_2_lvl(void) {
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
     ecs_add(world, e1, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "MeleeUnit(e1)"
     });
 
@@ -117,7 +117,7 @@ void RulesComponentInheritance_1_ent_3_lvl(void) {
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
     ecs_add(world, e1, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Unit(e1)"
     });
 
@@ -159,7 +159,7 @@ void RulesComponentInheritance_1_this_0_lvl(void) {
     ecs_entity_t e6 = ecs_new(world, RangedUnit);
     ecs_entity_t e7 = ecs_new(world, Unit);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Unit($this)"
     });
 
@@ -244,7 +244,7 @@ void RulesComponentInheritance_1_this_1_lvl(void) {
     /* ecs_entity_t e6 = */ ecs_new(world, RangedUnit);
     /* ecs_entity_t e7 = */ ecs_new(world, Unit);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "MeleeUnit($this)"
     });
 
@@ -294,7 +294,7 @@ void RulesComponentInheritance_1_this_2_lvl(void) {
     /* ecs_entity_t e6 = */ ecs_new(world, RangedUnit);
     /* ecs_entity_t e7 = */ ecs_new(world, Unit);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Warrior($this)"
     });
 
@@ -337,7 +337,7 @@ void RulesComponentInheritance_1_this_3_lvl(void) {
     /* ecs_entity_t e6 = */ ecs_new(world, RangedUnit);
     /* ecs_entity_t e7 = */ ecs_new(world, Unit);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Warlock($this)"
     });
 
@@ -389,7 +389,7 @@ void RulesComponentInheritance_1_this_0_lvl_written(void) {
     ecs_new(world, Warrior);
     ecs_new(world, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($this), Unit($this)"
     });
 
@@ -514,7 +514,7 @@ void RulesComponentInheritance_1_this_1_lvl_written(void) {
     ecs_new(world, Warrior);
     ecs_new(world, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($this), MeleeUnit($this)"
     });
 
@@ -589,7 +589,7 @@ void RulesComponentInheritance_1_this_2_lvl_written(void) {
     ecs_new(world, Warrior);
     ecs_new(world, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($this), Warrior($this)"
     });
 
@@ -654,7 +654,7 @@ void RulesComponentInheritance_1_this_3_lvl_written(void) {
     ecs_new(world, Warrior);
     ecs_new(world, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($this), Warlock($this)"
     });
 
@@ -693,7 +693,7 @@ void RulesComponentInheritance_1_var_0_lvl(void) {
     ecs_entity_t e6 = ecs_new(world, RangedUnit);
     ecs_entity_t e7 = ecs_new(world, Unit);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Unit($x)"
     });
 
@@ -781,7 +781,7 @@ void RulesComponentInheritance_1_var_1_lvl(void) {
     /* ecs_entity_t e6 = */ ecs_new(world, RangedUnit);
     /* ecs_entity_t e7 = */ ecs_new(world, Unit);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "MeleeUnit($x)"
     });
 
@@ -834,7 +834,7 @@ void RulesComponentInheritance_1_var_2_lvl(void) {
     /* ecs_entity_t e6 = */ ecs_new(world, RangedUnit);
     /* ecs_entity_t e7 = */ ecs_new(world, Unit);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Warrior($x)"
     });
 
@@ -878,7 +878,7 @@ void RulesComponentInheritance_1_var_3_lvl(void) {
     /* ecs_entity_t e6 = */ ecs_new(world, RangedUnit);
     /* ecs_entity_t e7 = */ ecs_new(world, Unit);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Warlock($x)"
     });
 
@@ -932,7 +932,7 @@ void RulesComponentInheritance_1_var_0_lvl_written(void) {
     ecs_new(world, Warrior);
     ecs_new(world, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($x), Unit($x)"
     });
 
@@ -1060,7 +1060,7 @@ void RulesComponentInheritance_1_var_1_lvl_written(void) {
     ecs_new(world, Warrior);
     ecs_new(world, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($x), MeleeUnit($x)"
     });
 
@@ -1138,7 +1138,7 @@ void RulesComponentInheritance_1_var_2_lvl_written(void) {
     ecs_new(world, Warrior);
     ecs_new(world, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($x), Warrior($x)"
     });
 
@@ -1206,7 +1206,7 @@ void RulesComponentInheritance_1_var_3_lvl_written(void) {
     ecs_new(world, Warrior);
     ecs_new(world, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($x), Warlock($x)"
     });
 
@@ -1243,7 +1243,7 @@ void RulesComponentInheritance_1_ent_1_lvl_self(void) {
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
     ecs_add(world, e1, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Warrior(e1:self)"
     });
 
@@ -1278,7 +1278,7 @@ void RulesComponentInheritance_1_this_1_lvl_self(void) {
     /* ecs_entity_t e6 = */ ecs_new(world, RangedUnit);
     /* ecs_entity_t e7 = */ ecs_new(world, Unit);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "MeleeUnit(self)"
     });
 
@@ -1344,7 +1344,7 @@ void RulesComponentInheritance_1_this_1_lvl_written_self(void) {
     ecs_new(world, Warrior);
     ecs_new(world, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag(self), MeleeUnit(self)"
     });
 
@@ -1403,7 +1403,7 @@ void RulesComponentInheritance_1_var_1_lvl_self(void) {
     /* ecs_entity_t e6 = */ ecs_new(world, RangedUnit);
     /* ecs_entity_t e7 = */ ecs_new(world, Unit);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "MeleeUnit($x:self)"
     });
 
@@ -1472,7 +1472,7 @@ void RulesComponentInheritance_1_var_1_lvl_written_self(void) {
     ecs_new(world, Warrior);
     ecs_new(world, Warlock);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($x), MeleeUnit($x)"
     });
 
@@ -1530,7 +1530,7 @@ void RulesComponentInheritance_1_ent_src_not(void) {
     ecs_add(world, e1, Warrior);
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Unit(e1)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Unit(e1)" });
         test_assert(r != NULL);
 
         {
@@ -1542,7 +1542,7 @@ void RulesComponentInheritance_1_ent_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!MeleeUnit(e1)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!MeleeUnit(e1)" });
         test_assert(r != NULL);
 
         {
@@ -1554,7 +1554,7 @@ void RulesComponentInheritance_1_ent_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Warrior(e1)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Warrior(e1)" });
         test_assert(r != NULL);
 
         {
@@ -1566,7 +1566,7 @@ void RulesComponentInheritance_1_ent_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Warlock(e1)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Warlock(e1)" });
         test_assert(r != NULL);
 
         {
@@ -1583,7 +1583,7 @@ void RulesComponentInheritance_1_ent_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!RangedUnit(e1)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!RangedUnit(e1)" });
         test_assert(r != NULL);
 
         {
@@ -1600,7 +1600,7 @@ void RulesComponentInheritance_1_ent_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Archer(e1)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Archer(e1)" });
         test_assert(r != NULL);
 
         {
@@ -1617,7 +1617,7 @@ void RulesComponentInheritance_1_ent_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Wizard(e1)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Wizard(e1)" });
         test_assert(r != NULL);
 
         {
@@ -1660,7 +1660,7 @@ void RulesComponentInheritance_1_this_src_not(void) {
     ecs_add(world, e7, Warlock);
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Unit($this), Tag($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Unit($this), Tag($this)" });
         test_assert(r != NULL);
 
         {
@@ -1672,7 +1672,7 @@ void RulesComponentInheritance_1_this_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!MeleeUnit($this), Tag($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!MeleeUnit($this), Tag($this)" });
         test_assert(r != NULL);
 
         {
@@ -1724,7 +1724,7 @@ void RulesComponentInheritance_1_this_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Warrior($this), Tag($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Warrior($this), Tag($this)" });
         test_assert(r != NULL);
 
         {
@@ -1786,7 +1786,7 @@ void RulesComponentInheritance_1_this_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Warlock($this), Tag($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Warlock($this), Tag($this)" });
         test_assert(r != NULL);
 
         {
@@ -1858,7 +1858,7 @@ void RulesComponentInheritance_1_this_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!RangedUnit($this), Tag($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!RangedUnit($this), Tag($this)" });
         test_assert(r != NULL);
 
         {
@@ -1900,7 +1900,7 @@ void RulesComponentInheritance_1_this_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Archer($this), Tag($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Archer($this), Tag($this)" });
         test_assert(r != NULL);
 
         {
@@ -1972,7 +1972,7 @@ void RulesComponentInheritance_1_this_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Wizard($this), Tag($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Wizard($this), Tag($this)" });
         test_assert(r != NULL);
 
         {
@@ -2060,7 +2060,7 @@ void RulesComponentInheritance_1_var_src_not(void) {
     ecs_add(world, e7, Warlock);
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Unit($x), Tag($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Unit($x), Tag($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -2075,7 +2075,7 @@ void RulesComponentInheritance_1_var_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!MeleeUnit($x), Tag($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!MeleeUnit($x), Tag($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -2130,7 +2130,7 @@ void RulesComponentInheritance_1_var_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Warrior($x), Tag($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Warrior($x), Tag($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -2195,7 +2195,7 @@ void RulesComponentInheritance_1_var_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Warlock($x), Tag($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Warlock($x), Tag($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -2270,7 +2270,7 @@ void RulesComponentInheritance_1_var_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!RangedUnit($x), Tag($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!RangedUnit($x), Tag($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -2315,7 +2315,7 @@ void RulesComponentInheritance_1_var_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Archer($x), Tag($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Archer($x), Tag($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -2390,7 +2390,7 @@ void RulesComponentInheritance_1_var_src_not(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "!Wizard($x), Tag($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "!Wizard($x), Tag($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -2481,7 +2481,7 @@ void RulesComponentInheritance_1_this_src_not_written(void) {
     ecs_add(world, e7, Warlock);
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($this), !Unit($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($this), !Unit($this)" });
         test_assert(r != NULL);
 
         {
@@ -2493,7 +2493,7 @@ void RulesComponentInheritance_1_this_src_not_written(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($this), !MeleeUnit($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($this), !MeleeUnit($this)" });
         test_assert(r != NULL);
 
         {
@@ -2546,7 +2546,7 @@ void RulesComponentInheritance_1_this_src_not_written(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($this), !Warrior($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($this), !Warrior($this)" });
         test_assert(r != NULL);
 
         {
@@ -2608,7 +2608,7 @@ void RulesComponentInheritance_1_this_src_not_written(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($this), !Warlock($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($this), !Warlock($this)" });
         test_assert(r != NULL);
 
         {
@@ -2680,7 +2680,7 @@ void RulesComponentInheritance_1_this_src_not_written(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($this), !RangedUnit($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($this), !RangedUnit($this)" });
         test_assert(r != NULL);
 
         {
@@ -2722,7 +2722,7 @@ void RulesComponentInheritance_1_this_src_not_written(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($this), !Archer($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($this), !Archer($this)" });
         test_assert(r != NULL);
 
         {
@@ -2794,7 +2794,7 @@ void RulesComponentInheritance_1_this_src_not_written(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($this), !Wizard($this)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($this), !Wizard($this)" });
         test_assert(r != NULL);
 
         {
@@ -2882,7 +2882,7 @@ void RulesComponentInheritance_1_var_src_not_written(void) {
     ecs_add(world, e7, Warlock);
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($x), !Unit($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($x), !Unit($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -2897,7 +2897,7 @@ void RulesComponentInheritance_1_var_src_not_written(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($x), !MeleeUnit($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($x), !MeleeUnit($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -2952,7 +2952,7 @@ void RulesComponentInheritance_1_var_src_not_written(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($x), !Warrior($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($x), !Warrior($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -3017,7 +3017,7 @@ void RulesComponentInheritance_1_var_src_not_written(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($x), !Warlock($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($x), !Warlock($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -3092,7 +3092,7 @@ void RulesComponentInheritance_1_var_src_not_written(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($x), !RangedUnit($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($x), !RangedUnit($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -3137,7 +3137,7 @@ void RulesComponentInheritance_1_var_src_not_written(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($x), !Archer($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($x), !Archer($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -3212,7 +3212,7 @@ void RulesComponentInheritance_1_var_src_not_written(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, { .expr = "Tag($x), !Wizard($x)" });
+        ecs_filter_t *r = ecs_rule(world, { .expr = "Tag($x), !Wizard($x)" });
         test_assert(r != NULL);
 
         int x_var = ecs_rule_find_var(r, "x");
@@ -3290,7 +3290,7 @@ void RulesComponentInheritance_first_self(void) {
     ecs_add(world, e2, Warrior);
 
     {
-        ecs_rule_t *r = ecs_rule(world, {
+        ecs_filter_t *r = ecs_rule(world, {
             .expr = "Warrior:self:(e1)"
         });
 
@@ -3305,7 +3305,7 @@ void RulesComponentInheritance_first_self(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, {
+        ecs_filter_t *r = ecs_rule(world, {
             .expr = "Warlock:self:(e1)"
         });
 
@@ -3326,7 +3326,7 @@ void RulesComponentInheritance_first_self(void) {
     }
 
     {
-        ecs_rule_t *r = ecs_rule(world, {
+        ecs_filter_t *r = ecs_rule(world, {
             .expr = "Warrior:self:(e2)"
         });
 

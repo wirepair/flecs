@@ -185,7 +185,7 @@ void Poly_iter_rule(void) {
     ECS_COMPONENT_DEFINE(world, Position);
     ECS_TAG_DEFINE(world, Tag);
     
-    ecs_rule_t *q = ecs_rule_new(world, "Position");
+    ecs_filter_t *q = ecs_rule_new(world, "Position");
     test_assert(q != NULL);
 
     test_no_chain(world, q, 0);
@@ -201,7 +201,7 @@ void Poly_iter_rule_w_filter(void) {
     ECS_COMPONENT_DEFINE(world, Position);
     ECS_TAG_DEFINE(world, Tag);
     
-    ecs_rule_t *q = ecs_rule_new(world, "Position");
+    ecs_filter_t *q = ecs_rule_new(world, "Position");
     test_assert(q != NULL);
 
     test_w_chain(world, q);
@@ -414,7 +414,7 @@ void Poly_iter_rule_from_entity(void) {
     ecs_entity_t e = ecs_new(world, Tag);
 
     ecs_entity_t qe = ecs_new_id(world);
-    ecs_rule_t *q = ecs_rule(world, {
+    ecs_filter_t *q = ecs_rule(world, {
         .terms = {{ Tag }},
         .entity = qe
     });
@@ -488,7 +488,7 @@ void Poly_free_rule_entity(void) {
     ECS_TAG(world, Tag);
 
     ecs_entity_t qe = ecs_new_id(world);
-    ecs_rule_t *q = ecs_rule(world, {
+    ecs_filter_t *q = ecs_rule(world, {
         .terms = {{ Tag }},
         .entity = qe
     });

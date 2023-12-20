@@ -36,7 +36,7 @@ void RulesTransitive_1_fact_0_lvl_true(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, SanFrancisco)"
     });
 
@@ -72,7 +72,7 @@ void RulesTransitive_1_fact_1_lvl_true(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, California)"
     });
 
@@ -108,7 +108,7 @@ void RulesTransitive_1_fact_2_lvl_true(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, UnitedStates)"
     });
 
@@ -144,7 +144,7 @@ void RulesTransitive_1_fact_0_lvl_false(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, Seattle)"
     });
 
@@ -174,7 +174,7 @@ void RulesTransitive_1_fact_1_lvl_false(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, Washington)"
     });
 
@@ -204,7 +204,7 @@ void RulesTransitive_1_fact_2_lvl_false(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, Netherlands)"
     });
 
@@ -236,7 +236,7 @@ void RulesTransitive_1_fact_reflexive(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, e1)"
     });
 
@@ -282,7 +282,7 @@ void RulesTransitive_1_this_src_written_0_lvl(void) {
     ecs_entity_t e4 = ecs_new(world, Tag);
     ecs_entity_t e5 = ecs_new(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($this), LocatedIn($this, SanFrancisco)"
     });
 
@@ -331,7 +331,7 @@ void RulesTransitive_1_this_src_written_1_lvl(void) {
     ecs_entity_t e4 = ecs_new(world, Tag);
     ecs_entity_t e5 = ecs_new(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($this), LocatedIn($this, California)"
     });
 
@@ -388,7 +388,7 @@ void RulesTransitive_1_this_src_written_2_lvl(void) {
     ecs_entity_t e4 = ecs_new(world, Tag);
     ecs_entity_t e5 = ecs_new(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($this), LocatedIn($this, UnitedStates)"
     });
 
@@ -462,7 +462,7 @@ void RulesTransitive_1_this_src_written_reflexive(void) {
     ecs_set_name(world, e2, "e2");
     ecs_set_name(world, e3, "e3");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($this), LocatedIn($this, e2)"
     });
 
@@ -531,7 +531,7 @@ void RulesTransitive_1_this_src_0_lvl(void) {
     ecs_entity_t e5 = ecs_new_id(world);
     ecs_entity_t e6 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($this, SanFrancisco)"
     });
 
@@ -588,7 +588,7 @@ void RulesTransitive_1_this_src_1_lvl(void) {
     ecs_entity_t e5 = ecs_new_id(world);
     ecs_entity_t e6 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($this, California)"
     });
 
@@ -653,7 +653,7 @@ void RulesTransitive_1_this_src_2_lvl(void) {
     ecs_entity_t e5 = ecs_new_id(world);
     ecs_entity_t e6 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($this, UnitedStates)"
     });
 
@@ -739,7 +739,7 @@ void RulesTransitive_1_this_src_reflexive(void) {
     ecs_entity_t e5 = ecs_new_id(world);
     ecs_entity_t e6 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($this, California)"
     });
 
@@ -805,7 +805,7 @@ void RulesTransitive_1_ent_src_tgt_var_0_lvl(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, $x)"
     });
 
@@ -852,7 +852,7 @@ void RulesTransitive_1_ent_src_tgt_var_1_lvl(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, $x)"
     });
 
@@ -905,7 +905,7 @@ void RulesTransitive_1_ent_src_tgt_var_2_lvl(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, $x)"
     });
 
@@ -966,7 +966,7 @@ void RulesTransitive_1_ent_src_tgt_var_reflexive(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, $x)"
     });
 
@@ -1024,7 +1024,7 @@ void RulesTransitive_1_this_src_tgt_var(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($this, $x)"
     });
 
@@ -1156,7 +1156,7 @@ void RulesTransitive_1_this_src_tgt_var_reflexive(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($this, $x)"
     });
 
@@ -1356,7 +1356,7 @@ void RulesTransitive_1_var_src_written_0_lvl(void) {
     ecs_entity_t e4 = ecs_new(world, Tag);
     ecs_entity_t e5 = ecs_new(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($r), LocatedIn($r, SanFrancisco)"
     });
 
@@ -1415,7 +1415,7 @@ void RulesTransitive_1_var_src_written_1_lvl(void) {
     ecs_entity_t e4 = ecs_new(world, Tag);
     ecs_entity_t e5 = ecs_new(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($r), LocatedIn($r, California)"
     });
 
@@ -1482,7 +1482,7 @@ void RulesTransitive_1_var_src_written_2_lvl(void) {
     ecs_entity_t e4 = ecs_new(world, Tag);
     ecs_entity_t e5 = ecs_new(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($r), LocatedIn($r, UnitedStates)"
     });
 
@@ -1566,7 +1566,7 @@ void RulesTransitive_1_var_src_written_reflexive(void) {
     ecs_set_name(world, e2, "e2");
     ecs_set_name(world, e3, "e3");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($r), LocatedIn($r, e2)"
     });
 
@@ -1645,7 +1645,7 @@ void RulesTransitive_1_var_src_0_lvl(void) {
     ecs_entity_t e5 = ecs_new_id(world);
     ecs_entity_t e6 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($r, SanFrancisco)"
     });
 
@@ -1710,7 +1710,7 @@ void RulesTransitive_1_var_src_1_lvl(void) {
     ecs_entity_t e5 = ecs_new_id(world);
     ecs_entity_t e6 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($r, California)"
     });
 
@@ -1788,7 +1788,7 @@ void RulesTransitive_1_var_src_2_lvl(void) {
     ecs_entity_t e5 = ecs_new_id(world);
     ecs_entity_t e6 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($r, UnitedStates)"
     });
 
@@ -1892,7 +1892,7 @@ void RulesTransitive_1_var_src_reflexive(void) {
     ecs_entity_t e5 = ecs_new_id(world);
     ecs_entity_t e6 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($r, California)"
     });
 
@@ -1969,7 +1969,7 @@ void RulesTransitive_1_var_src_tgt_var(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($r, $x)"
     });
 
@@ -2140,7 +2140,7 @@ void RulesTransitive_1_var_src_tgt_var_reflexive(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($r, $x)"
     });
 
@@ -2375,7 +2375,7 @@ void RulesTransitive_1_ent_src_tgt_this_0_lvl(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, $this)"
     });
 
@@ -2425,7 +2425,7 @@ void RulesTransitive_1_ent_src_tgt_this_1_lvl(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, $this)"
     });
 
@@ -2482,7 +2482,7 @@ void RulesTransitive_1_ent_src_tgt_this_2_lvl(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, $this)"
     });
 
@@ -2548,7 +2548,7 @@ void RulesTransitive_1_ent_src_tgt_this_reflexive(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, $this)"
     });
 
@@ -2612,7 +2612,7 @@ void RulesTransitive_1_var_src_tgt_this(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($r, $this)"
     });
 
@@ -2804,7 +2804,7 @@ void RulesTransitive_1_var_src_tgt_this_reflexive(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($r, $this)"
     });
 
@@ -3078,7 +3078,7 @@ void RulesTransitive_2_ent_src_constrain_tgt_var_before_0_lvl(void) {
     ecs_add_pair(world, e2, LocatedIn, SanFrancisco);
     ecs_add_pair(world, e3, LocatedIn, LosAngeles);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "City($x), LocatedIn(e1, $x)"
     });
 
@@ -3123,7 +3123,7 @@ void RulesTransitive_2_ent_src_constrain_tgt_var_before_1_lvl(void) {
     ecs_add_pair(world, e2, LocatedIn, SanFrancisco);
     ecs_add_pair(world, e3, LocatedIn, LosAngeles);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "State($x), LocatedIn(e1, $x)"
     });
 
@@ -3167,7 +3167,7 @@ void RulesTransitive_2_ent_src_constrain_tgt_var_before_2_lvl(void) {
     ecs_add_pair(world, e2, LocatedIn, SanFrancisco);
     ecs_add_pair(world, e3, LocatedIn, Amsterdam);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Country($x), LocatedIn(e1, $x)"
     });
 
@@ -3213,7 +3213,7 @@ void RulesTransitive_2_ent_src_constrain_tgt_var_after_0_lvl(void) {
     ecs_add_pair(world, e2, LocatedIn, SanFrancisco);
     ecs_add_pair(world, e3, LocatedIn, LosAngeles);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, $x), City($x)"
     });
 
@@ -3258,7 +3258,7 @@ void RulesTransitive_2_ent_src_constrain_tgt_var_after_1_lvl(void) {
     ecs_add_pair(world, e2, LocatedIn, SanFrancisco);
     ecs_add_pair(world, e3, LocatedIn, LosAngeles);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, $x), State($x)"
     });
 
@@ -3302,7 +3302,7 @@ void RulesTransitive_2_ent_src_constrain_tgt_var_after_2_lvl(void) {
     ecs_add_pair(world, e2, LocatedIn, SanFrancisco);
     ecs_add_pair(world, e3, LocatedIn, Amsterdam);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(e1, $x), Country($x)"
     });
 
@@ -3350,7 +3350,7 @@ void RulesTransitive_2_this_src_constrain_tgt_var_before_0_lvl(void) {
     ecs_add_pair(world, e3, LocatedIn, LosAngeles);
     ecs_add_pair(world, e4, LocatedIn, Amsterdam);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "City($x), LocatedIn($this, $x)"
     });
 
@@ -3417,7 +3417,7 @@ void RulesTransitive_2_this_src_constrain_tgt_var_before_1_lvl(void) {
     ecs_add_pair(world, e3, LocatedIn, LosAngeles);
     ecs_add_pair(world, e4, LocatedIn, Amsterdam);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "State($x), LocatedIn($this, $x)"
     });
 
@@ -3511,7 +3511,7 @@ void RulesTransitive_2_this_src_constrain_tgt_var_before_2_lvl(void) {
     ecs_add_pair(world, e3, LocatedIn, LosAngeles);
     ecs_add_pair(world, e4, LocatedIn, Amsterdam);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Country($x), LocatedIn($this, $x)"
     });
 
@@ -3626,7 +3626,7 @@ void RulesTransitive_2_this_src_constrain_tgt_var_after_0_lvl(void) {
     ecs_add_pair(world, e3, LocatedIn, LosAngeles);
     ecs_add_pair(world, e4, LocatedIn, Amsterdam);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($this, $x), City($x)"
     });
 
@@ -3693,7 +3693,7 @@ void RulesTransitive_2_this_src_constrain_tgt_var_after_1_lvl(void) {
     ecs_add_pair(world, e3, LocatedIn, LosAngeles);
     ecs_add_pair(world, e4, LocatedIn, Amsterdam);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($this, $x), State($x)"
     });
 
@@ -3787,7 +3787,7 @@ void RulesTransitive_2_this_src_constrain_tgt_var_after_2_lvl(void) {
     ecs_add_pair(world, e3, LocatedIn, LosAngeles);
     ecs_add_pair(world, e4, LocatedIn, Amsterdam);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($this, $x), Country($x)"
     });
 
@@ -3888,7 +3888,7 @@ void RulesTransitive_1_src_tgt_same_var(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($x, $x)"
     });
 
@@ -3904,7 +3904,7 @@ void RulesTransitive_1_src_tgt_same_var_reflexive(void) {
 
     ecs_add_id(world, LocatedIn, EcsReflexive);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($x, $x)"
     });
 
@@ -3984,7 +3984,7 @@ void RulesTransitive_1_src_tgt_same_this_var_reflexive(void) {
 
     ecs_add_id(world, LocatedIn, EcsReflexive);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($this, $this)"
     });
 
@@ -4072,7 +4072,7 @@ void RulesTransitive_1_any_src_tgt_var(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn(_, $x)"
     });
 
@@ -4132,7 +4132,7 @@ void RulesTransitive_not_transitive_ent_tgt(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "!LocatedIn($this, UnitedStates), Location($this)"
     });
 
@@ -4194,7 +4194,7 @@ void RulesTransitive_not_transitive_var_tgt(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "!LocatedIn($this, $x), Location($this)"
     });
 
@@ -4229,7 +4229,7 @@ void RulesTransitive_not_transitive_ent_tgt_written(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Location($this), !LocatedIn($this, UnitedStates)"
     });
 
@@ -4291,7 +4291,7 @@ void RulesTransitive_not_transitive_var_tgt_written(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Location($this), !LocatedIn($this, $x)"
     });
 
@@ -4326,7 +4326,7 @@ void RulesTransitive_optional_transitive_ent_tgt(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "?LocatedIn($this, UnitedStates), Location($this)"
     });
 
@@ -4422,7 +4422,7 @@ void RulesTransitive_optional_transitive_var_tgt(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "?LocatedIn($this, $x), Tag($this)"
     });
 
@@ -4594,7 +4594,7 @@ void RulesTransitive_optional_transitive_ent_tgt_written(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Location($this), ?LocatedIn($this, UnitedStates)"
     });
 
@@ -4690,7 +4690,7 @@ void RulesTransitive_optional_transitive_var_tgt_written(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Tag($this), ?LocatedIn($this, $x)"
     });
 
@@ -4863,7 +4863,7 @@ void RulesTransitive_2_var_src_w_same_tgt_ent(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($x, California), LocatedIn($y, California), Tag($x), Tag($y)"
     });
 
@@ -4964,7 +4964,7 @@ void RulesTransitive_self_target(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($this, $x:self)"
     });
 
@@ -5039,7 +5039,7 @@ void RulesTransitive_any_target(void) {
 
     populate_facts(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "LocatedIn($this, _)"
     });
 

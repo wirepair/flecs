@@ -476,9 +476,7 @@ bool flecs_rest_reply_query(
     rest_prev_log = ecs_os_api.log_;
     ecs_os_api.log_ = flecs_rest_capture_log;
 
-    ecs_rule_t *r = ecs_rule_init(world, &(ecs_filter_desc_t){
-        .expr = q
-    });
+    ecs_filter_t *r = ecs_rule(world, { .expr = q });
     if (!r) {
         flecs_rest_reply_set_captured_log(reply);
     } else {

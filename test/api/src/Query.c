@@ -9145,7 +9145,7 @@ void Query_query_w_singleton_w_rule_iter(void) {
         }
     });
 
-    ecs_rule_t *r = ecs_rule(ecs, {
+    ecs_filter_t *r = ecs_rule(ecs, {
         .terms = {{Tag}}
     });
 

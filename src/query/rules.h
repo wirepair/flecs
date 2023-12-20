@@ -3,13 +3,16 @@
  * @brief Internal types and functions for rules addon.
  */
 
-#include "../../private_api.h"
+#include "../private_api.h"
 
 #ifdef FLECS_RULES
 
+typedef struct ecs_rule_t ecs_rule_t;
 typedef uint8_t ecs_var_id_t;
 typedef int16_t ecs_rule_lbl_t;
 typedef ecs_flags64_t ecs_write_flags_t;
+
+#define flecs_rule(filter) ((ecs_rule_t*)filter)
 
 #define EcsRuleMaxVarCount      (64)
 #define EcsVarNone              ((ecs_var_id_t)-1)
@@ -282,7 +285,6 @@ typedef struct {
 } ecs_rule_var_cache_t;
 
 struct ecs_rule_t {
-    ecs_header_t hdr;             /* Poly header */
     ecs_filter_t filter;          /* Filter */
 
     /* Variables */
@@ -311,6 +313,12 @@ struct ecs_rule_t {
 /* Convert integer to label */
 ecs_rule_lbl_t flecs_itolbl(
     int64_t val);
+
+/* Find variable by name/kind */
+ecs_var_id_t flecs_rule_find_var_id(
+    const ecs_rule_t *rule,
+    const char *name,
+    ecs_var_kind_t kind);
 
 /* Get ref flags (IsEntity) or IsVar) for ref (Src, First, Second) */
 ecs_flags16_t flecs_rule_ref_flags(

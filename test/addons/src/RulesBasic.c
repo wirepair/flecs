@@ -7,7 +7,7 @@ void RulesBasic_1_fact_w_tag(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent)"
     });
 
@@ -41,7 +41,7 @@ void RulesBasic_1_fact_w_component(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(ent)"
     });
 
@@ -80,7 +80,7 @@ void RulesBasic_1_fact_w_tag_pair(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent, TgtA)"
     });
 
@@ -115,7 +115,7 @@ void RulesBasic_1_fact_w_component_pair(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(ent, TgtA)"
     });
 
@@ -150,7 +150,7 @@ void RulesBasic_2_facts_same_src_w_tag(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent), RelB(ent)"
     });
 
@@ -194,7 +194,7 @@ void RulesBasic_2_facts_same_src_w_component(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(ent), Velocity(ent)"
     });
 
@@ -247,7 +247,7 @@ void RulesBasic_2_facts_same_src_w_tag_pair(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent, TgtA), RelA(ent, TgtB)"
     });
 
@@ -292,7 +292,7 @@ void RulesBasic_2_facts_same_src_w_component_pair(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(ent, TgtA), Position(ent, TgtB)"
     });
 
@@ -337,7 +337,7 @@ void RulesBasic_2_facts_other_src_w_tag(void) {
     ecs_entity_t ent1 = ecs_new_entity(world, "ent1");
     ecs_entity_t ent2 = ecs_new_entity(world, "ent2");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent1), RelB(ent2)"
     });
 
@@ -382,7 +382,7 @@ void RulesBasic_2_facts_other_src_w_component(void) {
     ecs_entity_t ent1 = ecs_new_entity(world, "ent1");
     ecs_entity_t ent2 = ecs_new_entity(world, "ent2");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(ent1), Velocity(ent2)"
     });
 
@@ -436,7 +436,7 @@ void RulesBasic_2_facts_other_src_w_tag_pair(void) {
     ecs_entity_t ent1 = ecs_new_entity(world, "ent1");
     ecs_entity_t ent2 = ecs_new_entity(world, "ent2");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent1, TgtA), RelA(ent2, TgtB)"
     });
 
@@ -482,7 +482,7 @@ void RulesBasic_2_facts_other_src_w_component_pair(void) {
     ecs_entity_t ent1 = ecs_new_entity(world, "ent1");
     ecs_entity_t ent2 = ecs_new_entity(world, "ent2");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(ent1, TgtA), Position(ent2, TgtB)"
     });
 
@@ -526,7 +526,7 @@ void RulesBasic_1_fact_w_any(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "_(ent)"
     });
 
@@ -563,7 +563,7 @@ void RulesBasic_1_fact_w_pair_any_tgt(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent, _)"
     });
 
@@ -600,7 +600,7 @@ void RulesBasic_1_fact_w_pair_any_rel(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "_(ent, TgtA)"
     });
 
@@ -639,7 +639,7 @@ void RulesBasic_1_fact_w_pair_any_rel_tgt(void) {
     ecs_add_pair(world, ent, RelA, TgtA);
     ecs_add_pair(world, ent, RelB, TgtA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "_(ent, _)"
     });
 
@@ -667,7 +667,7 @@ void RulesBasic_2_facts_same_src_w_any(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "_(ent), _(ent)"
     });
 
@@ -706,7 +706,7 @@ void RulesBasic_2_facts_same_src_w_pair_any_tgt(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent, _), RelA(ent, _)"
     });
 
@@ -745,7 +745,7 @@ void RulesBasic_2_facts_same_src_w_pair_any_rel(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "_(ent, TgtA), _(ent, TgtA)"
     });
 
@@ -784,7 +784,7 @@ void RulesBasic_2_facts_same_src_w_pair_any_rel_tgt(void) {
     ecs_add_pair(world, ent, RelA, TgtA);
     ecs_add_pair(world, ent, RelB, TgtA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "_(ent, _), _(ent, _)"
     });
 
@@ -815,7 +815,7 @@ void RulesBasic_2_facts_other_src_w_any(void) {
     ecs_entity_t ent1 = ecs_new_entity(world, "ent1");
     ecs_entity_t ent2 = ecs_new_entity(world, "ent2");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "_(ent1), _(ent2)"
     });
 
@@ -857,7 +857,7 @@ void RulesBasic_2_facts_other_src_w_pair_any_tgt(void) {
     ecs_entity_t ent1 = ecs_new_entity(world, "ent1");
     ecs_entity_t ent2 = ecs_new_entity(world, "ent2");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent1, _), RelA(ent2, _)"
     });
 
@@ -899,7 +899,7 @@ void RulesBasic_2_facts_other_src_w_pair_any_rel(void) {
     ecs_entity_t ent1 = ecs_new_entity(world, "ent1");
     ecs_entity_t ent2 = ecs_new_entity(world, "ent2");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent1, _), RelA(ent2, _)"
     });
 
@@ -945,7 +945,7 @@ void RulesBasic_2_facts_other_src_w_pair_any_rel_tgt(void) {
     ecs_add_pair(world, ent2, RelA, TgtA);
     ecs_add_pair(world, ent2, RelB, TgtA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "_(ent1, _), _(ent2, _)"
     });
 
@@ -975,7 +975,7 @@ void RulesBasic_1_this_src_w_tag(void) {
     ecs_entity_t e1 = ecs_new_id(world);
     ecs_entity_t e2 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this)"
     });
 
@@ -1013,7 +1013,7 @@ void RulesBasic_1_this_src_w_component(void) {
     ecs_entity_t e1 = ecs_new_id(world);
     ecs_entity_t e2 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position($this)"
     });
 
@@ -1056,7 +1056,7 @@ void RulesBasic_1_this_src_w_tag_pair(void) {
     ecs_entity_t e1 = ecs_new_id(world);
     ecs_entity_t e2 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this, TgtA)"
     });
 
@@ -1095,7 +1095,7 @@ void RulesBasic_1_this_src_w_component_pair(void) {
     ecs_entity_t e1 = ecs_new_id(world);
     ecs_entity_t e2 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position($this, TgtA)"
     });
 
@@ -1142,7 +1142,7 @@ void RulesBasic_1_this_src_w_tag_2_tables(void) {
     ecs_add(world, e1, FragmentA);
     ecs_add(world, e2, FragmentB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this)"
     });
 
@@ -1190,7 +1190,7 @@ void RulesBasic_1_this_src_w_component_2_tables(void) {
     ecs_add(world, e1, FragmentA);
     ecs_add(world, e2, FragmentB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position($this)"
     });
 
@@ -1250,7 +1250,7 @@ void RulesBasic_1_this_src_w_tag_pair_2_tables(void) {
     ecs_add(world, e1, FragmentA);
     ecs_add(world, e2, FragmentB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this, TgtA)"
     });
 
@@ -1299,7 +1299,7 @@ void RulesBasic_1_this_src_w_component_pair_2_tables(void) {
     ecs_add(world, e1, FragmentA);
     ecs_add(world, e2, FragmentB);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position($this, TgtA)"
     });
 
@@ -1354,7 +1354,7 @@ void RulesBasic_2_this_src_w_tag(void) {
     ecs_entity_t e1 = ecs_new_id(world);
     ecs_entity_t e2 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), RelB($this)"
     });
 
@@ -1397,7 +1397,7 @@ void RulesBasic_2_this_src_w_component(void) {
     ecs_entity_t e1 = ecs_new_id(world);
     ecs_entity_t e2 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position($this), Velocity($this)"
     });
 
@@ -1450,7 +1450,7 @@ void RulesBasic_2_this_src_ent_src_w_tag(void) {
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_entity(world, "e3");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), RelB(e3)"
     });
 
@@ -1493,7 +1493,7 @@ void RulesBasic_2_this_src_ent_src_w_component(void) {
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_entity(world, "e3");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position($this), Velocity(e3)",
         .instanced = true
     });
@@ -1544,7 +1544,7 @@ void RulesBasic_2_ent_src_this_src_w_tag(void) {
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_entity(world, "e3");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelB(e3), RelA($this)"
     });
 
@@ -1587,7 +1587,7 @@ void RulesBasic_2_ent_src_this_src_w_component(void) {
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_entity(world, "e3");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Velocity(e3), Position($this)",
         .instanced = true
     });
@@ -1637,7 +1637,7 @@ void RulesBasic_recycled_tag(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent)"
     });
 
@@ -1673,7 +1673,7 @@ void RulesBasic_recycled_src(void) {
     ecs_entity_t ent = ecs_new_entity(world, "ent");
     test_assert((uint32_t)ent != ent);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent)"
     });
 
@@ -1710,7 +1710,7 @@ void RulesBasic_recycled_pair_rel(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent, TgtA)"
     });
 
@@ -1747,7 +1747,7 @@ void RulesBasic_recycled_pair_tgt(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent, TgtA)"
     });
 
@@ -1785,7 +1785,7 @@ void RulesBasic_this_src_w_wildcard(void) {
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), *($this)"
     });
 
@@ -1868,7 +1868,7 @@ void RulesBasic_this_src_w_pair_rel_wildcard(void) {
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this, TgtA), *($this, TgtA)"
     });
 
@@ -1954,7 +1954,7 @@ void RulesBasic_this_src_w_pair_tgt_wildcard(void) {
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this, TgtA), RelA($this, *)"
     });
 
@@ -2039,7 +2039,7 @@ void RulesBasic_this_src_w_pair_rel_tgt_wildcard(void) {
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this, TgtA), *($this, *)"
     });
 
@@ -2115,7 +2115,7 @@ void RulesBasic_this_src_w_any(void) {
     ECS_TAG(world, Rel);
     ECS_TAG(world, Tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "_"
     });
 
@@ -2145,7 +2145,7 @@ void RulesBasic_this_src_w_any(void) {
 void RulesBasic_not_any(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "!_"
     });
 
@@ -2168,7 +2168,7 @@ void RulesBasic_this_src_w_any_written(void) {
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this), _($this)"
     });
 
@@ -2228,7 +2228,7 @@ void RulesBasic_this_src_w_pair_rel_any(void) {
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this, TgtA), _($this, TgtA)"
     });
 
@@ -2291,7 +2291,7 @@ void RulesBasic_this_src_w_pair_tgt_any(void) {
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this, TgtA), RelA($this, _)"
     });
 
@@ -2353,7 +2353,7 @@ void RulesBasic_this_src_w_pair_rel_tgt_any(void) {
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_id(world);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA($this, TgtA), _($this, _)"
     });
 
@@ -2409,7 +2409,7 @@ void RulesBasic_ent_src_w_wildcard(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "*(ent)"
     });
 
@@ -2460,7 +2460,7 @@ void RulesBasic_ent_src_w_pair_rel_wildcard(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "*(ent, TgtA)"
     });
 
@@ -2512,7 +2512,7 @@ void RulesBasic_ent_src_w_pair_tgt_wildcard(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent, *)"
     });
 
@@ -2567,7 +2567,7 @@ void RulesBasic_ent_src_w_pair_rel_tgt_wildcard(void) {
     ecs_add_pair(world, e1, RelA, TgtB);
     ecs_add_pair(world, e1, RelB, TgtA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "*(ent, *)"
     });
 
@@ -2609,7 +2609,7 @@ void RulesBasic_1_wildcard_src(void) {
     ECS_TAG(world, RelA);
     ECS_TAG(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(*)"
     });
 
@@ -2650,7 +2650,7 @@ void RulesBasic_1_wildcard_src_w_pair(void) {
     ECS_TAG(world, Tag);
     ECS_TAG(world, TgtA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(*, TgtA)"
     });
 
@@ -2691,7 +2691,7 @@ void RulesBasic_2_wildcard_src(void) {
     ECS_TAG(world, RelB);
     ECS_TAG(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(*), RelB(*)"
     });
 
@@ -2754,7 +2754,7 @@ void RulesBasic_2_wildcard_src_w_pair(void) {
     ECS_TAG(world, Tag);
     ECS_TAG(world, TgtA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(*, TgtA), RelB(*, TgtA)"
     });
 
@@ -2816,7 +2816,7 @@ void RulesBasic_rule_w_iter_next(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(ent)"
     });
 
@@ -2851,7 +2851,7 @@ void RulesBasic_1_wildcard_src_w_pair_tgt_var(void) {
     ECS_TAG(world, TgtB);
     ECS_TAG(world, TgtC);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Rel(*, $x)"
     });
 
@@ -2902,7 +2902,7 @@ void RulesBasic_1_wildcard_src_w_pair_rel_var(void) {
     ECS_TAG(world, RelC);
     ECS_TAG(world, Tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x(*, Tgt)"
     });
 
@@ -2953,7 +2953,7 @@ void RulesBasic_1_wildcard_src_w_pair_tgt_this(void) {
     ECS_TAG(world, TgtB);
     ECS_TAG(world, TgtC);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Rel(*, $this)"
     });
 
@@ -3007,7 +3007,7 @@ void RulesBasic_1_wildcard_src_w_pair_rel_this(void) {
     ECS_TAG(world, RelC);
     ECS_TAG(world, Tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this(*, Tgt)"
     });
 
@@ -3059,7 +3059,7 @@ void RulesBasic_1_any_src(void) {
     ECS_TAG(world, RelA);
     ECS_TAG(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(_)"
     });
 
@@ -3095,7 +3095,7 @@ void RulesBasic_1_any_src_w_pair(void) {
     ECS_TAG(world, Tag);
     ECS_TAG(world, TgtA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(_, TgtA)"
     });
 
@@ -3131,7 +3131,7 @@ void RulesBasic_2_any_src(void) {
     ECS_TAG(world, RelB);
     ECS_TAG(world, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(_), RelB(_)"
     });
 
@@ -3177,7 +3177,7 @@ void RulesBasic_2_any_src_w_pair(void) {
     ECS_TAG(world, Tag);
     ECS_TAG(world, TgtA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "RelA(_, TgtA), RelB(_, TgtA)"
     });
 
@@ -3223,7 +3223,7 @@ void RulesBasic_1_any_src_w_pair_tgt_var(void) {
     ECS_TAG(world, TgtB);
     ECS_TAG(world, TgtC);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Rel(_, $x)"
     });
 
@@ -3274,7 +3274,7 @@ void RulesBasic_1_any_src_w_pair_rel_var(void) {
     ECS_TAG(world, RelC);
     ECS_TAG(world, Tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x(_, Tgt)"
     });
 
@@ -3325,7 +3325,7 @@ void RulesBasic_1_any_src_w_pair_tgt_this(void) {
     ECS_TAG(world, TgtB);
     ECS_TAG(world, TgtC);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Rel(_, $this)"
     });
 
@@ -3379,7 +3379,7 @@ void RulesBasic_1_any_src_w_pair_rel_this(void) {
     ECS_TAG(world, RelC);
     ECS_TAG(world, Tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this(_, Tgt)"
     });
 
@@ -3430,7 +3430,7 @@ void RulesBasic_empty_rule(void) {
 
     ECS_TAG(world, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = ""
     });
 
@@ -3453,7 +3453,7 @@ void RulesBasic_invalid_rule(void) {
 
     ECS_TAG(world, RelA);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo"
     });
 
@@ -3467,7 +3467,7 @@ void RulesBasic_not_instanced_table_src(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position($this)"
     });
 
@@ -3508,7 +3508,7 @@ void RulesBasic_not_instanced_entity_src(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(e1)"
     });
 
@@ -3544,7 +3544,7 @@ void RulesBasic_not_instanced_mixed_src(void) {
 
     ecs_entity_t e0 = ecs_new_entity(world, "e0");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position($this), Velocity(e0)"
     });
 
@@ -3626,7 +3626,7 @@ void RulesBasic_instanced_table_src(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position($this)",
         .instanced = true
     });
@@ -3668,7 +3668,7 @@ void RulesBasic_instanced_entity_src(void) {
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(e1)",
         .instanced = true
     });
@@ -3705,7 +3705,7 @@ void RulesBasic_instanced_mixed_src(void) {
 
     ecs_entity_t e0 = ecs_new_entity(world, "e0");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position($this), Velocity(e0)",
         .instanced = true
     });
@@ -3753,7 +3753,7 @@ void RulesBasic_in_term(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "[in] Position(ent)"
     });
 
@@ -3792,7 +3792,7 @@ void RulesBasic_out_term(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "[out] Position(ent)"
     });
 
@@ -3831,7 +3831,7 @@ void RulesBasic_inout_term(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "[inout] Position(ent)"
     });
 
@@ -3870,7 +3870,7 @@ void RulesBasic_nodata_term(void) {
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "[none] Position(ent)"
     });
 
@@ -3905,7 +3905,7 @@ void RulesBasic_find_this_lowercase(void) {
 
     ECS_TAG(world, Rel);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Rel($this)"
     });
 
@@ -3925,7 +3925,7 @@ void RulesBasic_find_this_uppercase(void) {
 
     ECS_TAG(world, Rel);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Rel($this)"
     });
 
@@ -3945,7 +3945,7 @@ void RulesBasic_find_this_tgt_lowercase(void) {
 
     ECS_TAG(world, Rel);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Rel(*, $this)"
     });
 
@@ -3965,7 +3965,7 @@ void RulesBasic_find_this_tgt_uppercase(void) {
 
     ECS_TAG(world, Rel);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Rel(*, $This)"
     });
 
@@ -3985,13 +3985,13 @@ void RulesBasic_get_filter(void) {
 
     ECS_TAG(world, Rel);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Rel"
     });
 
     test_assert(r != NULL);
 
-    const ecs_filter_t *f = ecs_rule_get_filter(r);
+    const ecs_filter_t *f = r;
     test_assert(f != NULL);
     test_int(f->term_count, 1);
     test_uint(f->terms[0].id, Rel);
@@ -4006,7 +4006,7 @@ void RulesBasic_iter_empty_source(void) {
 
     ECS_TAG(world, Foo);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo()"
     });
 
@@ -4031,7 +4031,7 @@ void RulesBasic_iter_empty_source_wildcard(void) {
 
     ECS_TAG(world, Foo);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "*()"
     });
 
@@ -4057,7 +4057,7 @@ void RulesBasic_iter_empty_source_2_terms(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo(), Bar()"
     });
 
@@ -4084,7 +4084,7 @@ void RulesBasic_iter_empty_source_pair(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo(0, Tgt)"
     });
 
@@ -4110,7 +4110,7 @@ void RulesBasic_iter_empty_source_pair_wildcard(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "*(0, Tgt)"
     });
 
@@ -4137,7 +4137,7 @@ void RulesBasic_iter_empty_source_2_terms_pair(void) {
     ECS_TAG(world, Bar);
     ECS_TAG(world, Tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo(0, Tgt), Bar(0, Tgt)"
     });
 
@@ -4165,7 +4165,7 @@ void RulesBasic_iter_empty_source_2_terms_mixed(void) {
     ECS_TAG(world, Bar);
     ECS_TAG(world, Tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo, Bar()"
     });
 
@@ -4197,7 +4197,7 @@ void RulesBasic_iter_empty_source_2_terms_mixed_pair(void) {
     ECS_TAG(world, Bar);
     ECS_TAG(world, Tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "(Foo, Tgt), Bar(0, Tgt)"
     });
 
@@ -4229,7 +4229,7 @@ void RulesBasic_iter_empty_source_2_terms_mixed_pair_wildcard(void) {
     ECS_TAG(world, Bar);
     ECS_TAG(world, Tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "(Foo, Tgt), *(0, Tgt)"
     });
 
@@ -4262,7 +4262,7 @@ void RulesBasic_this_var_w_empty_entity(void) {
     ecs_entity_t t = ecs_new_id(world);
     ecs_entity_t e = ecs_new_w_pair(world, Rel, t);
 
-    ecs_rule_t *r = ecs_rule(world, { .expr = "Rel($x, $this)"});
+    ecs_filter_t *r = ecs_rule(world, { .expr = "Rel($x, $this)"});
     test_assert(r != NULL);
 
     int x_var = ecs_rule_find_var(r, "x");
@@ -4292,19 +4292,19 @@ void RulesBasic_match_disabled(void) {
     ecs_entity_t e_3 = ecs_new(world, TagA);
     ecs_add_id(world, e_3, EcsPrefab);
 
-    ecs_rule_t *r_1 = ecs_rule(world, {
+    ecs_filter_t *r_1 = ecs_rule(world, {
         .expr = "TagA"
     });
 
-    ecs_rule_t *r_2 = ecs_rule(world, {
+    ecs_filter_t *r_2 = ecs_rule(world, {
         .expr = "TagA, ?Disabled"
     });
 
     test_assert(r_1 != NULL);
     test_assert(r_2 != NULL);
 
-    test_bool(ecs_rule_get_filter(r_1)->flags & EcsFilterMatchDisabled, false);
-    test_bool(ecs_rule_get_filter(r_2)->flags & EcsFilterMatchDisabled, true);
+    test_bool(r_1->flags & EcsFilterMatchDisabled, false);
+    test_bool(r_2->flags & EcsFilterMatchDisabled, true);
 
     ecs_iter_t it = ecs_rule_iter(world, r_1);
     test_assert(ecs_rule_next(&it));
@@ -4344,19 +4344,19 @@ void RulesBasic_match_prefab(void) {
     ecs_entity_t e_3 = ecs_new(world, TagA);
     ecs_add_id(world, e_3, EcsPrefab);
 
-    ecs_rule_t *r_1 = ecs_rule(world, {
+    ecs_filter_t *r_1 = ecs_rule(world, {
         .expr = "TagA"
     });
 
-    ecs_rule_t *r_2 = ecs_rule(world, {
+    ecs_filter_t *r_2 = ecs_rule(world, {
         .expr = "TagA, ?Prefab"
     });
 
     test_assert(r_1 != NULL);
     test_assert(r_2 != NULL);
 
-    test_bool(ecs_rule_get_filter(r_1)->flags & EcsFilterMatchPrefab, false);
-    test_bool(ecs_rule_get_filter(r_2)->flags & EcsFilterMatchPrefab, true);
+    test_bool(r_1->flags & EcsFilterMatchPrefab, false);
+    test_bool(r_2->flags & EcsFilterMatchPrefab, true);
 
     ecs_iter_t it = ecs_rule_iter(world, r_1);
     test_assert(ecs_rule_next(&it));
@@ -4399,19 +4399,19 @@ void RulesBasic_match_disabled_prefab(void) {
     ecs_add_id(world, e_4, EcsPrefab);
     ecs_add_id(world, e_4, EcsDisabled);
 
-    ecs_rule_t *r_1 = ecs_rule(world, {
+    ecs_filter_t *r_1 = ecs_rule(world, {
         .expr = "TagA"
     });
 
-    ecs_rule_t *r_2 = ecs_rule(world, {
+    ecs_filter_t *r_2 = ecs_rule(world, {
         .expr = "TagA, ?Disabled"
     });
 
-    ecs_rule_t *r_3 = ecs_rule(world, {
+    ecs_filter_t *r_3 = ecs_rule(world, {
         .expr = "TagA, ?Prefab"
     });
 
-    ecs_rule_t *r_4 = ecs_rule(world, {
+    ecs_filter_t *r_4 = ecs_rule(world, {
         .expr = "TagA, ?Prefab, ?Disabled"
     });
 
@@ -4420,15 +4420,15 @@ void RulesBasic_match_disabled_prefab(void) {
     test_assert(r_3 != NULL);
     test_assert(r_4 != NULL);
 
-    test_bool(ecs_rule_get_filter(r_1)->flags & EcsFilterMatchDisabled, false);
-    test_bool(ecs_rule_get_filter(r_2)->flags & EcsFilterMatchDisabled, true);
-    test_bool(ecs_rule_get_filter(r_3)->flags & EcsFilterMatchDisabled, false);
-    test_bool(ecs_rule_get_filter(r_4)->flags & EcsFilterMatchDisabled, true);
+    test_bool(r_1->flags & EcsFilterMatchDisabled, false);
+    test_bool(r_2->flags & EcsFilterMatchDisabled, true);
+    test_bool(r_3->flags & EcsFilterMatchDisabled, false);
+    test_bool(r_4->flags & EcsFilterMatchDisabled, true);
 
-    test_bool(ecs_rule_get_filter(r_1)->flags & EcsFilterMatchPrefab, false);
-    test_bool(ecs_rule_get_filter(r_2)->flags & EcsFilterMatchPrefab, false);
-    test_bool(ecs_rule_get_filter(r_3)->flags & EcsFilterMatchPrefab, true);
-    test_bool(ecs_rule_get_filter(r_4)->flags & EcsFilterMatchPrefab, true);
+    test_bool(r_1->flags & EcsFilterMatchPrefab, false);
+    test_bool(r_2->flags & EcsFilterMatchPrefab, false);
+    test_bool(r_3->flags & EcsFilterMatchPrefab, true);
+    test_bool(r_4->flags & EcsFilterMatchPrefab, true);
 
     ecs_iter_t it = ecs_rule_iter(world, r_1);
     test_assert(ecs_rule_next(&it));
@@ -4513,19 +4513,19 @@ void RulesBasic_match_disabled_this_tgt(void) {
     ecs_new_w_pair(world, EcsChildOf, e_2);
     ecs_new_w_pair(world, EcsChildOf, e_3);
 
-    ecs_rule_t *r_1 = ecs_rule(world, {
+    ecs_filter_t *r_1 = ecs_rule(world, {
         .expr = "TagA, ChildOf($child, $this)"
     });
 
-    ecs_rule_t *r_2 = ecs_rule(world, {
+    ecs_filter_t *r_2 = ecs_rule(world, {
         .expr = "TagA, ChildOf($child, $this), ?Disabled"
     });
 
     test_assert(r_1 != NULL);
     test_assert(r_2 != NULL);
 
-    test_bool(ecs_rule_get_filter(r_1)->flags & EcsFilterMatchDisabled, false);
-    test_bool(ecs_rule_get_filter(r_2)->flags & EcsFilterMatchDisabled, true);
+    test_bool(r_1->flags & EcsFilterMatchDisabled, false);
+    test_bool(r_2->flags & EcsFilterMatchDisabled, true);
 
     ecs_iter_t it = ecs_rule_iter(world, r_1);
     test_assert(ecs_rule_next(&it));
@@ -4569,19 +4569,19 @@ void RulesBasic_match_prefab_this_tgt(void) {
     ecs_new_w_pair(world, EcsChildOf, e_2);
     ecs_new_w_pair(world, EcsChildOf, e_3);
 
-    ecs_rule_t *r_1 = ecs_rule(world, {
+    ecs_filter_t *r_1 = ecs_rule(world, {
         .expr = "TagA, ChildOf($child, $this)"
     });
 
-    ecs_rule_t *r_2 = ecs_rule(world, {
+    ecs_filter_t *r_2 = ecs_rule(world, {
         .expr = "TagA, ChildOf($child, $this), ?Prefab"
     });
 
     test_assert(r_1 != NULL);
     test_assert(r_2 != NULL);
 
-    test_bool(ecs_rule_get_filter(r_1)->flags & EcsFilterMatchPrefab, false);
-    test_bool(ecs_rule_get_filter(r_2)->flags & EcsFilterMatchPrefab, true);
+    test_bool(r_1->flags & EcsFilterMatchPrefab, false);
+    test_bool(r_2->flags & EcsFilterMatchPrefab, true);
 
     ecs_iter_t it = ecs_rule_iter(world, r_1);
     test_assert(ecs_rule_next(&it));
@@ -4628,19 +4628,19 @@ void RulesBasic_match_disabled_prefab_this_tgt(void) {
     ecs_new_w_pair(world, EcsChildOf, e_3);
     ecs_new_w_pair(world, EcsChildOf, e_4);
 
-    ecs_rule_t *r_1 = ecs_rule(world, {
+    ecs_filter_t *r_1 = ecs_rule(world, {
         .expr = "TagA, ChildOf($child, $this)"
     });
 
-    ecs_rule_t *r_2 = ecs_rule(world, {
+    ecs_filter_t *r_2 = ecs_rule(world, {
         .expr = "TagA, ChildOf($child, $this), ?Disabled"
     });
 
-    ecs_rule_t *r_3 = ecs_rule(world, {
+    ecs_filter_t *r_3 = ecs_rule(world, {
         .expr = "TagA, ChildOf($child, $this), ?Prefab"
     });
 
-    ecs_rule_t *r_4 = ecs_rule(world, {
+    ecs_filter_t *r_4 = ecs_rule(world, {
         .expr = "TagA, ChildOf($child, $this), ?Prefab, ?Disabled"
     });
 
@@ -4649,15 +4649,15 @@ void RulesBasic_match_disabled_prefab_this_tgt(void) {
     test_assert(r_3 != NULL);
     test_assert(r_4 != NULL);
 
-    test_bool(ecs_rule_get_filter(r_1)->flags & EcsFilterMatchDisabled, false);
-    test_bool(ecs_rule_get_filter(r_2)->flags & EcsFilterMatchDisabled, true);
-    test_bool(ecs_rule_get_filter(r_3)->flags & EcsFilterMatchDisabled, false);
-    test_bool(ecs_rule_get_filter(r_4)->flags & EcsFilterMatchDisabled, true);
+    test_bool(r_1->flags & EcsFilterMatchDisabled, false);
+    test_bool(r_2->flags & EcsFilterMatchDisabled, true);
+    test_bool(r_3->flags & EcsFilterMatchDisabled, false);
+    test_bool(r_4->flags & EcsFilterMatchDisabled, true);
 
-    test_bool(ecs_rule_get_filter(r_1)->flags & EcsFilterMatchPrefab, false);
-    test_bool(ecs_rule_get_filter(r_2)->flags & EcsFilterMatchPrefab, false);
-    test_bool(ecs_rule_get_filter(r_3)->flags & EcsFilterMatchPrefab, true);
-    test_bool(ecs_rule_get_filter(r_4)->flags & EcsFilterMatchPrefab, true);
+    test_bool(r_1->flags & EcsFilterMatchPrefab, false);
+    test_bool(r_2->flags & EcsFilterMatchPrefab, false);
+    test_bool(r_3->flags & EcsFilterMatchPrefab, true);
+    test_bool(r_4->flags & EcsFilterMatchPrefab, true);
 
     ecs_iter_t it = ecs_rule_iter(world, r_1);
     test_assert(ecs_rule_next(&it));
@@ -4738,19 +4738,19 @@ void RulesBasic_match_self_disabled(void) {
     ecs_entity_t e_3 = ecs_new(world, TagA);
     ecs_add_id(world, e_3, EcsPrefab);
 
-    ecs_rule_t *r_1 = ecs_rule(world, {
+    ecs_filter_t *r_1 = ecs_rule(world, {
         .expr = "TagA(self)"
     });
 
-    ecs_rule_t *r_2 = ecs_rule(world, {
+    ecs_filter_t *r_2 = ecs_rule(world, {
         .expr = "TagA(self), ?Disabled(self)"
     });
 
     test_assert(r_1 != NULL);
     test_assert(r_2 != NULL);
 
-    test_bool(ecs_rule_get_filter(r_1)->flags & EcsFilterMatchDisabled, false);
-    test_bool(ecs_rule_get_filter(r_2)->flags & EcsFilterMatchDisabled, true);
+    test_bool(r_1->flags & EcsFilterMatchDisabled, false);
+    test_bool(r_2->flags & EcsFilterMatchDisabled, true);
 
     ecs_iter_t it = ecs_rule_iter(world, r_1);
     test_assert(ecs_rule_next(&it));
@@ -4790,19 +4790,19 @@ void RulesBasic_match_self_prefab(void) {
     ecs_entity_t e_3 = ecs_new(world, TagA);
     ecs_add_id(world, e_3, EcsPrefab);
 
-    ecs_rule_t *r_1 = ecs_rule(world, {
+    ecs_filter_t *r_1 = ecs_rule(world, {
         .expr = "TagA(self)"
     });
 
-    ecs_rule_t *r_2 = ecs_rule(world, {
+    ecs_filter_t *r_2 = ecs_rule(world, {
         .expr = "TagA(self), ?Prefab(self)"
     });
 
     test_assert(r_1 != NULL);
     test_assert(r_2 != NULL);
 
-    test_bool(ecs_rule_get_filter(r_1)->flags & EcsFilterMatchPrefab, false);
-    test_bool(ecs_rule_get_filter(r_2)->flags & EcsFilterMatchPrefab, true);
+    test_bool(r_1->flags & EcsFilterMatchPrefab, false);
+    test_bool(r_2->flags & EcsFilterMatchPrefab, true);
 
     ecs_iter_t it = ecs_rule_iter(world, r_1);
     test_assert(ecs_rule_next(&it));
@@ -4845,19 +4845,19 @@ void RulesBasic_match_self_disabled_prefab(void) {
     ecs_add_id(world, e_4, EcsPrefab);
     ecs_add_id(world, e_4, EcsDisabled);
 
-    ecs_rule_t *r_1 = ecs_rule(world, {
+    ecs_filter_t *r_1 = ecs_rule(world, {
         .expr = "TagA(self)"
     });
 
-    ecs_rule_t *r_2 = ecs_rule(world, {
+    ecs_filter_t *r_2 = ecs_rule(world, {
         .expr = "TagA(self), ?Disabled(self)"
     });
 
-    ecs_rule_t *r_3 = ecs_rule(world, {
+    ecs_filter_t *r_3 = ecs_rule(world, {
         .expr = "TagA(self), ?Prefab(self)"
     });
 
-    ecs_rule_t *r_4 = ecs_rule(world, {
+    ecs_filter_t *r_4 = ecs_rule(world, {
         .expr = "TagA(self), ?Prefab(self), ?Disabled(self)"
     });
 
@@ -4866,15 +4866,15 @@ void RulesBasic_match_self_disabled_prefab(void) {
     test_assert(r_3 != NULL);
     test_assert(r_4 != NULL);
 
-    test_bool(ecs_rule_get_filter(r_1)->flags & EcsFilterMatchDisabled, false);
-    test_bool(ecs_rule_get_filter(r_2)->flags & EcsFilterMatchDisabled, true);
-    test_bool(ecs_rule_get_filter(r_3)->flags & EcsFilterMatchDisabled, false);
-    test_bool(ecs_rule_get_filter(r_4)->flags & EcsFilterMatchDisabled, true);
+    test_bool(r_1->flags & EcsFilterMatchDisabled, false);
+    test_bool(r_2->flags & EcsFilterMatchDisabled, true);
+    test_bool(r_3->flags & EcsFilterMatchDisabled, false);
+    test_bool(r_4->flags & EcsFilterMatchDisabled, true);
 
-    test_bool(ecs_rule_get_filter(r_1)->flags & EcsFilterMatchPrefab, false);
-    test_bool(ecs_rule_get_filter(r_2)->flags & EcsFilterMatchPrefab, false);
-    test_bool(ecs_rule_get_filter(r_3)->flags & EcsFilterMatchPrefab, true);
-    test_bool(ecs_rule_get_filter(r_4)->flags & EcsFilterMatchPrefab, true);
+    test_bool(r_1->flags & EcsFilterMatchPrefab, false);
+    test_bool(r_2->flags & EcsFilterMatchPrefab, false);
+    test_bool(r_3->flags & EcsFilterMatchPrefab, true);
+    test_bool(r_4->flags & EcsFilterMatchPrefab, true);
 
     ecs_iter_t it = ecs_rule_iter(world, r_1);
     test_assert(ecs_rule_next(&it));
@@ -4950,7 +4950,7 @@ void RulesBasic_inout_none_first_term(void) {
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .terms = {
             { .id = ecs_id(Position), .inout = EcsInOutNone },
             { .id = ecs_id(Velocity) }
@@ -4991,7 +4991,7 @@ void RulesBasic_inout_none_second_term(void) {
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Velocity), .inout = EcsInOutNone }
@@ -5032,7 +5032,7 @@ void RulesBasic_no_data_rule(void) {
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Velocity) }
@@ -5073,7 +5073,7 @@ void RulesBasic_frame_offset(void) {
     ECS_TAG(world, TagB);
     ECS_TAG(world, TagC);
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .terms = {
             { .id = ecs_id(Position), }
         },
@@ -5128,7 +5128,7 @@ void RulesBasic_frame_offset_no_data(void) {
     ECS_TAG(world, TagB);
     ECS_TAG(world, TagC);
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .terms = {
             { .id = TagA, }
         },
@@ -5202,7 +5202,7 @@ void RulesBasic_match_empty_tables(void) {
     ecs_delete(world, e1);
     ecs_delete(world, e2);
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .terms = {{ ecs_id(Position) }},
         .flags = EcsFilterMatchEmptyTables
     });
@@ -5268,7 +5268,7 @@ void RulesBasic_match_empty_tables_no_data(void) {
     ecs_delete(world, e1);
     ecs_delete(world, e2);
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .terms = {{ Foo }},
         .flags = EcsFilterMatchEmptyTables
     });
@@ -5330,7 +5330,7 @@ void RulesBasic_match_empty_tables_w_not(void) {
     ecs_delete(world, e1);
     ecs_delete(world, e2);
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .terms = {{ Foo }, { TagA, .oper = EcsNot }},
         .flags = EcsFilterMatchEmptyTables
     });
@@ -5383,7 +5383,7 @@ void RulesBasic_match_empty_tables_w_wildcard(void) {
     ecs_delete(world, e1);
     ecs_delete(world, e2);
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .terms = {{ ecs_pair(Rel, EcsWildcard) }},
         .flags = EcsFilterMatchEmptyTables
     });
@@ -5425,7 +5425,7 @@ void RulesBasic_match_empty_tables_w_no_empty_tables(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .terms = {
             { Foo }
         },
@@ -5478,7 +5478,7 @@ void RulesBasic_match_empty_tables_trivial(void) {
     ecs_delete(world, e1);
     ecs_delete(world, e2);
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .terms = {{ ecs_id(Position), .src.id = EcsSelf }},
         .flags = EcsFilterMatchEmptyTables
     });
@@ -5531,7 +5531,7 @@ void RulesBasic_oneof_wildcard(void) {
     ecs_entity_t e2 = ecs_new_w_pair(world, Rel, ObjB);
     test_assert( ecs_has_pair(world, e2, Rel, ObjB));
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .terms = {{
             .id = ecs_pair(Rel, EcsWildcard)
         }}
@@ -5568,7 +5568,7 @@ void RulesBasic_oneof_any(void) {
     ecs_entity_t e2 = ecs_new_w_pair(world, Rel, ObjB);
     test_assert( ecs_has_pair(world, e2, Rel, ObjB));
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .terms = {{
             .id = ecs_pair(Rel, EcsAny)
         }}
@@ -5612,7 +5612,7 @@ void RulesBasic_instanced_w_singleton(void) {
     ecs_add(world, e4, Tag);
     ecs_add(world, e5, Tag);
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .expr = "Position, Velocity($)",
         .instanced = true
     });
@@ -5694,7 +5694,7 @@ void RulesBasic_instanced_w_base(void) {
     ecs_add_pair(world, e8, EcsIsA, base_2);
     ecs_add_pair(world, e9, EcsIsA, base_2);
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .expr = "Position, Velocity",
         .instanced = true
     });
@@ -5807,7 +5807,7 @@ void RulesBasic_not_instanced_w_singleton(void) {
     ecs_add(world, e4, Tag);
     ecs_add(world, e5, Tag);
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .expr = "Position, Velocity($)"
     });
 
@@ -5925,7 +5925,7 @@ void RulesBasic_not_instanced_w_base(void) {
     ecs_add_pair(world, e8, EcsIsA, base_2);
     ecs_add_pair(world, e9, EcsIsA, base_2);
 
-    ecs_rule_t *f = ecs_rule(world, {
+    ecs_filter_t *f = ecs_rule(world, {
         .expr = "Position, Velocity"
     });
 
@@ -6072,7 +6072,7 @@ void RulesBasic_unknown_before_known(void) {
 
     ECS_TAG(world, Foo);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo, ChildOf($gc, $c), ChildOf($c, $this)"
     });
 
@@ -6110,7 +6110,7 @@ void RulesBasic_unknown_before_known_after_or(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo, ChildOf($gc, $c), Foo($gc) || Bar($gc), ChildOf($c, $this)"
     });
 
@@ -6160,7 +6160,7 @@ void RulesBasic_unknown_before_known_after_not(void) {
 
     ECS_TAG(world, Foo);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo, ChildOf($gc, $c), !Foo($gc), ChildOf($c, $this)"
     });
 
@@ -6200,7 +6200,7 @@ void RulesBasic_unknown_before_known_after_optional(void) {
 
     ECS_TAG(world, Foo);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo, ChildOf($gc, $c), ?Foo($gc), ChildOf($c, $this)"
     });
 
@@ -6253,7 +6253,7 @@ void RulesBasic_unknown_before_known_after_scope(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo, ChildOf($gc, $c), !{Foo($gc) || Bar($gc)}, ChildOf($c, $this)"
     });
 
@@ -6293,7 +6293,7 @@ void RulesBasic_reordered_plan_1(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo, ChildOf($this, $p, $gp, $ggp), Bar($ggp)"
     });
 
@@ -6325,7 +6325,7 @@ void RulesBasic_reordered_plan_2(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo($ggp), ChildOf($this, $p, $gp, $ggp), Bar($this)"
     });
 
@@ -6360,7 +6360,7 @@ void RulesBasic_1_trivial_plan(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo(self)"
     });
 
@@ -6387,7 +6387,7 @@ void RulesBasic_2_trivial_plan(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo(self), Bar(self)"
     });
 
@@ -6413,7 +6413,7 @@ void RulesBasic_1_trivial_plan_component(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(self)"
     });
 
@@ -6441,7 +6441,7 @@ void RulesBasic_2_trivial_plan_component(void) {
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(self), Velocity(self)"
     });
 
@@ -6470,7 +6470,7 @@ void RulesBasic_3_trivial_plan_w_pair(void) {
 
     ecs_new_entity(world, "p");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo(self), Bar(self), ChildOf(self, p)"
     });
 
@@ -6499,7 +6499,7 @@ void RulesBasic_3_trivial_plan_w_wildcard(void) {
 
     ecs_new_entity(world, "p");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo(self), Bar(self), ChildOf(self, *)"
     });
 
@@ -6528,7 +6528,7 @@ void RulesBasic_3_trivial_plan_w_any(void) {
 
     ecs_new_entity(world, "p");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Foo(self), Bar(self), ChildOf(self, _)"
     });
 
@@ -6558,7 +6558,7 @@ void RulesBasic_3_trivial_plan_w_pair_component(void) {
 
     ecs_new_entity(world, "p");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(self), Velocity(self), ChildOf(self, p)"
     });
 
@@ -6587,7 +6587,7 @@ void RulesBasic_3_trivial_plan_w_wildcard_component(void) {
 
     ecs_new_entity(world, "p");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(self), Velocity(self), ChildOf(self, *)"
     });
 
@@ -6616,7 +6616,7 @@ void RulesBasic_3_trivial_plan_w_any_component(void) {
 
     ecs_new_entity(world, "p");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "Position(self), Velocity(self), ChildOf(self, _)"
     });
 
@@ -6646,7 +6646,7 @@ void RulesBasic_1_trivial_component_w_none(void) {
 
     ecs_new_entity(world, "p");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "[none] Position(self)"
     });
 
@@ -6675,7 +6675,7 @@ void RulesBasic_2_trivial_component_w_none(void) {
 
     ecs_new_entity(world, "p");
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "[none] Position(self), [none] Velocity(self)"
     });
 

@@ -19,7 +19,7 @@ void RulesRecycled_recycled_vars(void) {
     ecs_add(world, src, Tag);
     ecs_add_id(world, src, rel);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x($y), Tag($y)"
     });
 
@@ -67,7 +67,7 @@ void RulesRecycled_recycled_pair_vars(void) {
     ecs_add(world, src, Tag);
     ecs_add_pair(world, src, rel, tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x($y, $z), Tag($y)"
     });
 
@@ -119,7 +119,7 @@ void RulesRecycled_recycled_this_ent_var(void) {
     ecs_add(world, src, Tag);
     ecs_add_pair(world, src, rel, tgt);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x($y, $this), Tag($y)"
     });
 
@@ -174,7 +174,7 @@ void RulesRecycled_has_recycled_id_from_pair(void) {
     ecs_add_id(world, src, tgt);
     ecs_add(world, src, Tag);
 
-    ecs_rule_t *r = ecs_rule(world, {
+    ecs_filter_t *r = ecs_rule(world, {
         .expr = "$x($y, $z), $z($y), Tag($y)"
     });
 

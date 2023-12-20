@@ -2361,7 +2361,7 @@ void DeserExprOperators_iter_to_vars_no_data(void) {
 
     ECS_TAG(world, Foo);
 
-    ecs_rule_t *rule = ecs_rule(world, { .expr = "Foo" });
+    ecs_filter_t *rule = ecs_rule(world, { .expr = "Foo" });
     test_assert(rule != NULL);
 
     ecs_entity_t e1 = ecs_new(world, Foo);
@@ -2407,7 +2407,7 @@ void DeserExprOperators_iter_to_vars_1_comp(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_rule_t *rule = ecs_rule(world, { .expr = "Position" });
+    ecs_filter_t *rule = ecs_rule(world, { .expr = "Position" });
     test_assert(rule != NULL);
 
     ecs_entity_t e1 = ecs_new(world, Position);
@@ -2468,7 +2468,7 @@ void DeserExprOperators_iter_to_vars_2_comps(void) {
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
 
-    ecs_rule_t *rule = ecs_rule(world, { .expr = "Position, Velocity" });
+    ecs_filter_t *rule = ecs_rule(world, { .expr = "Position, Velocity" });
     test_assert(rule != NULL);
 
     ecs_entity_t e1 = ecs_new(world, Position);
@@ -2546,7 +2546,7 @@ void DeserExprOperators_iter_to_vars_1_comp_1_tag(void) {
     ECS_COMPONENT(world, Velocity);
     ECS_TAG(world, Foo);
 
-    ecs_rule_t *rule = ecs_rule(world, { .expr = "Position, Foo, Velocity" });
+    ecs_filter_t *rule = ecs_rule(world, { .expr = "Position, Foo, Velocity" });
     test_assert(rule != NULL);
 
     ecs_entity_t e1 = ecs_new(world, Position);
@@ -2626,7 +2626,7 @@ void DeserExprOperators_iter_to_vars_w_1_query_var(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_rule_t *rule = ecs_rule(world, { .expr = "Position($x)" });
+    ecs_filter_t *rule = ecs_rule(world, { .expr = "Position($x)" });
     test_assert(rule != NULL);
 
     ecs_entity_t e1 = ecs_new(world, Position);
@@ -2689,7 +2689,7 @@ void DeserExprOperators_iter_to_vars_w_2_query_vars(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_rule_t *rule = ecs_rule(world, { .expr = "Position($x), ChildOf($x, $y)" });
+    ecs_filter_t *rule = ecs_rule(world, { .expr = "Position($x), ChildOf($x, $y)" });
     test_assert(rule != NULL);
 
     ecs_entity_t parent = ecs_new_id(world);

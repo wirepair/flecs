@@ -2524,7 +2524,7 @@ bool ecs_rule_next_instanced(
     ecs_rule_iter_t *rit = &it->priv.iter.rule;
     ecs_rule_run_ctx_t ctx;
     ctx.world = it->real_world;
-    ctx.rule = rit->rule;
+    ctx.rule = flecs_rule(rit->rule);
     ctx.it = it;
     ctx.vars = rit->vars;
     ctx.rule_vars = rit->rule_vars;
@@ -2632,7 +2632,7 @@ void flecs_rule_iter_fini_ctx(
     ecs_iter_t *it,
     ecs_rule_iter_t *rit)
 {
-    const ecs_rule_t *rule = rit->rule;
+    const ecs_rule_t *rule = flecs_rule(rit->rule);
     int32_t i, count = rule->op_count;
     ecs_rule_op_t *ops = rule->ops;
     ecs_rule_op_ctx_t *ctx = rit->op_ctx;
@@ -2669,8 +2669,8 @@ void flecs_rule_iter_fini(
     ecs_rule_iter_t *rit = &it->priv.iter.rule;
     ecs_assert(rit->rule != NULL, ECS_INVALID_OPERATION, NULL);
     ecs_poly_assert(rit->rule, ecs_rule_t);
-    int32_t op_count = rit->rule->op_count;
-    int32_t var_count = rit->rule->var_count;
+    int32_t op_count = flecs_rule(rit->rule)->op_count;
+    int32_t var_count = flecs_rule(rit->rule)->var_count;
 
 #ifdef FLECS_DEBUG
     if (it->flags & EcsIterProfile) {
@@ -2694,23 +2694,26 @@ void flecs_rule_iter_fini(
 
 ecs_iter_t ecs_rule_iter(
     const ecs_world_t *world,
-    const ecs_rule_t *rule)
+    const ecs_filter_t *q)
 {
     ecs_iter_t it = {0};
     ecs_rule_iter_t *rit = &it.priv.iter.rule;
-    ecs_check(rule != NULL, ECS_INVALID_PARAMETER, NULL);
+    ecs_check(q != NULL, ECS_INVALID_PARAMETER, NULL);
+    
+    ecs_poly_assert(q, ecs_rule_t);
+    ecs_rule_t *impl = flecs_rule(q);
 
-    ecs_run_aperiodic(rule->filter.world, EcsAperiodicEmptyTables);
+    ecs_run_aperiodic(impl->filter.world, EcsAperiodicEmptyTables);
 
-    int32_t i, var_count = rule->var_count, op_count = rule->op_count;
+    int32_t i, var_count = impl->var_count, op_count = impl->op_count;
     it.world = ECS_CONST_CAST(ecs_world_t*, world);
-    it.real_world = rule->filter.world;
-    it.terms = rule->filter.terms;
+    it.real_world = q->world;
+    it.terms = q->terms;
     it.next = ecs_rule_next;
     it.fini = flecs_rule_iter_fini;
-    it.field_count = rule->filter.field_count;
-    it.sizes = rule->filter.sizes;
-    flecs_filter_apply_iter_flags(&it, &rule->filter);
+    it.field_count = q->field_count;
+    it.sizes = q->sizes;
+    flecs_filter_apply_iter_flags(&it, q);
 
     flecs_iter_init(world, &it, 
         flecs_iter_cache_ids |
@@ -2718,9 +2721,9 @@ ecs_iter_t ecs_rule_iter(
         flecs_iter_cache_sources |
         flecs_iter_cache_ptrs);
 
-    rit->rule = rule;
-    rit->rule_vars = rule->vars;
-    rit->ops = rule->ops;
+    rit->rule = q;
+    rit->rule_vars = impl->vars;
+    rit->ops = impl->ops;
     rit->source_set = 0;
     if (var_count) {
         rit->vars = flecs_iter_calloc_n(&it, ecs_var_t, var_count);
@@ -2739,8 +2742,8 @@ ecs_iter_t ecs_rule_iter(
     }
 
     it.variables = rit->vars;
-    it.variable_count = rule->var_pub_count;
-    it.variable_names = rule->var_names;
+    it.variable_count = impl->var_pub_count;
+    it.variable_names = impl->var_names;
 
 error:
     return it;

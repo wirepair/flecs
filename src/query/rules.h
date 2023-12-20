@@ -443,4 +443,55 @@ bool flecs_rule_trivial_test_w_wildcards(
     bool first,
     int32_t term_count);
 
+/* Helper type for passing around context required for error messages */
+typedef struct {
+    const ecs_world_t *world;
+    ecs_filter_t *filter;
+    ecs_term_t *term;
+    int32_t term_index;
+} ecs_rule_validator_ctx_t;
+
+char* flecs_filter_str(
+    const ecs_world_t *world,
+    const ecs_filter_t *filter,
+    const ecs_rule_validator_ctx_t *ctx,
+    int32_t *term_start_out);
+
+/** Initialize filter 
+ * A filter is a lightweight object that can be used to query for entities in
+ * a world. Filters, as opposed to queries, do not cache results. They are 
+ * therefore slower to iterate, but are faster to create.
+ * 
+ * When a filter is copied by value, make sure to use "ecs_filter_move" to 
+ * ensure that the terms pointer still points to the inline array:
+ * 
+ *   ecs_filter_move(&dst_filter, &src_filter)
+ * 
+ * Alternatively, the ecs_filter_move function can be called with both arguments
+ * set to the same filter, to ensure the pointer is valid:
+ * 
+ *   ecs_filter_move(&f, &f)
+ *
+ * It is possible to create a filter without allocating any memory, by setting
+ * the .storage member in ecs_filter_desc_t. See the documentation for the 
+ * member for more details.
+ *
+ * @param world The world.
+ * @param desc Properties for the filter to create.
+ * @return The filter if successful, NULL if not successful.
+ */
+FLECS_API
+ecs_filter_t * ecs_filter_init(
+    ecs_world_t *world,
+    const ecs_filter_desc_t *desc);
+
+/** Deinitialize filter.
+ * Free resources associated with filter.
+ *
+ * @param filter The filter to deinitialize.
+ */
+FLECS_API
+void ecs_filter_fini(
+    ecs_filter_t *filter); 
+
 #endif

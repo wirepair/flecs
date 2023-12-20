@@ -764,7 +764,7 @@ struct ecs_filter_t {
 struct ecs_observer_t {
     ecs_header_t hdr;
     
-    ecs_filter_t filter;        /**< Query for observer */
+    ecs_filter_t *query;        /**< Query for observer */
 
     /* Observer events */
     ecs_entity_t events[FLECS_EVENT_DESC_MAX];
@@ -795,6 +795,8 @@ struct ecs_observer_t {
 
     /* Mixins */
     ecs_poly_dtor_t dtor;
+    ecs_world_t *world;
+    ecs_entity_t entity;
 };
 
 /** @} */
@@ -3871,69 +3873,6 @@ void ecs_id_str_buf(
  * @{
  */
 
-/** Iterator for a single (component) id.
- * A term iterator returns all entities (tables) that match a single (component)
- * id. The search for the matching set of entities (tables) is performed in 
- * constant time.
- *
- * @param world The world.
- * @param term The term.
- * @return The iterator.
- */
-FLECS_API
-ecs_iter_t ecs_term_iter(
-    const ecs_world_t *world,
-    ecs_term_t *term);
-
-/** Return a chained term iterator.
- * A chained iterator applies a filter to the results of the input iterator. The
- * resulting iterator must be iterated with ecs_term_next.
- * 
- * @param it The input iterator
- * @param term The term filter to apply to the iterator.
- * @return The chained iterator. 
- */
-FLECS_API
-ecs_iter_t ecs_term_chain_iter(
-    const ecs_iter_t *it,
-    ecs_term_t *term);
-
-/** Progress a term iterator.
- * This operation progresses the term iterator to the next table. The 
- * iterator must have been initialized with `ecs_term_iter`. This operation 
- * must be invoked at least once before interpreting the contents of the 
- * iterator.
- *
- * @param it The iterator.
- * @returns True if more data is available, false if not.
- */
-FLECS_API
-bool ecs_term_next(
-    ecs_iter_t *it);
-
-/** Iterator for a parent's children.
- * This operation is equivalent to a term iterator for (ChildOf, parent). 
- * Iterate the result with ecs_children_next.
- * 
- * @param world The world.
- * @param parent The parent for which to iterate the children.
- * @return The iterator.
- */
-FLECS_API
-ecs_iter_t ecs_children(
-    const ecs_world_t *world,
-    ecs_entity_t parent);
-
-/** Progress a children iterator.
- * Equivalent to ecs_term_next.
- * 
- * @param it The iterator.
- * @returns True if more data is available, false if not.
- */
-FLECS_API
-bool ecs_children_next(
-    ecs_iter_t *it);
-
 /** Test whether term id is set.
  *
  * @param id The term id.
@@ -3992,81 +3931,6 @@ FLECS_API
 bool ecs_term_match_0(
     const ecs_term_t *term);
 
-/** Finalize term.
- * Ensure that all fields of a term are consistent and filled out. This 
- * operation should be invoked before using and after assigning members to, or 
- * parsing a term. When a term contains unresolved identifiers, this operation
- * will resolve and assign the identifiers. If the term contains any identifiers
- * that cannot be resolved, the operation will fail.
- *
- * An application generally does not need to invoke this operation as the APIs
- * that use terms (such as filters, queries and triggers) will finalize terms
- * when they are created.
- *
- * The name and expr parameters are optional, and only used for giving more 
- * descriptive error messages.
- *
- * @param world The world.
- * @param term The term to finalize.
- * @return Zero if success, nonzero if an error occurred.
- */
-FLECS_API 
-int ecs_term_finalize(
-    const ecs_world_t *world,
-    ecs_term_t *term);
-
-/** Initialize filter 
- * A filter is a lightweight object that can be used to query for entities in
- * a world. Filters, as opposed to queries, do not cache results. They are 
- * therefore slower to iterate, but are faster to create.
- * 
- * When a filter is copied by value, make sure to use "ecs_filter_move" to 
- * ensure that the terms pointer still points to the inline array:
- * 
- *   ecs_filter_move(&dst_filter, &src_filter)
- * 
- * Alternatively, the ecs_filter_move function can be called with both arguments
- * set to the same filter, to ensure the pointer is valid:
- * 
- *   ecs_filter_move(&f, &f)
- *
- * It is possible to create a filter without allocating any memory, by setting
- * the .storage member in ecs_filter_desc_t. See the documentation for the 
- * member for more details.
- *
- * @param world The world.
- * @param desc Properties for the filter to create.
- * @return The filter if successful, NULL if not successful.
- */
-FLECS_API
-ecs_filter_t * ecs_filter_init(
-    ecs_world_t *world,
-    const ecs_filter_desc_t *desc);
-
-/** Deinitialize filter.
- * Free resources associated with filter.
- *
- * @param filter The filter to deinitialize.
- */
-FLECS_API
-void ecs_filter_fini(
-    ecs_filter_t *filter); 
-
-/** Find index for $this variable.
- * This operation looks up the index of the $this variable. This index can
- * be used in operations like ecs_iter_set_var and ecs_iter_get_var.
- * 
- * The operation will return -1 if the variable was not found. This happens when
- * a filter only has terms that are not matched on the $this variable, like a
- * filter that exclusively matches singleton components.
- * 
- * @param filter The rule.
- * @return The index of the $this variable.
- */
-FLECS_API
-int32_t ecs_filter_find_this_var(
-    const ecs_filter_t *filter);
-
 /** Convert term to string expression.
  * Convert term to a string expression. The resulting expression is equivalent
  * to the same term, with the exception of And & Or operators.
@@ -4093,98 +3957,27 @@ char* ecs_filter_str(
     const ecs_world_t *world,
     const ecs_filter_t *filter); 
 
-/** Return a filter iterator.
- * A filter iterator lets an application iterate over entities that match the
- * specified filter.
- * 
- * @param world The world.
- * @param filter The filter.
- * @return An iterator that can be used with ecs_filter_next.
+/** @} */
+
+/**
+ * @defgroup each_iter Each iterator
+ * @brief Find all entities that have a single (component) id.
+ * @{
  */
-FLECS_API
-ecs_iter_t ecs_filter_iter(
+
+ecs_iter_t ecs_each_id(
     const ecs_world_t *world,
-    const ecs_filter_t *filter);  
+    ecs_id_t id);
 
-/** Return a chained filter iterator.
- * A chained iterator applies a filter to the results of the input iterator. The
- * resulting iterator must be iterated with ecs_filter_next.
- * 
- * @param it The input iterator
- * @param filter The filter to apply to the iterator.
- * @return The chained iterator. 
- */
-FLECS_API
-ecs_iter_t ecs_filter_chain_iter(
-    const ecs_iter_t *it,
-    const ecs_filter_t *filter);
-
-/** Get pivot term for filter.
- * The pivot term is the term that matches the smallest set of tables, and is
- * a good default starting point for a search.
- * 
- * The following conditions must be met for a term to be considered as pivot:
- * - It must have a This subject
- * - It must have the And operator
- * 
- * When a filter does not have any terms that match those conditions, it will
- * return -1.
- * 
- * If one or more terms in the filter have no matching tables the filter won't
- * yield any results. In this case the operation will return -2 which gives a
- * search function the option to early out.
- * 
- * @param world The world.
- * @param filter The filter.
- * @return Index of the pivot term (use with filter->terms)
- */
-FLECS_API
-int32_t ecs_filter_pivot_term(
-    const ecs_world_t *world,
-    const ecs_filter_t *filter);
-
-/** Iterate tables matched by filter.
- * This operation progresses the filter iterator to the next table. The 
- * iterator must have been initialized with `ecs_filter_iter`. This operation 
- * must be invoked at least once before interpreting the contents of the 
- * iterator.
- *
- * @param it The iterator
- * @return True if more data is available, false if not.
- */
-FLECS_API
-bool ecs_filter_next(
+bool ecs_each_next(
     ecs_iter_t *it);
 
-/** Same as ecs_filter_next, but always instanced.
- * See instanced property of ecs_filter_desc_t.
- * 
- * @param it The iterator
- * @return True if more data is available, false if not.
- */
-FLECS_API
-bool ecs_filter_next_instanced(
+ecs_iter_t ecs_children(
+    const ecs_world_t *world,
+    ecs_entity_t parent);
+
+bool ecs_children_next(
     ecs_iter_t *it);
-
-/** Move resources of one filter to another. 
- * 
- * @param dst The destination filter.
- * @param src The source filter.
- */
-FLECS_API
-void ecs_filter_move(
-    ecs_filter_t *dst,
-    ecs_filter_t *src);
-
-/** Copy resources of one filter to another. 
- * 
- * @param dst The destination filter.
- * @param src The source filter.
- */
-FLECS_API
-void ecs_filter_copy(
-    ecs_filter_t *dst,
-    const ecs_filter_t *src);
 
 /** @} */
 

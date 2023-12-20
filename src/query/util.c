@@ -219,6 +219,239 @@ char* ecs_rule_str(
     return ecs_rule_str_w_profile(q, NULL);
 }
 
+static
+void flecs_filter_str_add_id(
+    const ecs_world_t *world,
+    ecs_strbuf_t *buf,
+    const ecs_term_t *term,
+    const ecs_term_ref_t *ref,
+    bool is_src,
+    ecs_flags64_t default_traverse_flags)
+{
+    bool is_added = false;
+    ecs_entity_t ref_id = ECS_TERM_REF_ID(ref);
+    if (!is_src || ref_id != EcsThis) {
+        if (ref->id & EcsIsVariable && !ecs_id_is_wildcard(ref_id)){
+            ecs_strbuf_appendlit(buf, "$");
+        }
+        if (ref_id) {
+            char *path = ecs_get_fullpath(world, ref_id);
+            ecs_strbuf_appendstr(buf, path);
+            ecs_os_free(path);
+        } else if (ref->name) {
+            ecs_strbuf_appendstr(buf, ref->name);
+        } else {
+            ecs_strbuf_appendlit(buf, "0");
+        }
+        is_added = true;
+    }
+
+    ecs_flags64_t flags = ECS_TERM_REF_FLAGS(ref);
+    if (!(flags & EcsTraverseFlags)) {
+        /* If flags haven't been set yet, initialize with defaults. This can
+         * happen if an error is thrown while the term is being finalized */
+        flags |= default_traverse_flags;
+    }
+
+    if ((flags & EcsTraverseFlags) != default_traverse_flags) {
+        if (is_added) {
+            ecs_strbuf_list_push(buf, ":", "|");
+        } else {
+            ecs_strbuf_list_push(buf, "", "|");
+        }
+        if (is_src) {
+            if (flags & EcsSelf) {
+                ecs_strbuf_list_appendstr(buf, "self");
+            }
+            if (flags & EcsUp) {
+                ecs_strbuf_list_appendstr(buf, "up");
+            }
+            if (term->trav && (term->trav != EcsIsA)) {
+                ecs_strbuf_list_push(buf, "(", "");
+
+                char *rel_path = ecs_get_fullpath(world, term->trav);
+                ecs_strbuf_appendstr(buf, rel_path);
+                ecs_os_free(rel_path);
+
+                ecs_strbuf_list_pop(buf, ")");
+            }
+        }
+
+        ecs_strbuf_list_pop(buf, "");
+    }
+}
+
+static
+void flecs_term_str_w_strbuf(
+    const ecs_world_t *world,
+    const ecs_term_t *term,
+    ecs_strbuf_t *buf,
+    int32_t t)
+{
+    const ecs_term_ref_t *src = &term->src;
+    const ecs_term_ref_t *first = &term->first;
+    const ecs_term_ref_t *second = &term->second;
+
+    ecs_entity_t src_id = ECS_TERM_REF_ID(src);
+    ecs_entity_t first_id = ECS_TERM_REF_ID(first);
+
+    uint64_t def_src_mask = EcsSelf|EcsUp;
+    uint64_t def_first_mask = EcsSelf;
+    uint64_t def_second_mask = EcsSelf;
+
+    bool src_set = !ecs_term_match_0(term);
+    bool first_set = ecs_term_ref_is_set(first);
+    bool second_set = ecs_term_ref_is_set(second);
+
+    if (first_id == EcsScopeOpen) {
+        ecs_strbuf_appendlit(buf, "{");
+        return;
+    } else if (first_id == EcsScopeClose) {
+        ecs_strbuf_appendlit(buf, "}");
+        return;
+    }
+
+    if (!t || !(term[-1].oper == EcsOr)) {
+        if (term->inout == EcsIn) {
+            ecs_strbuf_appendlit(buf, "[in] ");
+        } else if (term->inout == EcsInOut) {
+            ecs_strbuf_appendlit(buf, "[inout] ");
+        } else if (term->inout == EcsOut) {
+            ecs_strbuf_appendlit(buf, "[out] ");
+        } else if (term->inout == EcsInOutNone && term->oper != EcsNot) {
+            ecs_strbuf_appendlit(buf, "[none] ");
+        }
+    }
+
+    if (term->first.id & EcsIsEntity && first_id) {
+        if (ecs_has_id(world, first_id, EcsDontInherit)) {
+            def_src_mask = EcsSelf;
+        }
+    }
+
+    if (term->oper == EcsNot) {
+        ecs_strbuf_appendlit(buf, "!");
+    } else if (term->oper == EcsOptional) {
+        ecs_strbuf_appendlit(buf, "?");
+    }
+
+    if (!src_set) {
+        flecs_filter_str_add_id(world, buf, term, &term->first, false, 
+            def_first_mask);
+        if (!second_set) {
+            ecs_strbuf_appendlit(buf, "()");
+        } else {
+            ecs_strbuf_appendlit(buf, "(0,");
+            flecs_filter_str_add_id(world, buf, term, &term->second, false, 
+                def_second_mask);
+            ecs_strbuf_appendlit(buf, ")");
+        }
+    } else if (ecs_term_match_this(term) && 
+        (src->id & EcsTraverseFlags) == def_src_mask)
+    {
+        if (first_set) {
+            if (second_set) {
+                ecs_strbuf_appendlit(buf, "(");
+            }
+            flecs_filter_str_add_id(world, buf, term, &term->first, false, 
+                def_first_mask);
+            if (second_set) {
+                ecs_strbuf_appendlit(buf, ",");
+                flecs_filter_str_add_id(
+                    world, buf, term, &term->second, false, def_second_mask);
+                ecs_strbuf_appendlit(buf, ")");
+            }
+        } else if (term->id) {
+            char *str = ecs_id_str(world, term->id);
+            ecs_strbuf_appendstr(buf, str);
+            ecs_os_free(str);
+        }
+    } else {
+        ecs_id_t flags = term->id & ECS_ID_FLAGS_MASK;
+        if (flags && !ECS_HAS_ID_FLAG(flags, PAIR)) {
+            ecs_strbuf_appendstr(buf, ecs_id_flag_str(flags));
+            ecs_strbuf_appendch(buf, '|');
+        }
+
+        flecs_filter_str_add_id(world, buf, term, &term->first, false, 
+            def_first_mask);
+        ecs_strbuf_appendlit(buf, "(");
+        if (term->src.id & EcsIsEntity && src_id == first_id) {
+            ecs_strbuf_appendlit(buf, "$");
+        } else {
+            flecs_filter_str_add_id(world, buf, term, &term->src, true, 
+                def_src_mask);
+        }
+        if (second_set) {
+            ecs_strbuf_appendlit(buf, ",");
+            flecs_filter_str_add_id(world, buf, term, &term->second, false, 
+                def_second_mask);
+        }
+        ecs_strbuf_appendlit(buf, ")");
+    }
+}
+
+char* ecs_term_str(
+    const ecs_world_t *world,
+    const ecs_term_t *term)
+{
+    ecs_strbuf_t buf = ECS_STRBUF_INIT;
+    flecs_term_str_w_strbuf(world, term, &buf, 0);
+    return ecs_strbuf_get(&buf);
+}
+
+char* flecs_filter_str(
+    const ecs_world_t *world,
+    const ecs_filter_t *filter,
+    const ecs_rule_validator_ctx_t *ctx,
+    int32_t *term_start_out)
+{
+    ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
+    ecs_check(filter != NULL, ECS_INVALID_PARAMETER, NULL);
+
+    ecs_strbuf_t buf = ECS_STRBUF_INIT;
+    const ecs_term_t *terms = filter->terms;
+    int32_t i, count = filter->term_count;
+
+    for (i = 0; i < count; i ++) {
+        const ecs_term_t *term = &terms[i];
+
+        if (term_start_out && ctx) {
+            if (ctx->term_index == i) {
+                term_start_out[0] = ecs_strbuf_written(&buf);
+                if (i) {
+                    term_start_out[0] += 2; /* whitespace  + , */
+                }
+            }
+        }
+
+        flecs_term_str_w_strbuf(world, term, &buf, i);
+
+        if (i != (count - 1)) {
+            if (term->oper == EcsOr) {
+                ecs_strbuf_appendlit(&buf, " || ");
+            } else {
+                if (ECS_TERM_REF_ID(&term->first) != EcsScopeOpen) {
+                    if (ECS_TERM_REF_ID(&term[1].first) != EcsScopeClose) {
+                        ecs_strbuf_appendlit(&buf, ", ");
+                    }
+                }
+            }
+        }
+    }
+
+    return ecs_strbuf_get(&buf);
+error:
+    return NULL;
+}
+
+char* ecs_filter_str(
+    const ecs_world_t *world,
+    const ecs_filter_t *filter)
+{
+    return flecs_filter_str(world, filter, NULL, NULL);
+}
+
 const char* ecs_rule_parse_vars(
     ecs_filter_t *q,
     ecs_iter_t *it,

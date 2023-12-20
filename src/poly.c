@@ -46,8 +46,8 @@ ecs_mixins_t ecs_stage_t_mixins = {
 ecs_mixins_t ecs_query_t_mixins = {
     .type_name = "ecs_query_t",
     .elems = {
-        [EcsMixinWorld] = offsetof(ecs_query_t, filter.world),
-        [EcsMixinEntity] = offsetof(ecs_query_t, filter.entity),
+        [EcsMixinWorld] = offsetof(ecs_query_t, world),
+        [EcsMixinEntity] = offsetof(ecs_query_t, entity),
         [EcsMixinIterable] = offsetof(ecs_query_t, iterable),
         [EcsMixinDtor] = offsetof(ecs_query_t, dtor)
     }
@@ -56,8 +56,8 @@ ecs_mixins_t ecs_query_t_mixins = {
 ecs_mixins_t ecs_observer_t_mixins = {
     .type_name = "ecs_observer_t",
     .elems = {
-        [EcsMixinWorld] = offsetof(ecs_observer_t, filter.world),
-        [EcsMixinEntity] = offsetof(ecs_observer_t, filter.entity),
+        [EcsMixinWorld] = offsetof(ecs_observer_t, world),
+        [EcsMixinEntity] = offsetof(ecs_observer_t, entity),
         [EcsMixinDtor] = offsetof(ecs_observer_t, dtor)
     }
 };

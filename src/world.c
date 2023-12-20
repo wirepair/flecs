@@ -704,7 +704,7 @@ void flecs_world_iter_init(
     (void)poly;
 
     if (filter) {
-        iter[0] = ecs_term_iter(world, filter);
+        iter[0] = ecs_each_id(world, filter->id);
     } else {
         iter[0] = (ecs_iter_t){
             .world = ECS_CONST_CAST(ecs_world_t*, world),

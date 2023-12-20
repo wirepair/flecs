@@ -169,6 +169,20 @@ FLECS_API
 bool ecs_rule_next_instanced(
     ecs_iter_t *it);
 
+/** Returns true if rule matches with  entity. */
+FLECS_API
+bool ecs_rule_has(
+    ecs_filter_t *rule,
+    ecs_entity_t entity,
+    ecs_iter_t *it);
+
+/** Returns true if rule matches with table. */
+FLECS_API
+bool ecs_rule_has_table(
+    ecs_filter_t *rule,
+    ecs_table_t *table,
+    ecs_iter_t *it);
+
 /** Convert rule to a string.
  * This will convert the rule program to a string which can aid in debugging
  * the behavior of a rule.

@@ -4171,16 +4171,8 @@ int32_t ecs_count_id(
     }
 
     int32_t count = 0;
-    ecs_iter_t it = ecs_term_iter(world, &(ecs_term_t) { 
-        .id = id,
-        .src.id = EcsSelf,
-        .flags = EcsTermMatchDisabled|EcsTermMatchPrefab
-    });
-
-    it.flags |= EcsIterNoData;
-    it.flags |= EcsIterEvalTables;
-
-    while (ecs_term_next(&it)) {
+    ecs_iter_t it = ecs_each_id(world, id);
+    while (ecs_each_next(&it)) {
         count += it.count;
     }
 

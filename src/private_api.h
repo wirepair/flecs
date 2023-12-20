@@ -114,32 +114,6 @@ void flecs_invoke_hook(
 //// Query API
 ////////////////////////////////////////////////////////////////////////////////
 
-/* Match table with term */
-bool flecs_term_match_table(
-    ecs_world_t *world,
-    const ecs_term_t *term,
-    const ecs_table_t *table,
-    ecs_id_t *id_out,
-    int32_t *column_out,
-    ecs_entity_t *subject_out,
-    int32_t *match_indices,
-    bool first,
-    ecs_flags32_t iter_flags);
-
-/* Match table with filter */
-bool flecs_filter_match_table(
-    ecs_world_t *world,
-    const ecs_filter_t *filter,
-    const ecs_table_t *table,
-    ecs_id_t *ids,
-    int32_t *columns,
-    ecs_entity_t *sources,
-    int32_t *match_indices,
-    int32_t *matches_left,
-    bool first,
-    int32_t skip_term,
-    ecs_flags32_t iter_flags);
-
 ecs_iter_t flecs_filter_iter_w_flags(
     const ecs_world_t *stage,
     const ecs_filter_t *filter,
@@ -327,5 +301,13 @@ bool flecs_type_can_inherit_id(
     const ecs_table_t *table,
     const ecs_id_record_t *idr,
     ecs_id_t id);
+
+int ecs_term_finalize(
+    const ecs_world_t *world,
+    ecs_term_t *term);
+
+int32_t flecs_filter_pivot_term(
+    const ecs_world_t *world,
+    const ecs_filter_t *filter);
 
 #endif

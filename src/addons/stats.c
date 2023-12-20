@@ -386,7 +386,7 @@ void ecs_query_stats_get(
 
     int32_t t = s->t = t_next(s->t);
 
-    if (query->filter.flags & EcsFilterMatchThis) {
+    if (query->query->flags & EcsFilterMatchThis) {
         ECS_GAUGE_RECORD(&s->matched_entity_count, t, 
             ecs_query_entity_count(query));
         ECS_GAUGE_RECORD(&s->matched_table_count, t, 
@@ -459,7 +459,7 @@ bool ecs_system_stats_get(
     ECS_COUNTER_RECORD(&s->time_spent, t, ptr->time_spent);
     ECS_COUNTER_RECORD(&s->invoke_count, t, ptr->invoke_count);
 
-    s->task = !(ptr->query->filter.flags & EcsFilterMatchThis);
+    s->task = !(ptr->query->query->flags & EcsFilterMatchThis);
 
     return true;
 error:

@@ -1038,14 +1038,12 @@ int flecs_json_serialize_children_alerts(
     ecs_strbuf_t *buf,
     ecs_entity_t entity)
 {
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter(ECS_CONST_CAST(ecs_world_t*, world), {
-        .storage = &f,
+    ecs_filter_t *q = ecs_rule(ECS_CONST_CAST(ecs_world_t*, world), {
         .terms = {{ .id = ecs_pair(EcsChildOf, entity) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
-    while (ecs_filter_next(&it)) {
+    ecs_iter_t it = ecs_rule_iter(world, q);
+    while (ecs_rule_next(&it)) {
         EcsAlertsActive *alerts = ecs_table_get_id(
             world, it.table, ecs_id(EcsAlertsActive), it.offset);
 
@@ -1071,7 +1069,7 @@ int flecs_json_serialize_children_alerts(
         }
     }
 
-    ecs_filter_fini(&f);
+    ecs_rule_fini(q);
 
     return 0;
 error:
@@ -2261,9 +2259,7 @@ int ecs_world_to_json_buf(
     ecs_strbuf_t *buf_out,
     const ecs_world_to_json_desc_t *desc)
 {
-    ecs_filter_t f = ECS_FILTER_INIT;
     ecs_filter_desc_t filter_desc = {0};
-    filter_desc.storage = &f;
 
     if (desc && desc->serialize_builtin && desc->serialize_modules) {
         filter_desc.terms[0].id = EcsAny;
@@ -2285,11 +2281,12 @@ int ecs_world_to_json_buf(
         }
     }
 
-    if (ecs_filter_init(world, &filter_desc) == NULL) {
+    ecs_filter_t *q = ecs_rule_init(world, &filter_desc);
+    if (!q) {
         return -1;
     }
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
+    ecs_iter_t it = ecs_rule_iter(world, q);
     ecs_iter_to_json_desc_t json_desc = { 
         .serialize_table = true,
         .serialize_ids = true,
@@ -2298,7 +2295,7 @@ int ecs_world_to_json_buf(
     };
 
     int ret = ecs_iter_to_json_buf(world, &it, buf_out, &json_desc);
-    ecs_filter_fini(&f);
+    ecs_rule_fini(q);
     return ret;
 }
 

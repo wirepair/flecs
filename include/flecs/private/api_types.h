@@ -118,31 +118,16 @@ typedef struct ecs_table_cache_iter_t {
     struct ecs_table_cache_hdr_t *next_list;
 } ecs_table_cache_iter_t;
 
-/** Term-iterator specific data */
-typedef struct ecs_term_iter_t {
-    ecs_term_t term;
-    ecs_id_record_t *self_index;
-    ecs_id_record_t *set_index;
-
-    ecs_id_record_t *cur;
+/** Each iterator */
+typedef struct ecs_each_iter_t {
     ecs_table_cache_iter_t it;
-    int32_t index;
-    int32_t observed_table_count;
-    
-    ecs_table_t *table;
-    int32_t cur_match;
-    int32_t match_count;
-    int32_t last_column;
 
-    bool empty_tables;
-
-    /* Storage */
-    ecs_id_t id;
-    int32_t column;
-    ecs_entity_t subject;
-    ecs_size_t size;
-    void *ptr;
-} ecs_term_iter_t;
+    /* Storage for iterator fields */
+    ecs_id_t ids;
+    ecs_entity_t sources;
+    ecs_size_t sizes;
+    int32_t columns;
+} ecs_each_iter_t;
 
 typedef enum ecs_iter_kind_t {
     EcsIterEvalCondition,
@@ -150,15 +135,6 @@ typedef enum ecs_iter_kind_t {
     EcsIterEvalChain,
     EcsIterEvalNone
 } ecs_iter_kind_t;
-
-/** Filter-iterator specific data */
-typedef struct ecs_filter_iter_t {
-    const ecs_filter_t *filter;
-    ecs_iter_kind_t kind; 
-    ecs_term_iter_t term_iter;
-    int32_t matches_left;
-    int32_t pivot_term;
-} ecs_filter_iter_t;
 
 /** Query-iterator specific data */
 typedef struct ecs_query_iter_t {
@@ -221,13 +197,12 @@ typedef struct ecs_iter_cache_t {
  * progress & to provide builtin storage. */
 typedef struct ecs_iter_private_t {
     union {
-        ecs_term_iter_t term;
-        ecs_filter_iter_t filter;
         ecs_query_iter_t query;
         ecs_rule_iter_t rule;
         ecs_snapshot_iter_t snapshot;
         ecs_page_iter_t page;
         ecs_worker_iter_t worker;
+        ecs_each_iter_t each;
     } iter;                       /* Iterator specific data */
 
     void *entity_iter;            /* Filter applied after matching a table */

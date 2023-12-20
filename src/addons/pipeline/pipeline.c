@@ -13,7 +13,7 @@ static void flecs_pipeline_free(
     ecs_pipeline_state_t *p) 
 {
     if (p) {
-        ecs_world_t *world = p->query->filter.world;
+        ecs_world_t *world = p->query->query->world;
         ecs_allocator_t *a = &world->allocator;
         ecs_vec_fini_t(a, &p->ops, ecs_pipeline_op_t);
         ecs_vec_fini_t(a, &p->systems, ecs_entity_t);
@@ -293,7 +293,7 @@ bool flecs_pipeline_build(
 
             bool needs_merge = false;
             needs_merge = flecs_pipeline_check_terms(
-                world, &q->filter, is_active, &ws);
+                world, q->query, is_active, &ws);
 
             if (is_active) {
                 if (first) {
@@ -335,7 +335,7 @@ bool flecs_pipeline_build(
                 needs_merge = false;
                 if (is_active) {
                     needs_merge = flecs_pipeline_check_terms(
-                        world, &q->filter, true, &ws);
+                        world, q->query, true, &ws);
                 }
 
                 /* The component states were just reset, so if we conclude that
@@ -827,9 +827,9 @@ ecs_entity_t ecs_pipeline_init(
         return 0;
     }
 
-    ecs_check(query->filter.terms != NULL, ECS_INVALID_PARAMETER, 
+    ecs_check(query->query->terms != NULL, ECS_INVALID_PARAMETER, 
         "pipeline query cannot be empty");
-    ecs_check(query->filter.terms[0].id == EcsSystem,
+    ecs_check(query->query->terms[0].id == EcsSystem,
         ECS_INVALID_PARAMETER, "pipeline must start with System term");
 
     ecs_pipeline_state_t *pq = ecs_os_calloc_t(ecs_pipeline_state_t);

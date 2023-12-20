@@ -999,14 +999,11 @@ static
 void DisableRest(ecs_iter_t *it) {
     ecs_world_t *world = it->world;
 
-    ecs_iter_t rit = ecs_term_iter(world, &(ecs_term_t){
-        .id = ecs_id(EcsRest),
-        .src.id = EcsSelf
-    });
+    ecs_iter_t rit = ecs_each_id(world, ecs_id(EcsRest));
 
     if (it->event == EcsOnAdd) {
         /* REST module was disabled */
-        while (ecs_term_next(&rit)) {
+        while (ecs_each_next(&rit)) {
             EcsRest *rest = ecs_field(&rit, EcsRest, 1);
             int i;
             for (i = 0; i < rit.count; i ++) {
@@ -1016,7 +1013,7 @@ void DisableRest(ecs_iter_t *it) {
         }
     } else if (it->event == EcsOnRemove) {
         /* REST module was enabled */
-        while (ecs_term_next(&rit)) {
+        while (ecs_each_next(&rit)) {
             EcsRest *rest = ecs_field(&rit, EcsRest, 1);
             int i;
             for (i = 0; i < rit.count; i ++) {

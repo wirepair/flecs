@@ -84,7 +84,7 @@ void flecs_rule_iter_mixin_init(
 
     if (filter) {
         iter[1] = ecs_rule_iter(world, ECS_CONST_CAST(ecs_filter_t*, poly));
-        iter[0] = ecs_term_chain_iter(&iter[1], filter);
+        // iter[0] = ecs_term_chain_iter(&iter[1], filter); TODO
     } else {
         iter[0] = ecs_rule_iter(world, ECS_CONST_CAST(ecs_filter_t*, poly));
     }
@@ -162,6 +162,37 @@ ecs_filter_t* ecs_rule_init(
 error:
     ecs_rule_fini(&result->filter);
     return NULL;
+}
+
+bool ecs_rule_has(
+    ecs_filter_t *q,
+    ecs_entity_t entity,
+    ecs_iter_t *it)
+{
+    ecs_poly_assert(q, ecs_rule_t);
+    ecs_check(q->flags & EcsFilterMatchThis, ECS_INVALID_PARAMETER, NULL);
+
+    *it = ecs_rule_iter(q->world, q);
+    ecs_iter_set_var(it, 0, entity);
+    return ecs_rule_next(it);
+error:
+    return false;
+}
+
+/** Returns true if rule matches with table. */
+bool ecs_rule_has_table(
+    ecs_filter_t *q,
+    ecs_table_t *table,
+    ecs_iter_t *it)
+{
+    ecs_poly_assert(q, ecs_rule_t);
+    ecs_check(q->flags & EcsFilterMatchThis, ECS_INVALID_PARAMETER, NULL);
+
+    *it = ecs_rule_iter(q->world, q);
+    ecs_iter_set_var_as_table(it, 0, table);
+    return ecs_rule_next(it);
+error:
+    return false;
 }
 
 #endif

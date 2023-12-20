@@ -216,7 +216,7 @@ struct ecs_query_t {
     ecs_header_t hdr;
 
     /* Query filter */
-    ecs_filter_t filter;
+    ecs_filter_t *query;
 
     /* Tables matched with query */
     ecs_table_cache_t cache;
@@ -267,6 +267,8 @@ struct ecs_query_t {
     /* Mixins */
     ecs_iterable_t iterable;
     ecs_poly_dtor_t dtor;
+    ecs_world_t *world;
+    ecs_entity_t entity;
 
     /* Query-level allocators */
     ecs_query_allocators_t allocators;

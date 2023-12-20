@@ -1262,9 +1262,8 @@ const char* plecs_parse_using_stmt(
         }
 
         /* Add each child of the scope to using stack */
-        ecs_iter_t it = ecs_term_iter(world, &(ecs_term_t){ 
-            .id = ecs_childof(scope) });
-        while (ecs_term_next(&it)) {
+        ecs_iter_t it = ecs_children(world, scope);
+        while (ecs_children_next(&it)) {
             int32_t i, count = it.count;
             for (i = 0; i < count; i ++) {
                 plecs_push_using(it.entities[i], state);

@@ -2713,7 +2713,7 @@ ecs_iter_t ecs_rule_iter(
     it.fini = flecs_rule_iter_fini;
     it.field_count = q->field_count;
     it.sizes = q->sizes;
-    flecs_filter_apply_iter_flags(&it, q);
+    flecs_rule_apply_iter_flags(&it, q);
 
     flecs_iter_init(world, &it, 
         flecs_iter_cache_ids |

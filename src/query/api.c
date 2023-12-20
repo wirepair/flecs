@@ -102,9 +102,87 @@ void flecs_rule_fini(
     ecs_os_free(impl->src_vars);
     flecs_name_index_fini(&impl->tvar_index);
     flecs_name_index_fini(&impl->evar_index);
-    ecs_filter_fini(&impl->filter);
+
+    ecs_filter_t *q = &impl->filter;
+    int i, count = q->term_count;
+    for (i = 0; i < count; i ++) {
+        ecs_term_t *term = &q->terms[i];
+        if (term->idr) {
+            if (!(q->world->flags & EcsWorldQuit)) {
+                if (ecs_os_has_threading()) {
+                    ecs_os_adec(&term->idr->keep_alive);
+                } else {
+                    term->idr->keep_alive --;
+                }
+            }
+        }
+    }
+
+    if (impl->tokens) {
+        flecs_free(&q->stage->allocator, impl->tokens_len, impl->tokens);
+    }
 
     ecs_poly_free(impl, ecs_rule_t);
+}
+
+static
+char* flecs_rule_append_token(
+    char *dst,
+    const char *src)
+{
+    int32_t len = ecs_os_strlen(src);
+    ecs_os_strncpy(dst, src, len + 1);
+    return dst + len + 1;
+}
+
+static
+void flecs_rule_populate_tokens(
+    ecs_rule_t *impl)
+{
+    ecs_filter_t *q = &impl->filter;
+    int32_t i, term_count = q->term_count;
+    
+    /* Step 1: determine size of token buffer */
+    int32_t len = 0;
+    for (i = 0; i < term_count; i ++) {
+        ecs_term_t *term = &q->terms[i];
+        
+        if (term->first.name) {
+            len += ecs_os_strlen(term->first.name);
+        }
+        if (term->second.name) {
+            len += ecs_os_strlen(term->second.name);
+        }
+        if (term->src.name) {
+            len += ecs_os_strlen(term->src.name);
+        }
+    }
+
+    /* Step 2: reassign term tokens to buffer */
+    if (len) {
+        impl->tokens = flecs_alloc(&q->stage->allocator, len);
+        impl->tokens_len = len;
+        char *token = impl->tokens, *next;
+
+        for (i = 0; i < term_count; i ++) {
+            ecs_term_t *term = &q->terms[i];
+            if (term->first.name) {
+                next = flecs_rule_append_token(token, term->first.name);
+                term->first.name = token;
+                token = next;
+            }
+            if (term->second.name) {
+                next = flecs_rule_append_token(token, term->second.name);
+                term->second.name = token;
+                token = next;
+            }
+            if (term->src.name) {
+                next = flecs_rule_append_token(token, term->src.name);
+                term->src.name = token;
+                token = next;
+            }
+        }
+    }
 }
 
 void ecs_rule_fini(
@@ -130,27 +208,25 @@ ecs_filter_t* ecs_rule_init(
 
     /* Initialize the query */
     ecs_filter_desc_t desc = *const_desc;
-    desc.storage = &result->filter; /* Use storage of rule */
-    result->filter = ECS_FILTER_INIT;
-    if (ecs_filter_init(world, &desc) == NULL) {
-        /* Patch type */
-        result->filter.hdr.type = ecs_rule_t_magic;
+    if (flecs_rule_finalize_query(world, &result->filter, &desc)) {
         goto error;
     }
-
-    /* Patch type TODO remove when merged with filters */
-    result->filter.hdr.type = ecs_rule_t_magic;
-    result->filter.hdr.mixins = &ecs_rule_t_mixins;
-
-    result->iterable.init = flecs_rule_iter_mixin_init;
 
     /* Compile filter to operations */
     if (flecs_rule_compile(world, stage, result)) {
         goto error;
     }
 
+    /* Store remaining string tokens in terms (after entity lookups) in single
+     * token buffer which simplifies memory management & reduces allocations. */
+    flecs_rule_populate_tokens(result);
+
     ecs_entity_t entity = const_desc->entity;
     result->dtor = (ecs_poly_dtor_t)flecs_rule_fini;
+    result->iterable.init = flecs_rule_iter_mixin_init;
+    result->filter.entity = entity;
+    result->filter.world = world;
+    result->filter.stage = stage;
 
     if (entity) {
         EcsPoly *poly = ecs_poly_bind(world, entity, ecs_rule_t);

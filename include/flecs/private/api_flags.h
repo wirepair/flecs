@@ -129,10 +129,8 @@ extern "C" {
 #define EcsFilterMatchPrefab           (1u << 3u)  /* Does filter match prefabs */
 #define EcsFilterMatchDisabled         (1u << 4u)  /* Does filter match disabled entities */
 #define EcsFilterMatchEmptyTables      (1u << 5u)  /* Does filter return empty tables */
-#define EcsFilterMatchAnything         (1u << 6u)  /* False if filter has no/only Not terms */
 #define EcsFilterNoData                (1u << 7u)  /* When true, data fields won't be populated */
 #define EcsFilterIsInstanced           (1u << 8u)  /* Is filter instanced (see ecs_filter_desc_t) */
-#define EcsFilterPopulate              (1u << 9u)  /* Populate data, ignore non-matching fields */
 #define EcsFilterHasCondSet            (1u << 10u) /* Does filter have conditionally set fields */
 #define EcsFilterUnresolvedByName      (1u << 11u) /* Use by-name matching for unresolved entity identifiers */
 #define EcsFilterHasPred               (1u << 12u) /* Filter has equality predicates */
@@ -140,7 +138,6 @@ extern "C" {
 #define EcsFilterIsTrivial             (1u << 14u) /* Trivial filter */
 #define EcsFilterMatchOnlySelf         (1u << 15u) /* Filter has no up traversal */
 #define EcsFilterHasWildcards          (1u << 16u) /* Filter has no up traversal */
-#define EcsFilterOwnsStorage           (1u << 17u) /* Is ecs_filter_t object owned by filter */
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Table flags (used by ecs_table_t::flags)

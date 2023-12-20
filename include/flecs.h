@@ -680,17 +680,11 @@ typedef enum ecs_oper_kind_t {
  * store information relevant to queries. */
 #define EcsTermMatchAny               (1u << 0)
 #define EcsTermMatchAnySrc            (1u << 1)
-#define EcsTermSrcFirstEq             (1u << 2)
-#define EcsTermSrcSecondEq            (1u << 3)
-#define EcsTermTransitive             (1u << 4)
-#define EcsTermReflexive              (1u << 5)
-#define EcsTermIdInherited            (1u << 6)
-#define EcsTermIsTrivial              (1u << 7)
-#define EcsTermNoData                 (1u << 8)
-
-/* Term flags used for term iteration */
-#define EcsTermMatchDisabled          (1u << 7)
-#define EcsTermMatchPrefab            (1u << 8)
+#define EcsTermTransitive             (1u << 2)
+#define EcsTermReflexive              (1u << 3)
+#define EcsTermIdInherited            (1u << 4)
+#define EcsTermIsTrivial              (1u << 5)
+#define EcsTermNoData                 (1u << 6)
 
 /** Type that describes a reference to an entity or variable in a term. */
 typedef struct ecs_term_ref_t {
@@ -731,9 +725,6 @@ struct ecs_term_t {
     ecs_id_record_t *idr;       /**< Cached pointer to internal index */
 };
 
-/** Use $this variable to initialize user-allocated filter object */
-FLECS_API extern ecs_filter_t ECS_FILTER_INIT;
-
 /** Filters alllow for ad-hoc quick filtering of entity tables. */
 struct ecs_filter_t {
     ecs_header_t hdr;
@@ -741,21 +732,13 @@ struct ecs_filter_t {
     ecs_term_t terms[FLECS_TERM_COUNT_MAX]; /**< Query terms */
     int32_t sizes[FLECS_TERM_COUNT_MAX]; /**< Component sizes. Indexed by field */
     
-    int8_t term_count;        /**< Number of elements in terms array */
-    int8_t field_count;       /**< Number of fields in iterator for filter */
+    int8_t term_count;         /**< Number of elements in terms array */
+    int8_t field_count;        /**< Number of fields in iterator for filter */
 
-    int16_t tokens_len;       /**< Length of tokens buffer */
-
-    ecs_flags32_t flags;      /**< Filter flags */
+    ecs_flags32_t flags;       /**< Filter flags */
     ecs_flags64_t data_fields; /**< Bitset with fields that have data */
 
-    char *variable_names[1];   /**< Placeholder variable names array */
-    char *tokens;              /**< Buffer with string tokens used by terms */
-
-    /* Mixins */
     ecs_entity_t entity;       /**< Entity associated with filter (optional) */
-    ecs_iterable_t iterable;   /**< Iterable mixin */
-    ecs_poly_dtor_t dtor;      /**< Dtor mixin */
     ecs_world_t *world;        /**< World mixin */
     ecs_stage_t *stage;
 };
@@ -963,9 +946,6 @@ typedef struct ecs_filter_desc_t {
      * FLECS_TERM_COUNT_MAX use terms_buffer */
     ecs_term_t terms[FLECS_TERM_COUNT_MAX];
 
-    /** External storage to prevent allocation of the filter object */
-    ecs_filter_t *storage;
-
     /** When true, terms returned by an iterator may either contain 1 or N 
      * elements, where terms with N elements are owned, and terms with 1 element 
      * are shared, for example from a parent or base entity. When false, the 
@@ -976,7 +956,7 @@ typedef struct ecs_filter_desc_t {
     /** Flags for advanced usage */
     ecs_flags32_t flags;
 
-    /** Filter expression. Should not be set at the same time as terms array */
+    /** Filter expression */
     const char *expr;
 
     /** Entity associated with query (optional) */
@@ -3953,7 +3933,7 @@ char* ecs_term_str(
  * @return The filter converted to a string.
  */
 FLECS_API 
-char* ecs_filter_str(
+char* ecs_rule_str(
     const ecs_world_t *world,
     const ecs_filter_t *filter); 
 

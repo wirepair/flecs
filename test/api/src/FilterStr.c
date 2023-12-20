@@ -11,7 +11,7 @@ void FilterStr_one_term(void) {
         .terms = {{ TagA }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "TagA");
     ecs_os_free(str);
 
@@ -34,7 +34,7 @@ void FilterStr_one_term_w_inout(void) {
         }
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "[in] TagA");
     ecs_os_free(str);
 
@@ -58,7 +58,7 @@ void FilterStr_two_terms(void) {
         }
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "TagA, TagB");
     ecs_os_free(str);
 
@@ -82,7 +82,7 @@ void FilterStr_two_terms_w_inout(void) {
         }
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "TagA, [in] TagB");
     ecs_os_free(str);
 
@@ -108,7 +108,7 @@ void FilterStr_three_terms_w_or(void) {
         }
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "TagA, TagB || TagC");
     ecs_os_free(str);
 
@@ -134,7 +134,7 @@ void FilterStr_three_terms_w_or_inout(void) {
         }
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "TagA, [in] TagB || TagC");
     ecs_os_free(str);
 
@@ -162,7 +162,7 @@ void FilterStr_four_terms_three_w_or_inout(void) {
         }
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "TagA, [in] TagB || TagC, [in] TagD");
     ecs_os_free(str);
 
@@ -183,7 +183,7 @@ void FilterStr_one_term_w_pair(void) {
         .terms = {{ .id = ecs_pair(Rel, Tgt) }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "(Rel,Tgt)");
     ecs_os_free(str);
 
@@ -205,7 +205,7 @@ void FilterStr_one_term_w_pair_entity_src(void) {
         .terms = {{ .id = ecs_pair(Rel, Tgt), .src.id = Src }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "Rel(Src,Tgt)");
     ecs_os_free(str);
 
@@ -225,7 +225,7 @@ void FilterStr_one_term_w_self(void) {
         .terms = {{ .id = Foo, .src.id = EcsSelf }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "Foo(self)");
     ecs_os_free(str);
 
@@ -245,7 +245,7 @@ void FilterStr_one_term_w_up(void) {
         .terms = {{ .id = Foo, .src.id = EcsUp }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     ecs_os_free(str);
 
     ecs_filter_fini(&f);
@@ -264,7 +264,7 @@ void FilterStr_one_term_w_0(void) {
         .terms = {{ .id = Foo, .src.id = EcsIsEntity }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "Foo()");
     ecs_os_free(str);
 
@@ -284,7 +284,7 @@ void FilterStr_one_term_w_singleton(void) {
         .terms = {{ .id = Foo, .src.id = Foo }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "Foo($)");
     ecs_os_free(str);
 
@@ -304,7 +304,7 @@ void FilterStr_one_term_w_final_pair(void) {
         .terms = {{ .first.id = Foo }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "Foo");
     ecs_os_free(str);
 
@@ -324,7 +324,7 @@ void FilterStr_one_term_w_final_dont_inherit_pair(void) {
         .terms = {{ .first.id = Foo }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "Foo");
     ecs_os_free(str);
 
@@ -344,7 +344,7 @@ void FilterStr_one_term_w_src_var(void) {
         .terms = {{ Tag, .src.id = EcsIsVariable, .src.name = "Var" }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "Tag($Var)");
     ecs_os_free(str);
 
@@ -362,7 +362,7 @@ void FilterStr_one_term_w_first_var(void) {
         .terms = {{ .first.id = EcsIsVariable, .first.name = "Var" }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "[none] $Var");
     ecs_os_free(str);
 
@@ -382,7 +382,7 @@ void FilterStr_one_term_w_second_var(void) {
         .terms = {{ .first.id = Rel, .second.id = EcsIsVariable, .second.name = "Var" }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "(Rel,$Var)");
     ecs_os_free(str);
 
@@ -402,7 +402,7 @@ void FilterStr_one_term_w_first_var_entity_src(void) {
         .terms = {{ .first.id = EcsIsVariable, .first.name = "Var", .src.id = Src }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "[none] $Var(Src)");
     ecs_os_free(str);
 
@@ -427,7 +427,7 @@ void FilterStr_one_term_w_pair_w_0_entity(void) {
         }
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "Rel(0,Tgt)");
     ecs_os_free(str);
 
@@ -447,7 +447,7 @@ void FilterStr_not_term(void) {
         .terms = {{ TagA, .oper = EcsNot }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "!TagA");
     ecs_os_free(str);
 
@@ -467,7 +467,7 @@ void FilterStr_wildcard_term(void) {
         .terms = {{ EcsWildcard }}
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "[none] *");
     ecs_os_free(str);
 
@@ -489,7 +489,7 @@ void FilterStr_scopes(void) {
         .expr = "TagA, {TagB, {TagC}}"
     }));
 
-    char *str = ecs_filter_str(world, &f);
+    char *str = ecs_rule_str(world, &f);
     test_str(str, "TagA, {TagB, {TagC}}");
     ecs_os_free(str);
 

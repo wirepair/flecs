@@ -119,7 +119,7 @@ struct filter_base {
     }
 
     flecs::string str() {
-        char *result = ecs_filter_str(m_world, m_filter_ptr);
+        char *result = ecs_rule_str(m_world, m_filter_ptr);
         return flecs::string(result);
     }
 

@@ -193,7 +193,7 @@ bool ecs_rule_has_table(
  * @return The string
  */
 FLECS_API
-char* ecs_rule_str(
+char* ecs_rule_plan(
     const ecs_filter_t *rule);
 
 /** Convert rule to string with profile.

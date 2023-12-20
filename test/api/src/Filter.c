@@ -9097,7 +9097,7 @@ void Filter_move_self(void) {
     ecs_filter_t f_2 = f;
     ecs_filter_move(&f_2, &f_2);
 
-    char *str = ecs_filter_str(world, &f_2);
+    char *str = ecs_rule_str(world, &f_2);
     test_str(str, "TagA");
     ecs_os_free(str);
 

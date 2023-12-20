@@ -213,7 +213,7 @@ char* ecs_rule_str_w_profile(
     return ecs_strbuf_get(&buf);
 }
 
-char* ecs_rule_str(
+char* ecs_rule_plan(
     const ecs_filter_t *q)
 {
     return ecs_rule_str_w_profile(q, NULL);
@@ -445,7 +445,7 @@ error:
     return NULL;
 }
 
-char* ecs_filter_str(
+char* ecs_rule_str(
     const ecs_world_t *world,
     const ecs_filter_t *filter)
 {
@@ -549,4 +549,92 @@ const char* ecs_rule_parse_vars(
     return ptr;
 error:
     return NULL;
+}
+
+int32_t flecs_rule_pivot_term(
+    const ecs_world_t *world,
+    const ecs_filter_t *filter)
+{
+    ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
+    ecs_check(filter != NULL, ECS_INVALID_PARAMETER, NULL);
+
+    const ecs_term_t *terms = filter->terms;
+    int32_t i, term_count = filter->term_count;
+    int32_t pivot_term = -1, min_count = -1, self_pivot_term = -1;
+
+    for (i = 0; i < term_count; i ++) {
+        const ecs_term_t *term = &terms[i];
+        ecs_id_t id = term->id;
+
+        if ((term->oper != EcsAnd) || (i && (term[-1].oper == EcsOr))) {
+            continue;
+        }
+
+        if (!ecs_term_match_this(term)) {
+            continue;
+        }
+
+        ecs_id_record_t *idr = flecs_query_id_record_get(world, id);
+        if (!idr) {
+            /* If one of the terms does not match with any data, iterator 
+             * should not return anything */
+            return -2; /* -2 indicates filter doesn't match anything */
+        }
+
+        int32_t table_count = flecs_table_cache_count(&idr->cache);
+        if (min_count == -1 || table_count < min_count) {
+            min_count = table_count;
+            pivot_term = i;
+            if ((term->src.id & EcsTraverseFlags) == EcsSelf) {
+                self_pivot_term = i;
+            }
+        }
+    }
+
+    if (self_pivot_term != -1) {
+        pivot_term = self_pivot_term;
+    }
+
+    return pivot_term;
+error:
+    return -2;
+}
+
+
+void flecs_rule_apply_iter_flags(
+    ecs_iter_t *it,
+    const ecs_filter_t *filter)
+{
+    ECS_BIT_COND(it->flags, EcsIterIsInstanced, 
+        ECS_BIT_IS_SET(filter->flags, EcsFilterIsInstanced));
+    ECS_BIT_COND(it->flags, EcsIterNoData,
+        ECS_BIT_IS_SET(filter->flags, EcsFilterNoData));
+    ECS_BIT_COND(it->flags, EcsIterHasCondSet, 
+        ECS_BIT_IS_SET(filter->flags, EcsFilterHasCondSet));
+}
+
+ecs_id_t flecs_to_public_id(
+    ecs_id_t id)
+{
+    if (ECS_PAIR_FIRST(id) == EcsUnion) {
+        return ecs_pair(ECS_PAIR_SECOND(id), EcsWildcard);
+    } else {
+        return id;
+    }
+}
+
+ecs_id_t flecs_from_public_id(
+    ecs_world_t *world,
+    ecs_id_t id)
+{
+    if (ECS_HAS_ID_FLAG(id, PAIR)) {
+        ecs_entity_t first = ECS_PAIR_FIRST(id);
+        ecs_id_record_t *idr = flecs_id_record_ensure(world, 
+            ecs_pair(first, EcsWildcard));
+        if (idr->flags & EcsIdUnion) {
+            return ecs_pair(EcsUnion, first);
+        }
+    }
+
+    return id;
 }

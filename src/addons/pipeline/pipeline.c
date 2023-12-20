@@ -13,7 +13,7 @@ static void flecs_pipeline_free(
     ecs_pipeline_state_t *p) 
 {
     if (p) {
-        ecs_world_t *world = p->query->query->world;
+        ecs_world_t *world = p->query->world;
         ecs_allocator_t *a = &world->allocator;
         ecs_vec_fini_t(a, &p->ops, ecs_pipeline_op_t);
         ecs_vec_fini_t(a, &p->systems, ecs_entity_t);

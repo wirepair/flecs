@@ -117,7 +117,7 @@ struct query_base {
 
     flecs::string str() const {
         const ecs_filter_t *f = ecs_query_get_filter(m_query);
-        char *result = ecs_filter_str(m_world, f);
+        char *result = ecs_rule_str(m_world, f);
         return flecs::string(result);
     }
 

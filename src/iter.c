@@ -65,7 +65,6 @@ void flecs_iter_init(
 
     INIT_CACHE(it, stack, fields, ids, ecs_id_t, it->field_count);
     INIT_CACHE(it, stack, fields, sources, ecs_entity_t, it->field_count);
-    INIT_CACHE(it, stack, fields, match_indices, int32_t, it->field_count);
     INIT_CACHE(it, stack, fields, columns, int32_t, it->field_count);
     INIT_CACHE(it, stack, fields, variables, ecs_var_t, it->variable_count);
     INIT_CACHE(it, stack, fields, ptrs, void*, it->field_count);
@@ -103,7 +102,6 @@ void ecs_iter_fini(
 
     FINI_CACHE(it, ids, ecs_id_t, it->field_count);
     FINI_CACHE(it, sources, ecs_entity_t, it->field_count);
-    FINI_CACHE(it, match_indices, int32_t, it->field_count);
     FINI_CACHE(it, columns, int32_t, it->field_count);
     FINI_CACHE(it, variables, ecs_var_t, it->variable_count);
     FINI_CACHE(it, ptrs, void*, it->field_count);

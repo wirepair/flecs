@@ -2093,7 +2093,7 @@ ecs_query_t* ecs_query_init(
     result->binding_ctx_free = desc->binding_ctx_free;
 
     if (ecs_should_log_1()) {
-        char *filter_expr = ecs_filter_str(world, result->query);
+        char *filter_expr = ecs_rule_str(world, result->query);
         ecs_dbg_1("#[green]query#[normal] [%s] created", 
             filter_expr ? filter_expr : "");
         ecs_os_free(filter_expr);
@@ -2293,7 +2293,7 @@ ecs_iter_t ecs_query_iter(
         .set_var = flecs_query_set_var
     };
 
-    flecs_filter_apply_iter_flags(&result, query->query);
+    flecs_rule_apply_iter_flags(&result, query->query);
 
     ecs_filter_t *filter = query->query;
     ecs_iter_t fit;
@@ -2773,7 +2773,7 @@ bool ecs_query_orphaned(
 char* ecs_query_str(
     const ecs_query_t *query)
 {
-    return ecs_filter_str(query->query->world, query->query);
+    return ecs_rule_str(query->query->world, query->query);
 }
 
 int32_t ecs_query_table_count(

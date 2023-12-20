@@ -62,16 +62,6 @@ ecs_mixins_t ecs_observer_t_mixins = {
     }
 };
 
-ecs_mixins_t ecs_filter_t_mixins = {
-    .type_name = "ecs_filter_t",
-    .elems = {
-        [EcsMixinWorld] = offsetof(ecs_filter_t, world),
-        [EcsMixinEntity] = offsetof(ecs_filter_t, entity),
-        [EcsMixinIterable] = offsetof(ecs_filter_t, iterable),
-        [EcsMixinDtor] = offsetof(ecs_filter_t, dtor)
-    }
-};
-
 static
 void* assert_mixin(
     const ecs_poly_t *poly,

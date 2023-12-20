@@ -410,10 +410,8 @@ extern "C" {
 #define EcsFilterMatchPrefab           (1u << 3u)  /* Does filter match prefabs */
 #define EcsFilterMatchDisabled         (1u << 4u)  /* Does filter match disabled entities */
 #define EcsFilterMatchEmptyTables      (1u << 5u)  /* Does filter return empty tables */
-#define EcsFilterMatchAnything         (1u << 6u)  /* False if filter has no/only Not terms */
 #define EcsFilterNoData                (1u << 7u)  /* When true, data fields won't be populated */
 #define EcsFilterIsInstanced           (1u << 8u)  /* Is filter instanced (see ecs_filter_desc_t) */
-#define EcsFilterPopulate              (1u << 9u)  /* Populate data, ignore non-matching fields */
 #define EcsFilterHasCondSet            (1u << 10u) /* Does filter have conditionally set fields */
 #define EcsFilterUnresolvedByName      (1u << 11u) /* Use by-name matching for unresolved entity identifiers */
 #define EcsFilterHasPred               (1u << 12u) /* Filter has equality predicates */
@@ -421,7 +419,6 @@ extern "C" {
 #define EcsFilterIsTrivial             (1u << 14u) /* Trivial filter */
 #define EcsFilterMatchOnlySelf         (1u << 15u) /* Filter has no up traversal */
 #define EcsFilterHasWildcards          (1u << 16u) /* Filter has no up traversal */
-#define EcsFilterOwnsStorage           (1u << 17u) /* Is ecs_filter_t object owned by filter */
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Table flags (used by ecs_table_t::flags)
@@ -2934,17 +2931,11 @@ typedef enum ecs_oper_kind_t {
  * store information relevant to queries. */
 #define EcsTermMatchAny               (1u << 0)
 #define EcsTermMatchAnySrc            (1u << 1)
-#define EcsTermSrcFirstEq             (1u << 2)
-#define EcsTermSrcSecondEq            (1u << 3)
-#define EcsTermTransitive             (1u << 4)
-#define EcsTermReflexive              (1u << 5)
-#define EcsTermIdInherited            (1u << 6)
-#define EcsTermIsTrivial              (1u << 7)
-#define EcsTermNoData                 (1u << 8)
-
-/* Term flags used for term iteration */
-#define EcsTermMatchDisabled          (1u << 7)
-#define EcsTermMatchPrefab            (1u << 8)
+#define EcsTermTransitive             (1u << 2)
+#define EcsTermReflexive              (1u << 3)
+#define EcsTermIdInherited            (1u << 4)
+#define EcsTermIsTrivial              (1u << 5)
+#define EcsTermNoData                 (1u << 6)
 
 /** Type that describes a reference to an entity or variable in a term. */
 typedef struct ecs_term_ref_t {
@@ -2985,9 +2976,6 @@ struct ecs_term_t {
     ecs_id_record_t *idr;       /**< Cached pointer to internal index */
 };
 
-/** Use $this variable to initialize user-allocated filter object */
-FLECS_API extern ecs_filter_t ECS_FILTER_INIT;
-
 /** Filters alllow for ad-hoc quick filtering of entity tables. */
 struct ecs_filter_t {
     ecs_header_t hdr;
@@ -2995,21 +2983,13 @@ struct ecs_filter_t {
     ecs_term_t terms[FLECS_TERM_COUNT_MAX]; /**< Query terms */
     int32_t sizes[FLECS_TERM_COUNT_MAX]; /**< Component sizes. Indexed by field */
     
-    int8_t term_count;        /**< Number of elements in terms array */
-    int8_t field_count;       /**< Number of fields in iterator for filter */
+    int8_t term_count;         /**< Number of elements in terms array */
+    int8_t field_count;        /**< Number of fields in iterator for filter */
 
-    int16_t tokens_len;       /**< Length of tokens buffer */
-
-    ecs_flags32_t flags;      /**< Filter flags */
+    ecs_flags32_t flags;       /**< Filter flags */
     ecs_flags64_t data_fields; /**< Bitset with fields that have data */
 
-    char *variable_names[1];   /**< Placeholder variable names array */
-    char *tokens;              /**< Buffer with string tokens used by terms */
-
-    /* Mixins */
     ecs_entity_t entity;       /**< Entity associated with filter (optional) */
-    ecs_iterable_t iterable;   /**< Iterable mixin */
-    ecs_poly_dtor_t dtor;      /**< Dtor mixin */
     ecs_world_t *world;        /**< World mixin */
     ecs_stage_t *stage;
 };
@@ -3246,13 +3226,6 @@ typedef struct ecs_each_iter_t {
     int32_t columns;
 } ecs_each_iter_t;
 
-typedef enum ecs_iter_kind_t {
-    EcsIterEvalCondition,
-    EcsIterEvalTables,
-    EcsIterEvalChain,
-    EcsIterEvalNone
-} ecs_iter_kind_t;
-
 /** Query-iterator specific data */
 typedef struct ecs_query_iter_t {
     ecs_query_t *query;
@@ -3299,8 +3272,7 @@ typedef struct ecs_rule_iter_t {
 #define flecs_iter_cache_columns       (1u << 1u)
 #define flecs_iter_cache_sources       (1u << 2u)
 #define flecs_iter_cache_ptrs          (1u << 3u)
-#define flecs_iter_cache_match_indices (1u << 4u)
-#define flecs_iter_cache_variables     (1u << 5u)
+#define flecs_iter_cache_variables     (1u << 4u)
 #define flecs_iter_cache_all           (255)
 
 /* Inline iterator arrays to prevent allocations for small array sizes */
@@ -3342,8 +3314,6 @@ struct ecs_iter_t {
     ecs_var_t *variables;         /* Values of variables (if any) */
     int32_t *columns;             /* Query term to table column mapping */
     ecs_entity_t *sources;        /* Entity on which the id was matched (0 if same as entities) */
-    int32_t *match_indices;       /* Indices of current match for term. Allows an iterator to iterate
-                                   * all permutations of wildcards in query. */
     ecs_ref_t *references;        /* Cached refs to components (if iterating a cache) */
     ecs_flags64_t constrained_vars; /* Bitset that marks constrained variables */
     uint64_t group_id;            /* Group id for table, if group_by is used */
@@ -3745,9 +3715,6 @@ typedef struct ecs_filter_desc_t {
      * FLECS_TERM_COUNT_MAX use terms_buffer */
     ecs_term_t terms[FLECS_TERM_COUNT_MAX];
 
-    /** External storage to prevent allocation of the filter object */
-    ecs_filter_t *storage;
-
     /** When true, terms returned by an iterator may either contain 1 or N 
      * elements, where terms with N elements are owned, and terms with 1 element 
      * are shared, for example from a parent or base entity. When false, the 
@@ -3758,7 +3725,7 @@ typedef struct ecs_filter_desc_t {
     /** Flags for advanced usage */
     ecs_flags32_t flags;
 
-    /** Filter expression. Should not be set at the same time as terms array */
+    /** Filter expression */
     const char *expr;
 
     /** Entity associated with query (optional) */
@@ -6756,7 +6723,7 @@ char* ecs_term_str(
  * @return The filter converted to a string.
  */
 FLECS_API 
-char* ecs_filter_str(
+char* ecs_rule_str(
     const ecs_world_t *world,
     const ecs_filter_t *filter); 
 
@@ -14816,7 +14783,7 @@ bool ecs_rule_has_table(
  * @return The string
  */
 FLECS_API
-char* ecs_rule_str(
+char* ecs_rule_plan(
     const ecs_filter_t *rule);
 
 /** Convert rule to string with profile.
@@ -27920,7 +27887,7 @@ struct filter_base {
     }
 
     flecs::string str() {
-        char *result = ecs_filter_str(m_world, m_filter_ptr);
+        char *result = ecs_rule_str(m_world, m_filter_ptr);
         return flecs::string(result);
     }
 
@@ -28387,7 +28354,7 @@ struct query_base {
 
     flecs::string str() const {
         const ecs_filter_t *f = ecs_query_get_filter(m_query);
-        char *result = ecs_filter_str(m_world, f);
+        char *result = ecs_rule_str(m_world, f);
         return flecs::string(result);
     }
 
@@ -29832,21 +29799,21 @@ struct rule_base {
     }
 
     /** Converts this rule to a string expression
-     * @see ecs_filter_str
+     * @see ecs_rule_str
      */
     flecs::string str() const {
         const ecs_filter_t *f = ecs_rule_get_filter(m_rule);
-        char *result = ecs_filter_str(m_world, f);
+        char *result = ecs_rule_str(m_world, f);
         return flecs::string(result);
     }
 
 
     /** Converts this rule to a string that can be used to aid debugging
      * the behavior of the rule.
-     * @see ecs_rule_str
+     * @see ecs_rule_plan
      */
     flecs::string rule_str() const {
-        char *result = ecs_rule_str(m_rule);
+        char *result = ecs_rule_plan(m_rule);
         return flecs::string(result);
     }
 

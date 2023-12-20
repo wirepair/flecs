@@ -131,7 +131,7 @@ ecs_id_t flecs_from_public_id(
     ecs_world_t *world,
     ecs_id_t id);
 
-void flecs_filter_apply_iter_flags(
+void flecs_rule_apply_iter_flags(
     ecs_iter_t *it,
     const ecs_filter_t *filter);
 
@@ -306,7 +306,7 @@ int ecs_term_finalize(
     const ecs_world_t *world,
     ecs_term_t *term);
 
-int32_t flecs_filter_pivot_term(
+int32_t flecs_rule_pivot_term(
     const ecs_world_t *world,
     const ecs_filter_t *filter);
 

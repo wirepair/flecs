@@ -613,7 +613,7 @@ void flecs_multi_observer_yield_existing(
 
     ecs_defer_begin(world);
 
-    int32_t pivot_term = flecs_filter_pivot_term(world, observer->query);
+    int32_t pivot_term = flecs_rule_pivot_term(world, observer->query);
     if (pivot_term < 0) {
         return;
     }

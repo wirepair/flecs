@@ -129,13 +129,6 @@ typedef struct ecs_each_iter_t {
     int32_t columns;
 } ecs_each_iter_t;
 
-typedef enum ecs_iter_kind_t {
-    EcsIterEvalCondition,
-    EcsIterEvalTables,
-    EcsIterEvalChain,
-    EcsIterEvalNone
-} ecs_iter_kind_t;
-
 /** Query-iterator specific data */
 typedef struct ecs_query_iter_t {
     ecs_query_t *query;
@@ -182,8 +175,7 @@ typedef struct ecs_rule_iter_t {
 #define flecs_iter_cache_columns       (1u << 1u)
 #define flecs_iter_cache_sources       (1u << 2u)
 #define flecs_iter_cache_ptrs          (1u << 3u)
-#define flecs_iter_cache_match_indices (1u << 4u)
-#define flecs_iter_cache_variables     (1u << 5u)
+#define flecs_iter_cache_variables     (1u << 4u)
 #define flecs_iter_cache_all           (255)
 
 /* Inline iterator arrays to prevent allocations for small array sizes */
@@ -225,8 +217,6 @@ struct ecs_iter_t {
     ecs_var_t *variables;         /* Values of variables (if any) */
     int32_t *columns;             /* Query term to table column mapping */
     ecs_entity_t *sources;        /* Entity on which the id was matched (0 if same as entities) */
-    int32_t *match_indices;       /* Indices of current match for term. Allows an iterator to iterate
-                                   * all permutations of wildcards in query. */
     ecs_ref_t *references;        /* Cached refs to components (if iterating a cache) */
     ecs_flags64_t constrained_vars; /* Bitset that marks constrained variables */
     uint64_t group_id;            /* Group id for table, if group_by is used */

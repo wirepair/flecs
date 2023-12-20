@@ -6309,7 +6309,7 @@ void RulesBasic_reordered_plan_1(void) {
     LINE " 6. [ 5,  7]  setvars     "
     LINE " 7. [ 6,  8]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6344,7 +6344,7 @@ void RulesBasic_reordered_plan_2(void) {
     LINE " 9. [ 8, 10]  setvars     "
     LINE "10. [ 9, 11]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6371,7 +6371,7 @@ void RulesBasic_1_trivial_plan(void) {
     LINE " 1. [ 0,  2]  andid       $[this]           (Foo)"
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6398,7 +6398,7 @@ void RulesBasic_2_trivial_plan(void) {
     LINE " 1. [ 0,  2]  triv        "
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6425,7 +6425,7 @@ void RulesBasic_1_trivial_plan_component(void) {
     LINE " 2. [ 1,  3]  popself     "
     LINE " 3. [ 2,  4]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6452,7 +6452,7 @@ void RulesBasic_2_trivial_plan_component(void) {
     LINE " 1. [ 0,  2]  trivpop     "
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6481,7 +6481,7 @@ void RulesBasic_3_trivial_plan_w_pair(void) {
     LINE " 1. [ 0,  2]  triv        "
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6510,7 +6510,7 @@ void RulesBasic_3_trivial_plan_w_wildcard(void) {
     LINE " 1. [ 0,  2]  trivwc      "
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6540,7 +6540,7 @@ void RulesBasic_3_trivial_plan_w_any(void) {
     LINE " 2. [ 1,  3]  andany      $[this]           (ChildOf, $_'1)"
     LINE " 3. [ 2,  4]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6569,7 +6569,7 @@ void RulesBasic_3_trivial_plan_w_pair_component(void) {
     LINE " 1. [ 0,  2]  trivpop     "
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6598,7 +6598,7 @@ void RulesBasic_3_trivial_plan_w_wildcard_component(void) {
     LINE " 1. [ 0,  2]  trivwc      "
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6628,7 +6628,7 @@ void RulesBasic_3_trivial_plan_w_any_component(void) {
     LINE " 2. [ 1,  3]  andany      $[this]           (ChildOf, $_'1)"
     LINE " 3. [ 2,  4]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6657,7 +6657,7 @@ void RulesBasic_1_trivial_component_w_none(void) {
     LINE " 1. [ 0,  2]  andid       $[this]           (Position)"
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);
@@ -6686,7 +6686,7 @@ void RulesBasic_2_trivial_component_w_none(void) {
     LINE " 1. [ 0,  2]  triv        "
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
-    char *plan = ecs_rule_str(r);
+    char *plan = ecs_rule_plan(r);
 
     test_str(expect, plan);
     ecs_os_free(plan);

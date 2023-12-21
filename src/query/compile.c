@@ -3,9 +3,7 @@
  * @brief Compile rule program from filter.
  */
 
-#include "rules.h"
-
-#ifdef FLECS_RULES
+#include "../private_api.h"
 
 #define FlecsRuleOrMarker ((int16_t)-2) /* Marks instruction in OR chain */
 
@@ -2098,5 +2096,3 @@ int flecs_rule_compile(
 
     return 0;
 }
-
-#endif

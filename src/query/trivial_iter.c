@@ -3,9 +3,7 @@
  * @brief Iterator for trivial queries.
  */
 
-#include "rules.h"
-
-#ifdef FLECS_RULES
+#include "../private_api.h"
 
 static
 bool flecs_rule_trivial_init(
@@ -251,5 +249,3 @@ bool flecs_rule_trivial_search_nodata(
 
     return true;
 }
-
-#endif

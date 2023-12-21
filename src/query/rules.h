@@ -3,9 +3,7 @@
  * @brief Internal types and functions for rules addon.
  */
 
-#include "../private_api.h"
-
-#ifdef FLECS_RULES
+#include "cache.h"
 
 typedef struct ecs_rule_t ecs_rule_t;
 typedef uint8_t ecs_var_id_t;
@@ -464,5 +462,3 @@ int flecs_rule_finalize_query(
     ecs_world_t *world,
     ecs_filter_t *q,
     const ecs_filter_desc_t *desc);
-
-#endif

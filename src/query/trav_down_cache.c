@@ -1,6 +1,4 @@
-#include "rules.h"
-
-#ifdef FLECS_RULES
+#include "../private_api.h"
 
 static
 void flecs_trav_entity_down_isa(
@@ -259,5 +257,3 @@ void flecs_rule_down_cache_fini(
     }
     ecs_map_fini(&cache->src);
 }
-
-#endif

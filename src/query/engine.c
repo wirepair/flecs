@@ -3,9 +3,7 @@
  * @brief Rules engine implementation.
  */
 
-#include "rules.h"
-
-#ifdef FLECS_RULES
+#include "../private_api.h"
 
 static
 bool flecs_rule_dispatch(
@@ -2749,5 +2747,3 @@ ecs_iter_t ecs_rule_iter(
 error:
     return it;
 }
-
-#endif

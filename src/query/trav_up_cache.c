@@ -1,6 +1,4 @@
-#include "rules.h"
-
-#ifdef FLECS_RULES
+#include "../private_api.h"
 
 static
 ecs_trav_up_t* flecs_trav_up_ensure(
@@ -196,5 +194,3 @@ void flecs_rule_up_cache_fini(
 {
     ecs_map_fini(&cache->src);
 }
-
-#endif

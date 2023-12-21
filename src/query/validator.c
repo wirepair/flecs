@@ -17,7 +17,7 @@
  * Cached queries and observers are built using filters.
  */
 
-#include "rules.h"
+#include "../private_api.h"
 #include <ctype.h>
 
 static

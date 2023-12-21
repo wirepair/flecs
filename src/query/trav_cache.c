@@ -3,9 +3,7 @@
  * @brief Cache that stores the result of graph traversal.
  */
 
-#include "rules.h"
-
-#ifdef FLECS_RULES
+#include "../private_api.h"
 
 static
 void flecs_rule_build_down_cache(
@@ -147,5 +145,3 @@ void flecs_rule_get_trav_up_cache(
         cache->up = true;
     }
 }
-
-#endif

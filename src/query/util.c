@@ -3,7 +3,7 @@
  * @brief Query utilities.
  */
 
-#include "rules.h"
+#include "../private_api.h"
 
 const char* flecs_rule_op_str(
     uint16_t kind)

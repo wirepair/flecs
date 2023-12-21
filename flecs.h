@@ -420,8 +420,6 @@ extern "C" {
 #define EcsFilterHasNonThisOutTerms    (1u << 21u) /* Query has [out] terms with no $this source */
 #define EcsFilterHasMonitor            (1u << 22u) /* Query has monitor for change detection */
 #define EcsFilterIsTrivial             (1u << 14u) /* Query can use trivial evaluation function */
-#define EcsFilterIsSubquery            (1u << 18u) /* Query is a subquery */
-#define EcsFilterIsOrphaned            (1u << 19u) /* Query is an orphaned subquery */
 
 /* Flags that may be set by the application to enable query features */
 #define EcsFilterMatchPrefab           (1u << 3u)  /* Query must match prefabs */
@@ -3758,14 +3756,6 @@ typedef struct ecs_filter_desc_t {
     /** Function to free group_by_ctx */
     ecs_ctx_free_t group_by_ctx_free;
 
-    /** If set, the query will be created as a subquery. A subquery matches at
-     * most a subset of its parent query. Subqueries do not directly receive
-     * (table) notifications from the world. Instead parent queries forward
-     * results to subqueries. This can improve matching performance, as fewer
-     * queries need to be matched with new tables.
-     * Subqueries can be nested. */
-    ecs_query_t *parent;
-
     /** User context to pass to callback */
     void *ctx;
 
@@ -6995,17 +6985,6 @@ const ecs_query_group_info_t* ecs_query_get_group_info(
     const ecs_query_t *query,
     uint64_t group_id);
 
-/** Returns whether query is orphaned.
- * When the parent query of a subquery is deleted, it is left in an orphaned
- * state. The only valid operation on an orphaned query is deleting it. Only
- * subqueries can be orphaned.
- *
- * @param query The query.
- * @return true if query is orphaned, otherwise false.
- */
-FLECS_API
-bool ecs_query_orphaned(
-    const ecs_query_t *query);
 
 /** Convert query to string.
  *

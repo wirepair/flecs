@@ -3,10 +3,8 @@
  * @brief User facing API for rules.
  */
 
-#include "rules.h"
+#include "../private_api.h"
 #include <ctype.h>
-
-#ifdef FLECS_RULES
 
 static ecs_mixins_t ecs_rule_t_mixins = {
     .type_name = "ecs_rule_t",
@@ -269,5 +267,3 @@ bool ecs_rule_has_table(
 error:
     return false;
 }
-
-#endif

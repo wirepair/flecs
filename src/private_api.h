@@ -9,6 +9,7 @@
 #include "private_types.h"
 #include "storage/table_cache.h"
 #include "storage/id_index.h"
+#include "query/rules.h"
 #include "observable.h"
 #include "iter.h"
 #include "poly.h"
@@ -118,11 +119,6 @@ ecs_iter_t flecs_filter_iter_w_flags(
     const ecs_world_t *stage,
     const ecs_filter_t *filter,
     ecs_flags32_t flags);
-
-void flecs_query_notify(
-    ecs_world_t *world,
-    ecs_query_t *query,
-    ecs_query_event_t *event);
 
 ecs_id_t flecs_to_public_id(
     ecs_id_t id);

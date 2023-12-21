@@ -43,13 +43,13 @@ ecs_mixins_t ecs_stage_t_mixins = {
     }
 };
 
-ecs_mixins_t ecs_query_t_mixins = {
-    .type_name = "ecs_query_t",
+ecs_mixins_t ecs_query_cache_t_mixins = {
+    .type_name = "ecs_query_cache_t",
     .elems = {
-        [EcsMixinWorld] = offsetof(ecs_query_t, world),
-        [EcsMixinEntity] = offsetof(ecs_query_t, entity),
-        [EcsMixinIterable] = offsetof(ecs_query_t, iterable),
-        [EcsMixinDtor] = offsetof(ecs_query_t, dtor)
+        [EcsMixinWorld] = offsetof(ecs_query_cache_t, world),
+        [EcsMixinEntity] = offsetof(ecs_query_cache_t, entity),
+        [EcsMixinIterable] = offsetof(ecs_query_cache_t, iterable),
+        [EcsMixinDtor] = offsetof(ecs_query_cache_t, dtor)
     }
 };
 

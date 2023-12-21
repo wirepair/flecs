@@ -1547,12 +1547,12 @@ void Pipeline_activate_after_add(void) {
     ecs_fini(world);
 }
 
-static ecs_query_t *q_result;
+static ecs_query_cache_t *q_result;
 
 static
 void CreateQuery(ecs_iter_t *it) {
     test_assert(it->real_world == it->world);
-    q_result = ecs_query_new(it->world, "Position");
+    q_result = ecs_query_cache_new(it->world, "Position");
 }
 
 void Pipeline_no_staging_system_create_query(void) {
@@ -1699,23 +1699,23 @@ void Pipeline_stack_allocator_after_progress(void) {
 
     ECS_SYSTEM(world, SysA, EcsOnUpdate, Position);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ ecs_id(Position) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     ecs_stack_cursor_t cursor = *it.priv.cache.stack_cursor;
     ecs_iter_fini(&it);
 
     ecs_progress(world, 1);
     test_int(sys_a_invoked, 1);
 
-    it = ecs_filter_iter(world, f);
+    it = ecs_query_iter(world, f);
     test_assert(it.priv.cache.stack_cursor->page == cursor.page);
     test_assert(it.priv.cache.stack_cursor->sp == cursor.sp);
     ecs_iter_fini(&it);
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1729,11 +1729,11 @@ void Pipeline_stack_allocator_after_progress_w_pipeline_change(void) {
     ECS_SYSTEM(world, SysA, EcsOnUpdate, Position);
     ECS_SYSTEM(world, SysB, EcsOnUpdate, Position);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ ecs_id(Position) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     ecs_stack_cursor_t cursor = *it.priv.cache.stack_cursor;
     ecs_iter_fini(&it);
 
@@ -1741,7 +1741,7 @@ void Pipeline_stack_allocator_after_progress_w_pipeline_change(void) {
     test_int(sys_a_invoked, 1);
     test_int(sys_b_invoked, 1);
 
-    it = ecs_filter_iter(world, f);
+    it = ecs_query_iter(world, f);
     test_assert(it.priv.cache.stack_cursor->page == cursor.page);
     test_assert(it.priv.cache.stack_cursor->sp == cursor.sp);
     ecs_iter_fini(&it);
@@ -1752,12 +1752,12 @@ void Pipeline_stack_allocator_after_progress_w_pipeline_change(void) {
     test_int(sys_a_invoked, 2);
     test_int(sys_b_invoked, 1);
 
-    it = ecs_filter_iter(world, f);
+    it = ecs_query_iter(world, f);
     test_assert(it.priv.cache.stack_cursor->page == cursor.page);
     test_assert(it.priv.cache.stack_cursor->sp == cursor.sp);
     ecs_iter_fini(&it);
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1765,15 +1765,15 @@ void Pipeline_stack_allocator_after_progress_w_pipeline_change(void) {
 static
 void Sys_w_MainWorldIter(ecs_iter_t *it) {
     ecs_id_t ecs_id(Position) = ecs_field_id(it, 1);
-    ecs_filter_t *f = ecs_filter(it->real_world, {
+    ecs_query_t *f = ecs_filter(it->real_world, {
         .terms = {{ ecs_id(Position) }}
     });
 
-    ecs_iter_t fit = ecs_filter_iter(it->real_world, f);
-    test_bool(true, ecs_filter_next(&fit));
+    ecs_iter_t fit = ecs_query_iter(it->real_world, f);
+    test_bool(true, ecs_query_next(&fit));
     test_int(1, fit.count);
-    test_bool(false, ecs_filter_next(&fit));
-    ecs_filter_fini(f);
+    test_bool(false, ecs_query_next(&fit));
+    ecs_query_fini(f);
 }
 
 static
@@ -1876,17 +1876,17 @@ static void NoStagingSystemCreatePosition(ecs_iter_t *it) {
     create_position_e = ecs_new_id(it->world);
     ecs_set(it->world, create_position_e, Position, {0, 0});
     
-    ecs_filter_t *f = ecs_filter(it->world, {
+    ecs_query_t *f = ecs_filter(it->world, {
         .terms = {{ ecs_id(Position) }}
     });
 
-    ecs_iter_t fit = ecs_filter_iter(it->world, f);
-    test_bool(true, ecs_filter_next(&fit));
+    ecs_iter_t fit = ecs_query_iter(it->world, f);
+    test_bool(true, ecs_query_next(&fit));
     test_int(fit.count, 1);
     test_uint(fit.entities[0], create_position_e);
-    test_bool(false, ecs_filter_next(&fit));
+    test_bool(false, ecs_query_next(&fit));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_defer_begin(it->world);
     no_staging_create_position_invoked ++;
@@ -1898,17 +1898,17 @@ static void NoStagingSystemCreateVelocity(ecs_iter_t *it) {
     create_velocity_e = ecs_new_id(it->world);
     ecs_set(it->world, create_velocity_e, Velocity, {0, 0});
     
-    ecs_filter_t *f = ecs_filter(it->world, {
+    ecs_query_t *f = ecs_filter(it->world, {
         .terms = {{ ecs_id(Velocity) }}
     });
 
-    ecs_iter_t fit = ecs_filter_iter(it->world, f);
-    test_bool(true, ecs_filter_next(&fit));
+    ecs_iter_t fit = ecs_query_iter(it->world, f);
+    test_bool(true, ecs_query_next(&fit));
     test_int(fit.count, 1);
     test_uint(fit.entities[0], create_velocity_e);
-    test_bool(false, ecs_filter_next(&fit));
+    test_bool(false, ecs_query_next(&fit));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_defer_begin(it->world);
     no_staging_create_velocity_invoked ++;
@@ -2980,10 +2980,10 @@ void Pipeline_builtin_pipeline_w_self_system_term(void) {
 
     const EcsPoly *p = ecs_get_pair(world, pipeline, EcsPoly, EcsQuery);
     test_assert(p != NULL);
-    test_assert(ecs_poly_is(p->poly, ecs_query_t));
+    test_assert(ecs_poly_is(p->poly, ecs_query_cache_t));
 
-    ecs_query_t *q = p->poly;
-    const ecs_filter_t *f = ecs_query_get_filter(q);
+    ecs_query_cache_t *q = p->poly;
+    const ecs_query_t *f = ecs_query_cache_get_filter(q);
     test_assert(f != NULL);
     test_assert((f->terms[0].src.id & EcsTraverseFlags) == EcsSelf);
 
@@ -3005,10 +3005,10 @@ void Pipeline_custom_pipeline_w_self_system_term(void) {
 
     const EcsPoly *p = ecs_get_pair(world, pipeline, EcsPoly, EcsQuery);
     test_assert(p != NULL);
-    test_assert(ecs_poly_is(p->poly, ecs_query_t));
+    test_assert(ecs_poly_is(p->poly, ecs_query_cache_t));
 
-    ecs_query_t *q = p->poly;
-    const ecs_filter_t *f = ecs_query_get_filter(q);
+    ecs_query_cache_t *q = p->poly;
+    const ecs_query_t *f = ecs_query_cache_get_filter(q);
     test_assert(f != NULL);
     test_assert((f->terms[0].src.id & EcsTraverseFlags) == EcsSelf);
 

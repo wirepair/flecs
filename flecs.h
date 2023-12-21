@@ -404,30 +404,30 @@ extern "C" {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//// Filter flags (used by ecs_filter_t::flags)
+//// Query flags (used by ecs_query_t::flags)
 ////////////////////////////////////////////////////////////////////////////////
 
 /* Flags that can only be set by the query implementation */
-#define EcsFilterMatchThis             (1u << 1u)  /* Query has terms with $this source */
-#define EcsFilterMatchOnlyThis         (1u << 2u)  /* Query only has terms with $this source */
-#define EcsFilterMatchOnlySelf         (1u << 15u) /* Query has no terms with up traversal */
-#define EcsFilterMatchWildcards        (1u << 16u) /* Query matches wildcards */
-#define EcsFilterHasCondSet            (1u << 10u) /* Query has conditionally set fields */
-#define EcsFilterHasPred               (1u << 12u) /* Query has equality predicates */
-#define EcsFilterHasScopes             (1u << 13u) /* Query has query scopes */
-#define EcsFilterHasRefs               (1u << 17u) /* Query has terms with static source */
-#define EcsFilterHasOutTerms           (1u << 20u) /* Query has [out] terms */
-#define EcsFilterHasNonThisOutTerms    (1u << 21u) /* Query has [out] terms with no $this source */
-#define EcsFilterHasMonitor            (1u << 22u) /* Query has monitor for change detection */
-#define EcsFilterIsTrivial             (1u << 14u) /* Query can use trivial evaluation function */
+#define EcsQueryMatchThis             (1u << 1u)  /* Query has terms with $this source */
+#define EcsQueryMatchOnlyThis         (1u << 2u)  /* Query only has terms with $this source */
+#define EcsQueryMatchOnlySelf         (1u << 15u) /* Query has no terms with up traversal */
+#define EcsQueryMatchWildcards        (1u << 16u) /* Query matches wildcards */
+#define EcsQueryHasCondSet            (1u << 10u) /* Query has conditionally set fields */
+#define EcsQueryHasPred               (1u << 12u) /* Query has equality predicates */
+#define EcsQueryHasScopes             (1u << 13u) /* Query has query scopes */
+#define EcsQueryHasRefs               (1u << 17u) /* Query has terms with static source */
+#define EcsQueryHasOutTerms           (1u << 20u) /* Query has [out] terms */
+#define EcsQueryHasNonThisOutTerms    (1u << 21u) /* Query has [out] terms with no $this source */
+#define EcsQueryHasMonitor            (1u << 22u) /* Query has monitor for change detection */
+#define EcsQueryIsTrivial             (1u << 14u) /* Query can use trivial evaluation function */
 
 /* Flags that may be set by the application to enable query features */
-#define EcsFilterMatchPrefab           (1u << 3u)  /* Query must match prefabs */
-#define EcsFilterMatchDisabled         (1u << 4u)  /* Query must match disabled entities */
-#define EcsFilterMatchEmptyTables      (1u << 5u)  /* Query must match empty tables */
-#define EcsFilterNoData                (1u << 7u)  /* Query won't provide component data */
-#define EcsFilterIsInstanced           (1u << 8u)  /* Query iteration is always instanced */
-#define EcsFilterAllowUnresolvedByName (1u << 11u) /* Query may have unresolved entity identifiers */
+#define EcsQueryMatchPrefab           (1u << 3u)  /* Query must match prefabs */
+#define EcsQueryMatchDisabled         (1u << 4u)  /* Query must match disabled entities */
+#define EcsQueryMatchEmptyTables      (1u << 5u)  /* Query must match empty tables */
+#define EcsQueryNoData                (1u << 7u)  /* Query won't provide component data */
+#define EcsQueryIsInstanced           (1u << 8u)  /* Query iteration is always instanced */
+#define EcsQueryAllowUnresolvedByName (1u << 11u) /* Query may have unresolved entity identifiers */
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -773,11 +773,9 @@ typedef struct ecs_allocator_t ecs_allocator_t;
 /* Magic number to identify the type of the object */
 #define ecs_world_t_magic     (0x65637377)
 #define ecs_stage_t_magic     (0x65637373)
-#define ecs_query_t_magic     (0x65637371)
-#define ecs_rule_t_magic      (0x65637375)
+#define ecs_query_cache_t_magic     (0x65637371)
+#define ecs_query_impl_t_magic      (0x65637375)
 #define ecs_table_t_magic     (0x65637374)
-#define ecs_filter_t_magic    (0x65637366)
-#define ecs_trigger_t_magic   (0x65637372)
 #define ecs_observer_t_magic  (0x65637362)
 
 
@@ -2603,10 +2601,10 @@ typedef struct ecs_table_t ecs_table_t;
 typedef struct ecs_term_t ecs_term_t;
 
 /** A filter is an iterable data structure that describes a query.
- * Filters are used by the various query implementations in Flecs, like queries,
- * observers and rules, to describe a query. Filters themselves can also be 
+ * Querys are used by the various query implementations in Flecs, like queries,
+ * observers and rules, to describe a query. Querys themselves can also be 
  * iterated. */
-typedef struct ecs_filter_t ecs_filter_t;
+typedef struct ecs_query_t ecs_query_t;
 
 /** A query that caches its results. 
  * Queries are the fastest mechanism for finding and iterating over entities.
@@ -2626,7 +2624,7 @@ typedef struct ecs_filter_t ecs_filter_t;
  * For ad-hoc queries it is recommended to use filters or rules instead, which 
  * are slower to iterate, but much faster to create. Applications should at all
  * times avoid frequent creation/deletion of queries. */
-typedef struct ecs_query_t ecs_query_t;
+typedef struct ecs_query_cache_t ecs_query_cache_t;
 
 /** An observer is a system that is invoked when an event matches its query.
  * Observers allow applications to respond to specific events, such as adding or
@@ -2694,9 +2692,9 @@ typedef struct ecs_table_record_t ecs_table_record_t;
  * 
  * - ecs_world_t
  * - ecs_stage_t
+ * - ecs_query_cache_t
  * - ecs_query_t
- * - ecs_filter_t
- * - ecs_rule_t
+ * - ecs_query_impl_t
  * - (more to come)
  * 
  * Functions that accept an ecs_poly_t argument can accept objects of these
@@ -2895,7 +2893,7 @@ typedef struct ecs_iterable_t {
 typedef enum ecs_inout_kind_t {
     EcsInOutDefault,  /**< InOut for regular terms, In for shared terms */
     EcsInOutNone,     /**< Term is neither read nor written */
-    EcsInOutFilter,   /**< Same as InOutNOne + prevents term from triggering observers */
+    EcsInOutQuery,   /**< Same as InOutNOne + prevents term from triggering observers */
     EcsInOut,         /**< Term is both read and written */
     EcsIn,            /**< Term is only read */
     EcsOut,           /**< Term is only written */
@@ -2968,13 +2966,13 @@ struct ecs_term_t {
     int16_t oper;               /**< Operator of term */
 
     int16_t field_index;        /**< Index of field for term in iterator */
-    ecs_flags16_t flags;        /**< Flags that help eval, set by ecs_filter_init */
+    ecs_flags16_t flags;        /**< Flags that help eval, set by ecs_query_init */
 
     ecs_id_record_t *idr;       /**< Cached pointer to internal index */
 };
 
-/** Filters alllow for ad-hoc quick filtering of entity tables. */
-struct ecs_filter_t {
+/** Querys alllow for ad-hoc quick filtering of entity tables. */
+struct ecs_query_t {
     ecs_header_t hdr;
 
     ecs_term_t terms[FLECS_TERM_COUNT_MAX]; /**< Query terms */
@@ -2983,7 +2981,7 @@ struct ecs_filter_t {
     int8_t term_count;         /**< Number of elements in terms array */
     int8_t field_count;        /**< Number of fields in iterator for filter */
 
-    ecs_flags32_t flags;       /**< Filter flags */
+    ecs_flags32_t flags;       /**< Query flags */
     ecs_flags64_t data_fields; /**< Bitset with fields that have data */
 
     ecs_entity_t entity;       /**< Entity associated with filter (optional) */
@@ -2995,7 +2993,7 @@ struct ecs_filter_t {
 struct ecs_observer_t {
     ecs_header_t hdr;
     
-    ecs_filter_t *query;        /**< Query for observer */
+    ecs_query_t *query;        /**< Query for observer */
 
     /* Observer events */
     ecs_entity_t events[FLECS_EVENT_DESC_MAX];
@@ -3121,7 +3119,7 @@ typedef struct ecs_data_t ecs_data_t;
 typedef struct ecs_switch_t ecs_switch_t;
 
 /* Cached query table data */
-typedef struct ecs_query_table_match_t ecs_query_table_match_t;
+typedef struct ecs_query_cache_table_match_t ecs_query_cache_table_match_t;
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Non-opaque types
@@ -3225,43 +3223,43 @@ typedef struct ecs_each_iter_t {
 } ecs_each_iter_t;
 
 /** Query-iterator specific data */
-typedef struct ecs_query_iter_t {
-    ecs_query_t *query;
-    ecs_query_table_match_t *node, *prev, *last;
+typedef struct ecs_query_cache_iter_t {
+    ecs_query_cache_t *query;
+    ecs_query_cache_table_match_t *node, *prev, *last;
     int32_t sparse_smallest;
     int32_t sparse_first;
     int32_t bitset_first;
     int32_t skip_count;
-} ecs_query_iter_t;
+} ecs_query_cache_iter_t;
 
 /** Snapshot-iterator specific data */
 typedef struct ecs_snapshot_iter_t {
-    ecs_filter_t filter;
+    ecs_query_t filter;
     ecs_vec_t tables; /* ecs_table_leaf_t */
     int32_t index;
 } ecs_snapshot_iter_t;
 
-typedef struct ecs_rule_op_profile_t {
+typedef struct ecs_query_op_profile_t {
     int32_t count[2]; /* 0 = enter, 1 = redo */
-} ecs_rule_op_profile_t;
+} ecs_query_op_profile_t;
 
 /** Rule-iterator specific data */
-typedef struct ecs_rule_iter_t {
-    const ecs_filter_t *rule;
+typedef struct ecs_query_iter_t {
+    const ecs_query_t *rule;
     struct ecs_var_t *vars;              /* Variable storage */
-    const struct ecs_rule_var_t *rule_vars;
-    const struct ecs_rule_op_t *ops;
-    struct ecs_rule_op_ctx_t *op_ctx;    /* Operation-specific state */
+    const struct ecs_query_var_t *rule_vars;
+    const struct ecs_query_op_t *ops;
+    struct ecs_query_op_ctx_t *op_ctx;    /* Operation-specific state */
     uint64_t *written;
     ecs_flags32_t source_set;
 
 #ifdef FLECS_DEBUG
-    ecs_rule_op_profile_t *profile;
+    ecs_query_op_profile_t *profile;
 #endif
 
     int16_t op;
     int16_t sp;
-} ecs_rule_iter_t;
+} ecs_query_iter_t;
 
 /* Bits for tracking whether a cache was used/whether the array was allocated.
  * Used by flecs_iter_init, flecs_iter_validate and ecs_iter_fini. 
@@ -3284,15 +3282,15 @@ typedef struct ecs_iter_cache_t {
  * progress & to provide builtin storage. */
 typedef struct ecs_iter_private_t {
     union {
-        ecs_query_iter_t query;
-        ecs_rule_iter_t rule;
+        ecs_query_cache_iter_t query;
+        ecs_query_iter_t rule;
         ecs_snapshot_iter_t snapshot;
         ecs_page_iter_t page;
         ecs_worker_iter_t worker;
         ecs_each_iter_t each;
     } iter;                       /* Iterator specific data */
 
-    void *entity_iter;            /* Filter applied after matching a table */
+    void *entity_iter;            /* Query applied after matching a table */
     ecs_iter_cache_t cache;       /* Inline arrays to reduce allocations */
 } ecs_iter_private_t;
 
@@ -3702,11 +3700,11 @@ typedef struct ecs_component_desc_t {
     ecs_type_info_t type;
 } ecs_component_desc_t;
 
-/** Used with ecs_filter_init. 
+/** Used with ecs_query_init. 
  * 
  * \ingroup filters
  */
-typedef struct ecs_filter_desc_t {
+typedef struct ecs_query_desc_t {
     int32_t _canary;
 
     /** Query terms */
@@ -3770,7 +3768,7 @@ typedef struct ecs_filter_desc_t {
 
     /** Entity associated with query (optional) */
     ecs_entity_t entity;
-} ecs_filter_desc_t;
+} ecs_query_desc_t;
 
 /** Used with ecs_observer_init. 
  * 
@@ -3782,8 +3780,8 @@ typedef struct ecs_observer_desc_t {
     /** Existing entity to associate with observer (optional) */
     ecs_entity_t entity;
 
-    /** Filter for observer */
-    ecs_filter_desc_t filter;
+    /** Query for observer */
+    ecs_query_desc_t filter;
 
     /** Events to observe (OnAdd, OnRemove, OnSet, UnSet) */
     ecs_entity_t events[FLECS_EVENT_DESC_MAX];
@@ -3948,11 +3946,11 @@ typedef struct ecs_world_info_t {
 } ecs_world_info_t;
 
 /** Type that contains information about a query group. */
-typedef struct ecs_query_group_info_t {
+typedef struct ecs_query_cache_group_info_t {
     int32_t match_count;  /**< How often tables have been matched/unmatched */
     int32_t table_count;  /**< Number of tables in group */
     void *ctx;            /**< Group context, returned by on_group_create */
-} ecs_query_group_info_t;
+} ecs_query_cache_group_info_t;
 
 /** @} */
 
@@ -4069,7 +4067,7 @@ FLECS_API extern const ecs_entity_t ecs_id(EcsPipelineQuery);
 
 /* Timer module component ids */
 FLECS_API extern const ecs_entity_t ecs_id(EcsTimer);
-FLECS_API extern const ecs_entity_t ecs_id(EcsRateFilter);
+FLECS_API extern const ecs_entity_t ecs_id(EcsRateQuery);
 
 /** Root scope for builtin flecs entities */
 FLECS_API extern const ecs_entity_t EcsFlecs;
@@ -6609,8 +6607,8 @@ void ecs_id_str_buf(
 /** @} */
 
 /**
- * @defgroup filters Filters
- * @brief Functions for working with `ecs_term_t` and `ecs_filter_t`.
+ * @defgroup filters Querys
+ * @brief Functions for working with `ecs_term_t` and `ecs_query_t`.
  * @{
  */
 
@@ -6694,9 +6692,9 @@ char* ecs_term_str(
  * @return The filter converted to a string.
  */
 FLECS_API 
-char* ecs_rule_str(
+char* ecs_query_str(
     const ecs_world_t *world,
-    const ecs_filter_t *filter); 
+    const ecs_query_t *filter); 
 
 /** @} */
 
@@ -6724,7 +6722,7 @@ bool ecs_children_next(
 
 /**
  * @defgroup queries Queries
- * @brief Functions for working with `ecs_query_t`.
+ * @brief Functions for working with `ecs_query_cache_t`.
  * @{
  */
 
@@ -6755,7 +6753,7 @@ bool ecs_children_next(
  * ecs_defer_begin and ecs_defer_end).
  *
  * Queries can be created and deleted dynamically. If a query was not deleted
- * (using ecs_query_fini) before the world is deleted, it will be deleted 
+ * (using ecs_query_cache_fini) before the world is deleted, it will be deleted 
  * automatically.
  *
  * @param world The world.
@@ -6763,9 +6761,9 @@ bool ecs_children_next(
  * @return The new query.
  */
 FLECS_API
-ecs_query_t* ecs_query_init(
+ecs_query_cache_t* ecs_query_cache_init(
     ecs_world_t *world, 
-    const ecs_filter_desc_t *desc);
+    const ecs_query_desc_t *desc);
 
 /** Destroy a query.
  * This operation destroys a query and its resources. If the query is used as
@@ -6775,8 +6773,8 @@ ecs_query_t* ecs_query_init(
  * @param query The query.
  */
 FLECS_API
-void ecs_query_fini(
-    ecs_query_t *query);
+void ecs_query_cache_fini(
+    ecs_query_cache_t *query);
 
 /** Get filter from a query.
  * This operation obtains a pointer to the internally constructed filter
@@ -6786,8 +6784,8 @@ void ecs_query_fini(
  * @return The filter.
  */
 FLECS_API
-const ecs_filter_t* ecs_query_get_filter(
-    const ecs_query_t *query);
+const ecs_query_t* ecs_query_cache_get_filter(
+    const ecs_query_cache_t *query);
 
 /** Return a query iterator.
  * A query iterator lets an application iterate over entities that match the
@@ -6798,11 +6796,11 @@ const ecs_filter_t* ecs_query_get_filter(
  * resources. An application does not need to deinitialize or free a query 
  * iterator before it goes out of scope.
  *
- * To iterate the iterator, an application should use ecs_query_next to progress
+ * To iterate the iterator, an application should use ecs_query_cache_next to progress
  * the iterator and test if it has data.
  *
  * Query iteration requires an outer and an inner loop. The outer loop uses
- * ecs_query_next to test if new tables are available. The inner loop iterates
+ * ecs_query_cache_next to test if new tables are available. The inner loop iterates
  * the entities in the table, and is usually a for loop that uses iter.count to
  * loop through the entities and component arrays.
  *
@@ -6817,13 +6815,13 @@ const ecs_filter_t* ecs_query_get_filter(
  * @return The query iterator.
  */
 FLECS_API
-ecs_iter_t ecs_query_iter(
+ecs_iter_t ecs_query_cache_iter(
     const ecs_world_t *world,
-    ecs_query_t *query);
+    ecs_query_cache_t *query);
 
 /** Progress the query iterator.
  * This operation progresses the query iterator to the next table. The 
- * iterator must have been initialized with `ecs_query_iter`. This operation 
+ * iterator must have been initialized with `ecs_query_cache_iter`. This operation 
  * must be invoked at least once before interpreting the contents of the 
  * iterator.
  *
@@ -6831,35 +6829,35 @@ ecs_iter_t ecs_query_iter(
  * @returns True if more data is available, false if not.
  */
 FLECS_API
-bool ecs_query_next(
+bool ecs_query_cache_next(
     ecs_iter_t *iter);
 
-/** Same as ecs_query_next, but always instanced.
- * See "instanced" property of ecs_filter_desc_t.
+/** Same as ecs_query_cache_next, but always instanced.
+ * See "instanced" property of ecs_query_desc_t.
  * 
  * @param iter The iterator.
  * @returns True if more data is available, false if not.
  */
 FLECS_API
-bool ecs_query_next_instanced(
+bool ecs_query_cache_next_instanced(
     ecs_iter_t *iter);
 
-/** Fast alternative to ecs_query_next that only returns matched tables.
+/** Fast alternative to ecs_query_cache_next that only returns matched tables.
  * This operation only populates the ecs_iter_t::table field. To access the
- * matched components, call ecs_query_populate.
+ * matched components, call ecs_query_cache_populate.
  * 
  * If this operation is used with a query that has inout/out terms, those terms
- * will not be marked dirty unless ecs_query_populate is called. 
+ * will not be marked dirty unless ecs_query_cache_populate is called. 
  * 
  * @param iter The iterator.
  * @returns True if more data is available, false if not.
  */
 FLECS_API
-bool ecs_query_next_table(
+bool ecs_query_cache_next_table(
     ecs_iter_t *iter);
 
 /** Populate iterator fields.
- * This operation can be combined with ecs_query_next_table to populate the
+ * This operation can be combined with ecs_query_cache_next_table to populate the
  * iterator fields for the current table.
  * 
  * Populating fields conditionally can save time when a query uses change 
@@ -6867,7 +6865,7 @@ bool ecs_query_next_table(
  * operation is called, inout/out terms will be marked dirty.
  * 
  * In cases where inout/out terms are conditionally written and no changes
- * were made after calling ecs_query_populate, the ecs_query_skip function can
+ * were made after calling ecs_query_cache_populate, the ecs_query_cache_skip function can
  * be called to prevent the matched table components from being marked dirty.
  * 
  * This operation does should not be used with queries that match disabled 
@@ -6880,7 +6878,7 @@ bool ecs_query_next_table(
  * @param when_changed Only populate data when result has changed.
  */
 FLECS_API
-int ecs_query_populate(
+int ecs_query_cache_populate(
     ecs_iter_t *iter,
     bool when_changed);
 
@@ -6905,8 +6903,8 @@ int ecs_query_populate(
  * the currently returned iterator result. The following preconditions must be
  * met before using an iterator with change detection:
  * 
- * - The iterator is a query iterator (created with ecs_query_iter)
- * - The iterator must be valid (ecs_query_next must have returned true)
+ * - The iterator is a query iterator (created with ecs_query_cache_iter)
+ * - The iterator must be valid (ecs_query_cache_next must have returned true)
  * - The iterator must be instanced
  * 
  * @param query The query (optional if 'it' is provided).
@@ -6914,8 +6912,8 @@ int ecs_query_populate(
  * @return true if entities changed, otherwise false.
  */
 FLECS_API
-bool ecs_query_changed(
-    ecs_query_t *query,
+bool ecs_query_cache_changed(
+    ecs_query_cache_t *query,
     const ecs_iter_t *it);
 
 /** Skip a table while iterating.
@@ -6929,7 +6927,7 @@ bool ecs_query_changed(
  * @param it The iterator result to skip.
  */
 FLECS_API
-void ecs_query_skip(
+void ecs_query_cache_skip(
     ecs_iter_t *it);
 
 /** Set group to iterate for query iterator.
@@ -6947,15 +6945,15 @@ void ecs_query_skip(
  * across many tables. This makes it a good fit for things like dividing up
  * a world into cells, and only iterating cells close to a player.
  * 
- * The group to iterate must be set before the first call to ecs_query_next. No
+ * The group to iterate must be set before the first call to ecs_query_cache_next. No
  * operations that can add/remove components should be invoked between calling 
- * ecs_query_set_group and ecs_query_next.
+ * ecs_query_cache_set_group and ecs_query_cache_next.
  * 
  * @param it The query iterator.
  * @param group_id The group to iterate.
  */
 FLECS_API
-void ecs_query_set_group(
+void ecs_query_cache_set_group(
     ecs_iter_t *it,
     uint64_t group_id);
 
@@ -6968,8 +6966,8 @@ void ecs_query_set_group(
  * @return The group context, NULL if the group doesn't exist.
  */
 FLECS_API
-void* ecs_query_get_group_ctx(
-    const ecs_query_t *query,
+void* ecs_query_cache_get_group_ctx(
+    const ecs_query_cache_t *query,
     uint64_t group_id);
 
 /** Get information about query group.
@@ -6981,8 +6979,8 @@ void* ecs_query_get_group_ctx(
  * @return The group info, NULL if the group doesn't exist.
  */
 FLECS_API
-const ecs_query_group_info_t* ecs_query_get_group_info(
-    const ecs_query_t *query,
+const ecs_query_cache_group_info_t* ecs_query_cache_get_group_info(
+    const ecs_query_cache_t *query,
     uint64_t group_id);
 
 
@@ -6992,8 +6990,8 @@ const ecs_query_group_info_t* ecs_query_get_group_info(
  * @return The query string.
  */
 FLECS_API
-char* ecs_query_str(
-    const ecs_query_t *query);
+char* ecs_query_cache_str(
+    const ecs_query_cache_t *query);
 
 /** Returns number of tables query matched with.
  *
@@ -7001,8 +6999,8 @@ char* ecs_query_str(
  * @return The number of matched tables.
  */
 FLECS_API
-int32_t ecs_query_table_count(
-    const ecs_query_t *query);
+int32_t ecs_query_cache_table_count(
+    const ecs_query_cache_t *query);
 
 /** Returns number of empty tables query matched with.
  *
@@ -7010,8 +7008,8 @@ int32_t ecs_query_table_count(
  * @return The number of matched empty tables.
  */
 FLECS_API
-int32_t ecs_query_empty_table_count(
-    const ecs_query_t *query);
+int32_t ecs_query_cache_empty_table_count(
+    const ecs_query_cache_t *query);
 
 /** Returns number of entities query matched with.
  * This operation iterates all non-empty tables in the query cache to find the
@@ -7021,8 +7019,8 @@ int32_t ecs_query_empty_table_count(
  * @return The number of matched entities.
  */
 FLECS_API
-int32_t ecs_query_entity_count(
-    const ecs_query_t *query);
+int32_t ecs_query_cache_entity_count(
+    const ecs_query_cache_t *query);
 
 /** Get query ctx.
  * Return the value set in ecs_query_desc_t::ctx.
@@ -7031,8 +7029,8 @@ int32_t ecs_query_entity_count(
  * @return The context.
  */
 FLECS_API
-void* ecs_query_get_ctx(
-    const ecs_query_t *query);
+void* ecs_query_cache_get_ctx(
+    const ecs_query_cache_t *query);
 
 /** Get query binding ctx.
  * Return the value set in ecs_query_desc_t::binding_ctx.
@@ -7041,8 +7039,8 @@ void* ecs_query_get_ctx(
  * @return The context.
  */
 FLECS_API
-void* ecs_query_get_binding_ctx(
-    const ecs_query_t *query);
+void* ecs_query_cache_get_binding_ctx(
+    const ecs_query_cache_t *query);
 
 /** @} */
 
@@ -7173,7 +7171,7 @@ void ecs_iter_poly(
  * objects.
  * 
  * This operation is slightly slower than using a type-specific iterator (e.g.
- * ecs_filter_next, ecs_query_next) as it has to call a function pointer which
+ * ecs_query_next, ecs_query_cache_next) as it has to call a function pointer which
  * introduces a level of indirection.
  * 
  * @param it The iterator.
@@ -7246,19 +7244,19 @@ ecs_entity_t ecs_iter_first(
  * Example:
  * 
  * // Rule that matches (Eats, *)
- * ecs_rule_t *r = ecs_rule_init(world, &(ecs_filter_desc_t){
+ * ecs_query_impl_t *r = ecs_query_init(world, &(ecs_query_desc_t){
  *   .terms = {
  *     { .first.id = Eats, .second.name = "$food" }
  *   }
  * });
  * 
- * int food_var = ecs_rule_find_var(r, "food");
+ * int food_var = ecs_query_find_var(r, "food");
  * 
  * // Set Food to Apples, so we're only matching (Eats, Apples)
- * ecs_iter_t it = ecs_rule_iter(world, r);
+ * ecs_iter_t it = ecs_query_iter(world, r);
  * ecs_iter_set_var(&it, food_var, Apples);
  * 
- * while (ecs_rule_next(&it)) {
+ * while (ecs_query_next(&it)) {
  *   for (int i = 0; i < it.count; i ++) {
  *     // iterate as usual
  *   }
@@ -8402,21 +8400,11 @@ int ecs_value_move_ctor(
         .type.alignment = ECS_ALIGNOF(T) \
     })
 
-/** Shorthand for creating a filter with ecs_filter_init.
- *
- * Example:
- *   ecs_filter(world, {
- *     .terms = {{ ecs_id(Position) }}
- *   });
- */
-#define ecs_filter(world, ...)\
-    ecs_filter_init(world, &(ecs_filter_desc_t) __VA_ARGS__ )
-
-/** Shorthand for creating a query with ecs_query_init.
+/** Shorthand for creating a query with ecs_query_cache_init.
  *
  * Example:
  *   ecs_query(world, {
- *     .filter.terms = {{ ecs_id(Position) }}
+ *     .terms = {{ ecs_id(Position) }}
  *   });
  */
 #define ecs_query(world, ...)\
@@ -8949,13 +8937,13 @@ int ecs_value_move_ctor(
 #define ecs_childof(e)   ecs_pair(EcsChildOf, e)
 #define ecs_dependson(e) ecs_pair(EcsDependsOn, e)
 
-#define ecs_query_new(world, q_expr)\
-    ecs_query_init(world, &(ecs_query_desc_t){\
+#define ecs_query_cache_new(world, q_expr)\
+    ecs_query_cache_init(world, &(ecs_query_desc_t){\
         .filter.expr = q_expr\
     })
 
-#define ecs_rule_new(world, q_expr)\
-    ecs_rule_init(world, &(ecs_filter_desc_t){\
+#define ecs_query_new(world, q_expr)\
+    ecs_query_init(world, &(ecs_query_desc_t){\
         .expr = q_expr\
     })
 
@@ -10246,12 +10234,12 @@ typedef struct EcsTimer {
 } EcsTimer;
 
 /** Apply a rate filter to a tick source */
-typedef struct EcsRateFilter {
+typedef struct EcsRateQuery {
     ecs_entity_t src;            /**< Source of the rate filter */
     int32_t rate;                /**< Rate of the rate filter */
     int32_t tick_count;          /**< Number of times the rate filter ticked */
     ecs_ftime_t time_elapsed;    /**< Time elapsed since last tick */
-} EcsRateFilter;
+} EcsRateQuery;
 
 
 /** Set timer timeout.
@@ -10547,7 +10535,7 @@ typedef struct ecs_pipeline_desc_t {
     
     /* Query descriptor. The first term of the query must match the EcsSystem
      * component. */
-    ecs_filter_desc_t query;
+    ecs_query_desc_t query;
 } ecs_pipeline_desc_t;
 
 /** Create a custom pipeline.
@@ -10750,20 +10738,20 @@ typedef struct ecs_system_desc_t {
     ecs_entity_t entity;
 
     /** System query parameters */
-    ecs_filter_desc_t query;
+    ecs_query_desc_t query;
 
     /** Callback that is invoked when a system is ran. 
      * When left to NULL, the default system runner is used, which calls the 
      * "callback" action for each result returned from the system's query. 
      * 
      * It should not be assumed that the input iterator can always be iterated
-     * with ecs_query_next. When a system is multithreaded and/or paged, the
+     * with ecs_query_cache_next. When a system is multithreaded and/or paged, the
      * iterator can be either a worker or paged iterator. Future use cases may
      * introduce additional inputs for a system, such as rules and filters. The
      * correct function to use for iteration is ecs_iter_next.
      * 
      * An implementation can test whether the iterator is a query iterator by
-     * testing whether the it->next value is equal to ecs_query_next. */
+     * testing whether the it->next value is equal to ecs_query_cache_next. */
     ecs_run_action_t run;
 
     /** Callback that is ran for each result returned by the system's query. This
@@ -10954,7 +10942,7 @@ ecs_entity_t ecs_run_w_filter(
  * @return The query.
  */
 FLECS_API
-ecs_query_t* ecs_system_get_query(
+ecs_query_cache_t* ecs_system_get_query(
     const ecs_world_t *world,
     ecs_entity_t system);
 
@@ -11159,8 +11147,8 @@ typedef struct ecs_world_stats_t {
     int32_t t;
 } ecs_world_stats_t;
 
-/** Statistics for a single query (use ecs_query_stats_get) */
-typedef struct ecs_query_stats_t {
+/** Statistics for a single query (use ecs_query_cache_stats_get) */
+typedef struct ecs_query_cache_stats_t {
     int64_t first_;
     ecs_metric_t matched_table_count;       /**< Matched non-empty tables */    
     ecs_metric_t matched_empty_table_count; /**< Matched empty tables */
@@ -11169,7 +11157,7 @@ typedef struct ecs_query_stats_t {
 
     /** Current position in ringbuffer */
     int32_t t; 
-} ecs_query_stats_t;
+} ecs_query_cache_stats_t;
 
 /** Statistics for a single system (use ecs_system_stats_get) */
 typedef struct ecs_system_stats_t {
@@ -11180,7 +11168,7 @@ typedef struct ecs_system_stats_t {
 
     bool task;                     /**< Is system a task */
 
-    ecs_query_stats_t query;
+    ecs_query_cache_stats_t query;
 } ecs_system_stats_t;
 
 /** Statistics for sync point */
@@ -11266,34 +11254,34 @@ void ecs_world_stats_log(
  * @param stats Out parameter for statistics.
  */
 FLECS_API 
-void ecs_query_stats_get(
+void ecs_query_cache_stats_get(
     const ecs_world_t *world,
-    const ecs_query_t *query,
-    ecs_query_stats_t *stats);
+    const ecs_query_cache_t *query,
+    ecs_query_cache_stats_t *stats);
 
 /** Reduce source measurement window into single destination measurement. */
 FLECS_API 
-void ecs_query_stats_reduce(
-    ecs_query_stats_t *dst,
-    const ecs_query_stats_t *src);
+void ecs_query_cache_stats_reduce(
+    ecs_query_cache_stats_t *dst,
+    const ecs_query_cache_stats_t *src);
 
 /** Reduce last measurement into previous measurement, restore old value. */
 FLECS_API
-void ecs_query_stats_reduce_last(
-    ecs_query_stats_t *stats,
-    const ecs_query_stats_t *old,
+void ecs_query_cache_stats_reduce_last(
+    ecs_query_cache_stats_t *stats,
+    const ecs_query_cache_stats_t *old,
     int32_t count);
 
 /** Repeat last measurement. */
 FLECS_API
-void ecs_query_stats_repeat_last(
-    ecs_query_stats_t *stats);
+void ecs_query_cache_stats_repeat_last(
+    ecs_query_cache_stats_t *stats);
 
 /** Copy last measurement from source to destination. */
 FLECS_API
-void ecs_query_stats_copy_last(
-    ecs_query_stats_t *dst,
-    const ecs_query_stats_t *src);
+void ecs_query_cache_stats_copy_last(
+    ecs_query_cache_stats_t *dst,
+    const ecs_query_cache_stats_t *src);
 
 #ifdef FLECS_SYSTEM
 /** Get system statistics.
@@ -11690,7 +11678,7 @@ typedef struct ecs_alert_desc_t {
     /** Alert query. An alert will be created for each entity that matches the
      * specified query. The query must have at least one term that uses the
      * $this variable (default). */
-    ecs_filter_desc_t filter;
+    ecs_query_desc_t filter;
 
     /** Template for alert message. This string is used to generate the alert
      * message and may refer to variables in the query result. The format for
@@ -12489,11 +12477,11 @@ typedef struct ecs_world_to_json_desc_t {
  * This operation iterates the contents of the world to JSON. The operation is
  * equivalent to the following code:
  * 
- * ecs_filter_t *f = ecs_filter(world, {
+ * ecs_query_t *f = ecs_filter(world, {
  *   .terms = {{ .id = EcsAny }}
  * });
  * 
- * ecs_iter_t it = ecs_filter_init(world, &f);
+ * ecs_iter_t it = ecs_query_init(world, &f);
  * ecs_iter_to_json_desc_t desc = { .serialize_table = true };
  * ecs_iter_to_json(world, iter, &desc);
  * 
@@ -14578,10 +14566,6 @@ void FlecsScriptImport(
 extern "C" {
 #endif
 
-/** Convenience macro for rule creation */
-#define ecs_rule(world, ...)\
-    ecs_rule_init(world, &(ecs_filter_desc_t) __VA_ARGS__ )
-
 /** Create a rule.
  * A rule accepts the same descriptor as a filter, but has the additional
  * ability to use query variables.
@@ -14621,24 +14605,24 @@ extern "C" {
  * Different terms with the same variable name are automatically correlated by
  * the query engine.
  * 
- * A rule needs to be explicitly deleted with ecs_rule_fini.
+ * A rule needs to be explicitly deleted with ecs_query_fini.
  * 
  * @param world The world.
- * @param desc The descriptor (see ecs_filter_desc_t)
+ * @param desc The descriptor (see ecs_query_desc_t)
  * @return The rule.
  */
 FLECS_API
-ecs_filter_t* ecs_rule_init(
+ecs_query_t* ecs_query_init(
     ecs_world_t *world,
-    const ecs_filter_desc_t *desc);
+    const ecs_query_desc_t *desc);
 
 /** Delete a rule. 
  * 
  * @param rule The rule.
  */
 FLECS_API
-void ecs_rule_fini(
-    ecs_filter_t *rule);
+void ecs_query_fini(
+    ecs_query_t *rule);
 
 /** Return number of variables in rule.
  * 
@@ -14646,8 +14630,8 @@ void ecs_rule_fini(
  * @return The number of variables/
  */
 FLECS_API
-int32_t ecs_rule_var_count(
-    const ecs_filter_t *rule);
+int32_t ecs_query_var_count(
+    const ecs_query_t *rule);
 
 /** Find variable index.
  * This operation looks up the index of a variable in the rule. This index can
@@ -14658,8 +14642,8 @@ int32_t ecs_rule_var_count(
  * @return The variable index.
  */
 FLECS_API
-int32_t ecs_rule_find_var(
-    const ecs_filter_t *rule,
+int32_t ecs_query_find_var(
+    const ecs_query_t *rule,
     const char *name);    
 
 /** Get variable name.
@@ -14669,13 +14653,13 @@ int32_t ecs_rule_find_var(
  * @param var_id The variable index.
  */
 FLECS_API
-const char* ecs_rule_var_name(
-    const ecs_filter_t *rule,
+const char* ecs_query_var_name(
+    const ecs_query_t *rule,
     int32_t var_id);
 
 /** Test if variable is an entity.
  * Internally the rule engine has entity variables and table variables. When
- * iterating through rule variables (by using ecs_rule_variable_count) only
+ * iterating through rule variables (by using ecs_query_variable_count) only
  * the values for entity variables are accessible. This operation enables an
  * application to check if a variable is an entity variable.
  * 
@@ -14683,14 +14667,14 @@ const char* ecs_rule_var_name(
  * @param var_id The variable id.
  */
 FLECS_API
-bool ecs_rule_var_is_entity(
-    const ecs_filter_t *rule,
+bool ecs_query_var_is_entity(
+    const ecs_query_t *rule,
     int32_t var_id);  
 
 /** Iterate a rule.
  * Note that rule iterators may allocate memory, and that unless the iterator
  * is iterated until completion, it may still hold resources. When stopping
- * iteration before ecs_rule_next has returned false, use ecs_iter_fini to
+ * iteration before ecs_query_next has returned false, use ecs_iter_fini to
  * cleanup any remaining resources.
  * 
  * @param world The world.
@@ -14698,16 +14682,16 @@ bool ecs_rule_var_is_entity(
  * @return An iterator.
  */
 FLECS_API
-ecs_iter_t ecs_rule_iter(
+ecs_iter_t ecs_query_iter(
     const ecs_world_t *world,
-    const ecs_filter_t *rule);
+    const ecs_query_t *rule);
 
 /** Progress rule iterator.
  * 
  * @param it The iterator.
  */
 FLECS_API
-bool ecs_rule_next(
+bool ecs_query_next(
     ecs_iter_t *it);
 
 /** Progress instanced iterator.
@@ -14716,20 +14700,20 @@ bool ecs_rule_next(
  * @param it The iterator.
  */
 FLECS_API
-bool ecs_rule_next_instanced(
+bool ecs_query_next_instanced(
     ecs_iter_t *it);
 
 /** Returns true if rule matches with  entity. */
 FLECS_API
-bool ecs_rule_has(
-    ecs_filter_t *rule,
+bool ecs_query_has(
+    ecs_query_t *rule,
     ecs_entity_t entity,
     ecs_iter_t *it);
 
 /** Returns true if rule matches with table. */
 FLECS_API
-bool ecs_rule_has_table(
-    ecs_filter_t *rule,
+bool ecs_query_has_table(
+    ecs_query_t *rule,
     ecs_table_t *table,
     ecs_iter_t *it);
 
@@ -14743,8 +14727,8 @@ bool ecs_rule_has_table(
  * @return The string
  */
 FLECS_API
-char* ecs_rule_plan(
-    const ecs_filter_t *rule);
+char* ecs_query_plan(
+    const ecs_query_t *rule);
 
 /** Convert rule to string with profile.
  * To use this you must set the EcsIterProfile flag on an iterator before 
@@ -14755,8 +14739,8 @@ char* ecs_rule_plan(
  * @return The string
  */
 FLECS_API
-char* ecs_rule_str_w_profile(
-    const ecs_filter_t *rule,
+char* ecs_query_str_w_profile(
+    const ecs_query_t *rule,
     const ecs_iter_t *it);
 
 /** Populate variables from key-value string.
@@ -14771,8 +14755,8 @@ char* ecs_rule_str_w_profile(
  * @param expr The key-value expression.
  */
 FLECS_API
-const char* ecs_rule_parse_vars(
-    ecs_filter_t *rule,
+const char* ecs_query_parse_vars(
+    ecs_query_t *rule,
     ecs_iter_t *it,
     const char *expr);
 
@@ -15419,15 +15403,15 @@ namespace flecs {
 
 using world_t = ecs_world_t;
 using world_info_t = ecs_world_info_t;
-using query_group_info_t = ecs_query_group_info_t;
+using query_group_info_t = ecs_query_cache_group_info_t;
 using id_t = ecs_id_t;
 using entity_t = ecs_entity_t;
 using type_t = ecs_type_t;
 using table_t = ecs_table_t;
-using filter_t = ecs_filter_t;
+using filter_t = ecs_query_t;
 using observer_t = ecs_observer_t;
-using query_t = ecs_query_t;
-using rule_t = ecs_rule_t;
+using query_t = ecs_query_cache_t;
+using rule_t = ecs_query_impl_t;
 using ref_t = ecs_ref_t;
 using iter_t = ecs_iter_t;
 using type_info_t = ecs_type_info_t;
@@ -15437,7 +15421,7 @@ using flags32_t = ecs_flags32_t;
 enum inout_kind_t {
     InOutDefault = EcsInOutDefault,
     InOutNone = EcsInOutNone,
-    InOutFilter = EcsInOutFilter,
+    InOutQuery = EcsInOutQuery,
     InOut = EcsInOut,
     In = EcsIn,
     Out = EcsOut
@@ -16630,7 +16614,7 @@ struct term_builder;
 
 /**
  * @file addons/cpp/mixins/filter/decl.hpp
- * @brief Filter declarations.
+ * @brief Query declarations.
  */
 
 #pragma once
@@ -16638,8 +16622,8 @@ struct term_builder;
 namespace flecs {
 
 /**
- * @defgroup cpp_core_filters Filters
- * @brief Filters are cheaper to create, but slower to iterate than flecs::query.
+ * @defgroup cpp_core_filters Querys
+ * @brief Querys are cheaper to create, but slower to iterate than flecs::query.
  * 
  * \ingroup cpp_core
  * @{
@@ -16998,7 +16982,7 @@ namespace flecs {
  */
 
 using Timer = EcsTimer;
-using RateFilter = EcsRateFilter;
+using RateQuery = EcsRateQuery;
 
 struct timer;
 
@@ -20240,7 +20224,7 @@ flecs::term term() const;
 
 /**
  * @file addons/cpp/mixins/filter/mixin.inl
- * @brief Filter world mixin.
+ * @brief Query world mixin.
  */
 
 /**
@@ -20250,14 +20234,14 @@ flecs::term term() const;
 
 /** Create a filter.
  * 
- * @see ecs_filter_init
+ * @see ecs_query_init
  */
 template <typename... Comps, typename... Args>
 flecs::filter<Comps...> filter(Args &&... args) const;
 
 /** Create a filter builder.
  * 
- * @see ecs_filter_init
+ * @see ecs_query_init
  */
 template <typename... Comps, typename... Args>
 flecs::filter_builder<Comps...> filter_builder(Args &&... args) const;
@@ -20327,19 +20311,19 @@ flecs::observer_builder<Components...> observer(Args &&... args) const;
  */
 
 /** Create a query.
- * @see ecs_query_init
+ * @see ecs_query_cache_init
  */
 template <typename... Comps, typename... Args>
 flecs::query<Comps...> query(Args &&... args) const;
 
 /** Create a subquery.
- * @see ecs_query_init
+ * @see ecs_query_cache_init
  */
 template <typename... Comps, typename... Args>
 flecs::query<Comps...> query(flecs::query_base& parent, Args &&... args) const;
 
 /** Create a query builder.
- * @see ecs_query_init
+ * @see ecs_query_cache_init
  */
 template <typename... Comps, typename... Args>
 flecs::query_builder<Comps...> query_builder(Args &&... args) const;
@@ -20573,19 +20557,19 @@ void randomize_timers() const;
  */
 
 /** Create a rule.
- * @see ecs_rule_init
+ * @see ecs_query_init
  */
 template <typename... Comps, typename... Args>
 flecs::rule<Comps...> rule(Args &&... args) const;
 
 /** Create a subrule.
- * @see ecs_rule_init
+ * @see ecs_query_init
  */
 template <typename... Comps, typename... Args>
 flecs::rule<Comps...> rule(flecs::rule_base& parent, Args &&... args) const;
 
 /** Create a rule builder.
- * @see ecs_rule_init
+ * @see ecs_query_init
  */
 template <typename... Comps, typename... Args>
 flecs::rule_builder<Comps...> rule_builder(Args &&... args) const;
@@ -21218,7 +21202,7 @@ public:
     /** Check if the current table has changed since the last iteration.
      * Can only be used when iterating queries and/or systems. */
     bool changed() {
-        return ecs_query_changed(nullptr, m_iter);
+        return ecs_query_cache_changed(nullptr, m_iter);
     }
 
     /** Skip current table.
@@ -21229,7 +21213,7 @@ public:
      * When this operation is invoked, the components of the current table will
      * not be marked dirty. */
     void skip() {
-        ecs_query_skip(m_iter);
+        ecs_query_cache_skip(m_iter);
     }
 
     /* Return group id for current table (grouped queries only) */
@@ -21518,23 +21502,23 @@ struct entity_view : public id {
         flecs::world world(m_world);
 
         ecs_term_t terms[2];
-        ecs_filter_t f = ECS_FILTER_INIT;
+        ecs_query_t f = ECS_FILTER_INIT;
         f.terms = terms;
         f.term_count = 2;
 
-        ecs_filter_desc_t desc = {};
+        ecs_query_desc_t desc = {};
         desc.terms[0].first.id = rel;
         desc.terms[0].second.id = m_id|EcsIsEntity;
         desc.terms[1].id = flecs::Prefab;
         desc.terms[1].oper = EcsOptional;
         desc.storage = &f;
-        if (ecs_filter_init(m_world, &desc) != nullptr) {
-            ecs_iter_t it = ecs_filter_iter(m_world, &f);
-            while (ecs_filter_next(&it)) {
+        if (ecs_query_init(m_world, &desc) != nullptr) {
+            ecs_iter_t it = ecs_query_iter(m_world, &f);
+            while (ecs_query_next(&it)) {
                 _::each_delegate<Func>(FLECS_MOV(func)).invoke(&it);
             }
 
-            ecs_filter_fini(&f);
+            ecs_query_fini(&f);
         }
     }
 
@@ -24906,8 +24890,8 @@ struct iter_iterable final : iterable<Components...> {
  */
 
 iter_iterable<Components...>& set_var(const char *name, flecs::entity_t value) {
-    ecs_rule_iter_t *rit = &m_it.priv.iter.rule;
-    int var_id = ecs_rule_find_var(rit->rule, name);
+    ecs_query_iter_t *rit = &m_it.priv.iter.rule;
+    int var_id = ecs_query_find_var(rit->rule, name);
     ecs_assert(var_id != -1, ECS_INVALID_PARAMETER, name);
     ecs_iter_set_var(&m_it, var_id, value);
     return *this;
@@ -24964,14 +24948,14 @@ flecs::string to_json(flecs::iter_to_json_desc_t *desc = nullptr) {
 
     // Limit results to tables with specified group id (grouped queries only)
     iter_iterable<Components...>& set_group(uint64_t group_id) {
-        ecs_query_set_group(&m_it, group_id);
+        ecs_query_cache_set_group(&m_it, group_id);
         return *this;
     }
 
     // Limit results to tables with specified group id (grouped queries only)
     template <typename Group>
     iter_iterable<Components...>& set_group() {
-        ecs_query_set_group(&m_it, _::cpp_type<Group>().id(m_it.real_world));
+        ecs_query_cache_set_group(&m_it, _::cpp_type<Group>().id(m_it.real_world));
         return *this;
     }
 
@@ -27161,9 +27145,9 @@ struct term_builder_i : term_id_builder_i<Base> {
         return *this;
     }
 
-    /* Filter terms are not triggered on by observers */
+    /* Query terms are not triggered on by observers */
     Base& filter() {
-        m_term->inout = EcsInOutFilter;
+        m_term->inout = EcsInOutQuery;
         return *this;
     }
 
@@ -27366,14 +27350,14 @@ inline flecs::term world::term() const {
 
 /**
  * @file addons/cpp/mixins/filter/impl.hpp
- * @brief Filter implementation.
+ * @brief Query implementation.
  */
 
 #pragma once
 
 /**
  * @file addons/cpp/mixins/filter/builder.hpp
- * @brief Filter builder.
+ * @brief Query builder.
  */
 
 #pragma once
@@ -27437,7 +27421,7 @@ protected:
 
 /**
  * @file addons/cpp/mixins/filter/builder_i.hpp
- * @brief Filter builder interface.
+ * @brief Query builder interface.
  */
 
 #pragma once
@@ -27446,13 +27430,13 @@ protected:
 namespace flecs 
 {
 
-/** Filter builder interface.
+/** Query builder interface.
  * 
  * \ingroup cpp_filters
  */
 template<typename Base, typename ... Components>
 struct filter_builder_i : term_builder_i<Base> {
-    filter_builder_i(ecs_filter_desc_t *desc, int32_t term_index = 0) 
+    filter_builder_i(ecs_query_desc_t *desc, int32_t term_index = 0) 
         : m_term_index(term_index)
         , m_expr_count(0)
         , m_desc(desc) { }
@@ -27693,7 +27677,7 @@ private:
         return *static_cast<Base*>(this);
     }
 
-    ecs_filter_desc_t *m_desc;
+    ecs_query_desc_t *m_desc;
 };
 
 }
@@ -27703,11 +27687,11 @@ namespace flecs {
 namespace _ {
     template <typename ... Components>
     using filter_builder_base = builder<
-        filter, ecs_filter_desc_t, filter_builder<Components...>, 
+        filter, ecs_query_desc_t, filter_builder<Components...>, 
         filter_builder_i, Components ...>;
 }
 
-/** Filter builder.
+/** Query builder.
  * 
  * \ingroup cpp_filters
  */
@@ -27744,23 +27728,23 @@ struct filter_base {
         , m_filter({})
         , m_filter_ptr(nullptr) { }
 
-    filter_base(world_t *world, const ecs_filter_t *filter)
+    filter_base(world_t *world, const ecs_query_t *filter)
         : m_world(world)
         , m_filter({})
         , m_filter_ptr(filter) { }
 
-    filter_base(world_t *world, ecs_filter_t *filter)
+    filter_base(world_t *world, ecs_query_t *filter)
         : m_world(world)
         , m_filter_ptr(&m_filter) {
-            ecs_filter_move(&m_filter, filter);
+            ecs_query_move(&m_filter, filter);
         }
 
-    filter_base(world_t *world, ecs_filter_desc_t *desc) 
+    filter_base(world_t *world, ecs_query_desc_t *desc) 
         : m_world(world)
     {
         desc->storage = &m_filter;
 
-        if (ecs_filter_init(world, desc) == NULL) {
+        if (ecs_query_init(world, desc) == NULL) {
             ecs_abort(ECS_INVALID_PARAMETER, NULL);
         }
 
@@ -27778,7 +27762,7 @@ struct filter_base {
         } else {
             this->m_filter_ptr = nullptr;
         }
-        ecs_filter_copy(&m_filter, &obj.m_filter);
+        ecs_query_copy(&m_filter, &obj.m_filter);
     }
 
     filter_base& operator=(const filter_base& obj) {
@@ -27788,7 +27772,7 @@ struct filter_base {
         } else {
             this->m_filter_ptr = nullptr;
         }
-        ecs_filter_copy(&m_filter, &obj.m_filter);
+        ecs_query_copy(&m_filter, &obj.m_filter);
         return *this; 
     }
 
@@ -27799,7 +27783,7 @@ struct filter_base {
         } else {
             this->m_filter_ptr = nullptr;
         }
-        ecs_filter_move(&m_filter, &obj.m_filter);
+        ecs_query_move(&m_filter, &obj.m_filter);
     }
 
     filter_base& operator=(filter_base&& obj) {
@@ -27809,7 +27793,7 @@ struct filter_base {
         } else {
             this->m_filter_ptr = nullptr;
         }
-        ecs_filter_move(&m_filter, &obj.m_filter);
+        ecs_query_move(&m_filter, &obj.m_filter);
         return *this; 
     }
 
@@ -27825,7 +27809,7 @@ struct filter_base {
      */
     ~filter_base() {
         if ((&m_filter == m_filter_ptr) && m_filter_ptr) {
-            ecs_filter_fini(&m_filter);
+            ecs_query_fini(&m_filter);
         }
     }
 
@@ -27847,7 +27831,7 @@ struct filter_base {
     }
 
     flecs::string str() {
-        char *result = ecs_rule_str(m_world, m_filter_ptr);
+        char *result = ecs_query_str(m_world, m_filter_ptr);
         return flecs::string(result);
     }
 
@@ -27888,15 +27872,15 @@ private:
         if (!world) {
             world = m_world;
         }
-        return ecs_filter_iter(world, m_filter_ptr);
+        return ecs_query_iter(world, m_filter_ptr);
     }
 
     ecs_iter_next_action_t next_action() const override {
-        return ecs_filter_next;
+        return ecs_query_next;
     }
 
     ecs_iter_next_action_t next_each_action() const override {
-        return ecs_filter_next_instanced;
+        return ecs_query_next_instanced;
     }
 };
 
@@ -27991,7 +27975,7 @@ inline void world::each(flecs::id_t term_id, Func&& func) const {
 // filter_base implementation
 inline filter_base::operator flecs::filter<> () const {
     flecs::filter<> f;
-    ecs_filter_copy(&f.m_filter, &this->m_filter);
+    ecs_query_copy(&f.m_filter, &this->m_filter);
     f.m_filter_ptr = &f.m_filter;
     f.m_world = this->m_world;
     return f;
@@ -28078,7 +28062,7 @@ public:
     }
 
     /** Group and sort matched tables.
-     * Similar yo ecs_query_order_by, but instead of sorting individual entities, this
+     * Similar yo ecs_query_cache_order_by, but instead of sorting individual entities, this
      * operation only sorts matched tables. This can be useful of a query needs to
      * enforce a certain iteration order upon the tables it is iterating, for 
      * example by giving a certain component or tag a higher priority.
@@ -28222,7 +28206,7 @@ struct query_base {
     query_base(world_t *world, ecs_query_desc_t *desc) 
         : m_world(world)
     {
-        m_query = ecs_query_init(world, desc);
+        m_query = ecs_query_cache_init(world, desc);
 
         if (!m_query) {
             ecs_abort(ECS_INVALID_PARAMETER, NULL);
@@ -28247,7 +28231,7 @@ struct query_base {
      * @return true if entities changed, otherwise false.
      */
     bool changed() const {
-        return ecs_query_changed(m_query, 0);
+        return ecs_query_cache_changed(m_query, 0);
     }
 
     /** Returns whether query is orphaned.
@@ -28258,7 +28242,7 @@ struct query_base {
      * @return true if query is orphaned, otherwise false.
      */
     bool orphaned() const {
-        return ecs_query_orphaned(m_query);
+        return ecs_query_cache_orphaned(m_query);
     }
 
     /** Get info for group. 
@@ -28267,7 +28251,7 @@ struct query_base {
      * @return The group info.
      */
     const flecs::query_group_info_t* group_info(uint64_t group_id) const {
-        return ecs_query_get_group_info(m_query, group_id);
+        return ecs_query_cache_get_group_info(m_query, group_id);
     }
 
     /** Get context for group. 
@@ -28287,7 +28271,7 @@ struct query_base {
     /** Free the query.
      */
     void destruct() {
-        ecs_query_fini(m_query);
+        ecs_query_cache_fini(m_query);
         m_world = nullptr;
         m_query = nullptr;
     }
@@ -28298,23 +28282,23 @@ struct query_base {
     }
 
     filter_base filter() const {
-        return filter_base(m_world, ecs_query_get_filter(m_query));
+        return filter_base(m_world, ecs_query_cache_get_filter(m_query));
     }
 
     flecs::term term(int32_t index) const {
-        const ecs_filter_t *f = ecs_query_get_filter(m_query);
+        const ecs_query_t *f = ecs_query_cache_get_filter(m_query);
         ecs_assert(f != NULL, ECS_INVALID_PARAMETER, NULL);
         return flecs::term(m_world, f->terms[index]);
     }
 
     int32_t field_count() const {
-        const ecs_filter_t *f = ecs_query_get_filter(m_query);
+        const ecs_query_t *f = ecs_query_cache_get_filter(m_query);
         return f->term_count;   
     }
 
     flecs::string str() const {
-        const ecs_filter_t *f = ecs_query_get_filter(m_query);
-        char *result = ecs_rule_str(m_world, f);
+        const ecs_query_t *f = ecs_query_cache_get_filter(m_query);
+        char *result = ecs_query_str(m_world, f);
         return flecs::string(result);
     }
 
@@ -28343,15 +28327,15 @@ private:
         if (!world) {
             world = m_world;
         }
-        return ecs_query_iter(world, m_query);
+        return ecs_query_cache_iter(world, m_query);
     }
 
     ecs_iter_next_action_t next_action() const override {
-        return ecs_query_next;
+        return ecs_query_cache_next;
     }
 
     ecs_iter_next_action_t next_each_action() const override {
-        return ecs_query_next_instanced;
+        return ecs_query_cache_next_instanced;
     }
 
 public:
@@ -29470,7 +29454,7 @@ inline void system::set_tick_source(flecs::entity e) {
 namespace _ {
 
 inline void timer_init(flecs::world& world) {
-    world.component<RateFilter>("flecs::timer::RateFilter");
+    world.component<RateQuery>("flecs::timer::RateQuery");
     world.component<Timer>("flecs::timer::Timer");
 }
 
@@ -29535,7 +29519,7 @@ struct snapshot final {
             ecs_snapshot_free(m_snapshot);
         }
 
-        ecs_iter_t it = ecs_filter_iter(m_world, f.c_ptr());
+        ecs_iter_t it = ecs_query_iter(m_world, f.c_ptr());
 
         m_snapshot = ecs_snapshot_take_w_iter(&it);
     }    
@@ -29668,7 +29652,7 @@ namespace flecs {
 namespace _ {
     template <typename ... Components>
     using rule_builder_base = builder<
-        rule, ecs_filter_desc_t, rule_builder<Components...>, 
+        rule, ecs_query_desc_t, rule_builder<Components...>, 
         filter_builder_i, Components ...>;
 }
 
@@ -29710,10 +29694,10 @@ struct rule_base {
         : m_world(world)
         , m_rule(rule) { }
 
-    rule_base(world_t *world, ecs_filter_desc_t *desc) 
+    rule_base(world_t *world, ecs_query_desc_t *desc) 
         : m_world(world)
     {
-        m_rule = ecs_rule_init(world, desc);
+        m_rule = ecs_query_init(world, desc);
         if (desc->terms_buffer) {
             ecs_os_free(desc->terms_buffer);
         }
@@ -29734,7 +29718,7 @@ struct rule_base {
     /** Free the rule. */
     void destruct() {
         if (m_rule) {
-            ecs_rule_fini(m_rule);
+            ecs_query_fini(m_rule);
             m_world = nullptr;
             m_rule = nullptr;
         }
@@ -29755,25 +29739,25 @@ struct rule_base {
     }
 
     flecs::filter_base filter() const {
-        return filter_base(m_world, ecs_rule_get_filter(m_rule));
+        return filter_base(m_world, ecs_query_get_filter(m_rule));
     }
 
     /** Converts this rule to a string expression
-     * @see ecs_rule_str
+     * @see ecs_query_str
      */
     flecs::string str() const {
-        const ecs_filter_t *f = ecs_rule_get_filter(m_rule);
-        char *result = ecs_rule_str(m_world, f);
+        const ecs_query_t *f = ecs_query_get_filter(m_rule);
+        char *result = ecs_query_str(m_world, f);
         return flecs::string(result);
     }
 
 
     /** Converts this rule to a string that can be used to aid debugging
      * the behavior of the rule.
-     * @see ecs_rule_plan
+     * @see ecs_query_plan
      */
     flecs::string rule_str() const {
-        char *result = ecs_rule_plan(m_rule);
+        char *result = ecs_query_plan(m_rule);
         return flecs::string(result);
     }
 
@@ -29793,22 +29777,22 @@ private:
         if (!world) {
             world = m_world;
         }
-        return ecs_rule_iter(world, m_rule);
+        return ecs_query_iter(world, m_rule);
     }
 
     ecs_iter_next_action_t next_action() const override {
-        return ecs_rule_next;
+        return ecs_query_next;
     }
 
     ecs_iter_next_action_t next_each_action() const override {
-        return ecs_rule_next_instanced;
+        return ecs_query_next_instanced;
     }
 
 public:
     using rule_base::rule_base;
 
     int32_t find_var(const char *name) {
-        return ecs_rule_find_var(m_rule, name);
+        return ecs_query_find_var(m_rule, name);
     }
 };
 
@@ -30684,9 +30668,9 @@ inline flecs::entity iter::get_var(int var_id) const {
  * Get value of a query variable for current result.
  */
 inline flecs::entity iter::get_var(const char *name) const {
-    ecs_rule_iter_t *rit = &m_iter->priv.iter.rule;
+    ecs_query_iter_t *rit = &m_iter->priv.iter.rule;
     const flecs::rule_t *r = rit->rule;
-    int var_id = ecs_rule_find_var(r, name);
+    int var_id = ecs_query_find_var(r, name);
     ecs_assert(var_id != -1, ECS_INVALID_PARAMETER, name);
     return flecs::entity(m_iter->world, ecs_iter_get_var(m_iter, var_id));
 }

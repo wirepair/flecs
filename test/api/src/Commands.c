@@ -2080,7 +2080,7 @@ void Commands_create_query_while_deferred(void) {
     ECS_TAG(world, TagA);
 
     ecs_defer_begin(world);
-    ecs_query_t *query = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *query = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.terms = {{ .id = TagA }}
     });
     ecs_defer_end(world);
@@ -2088,11 +2088,11 @@ void Commands_create_query_while_deferred(void) {
 
     ecs_entity_t e = ecs_new(world, TagA);
 
-    ecs_iter_t it = ecs_query_iter(world, query);
-    test_bool(true, ecs_query_next(&it));
+    ecs_iter_t it = ecs_query_cache_iter(world, query);
+    test_bool(true, ecs_query_cache_next(&it));
     test_int(1, it.count);
     test_uint(e, it.entities[0]);
-    test_bool(false, ecs_query_next(&it));
+    test_bool(false, ecs_query_cache_next(&it));
 
     ecs_fini(world);
 }

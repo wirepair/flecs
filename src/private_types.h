@@ -35,10 +35,10 @@ extern const ecs_entity_t EcsFlag;
 /* Tags associated with poly for (Poly, tag) components */
 #define ecs_world_t_tag     invalid
 #define ecs_stage_t_tag     invalid
-#define ecs_query_t_tag     EcsQuery
-#define ecs_rule_t_tag      EcsQuery
+#define ecs_query_cache_t_tag     EcsQuery
+#define ecs_query_impl_t_tag      EcsQuery
 #define ecs_table_t_tag     invalid
-#define ecs_filter_t_tag    EcsQuery
+#define ecs_query_t_tag    EcsQuery
 #define ecs_observer_t_tag  EcsObserver
 
 /* Mixin kinds */
@@ -63,8 +63,8 @@ struct ecs_mixins_t {
 /* Mixin tables */
 extern ecs_mixins_t ecs_world_t_mixins;
 extern ecs_mixins_t ecs_stage_t_mixins;
-extern ecs_mixins_t ecs_filter_t_mixins;
 extern ecs_mixins_t ecs_query_t_mixins;
+extern ecs_mixins_t ecs_query_cache_t_mixins;
 extern ecs_mixins_t ecs_trigger_t_mixins;
 extern ecs_mixins_t ecs_observer_t_mixins;
 
@@ -306,7 +306,7 @@ struct ecs_stage_t {
 
 /* Component monitor */
 typedef struct ecs_monitor_t {
-    ecs_vec_t queries;               /* vector<ecs_query_t*> */
+    ecs_vec_t queries;               /* vector<ecs_query_cache_t*> */
     bool is_dirty;                   /* Should queries be rematched? */
 } ecs_monitor_t;
 

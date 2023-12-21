@@ -1,6 +1,6 @@
 /**
  * @file addons/cpp/mixins/filter/decl.hpp
- * @brief Filter declarations.
+ * @brief Query declarations.
  */
 
 #pragma once
@@ -8,8 +8,8 @@
 namespace flecs {
 
 /**
- * @defgroup cpp_core_filters Filters
- * @brief Filters are cheaper to create, but slower to iterate than flecs::query.
+ * @defgroup cpp_core_filters Querys
+ * @brief Querys are cheaper to create, but slower to iterate than flecs::query.
  * 
  * \ingroup cpp_core
  * @{

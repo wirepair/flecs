@@ -52,12 +52,12 @@ void flecs_monitor_mark_dirty(
 void flecs_monitor_register(
     ecs_world_t *world,
     ecs_entity_t id,
-    ecs_query_t *query);
+    ecs_query_cache_t *query);
 
 void flecs_monitor_unregister(
     ecs_world_t *world,
     ecs_entity_t id,
-    ecs_query_t *query);
+    ecs_query_cache_t *query);
 
 void flecs_notify_tables(
     ecs_world_t *world,

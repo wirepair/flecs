@@ -193,21 +193,11 @@
         .type.alignment = ECS_ALIGNOF(T) \
     })
 
-/** Shorthand for creating a filter with ecs_filter_init.
- *
- * Example:
- *   ecs_filter(world, {
- *     .terms = {{ ecs_id(Position) }}
- *   });
- */
-#define ecs_filter(world, ...)\
-    ecs_filter_init(world, &(ecs_filter_desc_t) __VA_ARGS__ )
-
-/** Shorthand for creating a query with ecs_query_init.
+/** Shorthand for creating a query with ecs_query_cache_init.
  *
  * Example:
  *   ecs_query(world, {
- *     .filter.terms = {{ ecs_id(Position) }}
+ *     .terms = {{ ecs_id(Position) }}
  *   });
  */
 #define ecs_query(world, ...)\
@@ -740,13 +730,13 @@
 #define ecs_childof(e)   ecs_pair(EcsChildOf, e)
 #define ecs_dependson(e) ecs_pair(EcsDependsOn, e)
 
-#define ecs_query_new(world, q_expr)\
-    ecs_query_init(world, &(ecs_query_desc_t){\
+#define ecs_query_cache_new(world, q_expr)\
+    ecs_query_cache_init(world, &(ecs_query_desc_t){\
         .filter.expr = q_expr\
     })
 
-#define ecs_rule_new(world, q_expr)\
-    ecs_rule_init(world, &(ecs_filter_desc_t){\
+#define ecs_query_new(world, q_expr)\
+    ecs_query_init(world, &(ecs_query_desc_t){\
         .expr = q_expr\
     })
 

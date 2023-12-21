@@ -467,7 +467,7 @@ parent.lookup("child"); // returns child
 Queries (see below) can use hierarchies to order data breadth-first, which can come in handy when you're implementing a transform system:
 
 ```c
-ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
     .filter.terms = {
         { ecs_id(Position) },
         { ecs_id(Position), .src = {
@@ -477,8 +477,8 @@ ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
     }
 });
 
-ecs_iter_t it = ecs_query_iter(world, q);
-while (ecs_query_next(&it)) {
+ecs_iter_t it = ecs_query_cache_iter(world, q);
+while (ecs_query_cache_next(&it)) {
     Position *p = ecs_field(&it, Position, 1);
     Position *p_parent = ecs_field(&it, Position, 2);
     for (int i = 0; i < it.count; i++) {
@@ -606,7 +606,7 @@ The following examples show how to query for a singleton component:
 
 ```c
 // Create query that matches Gravity as singleton
-ecs_query_t *q = ecs_query(ecs, {
+ecs_query_cache_t *q = ecs_query(ecs, {
     .filter.terms = {
         // Regular component
         { .id = ecs_id(Velocity) },
@@ -625,12 +625,12 @@ world.query_builder<Velocity, Gravity>()
     .build();
 ```
 
-### Filter
-Filters are a kind of uncached query that are cheap to create. This makes them a good fit for scenarios where an application doesn't know in advance what it has to query for, like when finding the children for a parent. The following example shows a simple filter:
+### Query
+Querys are a kind of uncached query that are cheap to create. This makes them a good fit for scenarios where an application doesn't know in advance what it has to query for, like when finding the children for a parent. The following example shows a simple filter:
 
 ```c
 // Initialize a filter with 2 terms on the stack
-ecs_filter_t *f = ecs_filter_init(world, &(ecs_filter_desc_t){
+ecs_query_t *f = ecs_query_init(world, &(ecs_query_desc_t){
     .terms = {
         { ecs_id(Position) },
         { ecs_pair(EcsChildOf, parent) }
@@ -640,8 +640,8 @@ ecs_filter_t *f = ecs_filter_init(world, &(ecs_filter_desc_t){
 // Iterate the filter results. Because entities are grouped by their type there
 // are two loops: an outer loop for the type, and an inner loop for the entities
 // for that type.
-ecs_iter_t it = ecs_filter_iter(world, f);
-while (ecs_filter_next(&it)) {
+ecs_iter_t it = ecs_query_iter(world, f);
+while (ecs_query_next(&it)) {
     // Each type has its own set of component arrays
     Position *p = ecs_field(&it, Position, 1);
 
@@ -652,7 +652,7 @@ while (ecs_filter_next(&it)) {
     }
 }
 
-ecs_filter_fini(f);
+ecs_query_fini(f);
 ```
 ```cpp
 // For simple queries the each function can be used
@@ -680,12 +680,12 @@ f.iter([](flecs::iter& it, Position *p) {
 });
 ```
 
-Filters can use operators to exclude components, optionally match components or match one out of a list of components. Additionally filters may contain wildcards for terms which is especially useful when combined with pairs.
+Querys can use operators to exclude components, optionally match components or match one out of a list of components. Additionally filters may contain wildcards for terms which is especially useful when combined with pairs.
 
 The following example shows a filter that matches all entities with a parent that do not have `Position`:
 
 ```c
-ecs_filter_t *f = ecs_filter_init(world, &(ecs_filter_desc_t){
+ecs_query_t *f = ecs_query_init(world, &(ecs_query_desc_t){
     .terms = {
         { ecs_pair(EcsChildOf, EcsWildcard) }
         { ecs_id(Position), .oper = EcsNot },
@@ -710,15 +710,15 @@ The API for queries is similar to filters:
 
 ```c
 // Create a query with 2 terms
-ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
     .filter.terms = {
         { ecs_id(Position) },
         { ecs_pair(EcsChildOf, EcsWildcard) }
     }
 });
 
-ecs_iter_t it = ecs_query_iter(world, q);
-while (ecs_query_next(&it)) {
+ecs_iter_t it = ecs_query_cache_iter(world, q);
+while (ecs_query_cache_next(&it)) {
     // Same as for filters
 }
 ```

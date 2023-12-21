@@ -2,7 +2,7 @@
 
 static
 ecs_trav_up_t* flecs_trav_up_ensure(
-    const ecs_rule_run_ctx_t *ctx,
+    const ecs_query_run_ctx_t *ctx,
     ecs_trav_up_cache_t *cache,
     uint64_t table_id)
 {
@@ -54,7 +54,7 @@ int32_t flecs_trav_type_offset_search(
 
 static
 ecs_trav_up_t* flecs_trav_table_up(
-    const ecs_rule_run_ctx_t *ctx,
+    const ecs_query_run_ctx_t *ctx,
     ecs_allocator_t *a,
     ecs_trav_up_cache_t *cache,
     const ecs_world_t *world,
@@ -146,8 +146,8 @@ found:
     return up;
 }
 
-ecs_trav_up_t* flecs_rule_get_up_cache(
-    const ecs_rule_run_ctx_t *ctx,
+ecs_trav_up_t* flecs_query_get_up_cache(
+    const ecs_query_run_ctx_t *ctx,
     ecs_trav_up_cache_t *cache,
     ecs_table_t *table,
     ecs_id_t with,
@@ -156,11 +156,11 @@ ecs_trav_up_t* flecs_rule_get_up_cache(
     ecs_id_record_t *idr_trav)
 {
     if (cache->with && cache->with != with) {
-        flecs_rule_up_cache_fini(cache);
+        flecs_query_up_cache_fini(cache);
     }
 
     ecs_world_t *world = ctx->it->real_world;
-    ecs_allocator_t *a = flecs_rule_get_allocator(ctx->it);
+    ecs_allocator_t *a = flecs_query_get_allocator(ctx->it);
     ecs_map_init_if(&cache->src, a);
 
     ecs_assert(cache->dir != EcsTravDown, ECS_INTERNAL_ERROR, NULL);
@@ -189,7 +189,7 @@ ecs_trav_up_t* flecs_rule_get_up_cache(
     return NULL;
 }
 
-void flecs_rule_up_cache_fini(
+void flecs_query_up_cache_fini(
     ecs_trav_up_cache_t *cache)
 {
     ecs_map_fini(&cache->src);

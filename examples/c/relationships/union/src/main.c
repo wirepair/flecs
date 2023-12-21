@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 
     // Create a query that subscribers for all entities that have a Direction
     // and that are walking.
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_pair(Movement, Walking) },
             { .id = ecs_pair(Direction, EcsWildcard) }
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
     ecs_add_pair(world, e3, Movement, Walking);
 
     // Iterate query as usual
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     while (ecs_iter_next(&it)) {
         ecs_entity_t *movement = ecs_field(&it, ecs_entity_t, 1);
         ecs_entity_t *direction = ecs_field(&it, ecs_entity_t, 2);

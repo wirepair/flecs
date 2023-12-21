@@ -81,7 +81,7 @@ ecs_id_record_t* flecs_id_record_get(
 /* Get id record for id for searching.
  * Same as flecs_id_record_get, but replaces (R, *) with (Union, R) if R is a
  * union relationship. */
-ecs_id_record_t* flecs_query_id_record_get(
+ecs_id_record_t* flecs_query_cache_id_record_get(
     const ecs_world_t *world,
     ecs_id_t id);
 

@@ -3125,7 +3125,7 @@ void Observer_observer_w_filter_term(void) {
 
     Probe ctx = {0};
     ecs_observer(world, {
-        .filter.terms = {{ .id = TagA }, { .id = TagB, .inout = EcsInOutFilter }},
+        .filter.terms = {{ .id = TagA }, { .id = TagB, .inout = EcsInOutQuery }},
         .events = { EcsOnAdd },
         .callback = Observer,
         .ctx = &ctx
@@ -4875,7 +4875,7 @@ void Observer_multi_observer_table_fill_w_singleton(void) {
             { .id = ecs_id(Position), .src.id = ecs_id(Position)|EcsIsEntity },
             { .id = ecs_id(Velocity) },
         },
-        .filter.flags = EcsFilterNoData,
+        .filter.flags = EcsQueryNoData,
         .callback = Observer,
         .events = { EcsOnTableFill },
         .ctx = &ctx

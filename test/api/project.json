@@ -1126,7 +1126,7 @@
                 "dont_resort_after_set_unsorted_component_w_tag_w_out_term"
             ]
         }, {
-            "id": "Filter",
+            "id": "Query",
             "testcases": [
                 "filter_1_term",
                 "filter_1_term_component",
@@ -1413,7 +1413,7 @@
                 "filter_w_short_notation"
             ]
         }, {
-            "id": "FilterStr",
+            "id": "QueryStr",
             "testcases": [
                 "one_term",
                 "one_term_w_inout",

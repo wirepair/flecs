@@ -935,7 +935,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -943,9 +943,9 @@ void FixedHierarchies_query_w_parent_field_1_lvl(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(p_2, it.entities[1]);
@@ -959,7 +959,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -971,7 +971,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl(void) {
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -982,7 +982,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl(void) {
         Position *pp = ecs_field(&it, Position, 2);
         test_int(pp[0].x, 12); test_int(pp[0].y, 22);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1006,7 +1006,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl_w_init(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -1014,9 +1014,9 @@ void FixedHierarchies_query_w_parent_field_1_lvl_w_init(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(p_2, it.entities[1]);
@@ -1030,7 +1030,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl_w_init(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1042,7 +1042,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl_w_init(void) {
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1053,7 +1053,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl_w_init(void) {
         Position *pp = ecs_field(&it, Position, 2);
         test_int(pp[0].x, 12); test_int(pp[0].y, 22);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1084,7 +1084,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl_w_init_comp_after_tree_fixed(vo
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_pair(rel, ecs_id(Position)) },
@@ -1093,9 +1093,9 @@ void FixedHierarchies_query_w_parent_field_1_lvl_w_init_comp_after_tree_fixed(vo
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1111,7 +1111,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl_w_init_comp_after_tree_fixed(vo
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1126,7 +1126,7 @@ void FixedHierarchies_query_w_parent_field_1_lvl_w_init_comp_after_tree_fixed(vo
         Position *pp = ecs_field(&it, Position, 3);
         test_int(pp[0].x, 12); test_int(pp[0].y, 22);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1154,7 +1154,7 @@ void FixedHierarchies_query_w_parent_field_2_lvl(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -1162,9 +1162,9 @@ void FixedHierarchies_query_w_parent_field_2_lvl(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(p_2, it.entities[1]);
@@ -1178,7 +1178,7 @@ void FixedHierarchies_query_w_parent_field_2_lvl(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1190,7 +1190,7 @@ void FixedHierarchies_query_w_parent_field_2_lvl(void) {
         test_int(pp[0].x, 111); test_int(pp[0].y, 211);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1202,7 +1202,7 @@ void FixedHierarchies_query_w_parent_field_2_lvl(void) {
         test_int(pp[0].x, 121); test_int(pp[0].y, 221);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1214,7 +1214,7 @@ void FixedHierarchies_query_w_parent_field_2_lvl(void) {
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1225,7 +1225,7 @@ void FixedHierarchies_query_w_parent_field_2_lvl(void) {
         Position *pp = ecs_field(&it, Position, 2);
         test_int(pp[0].x, 12); test_int(pp[0].y, 22);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1253,7 +1253,7 @@ void FixedHierarchies_query_w_cascade_field_2_lvl(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp|EcsCascade },
@@ -1261,9 +1261,9 @@ void FixedHierarchies_query_w_cascade_field_2_lvl(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(p_2, it.entities[1]);
@@ -1277,7 +1277,7 @@ void FixedHierarchies_query_w_cascade_field_2_lvl(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1289,7 +1289,7 @@ void FixedHierarchies_query_w_cascade_field_2_lvl(void) {
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1301,7 +1301,7 @@ void FixedHierarchies_query_w_cascade_field_2_lvl(void) {
         test_int(pp[0].x, 12); test_int(pp[0].y, 22);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1313,7 +1313,7 @@ void FixedHierarchies_query_w_cascade_field_2_lvl(void) {
         test_int(pp[0].x, 111); test_int(pp[0].y, 211);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1324,7 +1324,7 @@ void FixedHierarchies_query_w_cascade_field_2_lvl(void) {
         Position *pp = ecs_field(&it, Position, 2);
         test_int(pp[0].x, 121); test_int(pp[0].y, 221);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1350,7 +1350,7 @@ void FixedHierarchies_query_w_parent_field_1_fixed_1_regular(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -1359,9 +1359,9 @@ void FixedHierarchies_query_w_parent_field_1_fixed_1_regular(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(p_2, it.entities[1]);
@@ -1378,7 +1378,7 @@ void FixedHierarchies_query_w_parent_field_1_fixed_1_regular(void) {
         test_int(vp[0].x, 3); test_int(vp[0].y, 4);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1393,7 +1393,7 @@ void FixedHierarchies_query_w_parent_field_1_fixed_1_regular(void) {
         test_int(vp[0].x, 3); test_int(vp[0].y, 4);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1407,7 +1407,7 @@ void FixedHierarchies_query_w_parent_field_1_fixed_1_regular(void) {
         Velocity *vp = ecs_field(&it, Velocity, 3);
         test_int(vp[0].x, 3); test_int(vp[0].y, 4);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1431,7 +1431,7 @@ void FixedHierarchies_query_w_parent_field_only_fixed_1_lvls(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -1439,9 +1439,9 @@ void FixedHierarchies_query_w_parent_field_only_fixed_1_lvls(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1455,7 +1455,7 @@ void FixedHierarchies_query_w_parent_field_only_fixed_1_lvls(void) {
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1468,7 +1468,7 @@ void FixedHierarchies_query_w_parent_field_only_fixed_1_lvls(void) {
         test_assert(pp != NULL);
         test_int(pp[0].x, 12); test_int(pp[0].y, 22);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1486,7 +1486,7 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_no_match(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -1494,11 +1494,11 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_no_match(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
-    test_bool(ecs_query_next(&it), false);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
+    test_bool(ecs_query_cache_next(&it), false);
 
-    it = ecs_query_iter(world, q);
-    test_bool(ecs_query_next(&it), false);
+    it = ecs_query_cache_iter(world, q);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1522,7 +1522,7 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_2_no_match(void) {
 
     test_assert(ecs_get_table(world, p_1_1) == ecs_get_table(world, p_2_1));
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -1530,8 +1530,8 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_2_no_match(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
-    test_bool(ecs_query_next(&it), false);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1556,7 +1556,7 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_no_match_match(void) {
 
     test_assert(ecs_get_table(world, p_1_1) == ecs_get_table(world, p_2_1));
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -1564,9 +1564,9 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_no_match_match(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1580,7 +1580,7 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_no_match_match(void) {
         test_int(pp[0].x, 12); test_int(pp[0].y, 22);
     }
 
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1605,7 +1605,7 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_match_no_match(void) {
 
     test_assert(ecs_get_table(world, p_1_1) == ecs_get_table(world, p_2_1));
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -1613,9 +1613,9 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_match_no_match(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1628,7 +1628,7 @@ void FixedHierarchies_query_w_parent_field_fixed_1_lvls_match_no_match(void) {
         test_assert(pp != NULL);
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1661,7 +1661,7 @@ void FixedHierarchies_query_w_parent_field_2_fixed_2_lvls(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -1671,9 +1671,9 @@ void FixedHierarchies_query_w_parent_field_2_fixed_2_lvls(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(p_2, it.entities[1]);
@@ -1694,7 +1694,7 @@ void FixedHierarchies_query_w_parent_field_2_fixed_2_lvls(void) {
         test_int(mp[1], 6);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1712,7 +1712,7 @@ void FixedHierarchies_query_w_parent_field_2_fixed_2_lvls(void) {
         test_int(mp[0], 5);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1730,7 +1730,7 @@ void FixedHierarchies_query_w_parent_field_2_fixed_2_lvls(void) {
         test_int(mp[0], 6);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1748,7 +1748,7 @@ void FixedHierarchies_query_w_parent_field_2_fixed_2_lvls(void) {
         test_int(mp[0], 5);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1765,7 +1765,7 @@ void FixedHierarchies_query_w_parent_field_2_fixed_2_lvls(void) {
         Mass *mp = ecs_field(&it, Mass, 4);
         test_int(mp[0], 6);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1789,7 +1789,7 @@ void FixedHierarchies_query_next_table(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -1797,10 +1797,10 @@ void FixedHierarchies_query_next_table(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next_table(&it), true);
-        test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
+        test_bool(ecs_query_cache_next_table(&it), true);
+        test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
         test_uint(2, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(p_2, it.entities[1]);
@@ -1814,8 +1814,8 @@ void FixedHierarchies_query_next_table(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next_table(&it), true);
-        test_assert(ecs_query_populate(&it, false) == EcsIterYield);
+        test_bool(ecs_query_cache_next_table(&it), true);
+        test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1827,7 +1827,7 @@ void FixedHierarchies_query_next_table(void) {
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
     {
-        test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
+        test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1838,7 +1838,7 @@ void FixedHierarchies_query_next_table(void) {
         Position *pp = ecs_field(&it, Position, 2);
         test_int(pp[0].x, 12); test_int(pp[0].y, 22);
     }
-    test_bool(ecs_query_next_table(&it), false);
+    test_bool(ecs_query_cache_next_table(&it), false);
 
     ecs_fini(world);
 }
@@ -1857,7 +1857,7 @@ void FixedHierarchies_query_next_table_1_elem(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -1865,10 +1865,10 @@ void FixedHierarchies_query_next_table_1_elem(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next_table(&it), true);
-        test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
+        test_bool(ecs_query_cache_next_table(&it), true);
+        test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
         test_uint(1, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1880,8 +1880,8 @@ void FixedHierarchies_query_next_table_1_elem(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next_table(&it), true);
-        test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
+        test_bool(ecs_query_cache_next_table(&it), true);
+        test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1892,7 +1892,7 @@ void FixedHierarchies_query_next_table_1_elem(void) {
         Position *pp = ecs_field(&it, Position, 2);
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
-    test_bool(ecs_query_next_table(&it), false);
+    test_bool(ecs_query_cache_next_table(&it), false);
 
     ecs_fini(world);
 }
@@ -1910,7 +1910,7 @@ void FixedHierarchies_query_next_table_1_elem_no_match(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -1918,13 +1918,13 @@ void FixedHierarchies_query_next_table_1_elem_no_match(void) {
         .filter.instanced = true
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next_table(&it), true);
-        test_assert(ecs_query_populate(&it, false) == EcsIterNext);
+        test_bool(ecs_query_cache_next_table(&it), true);
+        test_assert(ecs_query_cache_populate(&it, false) == EcsIterNext);
         test_uint(0, it.count);
     }
-    test_bool(ecs_query_next_table(&it), false);
+    test_bool(ecs_query_cache_next_table(&it), false);
 
     ecs_fini(world);
 }
@@ -1934,7 +1934,7 @@ void FixedHierarchies_query_nested_make_fixed(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp|EcsCascade },
@@ -1955,10 +1955,10 @@ void FixedHierarchies_query_nested_make_fixed(void) {
     ecs_flatten(world, ecs_pair(EcsChildOf, p_1), NULL);
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next_table(&it), true);
-        test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
+        test_bool(ecs_query_cache_next_table(&it), true);
+        test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
         test_uint(1, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -1970,8 +1970,8 @@ void FixedHierarchies_query_nested_make_fixed(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next_table(&it), true);
-        test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
+        test_bool(ecs_query_cache_next_table(&it), true);
+        test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
         test_uint(2, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(p_1_2, it.entities[1]);
@@ -1984,7 +1984,7 @@ void FixedHierarchies_query_nested_make_fixed(void) {
         Position *pp = ecs_field(&it, Position, 2);
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
-    test_bool(ecs_query_next_table(&it), false);
+    test_bool(ecs_query_cache_next_table(&it), false);
 
     ecs_fini(world);
 }
@@ -1994,7 +1994,7 @@ void FixedHierarchies_query_nested_make_fixed_w_optional(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .oper = EcsOptional, .src.id = EcsUp|EcsCascade },
@@ -2015,9 +2015,9 @@ void FixedHierarchies_query_nested_make_fixed_w_optional(void) {
     ecs_flatten(world, ecs_pair(EcsChildOf, p_1), NULL);
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -2029,7 +2029,7 @@ void FixedHierarchies_query_nested_make_fixed_w_optional(void) {
         test_assert(pp == NULL);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -2041,7 +2041,7 @@ void FixedHierarchies_query_nested_make_fixed_w_optional(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(p_1_2, it.entities[1]);
@@ -2054,7 +2054,7 @@ void FixedHierarchies_query_nested_make_fixed_w_optional(void) {
         Position *pp = ecs_field(&it, Position, 2);
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -2064,7 +2064,7 @@ void FixedHierarchies_query_nested_make_fixed_w_optional_match_children_only(voi
 
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .oper = EcsOptional, .src.id = EcsUp|EcsCascade },
@@ -2083,9 +2083,9 @@ void FixedHierarchies_query_nested_make_fixed_w_optional_match_children_only(voi
     ecs_flatten(world, ecs_pair(EcsChildOf, p_1), NULL);
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(p_1_2, it.entities[1]);
@@ -2098,7 +2098,7 @@ void FixedHierarchies_query_nested_make_fixed_w_optional_match_children_only(voi
         Position *pp = ecs_field(&it, Position, 2);
         test_assert(pp == NULL);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -2108,7 +2108,7 @@ void FixedHierarchies_query_nested_w_2_parents_make_fixed(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .oper = EcsOptional, .src.id = EcsUp|EcsCascade },
@@ -2142,9 +2142,9 @@ void FixedHierarchies_query_nested_w_2_parents_make_fixed(void) {
     test_assert(ecs_get_table(world, p_1_1_1) == ecs_get_table(world, p_1_2_1));
     test_assert(ecs_get_table(world, p_1_1_1) == ecs_get_table(world, p_1_2_2));
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -2156,7 +2156,7 @@ void FixedHierarchies_query_nested_w_2_parents_make_fixed(void) {
         test_assert(pp == NULL);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -2168,7 +2168,7 @@ void FixedHierarchies_query_nested_w_2_parents_make_fixed(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(p_1_2, it.entities[1]);
@@ -2182,7 +2182,7 @@ void FixedHierarchies_query_nested_w_2_parents_make_fixed(void) {
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -2194,7 +2194,7 @@ void FixedHierarchies_query_nested_w_2_parents_make_fixed(void) {
         test_int(pp[0].x, 111); test_int(pp[0].y, 211);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1_2_1, it.entities[0]);
         test_uint(p_1_2_2, it.entities[1]);
@@ -2208,7 +2208,7 @@ void FixedHierarchies_query_nested_w_2_parents_make_fixed(void) {
         test_int(pp[0].x, 112); test_int(pp[0].y, 212);
     }
 
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -2218,7 +2218,7 @@ void FixedHierarchies_query_table_w_3_parents(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .oper = EcsOptional, .src.id = EcsUp|EcsCascade },
@@ -2262,9 +2262,9 @@ void FixedHierarchies_query_table_w_3_parents(void) {
     test_assert(ecs_get_table(world, p_1_1_1) == ecs_get_table(world, p_1_2_2));
     test_assert(ecs_get_table(world, p_1_1_1) == ecs_get_table(world, p_1_3_1));
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -2276,7 +2276,7 @@ void FixedHierarchies_query_table_w_3_parents(void) {
         test_assert(pp == NULL);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -2288,7 +2288,7 @@ void FixedHierarchies_query_table_w_3_parents(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(3, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(p_1_2, it.entities[1]);
@@ -2304,7 +2304,7 @@ void FixedHierarchies_query_table_w_3_parents(void) {
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(3, it.count);
         test_uint(p_1_1_1, it.entities[0]);
         test_uint(p_1_1_2, it.entities[1]);
@@ -2320,7 +2320,7 @@ void FixedHierarchies_query_table_w_3_parents(void) {
         test_int(pp[0].x, 111); test_int(pp[0].y, 211);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1_2_1, it.entities[0]);
         test_uint(p_1_2_2, it.entities[1]);
@@ -2334,7 +2334,7 @@ void FixedHierarchies_query_table_w_3_parents(void) {
         test_int(pp[0].x, 112); test_int(pp[0].y, 212);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_3_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -2346,7 +2346,7 @@ void FixedHierarchies_query_table_w_3_parents(void) {
         test_int(pp[0].x, 113); test_int(pp[0].y, 213);
     }
 
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -2357,7 +2357,7 @@ void FixedHierarchies_query_w_parent_change_detection_1st(void) {
     ECS_COMPONENT(world, Velocity);
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {{ 
                 .id = ecs_id(Position), 
                 .inout = EcsIn
@@ -2391,11 +2391,11 @@ void FixedHierarchies_query_w_parent_change_detection_1st(void) {
     test_assert(ecs_get_table(world, p_1_1) == ecs_get_table(world, p_2_1));
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2408,8 +2408,8 @@ void FixedHierarchies_query_w_parent_change_detection_1st(void) {
             test_int(pp->x, 11); test_int(pp->y, 21);
         }
         {
-            test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2421,17 +2421,17 @@ void FixedHierarchies_query_w_parent_change_detection_1st(void) {
             test_assert(pp != NULL);
             test_int(pp->x, 12); test_int(pp->y, 22);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_set(world, p_1, Position, {22, 42});
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2444,8 +2444,8 @@ void FixedHierarchies_query_w_parent_change_detection_1st(void) {
             test_int(pp->x, 22); test_int(pp->y, 42);
         }
         {
-            test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_changed(NULL, &it), false);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2457,7 +2457,7 @@ void FixedHierarchies_query_w_parent_change_detection_1st(void) {
             test_assert(pp != NULL);
             test_int(pp->x, 12); test_int(pp->y, 22);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_fini(world);
@@ -2469,7 +2469,7 @@ void FixedHierarchies_query_w_parent_change_detection_2nd(void) {
     ECS_COMPONENT(world, Velocity);
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {{ 
                 .id = ecs_id(Position), 
                 .inout = EcsIn
@@ -2503,11 +2503,11 @@ void FixedHierarchies_query_w_parent_change_detection_2nd(void) {
     test_assert(ecs_get_table(world, p_1_1) == ecs_get_table(world, p_2_1));
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2520,8 +2520,8 @@ void FixedHierarchies_query_w_parent_change_detection_2nd(void) {
             test_int(pp->x, 11); test_int(pp->y, 21);
         }
         {
-            test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2533,17 +2533,17 @@ void FixedHierarchies_query_w_parent_change_detection_2nd(void) {
             test_assert(pp != NULL);
             test_int(pp->x, 12); test_int(pp->y, 22);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_set(world, p_2, Position, {24, 44});
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_changed(NULL, &it), false);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2556,8 +2556,8 @@ void FixedHierarchies_query_w_parent_change_detection_2nd(void) {
             test_int(pp->x, 11); test_int(pp->y, 21);
         }
         {
-            test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2569,7 +2569,7 @@ void FixedHierarchies_query_w_parent_change_detection_2nd(void) {
             test_assert(pp != NULL);
             test_int(pp->x, 24); test_int(pp->y, 44);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_fini(world);
@@ -2581,7 +2581,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
     ECS_COMPONENT(world, Velocity);
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {{ 
                 .id = ecs_id(Position), 
                 .inout = EcsIn
@@ -2615,11 +2615,11 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
     test_assert(ecs_get_table(world, p_1_1) == ecs_get_table(world, p_2_1));
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2632,8 +2632,8 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
             test_int(pp->x, 11); test_int(pp->y, 21);
         }
         {
-            test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2645,17 +2645,17 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
             test_assert(pp != NULL);
             test_int(pp->x, 12); test_int(pp->y, 22);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_set(world, p_1, Position, {22, 42});
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2668,8 +2668,8 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
             test_int(pp->x, 22); test_int(pp->y, 42);
         }
         {
-            test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_changed(NULL, &it), false);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2681,15 +2681,15 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
             test_assert(pp != NULL);
             test_int(pp->x, 12); test_int(pp->y, 22);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_changed(NULL, &it), false);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2702,8 +2702,8 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
             test_int(pp->x, 22); test_int(pp->y, 42);
         }
         {
-            test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_changed(NULL, &it), false);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2715,7 +2715,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
             test_assert(pp != NULL);
             test_int(pp->x, 12); test_int(pp->y, 22);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_fini(world);
@@ -2727,7 +2727,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
     ECS_COMPONENT(world, Velocity);
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {{ 
                 .id = ecs_id(Position), 
                 .inout = EcsIn
@@ -2761,11 +2761,11 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
     test_assert(ecs_get_table(world, p_1_1) == ecs_get_table(world, p_2_1));
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2778,8 +2778,8 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
             test_int(pp->x, 11); test_int(pp->y, 21);
         }
         {
-            test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2791,17 +2791,17 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
             test_assert(pp != NULL);
             test_int(pp->x, 12); test_int(pp->y, 22);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_set(world, p_1, Position, {22, 42});
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2814,8 +2814,8 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
             test_int(pp->x, 22); test_int(pp->y, 42);
         }
         {
-            test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_changed(NULL, &it), false);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2827,17 +2827,17 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
             test_assert(pp != NULL);
             test_int(pp->x, 12); test_int(pp->y, 22);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_set(world, p_2, Position, {24, 44});
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_changed(NULL, &it), false);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2850,8 +2850,8 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
             test_int(pp->x, 22); test_int(pp->y, 42);
         }
         {
-            test_assert(ecs_query_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2863,7 +2863,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
             test_assert(pp != NULL);
             test_int(pp->x, 24); test_int(pp->y, 44);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_fini(world);
@@ -2875,7 +2875,7 @@ void FixedHierarchies_query_w_parent_change_detection_1st_populate_when_changed(
     ECS_COMPONENT(world, Velocity);
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {{ 
                 .id = ecs_id(Position), 
                 .inout = EcsIn
@@ -2909,10 +2909,10 @@ void FixedHierarchies_query_w_parent_change_detection_1st_populate_when_changed(
     test_assert(ecs_get_table(world, p_1_1) == ecs_get_table(world, p_2_1));
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, true) == EcsIterYield);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterYield);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2925,7 +2925,7 @@ void FixedHierarchies_query_w_parent_change_detection_1st_populate_when_changed(
             test_int(pp->x, 11); test_int(pp->y, 21);
         }
         {
-            test_assert(ecs_query_populate(&it, true) == EcsIterNextYield);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterNextYield);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2937,16 +2937,16 @@ void FixedHierarchies_query_w_parent_change_detection_1st_populate_when_changed(
             test_assert(pp != NULL);
             test_int(pp->x, 12); test_int(pp->y, 22);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_set(world, p_1, Position, {22, 42});
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, true) == EcsIterYield);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterYield);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2959,9 +2959,9 @@ void FixedHierarchies_query_w_parent_change_detection_1st_populate_when_changed(
             test_int(pp->x, 22); test_int(pp->y, 42);
         }
         {
-            test_assert(ecs_query_populate(&it, true) == EcsIterNext);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterNext);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_fini(world);
@@ -2973,7 +2973,7 @@ void FixedHierarchies_query_w_parent_change_detection_2nd_populate_when_changed(
     ECS_COMPONENT(world, Velocity);
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {{ 
                 .id = ecs_id(Position), 
                 .inout = EcsIn
@@ -3007,10 +3007,10 @@ void FixedHierarchies_query_w_parent_change_detection_2nd_populate_when_changed(
     test_assert(ecs_get_table(world, p_1_1) == ecs_get_table(world, p_2_1));
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, true) == EcsIterYield);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterYield);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -3023,7 +3023,7 @@ void FixedHierarchies_query_w_parent_change_detection_2nd_populate_when_changed(
             test_int(pp->x, 11); test_int(pp->y, 21);
         }
         {
-            test_assert(ecs_query_populate(&it, true) == EcsIterNextYield);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterNextYield);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -3035,17 +3035,17 @@ void FixedHierarchies_query_w_parent_change_detection_2nd_populate_when_changed(
             test_assert(pp != NULL);
             test_int(pp->x, 12); test_int(pp->y, 22);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_set(world, p_2, Position, {24, 44});
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, true) == EcsIterNextYield);
-            test_bool(ecs_query_changed(NULL, &it), true);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterNextYield);
+            test_bool(ecs_query_cache_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -3057,7 +3057,7 @@ void FixedHierarchies_query_w_parent_change_detection_2nd_populate_when_changed(
             test_assert(pp != NULL);
             test_int(pp->x, 24); test_int(pp->y, 44);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_fini(world);
@@ -3069,7 +3069,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_populate_when_c
     ECS_COMPONENT(world, Velocity);
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {{ 
                 .id = ecs_id(Position), 
                 .inout = EcsIn
@@ -3103,10 +3103,10 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_populate_when_c
     test_assert(ecs_get_table(world, p_1_1) == ecs_get_table(world, p_2_1));
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, true) == EcsIterYield);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterYield);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -3119,7 +3119,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_populate_when_c
             test_int(pp->x, 11); test_int(pp->y, 21);
         }
         {
-            test_assert(ecs_query_populate(&it, true) == EcsIterNextYield);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterNextYield);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -3131,16 +3131,16 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_populate_when_c
             test_assert(pp != NULL);
             test_int(pp->x, 12); test_int(pp->y, 22);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_set(world, p_1, Position, {22, 42});
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, true) == EcsIterYield);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterYield);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -3153,18 +3153,18 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_populate_when_c
             test_int(pp->x, 22); test_int(pp->y, 42);
         }
         {
-            test_assert(ecs_query_populate(&it, true) == EcsIterNext);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterNext);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, true) == EcsIterNext);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterNext);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_fini(world);
@@ -3176,7 +3176,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent_pop
     ECS_COMPONENT(world, Velocity);
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {{ 
                 .id = ecs_id(Position), 
                 .inout = EcsIn
@@ -3210,10 +3210,10 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent_pop
     test_assert(ecs_get_table(world, p_1_1) == ecs_get_table(world, p_2_1));
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, true) == EcsIterYield);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterYield);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -3226,7 +3226,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent_pop
             test_int(pp->x, 11); test_int(pp->y, 21);
         }
         {
-            test_assert(ecs_query_populate(&it, true) == EcsIterNextYield);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterNextYield);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -3238,16 +3238,16 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent_pop
             test_assert(pp != NULL);
             test_int(pp->x, 12); test_int(pp->y, 22);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_set(world, p_1, Position, {22, 42});
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, true) == EcsIterYield);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterYield);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -3260,18 +3260,18 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent_pop
             test_int(pp->x, 22); test_int(pp->y, 42);
         }
         {
-            test_assert(ecs_query_populate(&it, true) == EcsIterNext);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterNext);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_set(world, p_2, Position, {24, 44});
 
     {
-        ecs_iter_t it = ecs_query_iter(world, q);
+        ecs_iter_t it = ecs_query_cache_iter(world, q);
         {
-            test_bool(ecs_query_next_table(&it), true);
-            test_assert(ecs_query_populate(&it, true) == EcsIterNextYield);
+            test_bool(ecs_query_cache_next_table(&it), true);
+            test_assert(ecs_query_cache_populate(&it, true) == EcsIterNextYield);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -3283,7 +3283,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent_pop
             test_assert(pp != NULL);
             test_int(pp->x, 24); test_int(pp->y, 44);
         }
-        test_bool(ecs_query_next_table(&it), false);
+        test_bool(ecs_query_cache_next_table(&it), false);
     }
 
     ecs_fini(world);
@@ -3308,7 +3308,7 @@ void FixedHierarchies_staged_query_w_parent_field_1_lvl(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -3319,9 +3319,9 @@ void FixedHierarchies_staged_query_w_parent_field_1_lvl(void) {
     ecs_world_t *stage = ecs_get_stage(world, 0);
     ecs_readonly_begin(world);
 
-    ecs_iter_t it = ecs_query_iter(stage, q);
+    ecs_iter_t it = ecs_query_cache_iter(stage, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(p_2, it.entities[1]);
@@ -3335,7 +3335,7 @@ void FixedHierarchies_staged_query_w_parent_field_1_lvl(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -3347,7 +3347,7 @@ void FixedHierarchies_staged_query_w_parent_field_1_lvl(void) {
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -3358,7 +3358,7 @@ void FixedHierarchies_staged_query_w_parent_field_1_lvl(void) {
         Position *pp = ecs_field(&it, Position, 2);
         test_int(pp[0].x, 12); test_int(pp[0].y, 22);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_readonly_end(world);
 
@@ -3388,7 +3388,7 @@ void FixedHierarchies_staged_query_w_parent_field_2_lvl(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -3399,9 +3399,9 @@ void FixedHierarchies_staged_query_w_parent_field_2_lvl(void) {
     ecs_world_t *stage = ecs_get_stage(world, 0);
     ecs_readonly_begin(world);
 
-    ecs_iter_t it = ecs_query_iter(stage, q);
+    ecs_iter_t it = ecs_query_cache_iter(stage, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(p_2, it.entities[1]);
@@ -3415,7 +3415,7 @@ void FixedHierarchies_staged_query_w_parent_field_2_lvl(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -3427,7 +3427,7 @@ void FixedHierarchies_staged_query_w_parent_field_2_lvl(void) {
         test_int(pp[0].x, 111); test_int(pp[0].y, 211);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -3439,7 +3439,7 @@ void FixedHierarchies_staged_query_w_parent_field_2_lvl(void) {
         test_int(pp[0].x, 121); test_int(pp[0].y, 221);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -3451,7 +3451,7 @@ void FixedHierarchies_staged_query_w_parent_field_2_lvl(void) {
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -3462,7 +3462,7 @@ void FixedHierarchies_staged_query_w_parent_field_2_lvl(void) {
         Position *pp = ecs_field(&it, Position, 2);
         test_int(pp[0].x, 12); test_int(pp[0].y, 22);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_readonly_end(world);
 
@@ -3490,7 +3490,7 @@ void FixedHierarchies_staged_query_w_parent_field_1_fixed_1_regular(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp },
@@ -3502,9 +3502,9 @@ void FixedHierarchies_staged_query_w_parent_field_1_fixed_1_regular(void) {
     ecs_world_t *stage = ecs_get_stage(world, 0);
     ecs_readonly_begin(world);
 
-    ecs_iter_t it = ecs_query_iter(stage, q);
+    ecs_iter_t it = ecs_query_cache_iter(stage, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(p_2, it.entities[1]);
@@ -3521,7 +3521,7 @@ void FixedHierarchies_staged_query_w_parent_field_1_fixed_1_regular(void) {
         test_int(vp[0].x, 3); test_int(vp[0].y, 4);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -3536,7 +3536,7 @@ void FixedHierarchies_staged_query_w_parent_field_1_fixed_1_regular(void) {
         test_int(vp[0].x, 3); test_int(vp[0].y, 4);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -3550,7 +3550,7 @@ void FixedHierarchies_staged_query_w_parent_field_1_fixed_1_regular(void) {
         Velocity *vp = ecs_field(&it, Velocity, 3);
         test_int(vp[0].x, 3); test_int(vp[0].y, 4);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_readonly_end(world);
 
@@ -3580,7 +3580,7 @@ void FixedHierarchies_staged_query_w_cascade_field_2_lvl(void) {
 
     ecs_flatten(world, ecs_pair(EcsChildOf, p), NULL);
 
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {
             { .id = ecs_id(Position) },
             { .id = ecs_id(Position), .src.id = EcsUp|EcsCascade },
@@ -3591,9 +3591,9 @@ void FixedHierarchies_staged_query_w_cascade_field_2_lvl(void) {
     ecs_world_t *stage = ecs_get_stage(world, 0);
     ecs_readonly_begin(world);
 
-    ecs_iter_t it = ecs_query_iter(stage, q);
+    ecs_iter_t it = ecs_query_cache_iter(stage, q);
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(2, it.count);
         test_uint(p_1, it.entities[0]);
         test_uint(p_2, it.entities[1]);
@@ -3607,7 +3607,7 @@ void FixedHierarchies_staged_query_w_cascade_field_2_lvl(void) {
         test_int(pp[0].x, 1); test_int(pp[0].y, 2);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -3619,7 +3619,7 @@ void FixedHierarchies_staged_query_w_cascade_field_2_lvl(void) {
         test_int(pp[0].x, 11); test_int(pp[0].y, 21);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -3631,7 +3631,7 @@ void FixedHierarchies_staged_query_w_cascade_field_2_lvl(void) {
         test_int(pp[0].x, 12); test_int(pp[0].y, 22);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_1_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -3643,7 +3643,7 @@ void FixedHierarchies_staged_query_w_cascade_field_2_lvl(void) {
         test_int(pp[0].x, 111); test_int(pp[0].y, 211);
     }
     {
-        test_bool(ecs_query_next(&it), true);
+        test_bool(ecs_query_cache_next(&it), true);
         test_uint(1, it.count);
         test_uint(p_2_1_1, it.entities[0]);
         test_uint(0, it.sources[0]);
@@ -3654,7 +3654,7 @@ void FixedHierarchies_staged_query_w_cascade_field_2_lvl(void) {
         Position *pp = ecs_field(&it, Position, 2);
         test_int(pp[0].x, 121); test_int(pp[0].y, 221);
     }
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_readonly_end(world);
 

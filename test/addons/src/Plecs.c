@@ -6428,7 +6428,7 @@ void Plecs_assembly_w_anonymous(void) {
     test_assert(t != 0);
 
     {
-        ecs_filter_t *f = ecs_filter(world, {
+        ecs_query_t *f = ecs_filter(world, {
             .terms = {
                 { .id = ecs_childof(tree) },
                 { .id = ecs_id(Position) },
@@ -6436,22 +6436,22 @@ void Plecs_assembly_w_anonymous(void) {
             }
         });
 
-        ecs_iter_t it = ecs_filter_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, f);
         test_int(2, ecs_iter_count(&it));
-        ecs_filter_fini(f);
+        ecs_query_fini(f);
     }
 
     {
-        ecs_filter_t *f = ecs_filter(world, {
+        ecs_query_t *f = ecs_filter(world, {
             .terms = {
                 { .id = ecs_childof(t) },
                 { .id = ecs_id(Position) },
             }
         });
 
-        ecs_iter_t it = ecs_filter_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, f);
         test_int(2, ecs_iter_count(&it));
-        ecs_filter_fini(f);
+        ecs_query_fini(f);
     }
 
     ecs_fini(world);
@@ -6490,7 +6490,7 @@ void Plecs_assembly_w_anonymous_parse_again(void) {
     test_assert(t != 0);
 
     {
-        ecs_filter_t *f = ecs_filter(world, {
+        ecs_query_t *f = ecs_filter(world, {
             .terms = {
                 { .id = ecs_childof(tree) },
                 { .id = ecs_id(Position) },
@@ -6498,22 +6498,22 @@ void Plecs_assembly_w_anonymous_parse_again(void) {
             }
         });
 
-        ecs_iter_t it = ecs_filter_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, f);
         test_int(2, ecs_iter_count(&it));
-        ecs_filter_fini(f);
+        ecs_query_fini(f);
     }
 
     {
-        ecs_filter_t *f = ecs_filter(world, {
+        ecs_query_t *f = ecs_filter(world, {
             .terms = {
                 { .id = ecs_childof(t) },
                 { .id = ecs_id(Position) },
             }
         });
 
-        ecs_iter_t it = ecs_filter_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, f);
         test_int(2, ecs_iter_count(&it));
-        ecs_filter_fini(f);
+        ecs_query_fini(f);
     }
 
     ecs_fini(world);

@@ -130,7 +130,7 @@ bool flecs_iter_populate_term_data(
         goto no_data;
     }
 
-    /* Filter terms may match with data but don't return it */
+    /* Query terms may match with data but don't return it */
     if (it->terms[t].inout == EcsInOutNone) {
         goto no_data;
     }

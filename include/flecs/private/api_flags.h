@@ -123,30 +123,30 @@ extern "C" {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//// Filter flags (used by ecs_filter_t::flags)
+//// Query flags (used by ecs_query_t::flags)
 ////////////////////////////////////////////////////////////////////////////////
 
 /* Flags that can only be set by the query implementation */
-#define EcsFilterMatchThis             (1u << 1u)  /* Query has terms with $this source */
-#define EcsFilterMatchOnlyThis         (1u << 2u)  /* Query only has terms with $this source */
-#define EcsFilterMatchOnlySelf         (1u << 15u) /* Query has no terms with up traversal */
-#define EcsFilterMatchWildcards        (1u << 16u) /* Query matches wildcards */
-#define EcsFilterHasCondSet            (1u << 10u) /* Query has conditionally set fields */
-#define EcsFilterHasPred               (1u << 12u) /* Query has equality predicates */
-#define EcsFilterHasScopes             (1u << 13u) /* Query has query scopes */
-#define EcsFilterHasRefs               (1u << 17u) /* Query has terms with static source */
-#define EcsFilterHasOutTerms           (1u << 20u) /* Query has [out] terms */
-#define EcsFilterHasNonThisOutTerms    (1u << 21u) /* Query has [out] terms with no $this source */
-#define EcsFilterHasMonitor            (1u << 22u) /* Query has monitor for change detection */
-#define EcsFilterIsTrivial             (1u << 14u) /* Query can use trivial evaluation function */
+#define EcsQueryMatchThis             (1u << 1u)  /* Query has terms with $this source */
+#define EcsQueryMatchOnlyThis         (1u << 2u)  /* Query only has terms with $this source */
+#define EcsQueryMatchOnlySelf         (1u << 15u) /* Query has no terms with up traversal */
+#define EcsQueryMatchWildcards        (1u << 16u) /* Query matches wildcards */
+#define EcsQueryHasCondSet            (1u << 10u) /* Query has conditionally set fields */
+#define EcsQueryHasPred               (1u << 12u) /* Query has equality predicates */
+#define EcsQueryHasScopes             (1u << 13u) /* Query has query scopes */
+#define EcsQueryHasRefs               (1u << 17u) /* Query has terms with static source */
+#define EcsQueryHasOutTerms           (1u << 20u) /* Query has [out] terms */
+#define EcsQueryHasNonThisOutTerms    (1u << 21u) /* Query has [out] terms with no $this source */
+#define EcsQueryHasMonitor            (1u << 22u) /* Query has monitor for change detection */
+#define EcsQueryIsTrivial             (1u << 14u) /* Query can use trivial evaluation function */
 
 /* Flags that may be set by the application to enable query features */
-#define EcsFilterMatchPrefab           (1u << 3u)  /* Query must match prefabs */
-#define EcsFilterMatchDisabled         (1u << 4u)  /* Query must match disabled entities */
-#define EcsFilterMatchEmptyTables      (1u << 5u)  /* Query must match empty tables */
-#define EcsFilterNoData                (1u << 7u)  /* Query won't provide component data */
-#define EcsFilterIsInstanced           (1u << 8u)  /* Query iteration is always instanced */
-#define EcsFilterAllowUnresolvedByName (1u << 11u) /* Query may have unresolved entity identifiers */
+#define EcsQueryMatchPrefab           (1u << 3u)  /* Query must match prefabs */
+#define EcsQueryMatchDisabled         (1u << 4u)  /* Query must match disabled entities */
+#define EcsQueryMatchEmptyTables      (1u << 5u)  /* Query must match empty tables */
+#define EcsQueryNoData                (1u << 7u)  /* Query won't provide component data */
+#define EcsQueryIsInstanced           (1u << 8u)  /* Query iteration is always instanced */
+#define EcsQueryAllowUnresolvedByName (1u << 11u) /* Query may have unresolved entity identifiers */
 
 
 ////////////////////////////////////////////////////////////////////////////////

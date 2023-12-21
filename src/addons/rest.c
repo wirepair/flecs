@@ -433,13 +433,13 @@ bool flecs_rest_reply_existing_query(
 
     const char *vars = ecs_http_get_param(req, "vars");
     if (vars) {
-        if (!ecs_poly_is(poly->poly, ecs_rule_t)) {
+        if (!ecs_poly_is(poly->poly, ecs_query_impl_t)) {
             flecs_reply_error(reply, 
                 "variables are only supported for rule queries");
             reply->code = 400;
             return true;
         }
-        if (ecs_rule_parse_vars(poly->poly, &it, vars) == NULL) {
+        if (ecs_query_parse_vars(poly->poly, &it, vars) == NULL) {
             flecs_rest_reply_set_captured_log(reply);
             return true;
         }
@@ -476,13 +476,13 @@ bool flecs_rest_reply_query(
     rest_prev_log = ecs_os_api.log_;
     ecs_os_api.log_ = flecs_rest_capture_log;
 
-    ecs_filter_t *r = ecs_rule(world, { .expr = q });
+    ecs_query_t *r = ecs_query(world, { .expr = q });
     if (!r) {
         flecs_rest_reply_set_captured_log(reply);
     } else {
-        ecs_iter_t it = ecs_rule_iter(world, r);
+        ecs_iter_t it = ecs_query_iter(world, r);
         flecs_rest_iter_to_reply(world, req, reply, &it);
-        ecs_rule_fini(r);
+        ecs_query_fini(r);
     }
 
     ecs_os_api.log_ = rest_prev_log;

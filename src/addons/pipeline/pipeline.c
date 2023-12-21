@@ -18,7 +18,7 @@ static void flecs_pipeline_free(
         ecs_vec_fini_t(a, &p->ops, ecs_pipeline_op_t);
         ecs_vec_fini_t(a, &p->systems, ecs_entity_t);
         ecs_os_free(p->iters);
-        ecs_query_fini(p->query);
+        ecs_query_cache_fini(p->query);
         ecs_os_free(p);
     }
 }
@@ -131,7 +131,7 @@ bool flecs_pipeline_check_term(
     (void)world;
 
     ecs_term_ref_t *src = &term->src;
-    if (term->inout == EcsInOutNone || term->inout == EcsInOutFilter) {
+    if (term->inout == EcsInOutNone || term->inout == EcsInOutQuery) {
         return false;
     }
 
@@ -183,7 +183,7 @@ bool flecs_pipeline_check_term(
             break;
         case EcsInOutDefault:
         case EcsInOutNone:
-        case EcsInOutFilter:
+        case EcsInOutQuery:
         case EcsIn:
             break;
         }
@@ -199,7 +199,7 @@ bool flecs_pipeline_check_term(
             /* fall through */
         case EcsInOutDefault:
         case EcsInOutNone:
-        case EcsInOutFilter:
+        case EcsInOutQuery:
         case EcsOut:
             break;
         }
@@ -211,7 +211,7 @@ bool flecs_pipeline_check_term(
 static
 bool flecs_pipeline_check_terms(
     ecs_world_t *world,
-    ecs_filter_t *filter,
+    ecs_query_t *filter,
     bool is_active,
     ecs_write_state_t *ws)
 {
@@ -256,7 +256,7 @@ bool flecs_pipeline_build(
     ecs_world_t *world,
     ecs_pipeline_state_t *pq)
 {
-    ecs_iter_t it = ecs_query_iter(world, pq->query);
+    ecs_iter_t it = ecs_query_cache_iter(world, pq->query);
 
     if (pq->match_count == pq->query->match_count) {
         /* No need to rebuild the pipeline */
@@ -281,7 +281,7 @@ bool flecs_pipeline_build(
     bool first = true;
 
     /* Iterate systems in pipeline, add ops for running / merging */
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         EcsPoly *poly = flecs_pipeline_term_system(&it);
         bool is_active = ecs_table_get_type_index(world, it.table, EcsEmpty) == -1;
 
@@ -289,7 +289,7 @@ bool flecs_pipeline_build(
         for (i = 0; i < it.count; i ++) {
             ecs_poly_assert(poly[i].poly, ecs_system_t);
             ecs_system_t *sys = (ecs_system_t*)poly[i].poly;
-            ecs_query_t *q = sys->query;
+            ecs_query_cache_t *q = sys->query;
 
             bool needs_merge = false;
             needs_merge = flecs_pipeline_check_terms(
@@ -498,7 +498,7 @@ bool flecs_pipeline_update(
         int32_t i, count = pq->iter_count;
         for (i = 0; i < count; i ++) {
             ecs_world_t *stage = ecs_get_stage(world, i);
-            pq->iters[i] = ecs_query_iter(stage, pq->query);
+            pq->iters[i] = ecs_query_cache_iter(stage, pq->query);
         }
         pq->cur_op = ecs_vec_first_t(&pq->ops, ecs_pipeline_op_t);
         pq->cur_i = 0;
@@ -815,13 +815,13 @@ ecs_entity_t ecs_pipeline_init(
         result = ecs_new(world, 0);
     }
 
-    ecs_filter_desc_t qd = desc->query;
+    ecs_query_desc_t qd = desc->query;
     if (!qd.order_by) {
         qd.order_by = flecs_entity_compare;
     }
     qd.entity = result;
 
-    ecs_query_t *query = ecs_query_init(world, &qd);
+    ecs_query_cache_t *query = ecs_query_cache_init(world, &qd);
     if (!query) {
         ecs_delete(world, result);
         return 0;

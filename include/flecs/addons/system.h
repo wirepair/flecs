@@ -42,20 +42,20 @@ typedef struct ecs_system_desc_t {
     ecs_entity_t entity;
 
     /** System query parameters */
-    ecs_filter_desc_t query;
+    ecs_query_desc_t query;
 
     /** Callback that is invoked when a system is ran. 
      * When left to NULL, the default system runner is used, which calls the 
      * "callback" action for each result returned from the system's query. 
      * 
      * It should not be assumed that the input iterator can always be iterated
-     * with ecs_query_next. When a system is multithreaded and/or paged, the
+     * with ecs_query_cache_next. When a system is multithreaded and/or paged, the
      * iterator can be either a worker or paged iterator. Future use cases may
      * introduce additional inputs for a system, such as rules and filters. The
      * correct function to use for iteration is ecs_iter_next.
      * 
      * An implementation can test whether the iterator is a query iterator by
-     * testing whether the it->next value is equal to ecs_query_next. */
+     * testing whether the it->next value is equal to ecs_query_cache_next. */
     ecs_run_action_t run;
 
     /** Callback that is ran for each result returned by the system's query. This
@@ -246,7 +246,7 @@ ecs_entity_t ecs_run_w_filter(
  * @return The query.
  */
 FLECS_API
-ecs_query_t* ecs_system_get_query(
+ecs_query_cache_t* ecs_system_get_query(
     const ecs_world_t *world,
     ecs_entity_t system);
 

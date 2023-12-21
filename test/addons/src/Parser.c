@@ -1,13 +1,13 @@
 #include <addons.h>
 
 static
-int filter_count(ecs_filter_t *f) {
+int filter_count(ecs_query_t *f) {
     test_assert(f != NULL);
     return f->term_count;
 }
 
 static
-ecs_term_t* filter_terms(ecs_filter_t *f) {
+ecs_term_t* filter_terms(ecs_query_t *f) {
     test_assert(f != NULL);
     return f->terms;
 }
@@ -78,15 +78,15 @@ void Parser_0(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "0"
     }));
 
     test_int(filter_count(&f), 0);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -96,8 +96,8 @@ void Parser_component_implicit_subject(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred"
     }));
@@ -110,7 +110,7 @@ void Parser_component_implicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -121,8 +121,8 @@ void Parser_component_explicit_subject(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj)"
     }));
@@ -135,7 +135,7 @@ void Parser_component_explicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -145,8 +145,8 @@ void Parser_component_explicit_subject_this(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred($This)"
     }));
@@ -158,7 +158,7 @@ void Parser_component_explicit_subject_this(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -168,8 +168,8 @@ void Parser_component_explicit_subject_this_by_name(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(this)"
     }));
@@ -182,7 +182,7 @@ void Parser_component_explicit_subject_this_by_name(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -192,8 +192,8 @@ void Parser_component_explicit_subject_this_by_var_name(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred($This)"
     }));
@@ -206,7 +206,7 @@ void Parser_component_explicit_subject_this_by_var_name(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -216,8 +216,8 @@ void Parser_component_explicit_subject_wildcard(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(*)"
     }));
@@ -229,7 +229,7 @@ void Parser_component_explicit_subject_wildcard(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -239,8 +239,8 @@ void Parser_component_explicit_subject_any(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(_)"
     }));
@@ -252,7 +252,7 @@ void Parser_component_explicit_subject_any(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -262,8 +262,8 @@ void Parser_component_explicit_subject_0(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(0)"
     }));
@@ -276,7 +276,7 @@ void Parser_component_explicit_subject_0(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -286,8 +286,8 @@ void Parser_this_as_predicate(void) {
 
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "this(Subj)"
     }));
@@ -299,7 +299,7 @@ void Parser_this_as_predicate(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -309,8 +309,8 @@ void Parser_this_var_as_predicate(void) {
 
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$This(Subj)"
     }));
@@ -322,7 +322,7 @@ void Parser_this_var_as_predicate(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -332,8 +332,8 @@ void Parser_this_lowercase_var_as_predicate(void) {
 
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$this(Subj)"
     }));
@@ -345,7 +345,7 @@ void Parser_this_lowercase_var_as_predicate(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -356,8 +356,8 @@ void Parser_this_as_object(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj, this)"
     }));
@@ -370,7 +370,7 @@ void Parser_this_as_object(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -381,8 +381,8 @@ void Parser_this_var_as_object(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj, $This)"
     }));
@@ -395,7 +395,7 @@ void Parser_this_var_as_object(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -406,8 +406,8 @@ void Parser_pair_implicit_subject(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred, Obj)"
     }));
@@ -420,7 +420,7 @@ void Parser_pair_implicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -431,8 +431,8 @@ void Parser_pair_implicit_subject_wildcard_pred(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(*, Obj)"
     }));
@@ -445,7 +445,7 @@ void Parser_pair_implicit_subject_wildcard_pred(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -456,8 +456,8 @@ void Parser_pair_implicit_subject_wildcard_obj(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred, *)"
     }));
@@ -470,7 +470,7 @@ void Parser_pair_implicit_subject_wildcard_obj(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -481,8 +481,8 @@ void Parser_pair_implicit_subject_any_pred(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(_, Obj)"
     }));
@@ -495,7 +495,7 @@ void Parser_pair_implicit_subject_any_pred(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -506,8 +506,8 @@ void Parser_pair_implicit_subject_any_obj(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred, _)"
     }));
@@ -520,7 +520,7 @@ void Parser_pair_implicit_subject_any_obj(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -531,8 +531,8 @@ void Parser_pair_implicit_subject_this_pred(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "($This, Obj)"
     }));
@@ -545,7 +545,7 @@ void Parser_pair_implicit_subject_this_pred(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -556,8 +556,8 @@ void Parser_pair_implicit_subject_this_obj(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred, $This)"
     }));
@@ -570,7 +570,7 @@ void Parser_pair_implicit_subject_this_obj(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -581,8 +581,8 @@ void Parser_pair_implicit_subject_pred_w_self(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred:self, Obj)"
     }));
@@ -595,7 +595,7 @@ void Parser_pair_implicit_subject_pred_w_self(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -606,8 +606,8 @@ void Parser_pair_implicit_subject_obj_w_self(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred, Obj:self)"
     }));
@@ -620,7 +620,7 @@ void Parser_pair_implicit_subject_obj_w_self(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -631,8 +631,8 @@ void Parser_pair_implicit_subject_pred_w_up(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred:up, Obj)"
     }));
@@ -645,7 +645,7 @@ void Parser_pair_implicit_subject_pred_w_up(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -656,8 +656,8 @@ void Parser_pair_implicit_subject_obj_w_up(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred, Obj:up)"
     }));
@@ -670,7 +670,7 @@ void Parser_pair_implicit_subject_obj_w_up(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -681,8 +681,8 @@ void Parser_pair_implicit_subject_pred_w_self_up(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred:self|up, Obj)"
     }));
@@ -695,7 +695,7 @@ void Parser_pair_implicit_subject_pred_w_self_up(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -706,8 +706,8 @@ void Parser_pair_implicit_subject_obj_w_self_up(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred, Obj:self|up)"
     }));
@@ -720,7 +720,7 @@ void Parser_pair_implicit_subject_obj_w_self_up(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -731,9 +731,9 @@ void Parser_pair_implicit_subject_pred_w_invalid_flags(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
+    ecs_query_t f = ECS_FILTER_INIT;
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred:, Obj)"
     }));
@@ -747,9 +747,9 @@ void Parser_pair_implicit_subject_obj_w_invalid_flags(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
+    ecs_query_t f = ECS_FILTER_INIT;
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred, Obj:)"
     }));
@@ -764,8 +764,8 @@ void Parser_pair_explicit_subject(void) {
     ECS_TAG(world, Subj);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj, Obj)"
     }));
@@ -778,7 +778,7 @@ void Parser_pair_explicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -789,8 +789,8 @@ void Parser_pair_explicit_subject_this(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred($This, Obj)"
     }));
@@ -803,7 +803,7 @@ void Parser_pair_explicit_subject_this(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -814,8 +814,8 @@ void Parser_pair_explicit_subject_this_by_name(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(this, Obj)"
     }));
@@ -828,7 +828,7 @@ void Parser_pair_explicit_subject_this_by_name(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -839,8 +839,8 @@ void Parser_pair_explicit_subject_this_by_var_name(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred($This, Obj)"
     }));
@@ -853,7 +853,7 @@ void Parser_pair_explicit_subject_this_by_var_name(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -864,8 +864,8 @@ void Parser_pair_explicit_subject_wildcard_pred(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "*($This, Obj)"
     }));
@@ -878,7 +878,7 @@ void Parser_pair_explicit_subject_wildcard_pred(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -889,8 +889,8 @@ void Parser_pair_explicit_subject_wildcard_subj(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(*, Obj)"
     }));
@@ -903,7 +903,7 @@ void Parser_pair_explicit_subject_wildcard_subj(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -914,8 +914,8 @@ void Parser_pair_explicit_subject_wildcard_obj(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred($This, *)"
     }));
@@ -928,7 +928,7 @@ void Parser_pair_explicit_subject_wildcard_obj(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -936,8 +936,8 @@ void Parser_pair_explicit_subject_wildcard_obj(void) {
 void Parser_pair_implicit_subject_0_object(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(ChildOf, 0)"
     }));
@@ -951,7 +951,7 @@ void Parser_pair_implicit_subject_0_object(void) {
     test_int(terms[0].inout, EcsInOutDefault);
     test_int(terms[0].id, ecs_pair(EcsChildOf, 0));
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -959,8 +959,8 @@ void Parser_pair_implicit_subject_0_object(void) {
 void Parser_pair_explicit_subject_0_object(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "ChildOf($This, 0)"
     }));
@@ -974,7 +974,7 @@ void Parser_pair_explicit_subject_0_object(void) {
     test_int(terms[0].inout, EcsInOutDefault);
     test_int(terms[0].id, ecs_pair(EcsChildOf, 0));
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -985,8 +985,8 @@ void Parser_pair_explicit_subject_0(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(0, Obj)"
     }));
@@ -999,7 +999,7 @@ void Parser_pair_explicit_subject_0(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1009,8 +1009,8 @@ void Parser_in_component_implicit_subject(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[in] Pred"
     }));
@@ -1022,7 +1022,7 @@ void Parser_in_component_implicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsIn);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1033,8 +1033,8 @@ void Parser_in_component_explicit_subject(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[in] Pred(Subj)"
     }));
@@ -1046,7 +1046,7 @@ void Parser_in_component_explicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsIn);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1057,8 +1057,8 @@ void Parser_in_pair_implicit_subject(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[in] (Pred, Obj)"
     }));
@@ -1071,7 +1071,7 @@ void Parser_in_pair_implicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsIn);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1083,8 +1083,8 @@ void Parser_in_pair_explicit_subject(void) {
     ECS_TAG(world, Subj);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[in] Pred(Subj, Obj)"
     }));
@@ -1097,7 +1097,7 @@ void Parser_in_pair_explicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsIn);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1107,8 +1107,8 @@ void Parser_inout_component_implicit_subject(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[inout] Pred"
     }));
@@ -1120,7 +1120,7 @@ void Parser_inout_component_implicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1131,8 +1131,8 @@ void Parser_inout_component_explicit_subject(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[inout] Pred(Subj)"
     }));
@@ -1144,7 +1144,7 @@ void Parser_inout_component_explicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1155,8 +1155,8 @@ void Parser_inout_pair_implicit_subject(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[inout] (Pred, Obj)"
     }));
@@ -1169,7 +1169,7 @@ void Parser_inout_pair_implicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1181,8 +1181,8 @@ void Parser_inout_pair_explicit_subject(void) {
     ECS_TAG(world, Subj);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[inout] Pred(Subj, Obj)"
     }));
@@ -1195,7 +1195,7 @@ void Parser_inout_pair_explicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1205,8 +1205,8 @@ void Parser_out_component_implicit_subject(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[out] Pred"
     }));
@@ -1218,7 +1218,7 @@ void Parser_out_component_implicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1229,8 +1229,8 @@ void Parser_out_component_explicit_subject(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[out] Pred(Subj)"
     }));
@@ -1242,7 +1242,7 @@ void Parser_out_component_explicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1253,8 +1253,8 @@ void Parser_out_pair_implicit_subject(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[out] (Pred, Obj)"
     }));
@@ -1267,7 +1267,7 @@ void Parser_out_pair_implicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1279,8 +1279,8 @@ void Parser_out_pair_explicit_subject(void) {
     ECS_TAG(world, Subj);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[out] Pred(Subj, Obj)"
     }));
@@ -1293,7 +1293,7 @@ void Parser_out_pair_explicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1303,8 +1303,8 @@ void Parser_inout_filter_component(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[none] Pred"
     }));
@@ -1316,7 +1316,7 @@ void Parser_inout_filter_component(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1326,8 +1326,8 @@ void Parser_component_singleton(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred($)"
     }));
@@ -1339,7 +1339,7 @@ void Parser_component_singleton(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1351,8 +1351,8 @@ void Parser_this_singleton(void) {
     ECS_TAG(world, Subj);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$This($)"
     }));
@@ -1364,7 +1364,7 @@ void Parser_this_singleton(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1374,8 +1374,8 @@ void Parser_component_implicit_no_subject(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred()"
     }));
@@ -1387,7 +1387,7 @@ void Parser_component_implicit_no_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1397,8 +1397,8 @@ void Parser_component_explicit_no_subject(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(0)"
     }));
@@ -1410,7 +1410,7 @@ void Parser_component_explicit_no_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1421,8 +1421,8 @@ void Parser_pair_no_subject(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(0, Obj)"
     }));
@@ -1435,7 +1435,7 @@ void Parser_pair_no_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1446,8 +1446,8 @@ void Parser_variable_single_char(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, X);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred($X)"
     }));
@@ -1459,7 +1459,7 @@ void Parser_variable_single_char(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1470,8 +1470,8 @@ void Parser_variable_multi_char(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, XYZ);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred($XYZ)"
     }));
@@ -1483,7 +1483,7 @@ void Parser_variable_multi_char(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1494,8 +1494,8 @@ void Parser_variable_multi_char_w_underscore(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, XY_Z);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred($XY_Z)"
     }));
@@ -1507,7 +1507,7 @@ void Parser_variable_multi_char_w_underscore(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1518,8 +1518,8 @@ void Parser_variable_multi_char_w_number(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, XY_1);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred($XY_1)"
     }));
@@ -1531,7 +1531,7 @@ void Parser_variable_multi_char_w_number(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1542,8 +1542,8 @@ void Parser_variable_multi_char_not_allcaps(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, XYZ);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred($xyZ)"
     }));
@@ -1555,7 +1555,7 @@ void Parser_variable_multi_char_not_allcaps(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1566,8 +1566,8 @@ void Parser_pred_var(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "($Pred, Obj)"
     }));
@@ -1580,7 +1580,7 @@ void Parser_pred_var(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1590,8 +1590,8 @@ void Parser_obj_var(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred, $Obj)"
     }));
@@ -1604,7 +1604,7 @@ void Parser_obj_var(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1614,8 +1614,8 @@ void Parser_component_not(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "!Pred"
     }));
@@ -1627,7 +1627,7 @@ void Parser_component_not(void) {
     test_int(terms[0].oper, EcsNot);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1638,8 +1638,8 @@ void Parser_pair_implicit_subject_not(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "!(Pred, Obj)"
     }));
@@ -1652,7 +1652,7 @@ void Parser_pair_implicit_subject_not(void) {
     test_int(terms[0].oper, EcsNot);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1664,8 +1664,8 @@ void Parser_pair_explicit_subject_not(void) {
     ECS_TAG(world, Subj);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "!Pred(Subj, Obj)"
     }));
@@ -1678,7 +1678,7 @@ void Parser_pair_explicit_subject_not(void) {
     test_int(terms[0].oper, EcsNot);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1689,8 +1689,8 @@ void Parser_2_component_not(void) {
     ECS_TAG(world, Pred_1);
     ECS_TAG(world, Pred_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "!Pred_1, !Pred_2"
     }));
@@ -1707,7 +1707,7 @@ void Parser_2_component_not(void) {
     test_int(terms[1].oper, EcsNot);
     test_int(terms[1].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1718,8 +1718,8 @@ void Parser_2_component_not_no_space(void) {
     ECS_TAG(world, Pred_1);
     ECS_TAG(world, Pred_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "!Pred_1,!Pred_2"
     }));
@@ -1736,7 +1736,7 @@ void Parser_2_component_not_no_space(void) {
     test_int(terms[1].oper, EcsNot);
     test_int(terms[1].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1746,8 +1746,8 @@ void Parser_component_optional(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "?Pred"
     }));
@@ -1759,7 +1759,7 @@ void Parser_component_optional(void) {
     test_int(terms[0].oper, EcsOptional);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1770,8 +1770,8 @@ void Parser_2_component_optional(void) {
     ECS_TAG(world, Pred_1);
     ECS_TAG(world, Pred_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "?Pred_1, ?Pred_2"
     }));
@@ -1788,7 +1788,7 @@ void Parser_2_component_optional(void) {
     test_int(terms[1].oper, EcsOptional);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1799,8 +1799,8 @@ void Parser_2_component_optional_no_space(void) {
     ECS_TAG(world, Pred_1);
     ECS_TAG(world, Pred_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "?Pred_1,?Pred_2"
     }));
@@ -1817,7 +1817,7 @@ void Parser_2_component_optional_no_space(void) {
     test_int(terms[1].oper, EcsOptional);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1827,8 +1827,8 @@ void Parser_from_and(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "AND | Pred"
     }));
@@ -1840,7 +1840,7 @@ void Parser_from_and(void) {
     test_int(terms[0].oper, EcsAndFrom);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1850,8 +1850,8 @@ void Parser_from_or(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "OR | Pred"
     }));
@@ -1863,7 +1863,7 @@ void Parser_from_or(void) {
     test_int(terms[0].oper, EcsOrFrom);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1873,8 +1873,8 @@ void Parser_from_not(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "NOT | Pred"
     }));
@@ -1886,7 +1886,7 @@ void Parser_from_not(void) {
     test_int(terms[0].oper, EcsNotFrom);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1897,8 +1897,8 @@ void Parser_pair_implicit_subject_optional(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "?(Pred, Obj)"
     }));
@@ -1911,7 +1911,7 @@ void Parser_pair_implicit_subject_optional(void) {
     test_int(terms[0].oper, EcsOptional);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1923,8 +1923,8 @@ void Parser_pair_explicit_subject_optional(void) {
     ECS_TAG(world, Subj);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "?Pred(Subj, Obj)"
     }));
@@ -1937,7 +1937,7 @@ void Parser_pair_explicit_subject_optional(void) {
     test_int(terms[0].oper, EcsOptional);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1947,8 +1947,8 @@ void Parser_pred_implicit_subject_w_role(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TOGGLE | Pred"
     }));
@@ -1960,7 +1960,7 @@ void Parser_pred_implicit_subject_w_role(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);    
 }
@@ -1970,8 +1970,8 @@ void Parser_pred_explicit_subject_w_role(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TOGGLE | Pred($This)"
     }));
@@ -1983,7 +1983,7 @@ void Parser_pred_explicit_subject_w_role(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);    
 }
@@ -1993,8 +1993,8 @@ void Parser_pred_no_subject_w_role(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TOGGLE | Pred()"
     }));
@@ -2006,7 +2006,7 @@ void Parser_pred_no_subject_w_role(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);  
 }
@@ -2017,8 +2017,8 @@ void Parser_pair_implicit_subject_w_role(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred, Obj)"
     }));
@@ -2031,7 +2031,7 @@ void Parser_pair_implicit_subject_w_role(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);   
 }
@@ -2042,8 +2042,8 @@ void Parser_pair_explicit_subject_w_role(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred($This, Obj)"
     }));
@@ -2056,7 +2056,7 @@ void Parser_pair_explicit_subject_w_role(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2066,8 +2066,8 @@ void Parser_inout_role_pred_implicit_subject(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[inout] TOGGLE | Pred"
     }));
@@ -2079,7 +2079,7 @@ void Parser_inout_role_pred_implicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);  
 }
@@ -2089,8 +2089,8 @@ void Parser_inout_role_pred_no_subject(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[inout] TOGGLE | Pred()"
     }));
@@ -2102,7 +2102,7 @@ void Parser_inout_role_pred_no_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);  
 }
@@ -2112,8 +2112,8 @@ void Parser_inout_role_pred_explicit_subject(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[inout] TOGGLE | Pred($This)"
     }));
@@ -2125,7 +2125,7 @@ void Parser_inout_role_pred_explicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);  
 }
@@ -2136,8 +2136,8 @@ void Parser_inout_role_pair_implicit_subject(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[inout] (Pred, Obj)"
     }));
@@ -2150,7 +2150,7 @@ void Parser_inout_role_pair_implicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);  
 }
@@ -2161,8 +2161,8 @@ void Parser_inout_role_pair_explicit_subject(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[inout] Pred($This, Obj)"
     }));
@@ -2175,7 +2175,7 @@ void Parser_inout_role_pair_explicit_subject(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOut);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);  
 }
@@ -2186,8 +2186,8 @@ void Parser_2_pred_implicit_subject(void) {
     ECS_TAG(world, Pred_1);
     ECS_TAG(world, Pred_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred_1, Pred_2"
     }));
@@ -2205,7 +2205,7 @@ void Parser_2_pred_implicit_subject(void) {
     test_int(terms[1].inout, EcsInOutDefault);    
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2216,8 +2216,8 @@ void Parser_2_pred_no_subject(void) {
     ECS_TAG(world, Pred_1);
     ECS_TAG(world, Pred_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred_1(), Pred_2()"
     }));
@@ -2235,7 +2235,7 @@ void Parser_2_pred_no_subject(void) {
     test_int(terms[1].inout, EcsInOutDefault);    
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2246,8 +2246,8 @@ void Parser_2_pred_explicit_subject(void) {
     ECS_TAG(world, Pred_1);
     ECS_TAG(world, Pred_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred_1($This), Pred_2($This)"
     }));
@@ -2265,7 +2265,7 @@ void Parser_2_pred_explicit_subject(void) {
     test_int(terms[1].inout, EcsInOutDefault);    
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2278,8 +2278,8 @@ void Parser_2_pair_implicit_subject(void) {
     ECS_TAG(world, Obj_1);
     ECS_TAG(world, Obj_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred_1, Obj_1), (Pred_2, Obj_2)"
     }));
@@ -2299,7 +2299,7 @@ void Parser_2_pair_implicit_subject(void) {
     test_int(terms[1].inout, EcsInOutDefault);    
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2312,8 +2312,8 @@ void Parser_2_pair_explicit_subject(void) {
     ECS_TAG(world, Obj_1);
     ECS_TAG(world, Obj_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred_1($This, Obj_1), Pred_2($This, Obj_2)"
     }));
@@ -2333,7 +2333,7 @@ void Parser_2_pair_explicit_subject(void) {
     test_int(terms[1].inout, EcsInOutDefault);    
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2344,8 +2344,8 @@ void Parser_2_pred_role(void) {
     ECS_TAG(world, Pred_1);
     ECS_TAG(world, Pred_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TOGGLE | Pred_1, TOGGLE | Pred_2"
     }));
@@ -2363,7 +2363,7 @@ void Parser_2_pred_role(void) {
     test_int(terms[1].inout, EcsInOutDefault); 
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2376,8 +2376,8 @@ void Parser_2_pair_implicit_subj_role(void) {
     ECS_TAG(world, Obj_1);
     ECS_TAG(world, Obj_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred_1, Obj_1), (Pred_2, Obj_2)"
     }));
@@ -2397,7 +2397,7 @@ void Parser_2_pair_implicit_subj_role(void) {
     test_int(terms[1].inout, EcsInOutDefault); 
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2410,8 +2410,8 @@ void Parser_2_pair_explicit_subj_role(void) {
     ECS_TAG(world, Obj_1);
     ECS_TAG(world, Obj_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred_1($This, Obj_1), Pred_2($This, Obj_2)"
     }));
@@ -2431,7 +2431,7 @@ void Parser_2_pair_explicit_subj_role(void) {
     test_int(terms[1].inout, EcsInOutDefault); 
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2442,8 +2442,8 @@ void Parser_2_or_pred_implicit_subj(void) {
     ECS_TAG(world, Pred_1);
     ECS_TAG(world, Pred_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred_1 || Pred_2"
     }));
@@ -2460,7 +2460,7 @@ void Parser_2_or_pred_implicit_subj(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2471,8 +2471,8 @@ void Parser_2_or_pred_explicit_subj(void) {
     ECS_TAG(world, Pred_1);
     ECS_TAG(world, Pred_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred_1($This) || Pred_2($This)"
     }));
@@ -2489,7 +2489,7 @@ void Parser_2_or_pred_explicit_subj(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2502,8 +2502,8 @@ void Parser_2_or_pair_implicit_subj(void) {
     ECS_TAG(world, Obj_1);
     ECS_TAG(world, Obj_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred_1, Obj_1) || (Pred_2, Obj_2)"
     }));
@@ -2522,7 +2522,7 @@ void Parser_2_or_pair_implicit_subj(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2535,8 +2535,8 @@ void Parser_2_or_pair_explicit_subj(void) {
     ECS_TAG(world, Obj_1);
     ECS_TAG(world, Obj_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred_1($This, Obj_1) || Pred_2($This, Obj_2)"
     }));
@@ -2555,7 +2555,7 @@ void Parser_2_or_pair_explicit_subj(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2566,8 +2566,8 @@ void Parser_2_or_pred_inout(void) {
     ECS_TAG(world, Pred_1);
     ECS_TAG(world, Pred_2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "[inout] Pred_1 || Pred_2"
     }));
@@ -2584,7 +2584,7 @@ void Parser_2_or_pred_inout(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -2594,8 +2594,8 @@ void Parser_1_digit_pred_implicit_subj(void) {
 
     ecs_ensure(world, 100);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "100"
     }));
@@ -2608,7 +2608,7 @@ void Parser_1_digit_pred_implicit_subj(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2618,8 +2618,8 @@ void Parser_1_digit_pred_no_subj(void) {
 
     ecs_ensure(world, 100);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "100()"
     }));
@@ -2632,7 +2632,7 @@ void Parser_1_digit_pred_no_subj(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2643,8 +2643,8 @@ void Parser_1_digit_pred_explicit_subj(void) {
     ecs_ensure(world, 100);
     ecs_ensure(world, 200);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "100(200)"
     }));
@@ -2657,7 +2657,7 @@ void Parser_1_digit_pred_explicit_subj(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2671,8 +2671,8 @@ void Parser_1_digit_pair_implicit_subj(void) {
     ecs_ensure(world, 100);
     ecs_ensure(world, 300);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(100, 300)"
     }));
@@ -2686,7 +2686,7 @@ void Parser_1_digit_pair_implicit_subj(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2701,8 +2701,8 @@ void Parser_1_digit_pair_explicit_subj(void) {
     ecs_ensure(world, 200);
     ecs_ensure(world, 300);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "100(200, 300)"
     }));
@@ -2716,7 +2716,7 @@ void Parser_1_digit_pair_explicit_subj(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2726,8 +2726,8 @@ void Parser_pred_implicit_subject_self(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(self)"
     }));
@@ -2740,7 +2740,7 @@ void Parser_pred_implicit_subject_self(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2750,8 +2750,8 @@ void Parser_pred_implicit_subject_superset(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(up)"
     }));
@@ -2764,7 +2764,7 @@ void Parser_pred_implicit_subject_superset(void) {
     test_int(terms[0].inout, EcsInOutDefault);
     test_int(terms[0].trav, EcsChildOf);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2774,8 +2774,8 @@ void Parser_pred_implicit_subject_superset_inclusive(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(self|up)"
     }));
@@ -2788,7 +2788,7 @@ void Parser_pred_implicit_subject_superset_inclusive(void) {
     test_int(terms[0].inout, EcsInOutDefault);
     test_int(terms[0].trav, EcsChildOf);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2798,8 +2798,8 @@ void Parser_pred_implicit_subject_superset_cascade(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(up|cascade)"
     }));
@@ -2812,7 +2812,7 @@ void Parser_pred_implicit_subject_superset_cascade(void) {
     test_int(terms[0].inout, EcsInOutDefault);
     test_int(terms[0].trav, EcsChildOf);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2822,8 +2822,8 @@ void Parser_pred_implicit_subject_superset_inclusive_cascade(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(up|cascade|self)"
     }));
@@ -2836,7 +2836,7 @@ void Parser_pred_implicit_subject_superset_inclusive_cascade(void) {
     test_int(terms[0].inout, EcsInOutDefault);
     test_int(terms[0].trav, EcsChildOf);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2846,8 +2846,8 @@ void Parser_pred_implicit_subject_implicit_superset_cascade(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(cascade)"
     }));
@@ -2860,7 +2860,7 @@ void Parser_pred_implicit_subject_implicit_superset_cascade(void) {
     test_int(terms[0].inout, EcsInOutDefault);
     test_int(terms[0].trav, EcsChildOf);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2870,8 +2870,8 @@ void Parser_pred_implicit_subject_implicit_superset_inclusive_cascade(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(self|cascade)"
     }));
@@ -2884,7 +2884,7 @@ void Parser_pred_implicit_subject_implicit_superset_inclusive_cascade(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
     test_int(terms[0].trav, EcsChildOf);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2895,8 +2895,8 @@ void Parser_pred_implicit_subject_implicit_superset_cascade_w_rel(void) {
     ECS_TAG(world, Pred);
     ECS_ENTITY(world, Rel, Traversable);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(cascade(Rel))"
     }));
@@ -2909,7 +2909,7 @@ void Parser_pred_implicit_subject_implicit_superset_cascade_w_rel(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
     test_int(terms[0].trav, Rel);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2920,8 +2920,8 @@ void Parser_pred_implicit_subject_implicit_superset_inclusive_cascade_w_rel(void
     ECS_TAG(world, Pred);
     ECS_ENTITY(world, Rel, Traversable);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(self|cascade(Rel))"
     }));
@@ -2934,7 +2934,7 @@ void Parser_pred_implicit_subject_implicit_superset_inclusive_cascade_w_rel(void
     test_int(terms[0].inout, EcsInOutDefault);  
     test_int(terms[0].trav, Rel);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2944,8 +2944,8 @@ void Parser_pred_implicit_subject_superset_childof(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(up(IsA))"
     }));
@@ -2958,7 +2958,7 @@ void Parser_pred_implicit_subject_superset_childof(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
     test_int(terms[0].trav, EcsIsA);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2968,8 +2968,8 @@ void Parser_pred_implicit_subject_cascade_superset_childof(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(cascade|up(IsA))"
     }));
@@ -2982,7 +2982,7 @@ void Parser_pred_implicit_subject_cascade_superset_childof(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
     test_int(terms[0].trav, EcsIsA);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -2992,8 +2992,8 @@ void Parser_pred_implicit_subject_superset_cascade_childof(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(up|cascade(IsA))"
     }));
@@ -3006,7 +3006,7 @@ void Parser_pred_implicit_subject_superset_cascade_childof(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
     test_int(terms[0].trav, EcsIsA);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world); 
 }
@@ -3016,8 +3016,8 @@ void Parser_pred_implicit_subject_superset_cascade_childof_optional(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "?Pred(up|cascade(IsA))"
     }));
@@ -3030,7 +3030,7 @@ void Parser_pred_implicit_subject_superset_cascade_childof_optional(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
     test_int(terms[0].trav, EcsIsA);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3047,8 +3047,8 @@ void Parser_expr_w_symbol(void) {
         })
     });
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "FooBar"
     }));
@@ -3061,7 +3061,7 @@ void Parser_expr_w_symbol(void) {
     test_int(terms[0].inout, EcsInOutDefault);  
 
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3071,13 +3071,13 @@ void Parser_expr_w_newline(void) {
 
     ecs_new_entity(world, "Foo");
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Foo\n"
     }));
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3088,8 +3088,8 @@ void Parser_subj_entity_w_explicit_self(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj:self)"
     }));
@@ -3102,7 +3102,7 @@ void Parser_subj_entity_w_explicit_self(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3113,8 +3113,8 @@ void Parser_subj_entity_w_explicit_self_superset(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj:self|up)"
     }));
@@ -3127,7 +3127,7 @@ void Parser_subj_entity_w_explicit_self_superset(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3138,8 +3138,8 @@ void Parser_subj_entity_w_explicit_superset_relation(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj:up(IsA))"
     }));
@@ -3153,7 +3153,7 @@ void Parser_subj_entity_w_explicit_superset_relation(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3164,8 +3164,8 @@ void Parser_subj_entity_w_explicit_self_superset_relation(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj:self|up(IsA))"
     }));
@@ -3179,7 +3179,7 @@ void Parser_subj_entity_w_explicit_self_superset_relation(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3191,8 +3191,8 @@ void Parser_obj_entity_w_explicit_self(void) {
     ECS_TAG(world, Subj);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj, Obj:self)"
     }));
@@ -3205,7 +3205,7 @@ void Parser_obj_entity_w_explicit_self(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3217,8 +3217,8 @@ void Parser_obj_entity_w_explicit_self_superset(void) {
     ECS_TAG(world, Subj);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj, Obj:self|up)"
     }));
@@ -3231,7 +3231,7 @@ void Parser_obj_entity_w_explicit_self_superset(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3243,8 +3243,8 @@ void Parser_obj_entity_w_explicit_superset_relation(void) {
     ECS_TAG(world, Subj);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj, Obj:up(ChildOf))"
     }));
@@ -3257,7 +3257,7 @@ void Parser_obj_entity_w_explicit_superset_relation(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3269,8 +3269,8 @@ void Parser_obj_entity_w_explicit_self_superset_relation(void) {
     ECS_TAG(world, Subj);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj, Obj:self|up(ChildOf))"
     }));
@@ -3283,7 +3283,7 @@ void Parser_obj_entity_w_explicit_self_superset_relation(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3294,8 +3294,8 @@ void Parser_pred_entity_w_explicit_self(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred:self:(Subj)"
     }));
@@ -3308,7 +3308,7 @@ void Parser_pred_entity_w_explicit_self(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3319,8 +3319,8 @@ void Parser_pred_entity_w_explicit_self_superset(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred:self|up:(Subj)"
     }));
@@ -3333,7 +3333,7 @@ void Parser_pred_entity_w_explicit_self_superset(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3343,8 +3343,8 @@ void Parser_pred_entity_no_args_w_explicit_self(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred:self"
     }));
@@ -3357,7 +3357,7 @@ void Parser_pred_entity_no_args_w_explicit_self(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3367,8 +3367,8 @@ void Parser_pred_entity_no_args_w_explicit_self_superset(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred:self|up"
     }));
@@ -3381,7 +3381,7 @@ void Parser_pred_entity_no_args_w_explicit_self_superset(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3392,8 +3392,8 @@ void Parser_pred_entity_no_args_2_terms_w_explicit_self(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Pred2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred:self, Pred2"
     }));
@@ -3411,7 +3411,7 @@ void Parser_pred_entity_no_args_2_terms_w_explicit_self(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3422,8 +3422,8 @@ void Parser_pred_entity_no_args_2_terms_w_explicit_self_superset(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Pred2);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred:self|up, Pred2"
     }));
@@ -3441,7 +3441,7 @@ void Parser_pred_entity_no_args_2_terms_w_explicit_self_superset(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3449,15 +3449,15 @@ void Parser_pred_entity_no_args_2_terms_w_explicit_self_superset(void) {
 void Parser_newline(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "\n"
     }));
 
     test_int(filter_count(&f), 0);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3465,15 +3465,15 @@ void Parser_newline(void) {
 void Parser_2_newlines(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "\n\n"
     }));
 
     test_int(filter_count(&f), 0);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3481,15 +3481,15 @@ void Parser_2_newlines(void) {
 void Parser_3_newlines(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "\n\n"
     }));
 
     test_int(filter_count(&f), 0);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3497,15 +3497,15 @@ void Parser_3_newlines(void) {
 void Parser_space(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = " "
     }));
 
     test_int(filter_count(&f), 0);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3513,15 +3513,15 @@ void Parser_space(void) {
 void Parser_2_spaces(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "  "
     }));
 
     test_int(filter_count(&f), 0);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3531,8 +3531,8 @@ void Parser_trailing_newline(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred\n"
     }));
@@ -3545,7 +3545,7 @@ void Parser_trailing_newline(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3555,8 +3555,8 @@ void Parser_2_trailing_newlines(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred\n\n"
     }));
@@ -3569,7 +3569,7 @@ void Parser_2_trailing_newlines(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3579,8 +3579,8 @@ void Parser_trailing_space(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred "
     }));
@@ -3593,7 +3593,7 @@ void Parser_trailing_space(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3603,8 +3603,8 @@ void Parser_2_trailing_spaces(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred  "
     }));
@@ -3617,7 +3617,7 @@ void Parser_2_trailing_spaces(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3631,8 +3631,8 @@ void Parser_template_type(void) {
     test_assert(Pred != 0);
     test_str(ecs_get_name(world, Pred), "Template<int>");
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Template<int>"
     }));
@@ -3645,7 +3645,7 @@ void Parser_template_type(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3655,8 +3655,8 @@ void Parser_predicate_w_parens(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Pred)"
     }));
@@ -3668,7 +3668,7 @@ void Parser_predicate_w_parens(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3680,8 +3680,8 @@ void Parser_not_alive_pred(void) {
 
     test_assert(!ecs_is_alive(world, 5000));
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "5000"
     }));
@@ -3698,8 +3698,8 @@ void Parser_not_alive_subj(void) {
 
     test_assert(!ecs_is_alive(world, 5000));
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(5000)"
     }));
@@ -3717,8 +3717,8 @@ void Parser_not_alive_obj(void) {
 
     test_assert(!ecs_is_alive(world, 5000));
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(Subj, 5000)"
     }));
@@ -3732,8 +3732,8 @@ void Parser_this_subj_var_kind(void) {
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA, TagB($This)"
     }));
@@ -3750,7 +3750,7 @@ void Parser_this_subj_var_kind(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3762,8 +3762,8 @@ void Parser_this_obj_var_kind(void) {
     ECS_TAG(world, TagB);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA, TagB(Subj, $This)"
     }));
@@ -3781,7 +3781,7 @@ void Parser_this_obj_var_kind(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3792,8 +3792,8 @@ void Parser_this_subj_obj_var_kind(void) {
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA, TagB($This, $This)"
     }));
@@ -3811,7 +3811,7 @@ void Parser_this_subj_obj_var_kind(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3821,8 +3821,8 @@ void Parser_var_w_name(void) {
 
     ECS_TAG(world, TagA);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA($Var)"
     }));
@@ -3835,7 +3835,7 @@ void Parser_var_w_name(void) {
     test_int(terms[0].inout, EcsInOutDefault);    
     test_str(terms[0].src.name, "Var");
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3845,8 +3845,8 @@ void Parser_entity_pred_no_name(void) {
 
     ECS_TAG(world, TagA);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA"
     }));
@@ -3860,7 +3860,7 @@ void Parser_entity_pred_no_name(void) {
 
     test_str(terms[0].first.name, NULL);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3871,8 +3871,8 @@ void Parser_entity_subj_no_name(void) {
     ECS_TAG(world, TagA);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA(Subj)"
     }));
@@ -3886,7 +3886,7 @@ void Parser_entity_subj_no_name(void) {
 
     test_str(terms[0].src.name, NULL);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3898,8 +3898,8 @@ void Parser_entity_obj_no_name(void) {
     ECS_TAG(world, Subj);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA(Subj, Obj)"
     }));
@@ -3914,7 +3914,7 @@ void Parser_entity_obj_no_name(void) {
 
     test_str(terms[0].second.name, NULL);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3922,8 +3922,8 @@ void Parser_entity_obj_no_name(void) {
 void Parser_this_pred_no_name(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$This"
     }));
@@ -3937,7 +3937,7 @@ void Parser_this_pred_no_name(void) {
 
     test_str(terms[0].first.name, NULL);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3948,8 +3948,8 @@ void Parser_this_subj_no_name(void) {
     ECS_TAG(world, TagA);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA($This)"
     }));
@@ -3963,7 +3963,7 @@ void Parser_this_subj_no_name(void) {
 
     test_str(terms[0].src.name, NULL);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -3974,8 +3974,8 @@ void Parser_this_obj_no_name(void) {
     ECS_TAG(world, TagA);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA(Subj, $This)"
     }));
@@ -3990,7 +3990,7 @@ void Parser_this_obj_no_name(void) {
 
     test_str(terms[0].second.name, NULL);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4000,8 +4000,8 @@ void Parser_auto_object_variable(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$(Pred)"
     }));
@@ -4014,7 +4014,7 @@ void Parser_auto_object_variable(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4025,8 +4025,8 @@ void Parser_auto_object_variable_w_subj(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$(Pred, Subj)"
     }));
@@ -4039,7 +4039,7 @@ void Parser_auto_object_variable_w_subj(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4051,8 +4051,8 @@ void Parser_auto_scoped_variable(void) {
         .name = "foo.Pred"
     });
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$(foo.Pred)"
     }));
@@ -4065,7 +4065,7 @@ void Parser_auto_scoped_variable(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4078,8 +4078,8 @@ void Parser_invalid_variable_only(void) {
     ECS_TAG(world, Pred);
     ECS_TAG(world, Subj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$"
     }));
@@ -4095,8 +4095,8 @@ void Parser_oneof_self_pred_w_relative_obj(void) {
 
     test_assert( ecs_lookup_child(world, 0, "Obj") == 0 ); // sanity check
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Rel, Obj)"
     }));
@@ -4109,7 +4109,7 @@ void Parser_oneof_self_pred_w_relative_obj(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
  
     ecs_fini(world);
 }
@@ -4123,8 +4123,8 @@ void Parser_oneof_other_pred_w_relative_obj(void) {
 
     test_assert( ecs_lookup_child(world, 0, "Obj") == 0 ); // sanity check
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Rel, Obj)"
     }));
@@ -4137,7 +4137,7 @@ void Parser_oneof_other_pred_w_relative_obj(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
  
     ecs_fini(world);
 }
@@ -4152,8 +4152,8 @@ void Parser_oneof_self_pred_w_invalid_obj(void) {
 
     test_assert( ecs_lookup_child(world, 0, "Obj") != 0 ); // sanity check
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Rel, Obj)"
     }));
@@ -4172,8 +4172,8 @@ void Parser_oneof_other_pred_w_invalid_obj(void) {
 
     test_assert( ecs_lookup_child(world, 0, "Obj") != 0 ); // sanity check
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Rel, Obj)"
     }));
@@ -4189,8 +4189,8 @@ void Parser_pair_implicit_src_missing_rel(void) {
     ECS_TAG(world, Rel);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(, Obj)"
     }));
@@ -4206,8 +4206,8 @@ void Parser_pair_implicit_src_missing_obj(void) {
     ECS_TAG(world, Rel);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(Rel, )"
     }));
@@ -4223,8 +4223,8 @@ void Parser_pair_explicit_src_missing_src(void) {
     ECS_TAG(world, Rel);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Rel(, Obj)"
     }));
@@ -4240,8 +4240,8 @@ void Parser_pair_explicit_src_missing_obj(void) {
     ECS_TAG(world, Rel);
     ECS_TAG(world, Obj);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Rel($this, )"
     }));
@@ -4256,7 +4256,7 @@ void Parser_eq_id(void) {
     ECS_TAG(world, Second);
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "First == Second"
     }));
 
@@ -4268,8 +4268,8 @@ void Parser_eq_id_var(void) {
 
     ECS_TAG(world, Second);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$this == Second"
     }));
@@ -4283,7 +4283,7 @@ void Parser_eq_id_var(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4294,7 +4294,7 @@ void Parser_eq_var_id(void) {
     ECS_TAG(world, First);
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "First == $this"
     }));
 
@@ -4307,8 +4307,8 @@ void Parser_eq_var(void) {
     ECS_TAG(world, First);
     ECS_TAG(world, Second);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$x == $y"
     }));
@@ -4322,7 +4322,7 @@ void Parser_eq_var(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4334,7 +4334,7 @@ void Parser_neq_id(void) {
     ECS_TAG(world, Second);
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "First != Second"
     }));
 
@@ -4346,8 +4346,8 @@ void Parser_neq_id_var(void) {
 
     ECS_TAG(world, Second);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$this != Second"
     }));
@@ -4361,7 +4361,7 @@ void Parser_neq_id_var(void) {
     test_int(terms[0].oper, EcsNot);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4372,7 +4372,7 @@ void Parser_neq_var_id(void) {
     ECS_TAG(world, First);
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "First != $this"
     }));
 
@@ -4382,8 +4382,8 @@ void Parser_neq_var_id(void) {
 void Parser_neq_var(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$x != $y"
     }));
@@ -4397,7 +4397,7 @@ void Parser_neq_var(void) {
     test_int(terms[0].oper, EcsNot);
     test_int(terms[0].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4406,7 +4406,7 @@ void Parser_eq_name(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "\"First\" == \"Second\""
     }));
 
@@ -4417,7 +4417,7 @@ void Parser_eq_name_var(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "\"First\" == $y"
     }));
 
@@ -4428,13 +4428,13 @@ void Parser_eq_var_name(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$x == \"Second\""
     }));
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4443,7 +4443,7 @@ void Parser_neq_name(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "\"First\" != \"Second\""
     }));
 
@@ -4454,7 +4454,7 @@ void Parser_neq_name_var(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "\"First\" != $y"
     }));
 
@@ -4464,8 +4464,8 @@ void Parser_neq_name_var(void) {
 void Parser_neq_var_name(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$x != \"Second\""
     }));
@@ -4480,7 +4480,7 @@ void Parser_neq_var_name(void) {
     test_str(terms[0].second.name, "Second");
     test_int(terms[0].oper, EcsNot);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4489,7 +4489,7 @@ void Parser_match_name(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "\"First\" ~= \"Second\""
     }));
 
@@ -4500,7 +4500,7 @@ void Parser_match_name_var(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "\"First\" ~= $y"
     }));
 
@@ -4510,8 +4510,8 @@ void Parser_match_name_var(void) {
 void Parser_match_var_name(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$x ~= \"Second\""
     }));
@@ -4526,7 +4526,7 @@ void Parser_match_var_name(void) {
     test_str(terms[0].second.name, "Second");
     test_int(terms[0].oper, EcsAnd);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4535,7 +4535,7 @@ void Parser_match_var(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "$x ~= $y"
     }));
 
@@ -4546,7 +4546,7 @@ void Parser_nmatch_name(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "\"First\" ~= \"!Second\""
     }));
 
@@ -4557,7 +4557,7 @@ void Parser_nmatch_name_var(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "\"!First\" ~= $y"
     }));
 
@@ -4567,8 +4567,8 @@ void Parser_nmatch_name_var(void) {
 void Parser_nmatch_var_name(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "$x ~= \"!Second\""
     }));
@@ -4583,7 +4583,7 @@ void Parser_nmatch_var_name(void) {
     test_str(terms[0].second.name, "Second");
     test_int(terms[0].oper, EcsNot);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4592,7 +4592,7 @@ void Parser_eq_same_var(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "$x == $x"
     }));
 
@@ -4603,7 +4603,7 @@ void Parser_neq_same_var(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "$x != $x"
     }));
 
@@ -4614,7 +4614,7 @@ void Parser_eq_same_var_this(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "$this == $this"
     }));
 
@@ -4625,7 +4625,7 @@ void Parser_neq_same_var_this(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "$this != $this"
     }));
 
@@ -4638,7 +4638,7 @@ void Parser_eq_w_optional(void) {
     ECS_TAG(world, Foo);
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "?$this == Foo"
     }));
 
@@ -4651,7 +4651,7 @@ void Parser_neq_w_optional(void) {
     ECS_TAG(world, Foo);
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "?$this != Foo"
     }));
 
@@ -4662,7 +4662,7 @@ void Parser_match_w_optional(void) {
     ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "?$this ~= \"Foo\""
     }));
 
@@ -4675,8 +4675,8 @@ void Parser_query_scope_1_term(void) {
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA, {TagB}"
     }));
@@ -4703,7 +4703,7 @@ void Parser_query_scope_1_term(void) {
     test_int(terms[3].oper, EcsAnd);
     test_int(terms[3].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4714,8 +4714,8 @@ void Parser_query_scope_1_term_spaces(void) {
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA, { TagB }"
     }));
@@ -4742,7 +4742,7 @@ void Parser_query_scope_1_term_spaces(void) {
     test_int(terms[3].oper, EcsAnd);
     test_int(terms[3].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4754,8 +4754,8 @@ void Parser_query_scope_2_terms(void) {
     ECS_TAG(world, TagB);
     ECS_TAG(world, TagC);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA, { TagB, TagC }"
     }));
@@ -4787,7 +4787,7 @@ void Parser_query_scope_2_terms(void) {
     test_int(terms[4].oper, EcsAnd);
     test_int(terms[4].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4799,8 +4799,8 @@ void Parser_query_nested_scope(void) {
     ECS_TAG(world, TagB);
     ECS_TAG(world, TagC);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA, {TagB, {TagC}}"
     }));
@@ -4842,7 +4842,7 @@ void Parser_query_nested_scope(void) {
     test_int(terms[6].oper, EcsAnd);
     test_int(terms[6].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4854,8 +4854,8 @@ void Parser_query_nested_scope_spaces(void) {
     ECS_TAG(world, TagB);
     ECS_TAG(world, TagC);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA, { TagB, { TagC } }"
     }));
@@ -4897,7 +4897,7 @@ void Parser_query_nested_scope_spaces(void) {
     test_int(terms[6].oper, EcsAnd);
     test_int(terms[6].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4909,8 +4909,8 @@ void Parser_query_scope_unbalanced(void) {
     ECS_TAG(world, TagB);
 
     ecs_log_set_level(-4);
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA, { TagB"
     }));
@@ -4924,8 +4924,8 @@ void Parser_query_not_scope(void) {
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA, !{TagB}"
     }));
@@ -4952,7 +4952,7 @@ void Parser_query_not_scope(void) {
     test_int(terms[3].oper, EcsAnd);
     test_int(terms[3].inout, EcsInOutNone);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -4964,8 +4964,8 @@ void Parser_query_empty_scope(void) {
     ECS_TAG(world, TagB);
 
     ecs_log_set_level(-4);
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL == ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL == ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "TagA, !{}"
     }));
@@ -4978,8 +4978,8 @@ void Parser_override_tag(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "OVERRIDE|Tag"
     }));
@@ -4992,7 +4992,7 @@ void Parser_override_tag(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -5003,8 +5003,8 @@ void Parser_override_pair(void) {
     ECS_TAG(world, Rel);
     ECS_TAG(world, Tgt);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "OVERRIDE|(Rel, Tgt)"
     }));
@@ -5018,7 +5018,7 @@ void Parser_override_pair(void) {
     test_int(terms[0].oper, EcsAnd);
     test_int(terms[0].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -5026,8 +5026,8 @@ void Parser_override_pair(void) {
 void Parser_pair_3_args(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "ChildOf($this, $parent, $grandparent)"
     }));
@@ -5047,7 +5047,7 @@ void Parser_pair_3_args(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -5055,8 +5055,8 @@ void Parser_pair_3_args(void) {
 void Parser_pair_3_args_implicit_this(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(ChildOf, $parent, $grandparent)"
     }));
@@ -5076,7 +5076,7 @@ void Parser_pair_3_args_implicit_this(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -5084,8 +5084,8 @@ void Parser_pair_3_args_implicit_this(void) {
 void Parser_pair_4_args(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "ChildOf($this, $parent, $grandparent, $greatgrandparent)"
     }));
@@ -5111,7 +5111,7 @@ void Parser_pair_4_args(void) {
     test_int(terms[2].oper, EcsAnd);
     test_int(terms[2].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -5119,8 +5119,8 @@ void Parser_pair_4_args(void) {
 void Parser_pair_4_args_implicit_this(void) {
     ecs_world_t *world = ecs_mini();
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "(ChildOf, $parent, $grandparent, $greatgrandparent)"
     }));
@@ -5146,7 +5146,7 @@ void Parser_pair_4_args_implicit_this(void) {
     test_int(terms[2].oper, EcsAnd);
     test_int(terms[2].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -5157,8 +5157,8 @@ void Parser_pair_3_args_2_terms(void) {
     ECS_TAG(world, Rel);
     ECS_TAG(world, Tgt);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "ChildOf($this, $parent, $grandparent), Rel($this, $parent)"
     }));
@@ -5184,7 +5184,7 @@ void Parser_pair_3_args_2_terms(void) {
     test_int(terms[2].oper, EcsAnd);
     test_int(terms[2].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -5194,8 +5194,8 @@ void Parser_cascade_desc(void) {
 
     ECS_TAG(world, Pred);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "Pred(cascade|desc)"
     }));
@@ -5208,7 +5208,7 @@ void Parser_cascade_desc(void) {
     test_int(terms[0].inout, EcsInOutDefault);
     test_int(terms[0].trav, EcsChildOf);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -5219,8 +5219,8 @@ void Parser_pair_3_args_this_tgt(void) {
     ECS_TAG(world, Rel);
     ECS_TAG(world, Tgt);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "ChildOf($grandchild, $child, $this)"
     }));
@@ -5240,7 +5240,7 @@ void Parser_pair_3_args_this_tgt(void) {
     test_int(terms[1].oper, EcsAnd);
     test_int(terms[1].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -5250,8 +5250,8 @@ void Parser_pair_3_args_2_terms_this_tgt(void) {
 
     ECS_TAG(world, Rel);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "ChildOf($grandchild, $child, $this), Rel($this)"
     }));
@@ -5276,7 +5276,7 @@ void Parser_pair_3_args_2_terms_this_tgt(void) {
     test_int(terms[2].oper, EcsAnd);
     test_int(terms[2].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -5286,8 +5286,8 @@ void Parser_pair_3_args_2_terms_this_tgt_implicit_this(void) {
 
     ECS_TAG(world, Rel);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .expr = "ChildOf($grandchild, $child, $this), Rel"
     }));
@@ -5312,7 +5312,7 @@ void Parser_pair_3_args_2_terms_this_tgt_implicit_this(void) {
     test_int(terms[2].oper, EcsAnd);
     test_int(terms[2].inout, EcsInOutDefault);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }

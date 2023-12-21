@@ -205,7 +205,7 @@ int32_t flecs_search_relation_w_idr(
     flags = flags ? flags : (EcsSelf|EcsUp);
 
     if (!idr) {
-        idr = flecs_query_id_record_get(world, id);
+        idr = flecs_query_cache_id_record_get(world, id);
         if (!idr) {
             return -1;
         }
@@ -251,7 +251,7 @@ int32_t ecs_search_relation(
         return ecs_search_offset(world, table, offset, id, id_out);
     }
 
-    ecs_id_record_t *idr = flecs_query_id_record_get(world, id);
+    ecs_id_record_t *idr = flecs_query_cache_id_record_get(world, id);
     if (!idr) {
         return -1;
     }
@@ -292,7 +292,7 @@ int32_t ecs_search(
     ecs_poly_assert(world, ecs_world_t);
     ecs_assert(id != 0, ECS_INVALID_PARAMETER, NULL);
 
-    ecs_id_record_t *idr = flecs_query_id_record_get(world, id);
+    ecs_id_record_t *idr = flecs_query_cache_id_record_get(world, id);
     if (!idr) {
         return -1;
     }

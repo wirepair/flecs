@@ -102,7 +102,7 @@ void Poly_iter_query(void) {
     ECS_COMPONENT_DEFINE(world, Position);
     ECS_TAG_DEFINE(world, Tag);
     
-    ecs_query_t *q = ecs_query_new(world, "Position");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position");
     test_assert(q != NULL);
 
     test_no_chain(world, q, 0);
@@ -116,7 +116,7 @@ void Poly_iter_query_w_filter(void) {
     ECS_COMPONENT_DEFINE(world, Position);
     ECS_TAG_DEFINE(world, Tag);
     
-    ecs_query_t *q = ecs_query_new(world, "Position");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position");
     test_assert(q != NULL);
 
     test_w_chain(world, q);
@@ -185,12 +185,12 @@ void Poly_iter_rule(void) {
     ECS_COMPONENT_DEFINE(world, Position);
     ECS_TAG_DEFINE(world, Tag);
     
-    ecs_filter_t *q = ecs_rule_new(world, "Position");
+    ecs_query_t *q = ecs_query_new(world, "Position");
     test_assert(q != NULL);
 
     test_no_chain(world, q, 0);
 
-    ecs_rule_fini(q);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -201,12 +201,12 @@ void Poly_iter_rule_w_filter(void) {
     ECS_COMPONENT_DEFINE(world, Position);
     ECS_TAG_DEFINE(world, Tag);
     
-    ecs_filter_t *q = ecs_rule_new(world, "Position");
+    ecs_query_t *q = ecs_query_new(world, "Position");
     test_assert(q != NULL);
 
     test_w_chain(world, q);
 
-    ecs_rule_fini(q);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -217,13 +217,13 @@ void Poly_iter_filter(void) {
     ECS_COMPONENT_DEFINE(world, Position);
     ECS_TAG_DEFINE(world, Tag);
 
-    ecs_filter_t *f = ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t *f = ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "Position"});
     test_assert(f != NULL);
 
     test_no_chain(world, f, 0);
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -234,13 +234,13 @@ void Poly_iter_filter_w_filter(void) {
     ECS_COMPONENT_DEFINE(world, Position);
     ECS_TAG_DEFINE(world, Tag);
     
-    ecs_filter_t *f = ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t *f = ecs_query_init(world, &(ecs_query_desc_t){
         .expr = "Position"});
     test_assert(f != NULL);
 
     test_w_chain(world, f);
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -303,7 +303,7 @@ void Poly_on_set_poly_query(void) {
 
     test_int(0, ctx.invoked);
 
-    ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.terms = {{ tag }},
     });
 
@@ -348,7 +348,7 @@ void Poly_iter_filter_from_entity(void) {
     ecs_entity_t e = ecs_new(world, Tag);
 
     ecs_entity_t qe = ecs_new_id(world);
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ Tag }},
         .entity = qe
     });
@@ -367,7 +367,7 @@ void Poly_iter_filter_from_entity(void) {
     test_uint(it.entities[0], e);
     test_bool(false, ecs_iter_next(&it));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     test_assert(!ecs_is_alive(world, qe));
 
@@ -382,9 +382,41 @@ void Poly_iter_query_from_entity(void) {
     ecs_entity_t e = ecs_new(world, Tag);
 
     ecs_entity_t qe = ecs_new_id(world);
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {{ Tag }},
         .filter.entity = qe
+    });
+
+    const EcsPoly *poly = ecs_get_pair(world, qe, EcsPoly, EcsQuery);
+    test_assert(poly != NULL);
+    test_assert(poly->poly == q);
+
+    ecs_iter_t it;
+    ecs_iter_poly(world, poly->poly, &it, NULL);
+
+    test_bool(true, ecs_iter_next(&it));
+    test_int(it.count, 1);
+    test_uint(it.entities[0], e);
+    test_bool(false, ecs_iter_next(&it));
+
+    ecs_query_cache_fini(q);
+
+    test_assert(!ecs_is_alive(world, qe));
+
+    ecs_fini(world);
+}
+
+void Poly_iter_rule_from_entity(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, Tag);
+
+    ecs_entity_t e = ecs_new(world, Tag);
+
+    ecs_entity_t qe = ecs_new_id(world);
+    ecs_query_t *q = ecs_query(world, {
+        .terms = {{ Tag }},
+        .entity = qe
     });
 
     const EcsPoly *poly = ecs_get_pair(world, qe, EcsPoly, EcsQuery);
@@ -406,45 +438,13 @@ void Poly_iter_query_from_entity(void) {
     ecs_fini(world);
 }
 
-void Poly_iter_rule_from_entity(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, Tag);
-
-    ecs_entity_t e = ecs_new(world, Tag);
-
-    ecs_entity_t qe = ecs_new_id(world);
-    ecs_filter_t *q = ecs_rule(world, {
-        .terms = {{ Tag }},
-        .entity = qe
-    });
-
-    const EcsPoly *poly = ecs_get_pair(world, qe, EcsPoly, EcsQuery);
-    test_assert(poly != NULL);
-    test_assert(poly->poly == q);
-
-    ecs_iter_t it;
-    ecs_iter_poly(world, poly->poly, &it, NULL);
-
-    test_bool(true, ecs_iter_next(&it));
-    test_int(it.count, 1);
-    test_uint(it.entities[0], e);
-    test_bool(false, ecs_iter_next(&it));
-
-    ecs_rule_fini(q);
-
-    test_assert(!ecs_is_alive(world, qe));
-
-    ecs_fini(world);
-}
-
 void Poly_free_filter_entity(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
     ecs_entity_t qe = ecs_new_id(world);
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ Tag }},
         .entity = qe
     });
@@ -466,7 +466,7 @@ void Poly_free_query_entity(void) {
     ECS_TAG(world, Tag);
 
     ecs_entity_t qe = ecs_new_id(world);
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter.terms = {{ Tag }},
         .filter.entity = qe
     });
@@ -488,7 +488,7 @@ void Poly_free_rule_entity(void) {
     ECS_TAG(world, Tag);
 
     ecs_entity_t qe = ecs_new_id(world);
-    ecs_filter_t *q = ecs_rule(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms = {{ Tag }},
         .entity = qe
     });

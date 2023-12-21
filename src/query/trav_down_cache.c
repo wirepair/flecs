@@ -25,7 +25,7 @@ ecs_trav_down_t* flecs_trav_entity_down(
 
 static
 ecs_trav_down_t* flecs_trav_down_ensure(
-    const ecs_rule_run_ctx_t *ctx,
+    const ecs_query_run_ctx_t *ctx,
     ecs_trav_up_cache_t *cache,
     ecs_entity_t entity)
 {
@@ -208,8 +208,8 @@ ecs_trav_down_t* flecs_trav_entity_down(
     return dst;
 }
 
-ecs_trav_down_t* flecs_rule_get_down_cache(
-    const ecs_rule_run_ctx_t *ctx,
+ecs_trav_down_t* flecs_query_get_down_cache(
+    const ecs_query_run_ctx_t *ctx,
     ecs_trav_up_cache_t *cache,
     ecs_entity_t trav,
     ecs_entity_t e,
@@ -220,7 +220,7 @@ ecs_trav_down_t* flecs_rule_get_down_cache(
     ecs_assert(cache->dir != EcsTravUp, ECS_INTERNAL_ERROR, NULL);
     cache->dir = EcsTravDown;
 
-    ecs_allocator_t *a = flecs_rule_get_allocator(ctx->it);
+    ecs_allocator_t *a = flecs_query_get_allocator(ctx->it);
     ecs_map_init_if(&cache->src, a);
 
     ecs_trav_down_t *result = flecs_trav_down_ensure(ctx, cache, e);
@@ -246,7 +246,7 @@ ecs_trav_down_t* flecs_rule_get_down_cache(
     return result;
 }
 
-void flecs_rule_down_cache_fini(
+void flecs_query_down_cache_fini(
     ecs_allocator_t *a,
     ecs_trav_up_cache_t *cache)
 {

@@ -21,7 +21,7 @@ typedef struct ecs_system_t {
     ecs_run_action_t run;           /* See ecs_system_desc_t */
     ecs_iter_action_t action;       /* See ecs_system_desc_t */
 
-    ecs_query_t *query;             /* System query */
+    ecs_query_cache_t *query;             /* System query */
     ecs_entity_t query_entity;      /* Entity associated with query */
     ecs_entity_t tick_source;       /* Tick source associated with system */
     

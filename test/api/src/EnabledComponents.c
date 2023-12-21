@@ -593,12 +593,12 @@ void EnabledComponents_query_disabled(void) {
     ecs_enable_component(world, e1, Position, true);
     ecs_enable_component(world, e2, Position, false);
 
-    ecs_query_t *q = ecs_query_new(world, "Position");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t table_count = 0, count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(it.entities[i] != e2);
@@ -628,12 +628,12 @@ void EnabledComponents_query_disabled_pair(void) {
     ecs_enable_pair(world, e1, Position, Tgt, true);
     ecs_enable_pair(world, e2, Position, Tgt, false);
 
-    ecs_query_t *q = ecs_query_new(world, "(Position, Tgt)");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "(Position, Tgt)");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t table_count = 0, count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(it.entities[i] != e2);
@@ -662,12 +662,12 @@ void EnabledComponents_query_disabled_skip_initial(void) {
     ecs_enable_component(world, e1, Position, false);
     ecs_enable_component(world, e2, Position, true);
 
-    ecs_query_t *q = ecs_query_new(world, "Position");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(it.entities[i] != e1);
@@ -695,12 +695,12 @@ void EnabledComponents_query_disabled_pair_skip_initial(void) {
     ecs_enable_pair(world, e1, Position, Tgt, false);
     ecs_enable_pair(world, e2, Position, Tgt, true);
 
-    ecs_query_t *q = ecs_query_new(world, "(Position, Tgt)");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "(Position, Tgt)");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(it.entities[i] != e1);
@@ -733,12 +733,12 @@ void EnabledComponents_query_mod_2(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(it.entities[i] % 2);
@@ -770,12 +770,12 @@ void EnabledComponents_query_mod_8(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(it.entities[i] % 8);
@@ -807,12 +807,12 @@ void EnabledComponents_query_mod_64(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(it.entities[i] % 64);
@@ -844,12 +844,12 @@ void EnabledComponents_query_mod_256(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(it.entities[i] % 256);
@@ -881,12 +881,12 @@ void EnabledComponents_query_mod_1024(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(it.entities[i] % 1024);
@@ -918,12 +918,12 @@ void EnabledComponents_query_enable_mod_10(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(!(it.entities[i] % 10));
@@ -966,12 +966,12 @@ void EnabledComponents_query_mod_2_2_bitsets(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Velocity");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position, Velocity");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(ecs_is_enabled_component(world, it.entities[i], Position));
@@ -1015,12 +1015,12 @@ void EnabledComponents_query_mod_8_2_bitsets(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Velocity");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position, Velocity");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(ecs_is_enabled_component(world, it.entities[i], Position));
@@ -1064,12 +1064,12 @@ void EnabledComponents_query_mod_64_2_bitsets(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Velocity");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position, Velocity");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(ecs_is_enabled_component(world, it.entities[i], Position));
@@ -1113,12 +1113,12 @@ void EnabledComponents_query_mod_256_2_bitsets(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Velocity");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position, Velocity");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(ecs_is_enabled_component(world, it.entities[i], Position));
@@ -1162,12 +1162,12 @@ void EnabledComponents_query_mod_1024_2_bitsets(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Velocity");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position, Velocity");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(ecs_is_enabled_component(world, it.entities[i], Position));
@@ -1205,12 +1205,12 @@ void EnabledComponents_query_randomized_2_bitsets(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Velocity");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position, Velocity");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(ecs_is_enabled_component(world, it.entities[i], Position));
@@ -1251,12 +1251,12 @@ void EnabledComponents_query_randomized_3_bitsets(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Velocity, Mass");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position, Velocity, Mass");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(ecs_is_enabled_component(world, it.entities[i], Position));
@@ -1302,12 +1302,12 @@ void EnabledComponents_query_randomized_4_bitsets(void) {
 
     test_assert(total_count != 0);
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Velocity, Mass, Rotation");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position, Velocity, Mass, Rotation");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
     int32_t count = 0;
 
-    while (ecs_query_next(&it)) {
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             test_assert(ecs_is_enabled_component(world, it.entities[i], Position));
@@ -1368,18 +1368,18 @@ void EnabledComponents_sort(void) {
     test_bool(ecs_is_enabled_component(world, e3, Position), false);
     test_bool(ecs_is_enabled_component(world, e4, Position), false);
     
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.expr = "Position",
         .order_by_component = ecs_id(Position),
         .order_by = compare_position
     });
 
-    ecs_iter_t it = ecs_query_iter(world, q);
-    test_assert(ecs_query_next(&it));
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
+    test_assert(ecs_query_cache_next(&it));
     test_int(it.count, 2);
     test_assert(it.entities[0] == e2);
     test_assert(it.entities[1] == e1);
-    test_assert(!ecs_query_next(&it));
+    test_assert(!ecs_query_cache_next(&it));
 
     /* Entities will have shuffled around, ensure bits got shuffled too */
     test_bool(ecs_is_enabled_component(world, e1, Position), true);
@@ -1396,7 +1396,7 @@ void EnabledComponents_table_move_2_from_3(void) {
     ECS_COMPONENT(world, Position);
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query(world, { .filter.expr = "Position" });
+    ecs_query_cache_t *q = ecs_query(world, { .filter.expr = "Position" });
 
     ecs_entity_t e1 = ecs_set(world, 0, Position, {10, 20});
     ecs_entity_t e2 = ecs_set(world, 0, Position, {20, 30});
@@ -1417,22 +1417,22 @@ void EnabledComponents_table_move_2_from_3(void) {
     test_bool(ecs_is_enabled_component(world, e2, Position), false);
     test_bool(ecs_is_enabled_component(world, e3, Position), true);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     {
-        test_bool(true, ecs_query_next(&it));
+        test_bool(true, ecs_query_cache_next(&it));
         test_int(1, it.count);
         test_uint(e1, it.entities[0]);
         Position *p = ecs_field(&it, Position, 1);
         test_int(p->x, 10); test_int(p->y, 20);
     }
     {
-        test_bool(true, ecs_query_next(&it));
+        test_bool(true, ecs_query_cache_next(&it));
         test_int(1, it.count);
         test_uint(e3, it.entities[0]);
         Position *p = ecs_field(&it, Position, 1);
         test_int(p->x, 30); test_int(p->y, 40);
     }
-    test_bool(false, ecs_query_next(&it));
+    test_bool(false, ecs_query_cache_next(&it));
 
     ecs_fini(world);
 }

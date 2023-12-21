@@ -374,10 +374,10 @@ void ecs_world_stats_copy_last(
         ECS_METRIC_FIRST(src), dst->t, t_next(src->t));
 }
 
-void ecs_query_stats_get(
+void ecs_query_cache_stats_get(
     const ecs_world_t *world,
-    const ecs_query_t *query,
-    ecs_query_stats_t *s)
+    const ecs_query_cache_t *query,
+    ecs_query_cache_stats_t *s)
 {
     ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(query != NULL, ECS_INVALID_PARAMETER, NULL);
@@ -386,13 +386,13 @@ void ecs_query_stats_get(
 
     int32_t t = s->t = t_next(s->t);
 
-    if (query->query->flags & EcsFilterMatchThis) {
+    if (query->query->flags & EcsQueryMatchThis) {
         ECS_GAUGE_RECORD(&s->matched_entity_count, t, 
-            ecs_query_entity_count(query));
+            ecs_query_cache_entity_count(query));
         ECS_GAUGE_RECORD(&s->matched_table_count, t, 
-            ecs_query_table_count(query));
+            ecs_query_cache_table_count(query));
         ECS_GAUGE_RECORD(&s->matched_empty_table_count, t, 
-            ecs_query_empty_table_count(query));
+            ecs_query_cache_empty_table_count(query));
     } else {
         ECS_GAUGE_RECORD(&s->matched_entity_count, t, 0);
         ECS_GAUGE_RECORD(&s->matched_table_count, t, 0);
@@ -403,33 +403,33 @@ error:
     return;
 }
 
-void ecs_query_stats_reduce(
-    ecs_query_stats_t *dst,
-    const ecs_query_stats_t *src)
+void ecs_query_cache_stats_reduce(
+    ecs_query_cache_stats_t *dst,
+    const ecs_query_cache_stats_t *src)
 {
     flecs_stats_reduce(ECS_METRIC_FIRST(dst), ECS_METRIC_LAST(dst), 
         ECS_METRIC_FIRST(src), (dst->t = t_next(dst->t)), src->t);
 }
 
-void ecs_query_stats_reduce_last(
-    ecs_query_stats_t *dst,
-    const ecs_query_stats_t *src,
+void ecs_query_cache_stats_reduce_last(
+    ecs_query_cache_stats_t *dst,
+    const ecs_query_cache_stats_t *src,
     int32_t count)
 {
     flecs_stats_reduce_last(ECS_METRIC_FIRST(dst), ECS_METRIC_LAST(dst), 
         ECS_METRIC_FIRST(src), (dst->t = t_prev(dst->t)), src->t, count);
 }
 
-void ecs_query_stats_repeat_last(
-    ecs_query_stats_t *stats)
+void ecs_query_cache_stats_repeat_last(
+    ecs_query_cache_stats_t *stats)
 {
     flecs_stats_repeat_last(ECS_METRIC_FIRST(stats), ECS_METRIC_LAST(stats),
         (stats->t = t_next(stats->t)));
 }
 
-void ecs_query_stats_copy_last(
-    ecs_query_stats_t *dst,
-    const ecs_query_stats_t *src)
+void ecs_query_cache_stats_copy_last(
+    ecs_query_cache_stats_t *dst,
+    const ecs_query_cache_stats_t *src)
 {
     flecs_stats_copy_last(ECS_METRIC_FIRST(dst), ECS_METRIC_LAST(dst),
         ECS_METRIC_FIRST(src), dst->t, t_next(src->t));
@@ -453,13 +453,13 @@ bool ecs_system_stats_get(
         return false;
     }
 
-    ecs_query_stats_get(world, ptr->query, &s->query);
+    ecs_query_cache_stats_get(world, ptr->query, &s->query);
     int32_t t = s->query.t;
 
     ECS_COUNTER_RECORD(&s->time_spent, t, ptr->time_spent);
     ECS_COUNTER_RECORD(&s->invoke_count, t, ptr->invoke_count);
 
-    s->task = !(ptr->query->query->flags & EcsFilterMatchThis);
+    s->task = !(ptr->query->query->flags & EcsQueryMatchThis);
 
     return true;
 error:
@@ -470,7 +470,7 @@ void ecs_system_stats_reduce(
     ecs_system_stats_t *dst,
     const ecs_system_stats_t *src)
 {
-    ecs_query_stats_reduce(&dst->query, &src->query);
+    ecs_query_cache_stats_reduce(&dst->query, &src->query);
     dst->task = src->task;
     flecs_stats_reduce(ECS_METRIC_FIRST(dst), ECS_METRIC_LAST(dst), 
         ECS_METRIC_FIRST(src), dst->query.t, src->query.t);
@@ -481,7 +481,7 @@ void ecs_system_stats_reduce_last(
     const ecs_system_stats_t *src,
     int32_t count)
 {
-    ecs_query_stats_reduce_last(&dst->query, &src->query, count);
+    ecs_query_cache_stats_reduce_last(&dst->query, &src->query, count);
     dst->task = src->task;
     flecs_stats_reduce_last(ECS_METRIC_FIRST(dst), ECS_METRIC_LAST(dst), 
         ECS_METRIC_FIRST(src), dst->query.t, src->query.t, count);
@@ -490,7 +490,7 @@ void ecs_system_stats_reduce_last(
 void ecs_system_stats_repeat_last(
     ecs_system_stats_t *stats)
 {
-    ecs_query_stats_repeat_last(&stats->query);
+    ecs_query_cache_stats_repeat_last(&stats->query);
     flecs_stats_repeat_last(ECS_METRIC_FIRST(stats), ECS_METRIC_LAST(stats),
         (stats->query.t));
 }
@@ -499,7 +499,7 @@ void ecs_system_stats_copy_last(
     ecs_system_stats_t *dst,
     const ecs_system_stats_t *src)
 {
-    ecs_query_stats_copy_last(&dst->query, &src->query);
+    ecs_query_cache_stats_copy_last(&dst->query, &src->query);
     dst->task = src->task;
     flecs_stats_copy_last(ECS_METRIC_FIRST(dst), ECS_METRIC_LAST(dst),
         ECS_METRIC_FIRST(src), dst->query.t, t_next(src->query.t));
@@ -529,8 +529,8 @@ bool ecs_pipeline_stats_get(
     int32_t sys_count = 0, active_sys_count = 0;
 
     /* Count number of active systems */
-    ecs_iter_t it = ecs_query_iter(stage, pq->query);
-    while (ecs_query_next(&it)) {
+    ecs_iter_t it = ecs_query_cache_iter(stage, pq->query);
+    while (ecs_query_cache_next(&it)) {
         if (flecs_id_record_get_table(pq->idr_inactive, it.table) != NULL) {
             continue;
         }
@@ -538,8 +538,8 @@ bool ecs_pipeline_stats_get(
     }
 
     /* Count total number of systems in pipeline */
-    it = ecs_query_iter(stage, pq->query);
-    while (ecs_query_next(&it)) {
+    it = ecs_query_cache_iter(stage, pq->query);
+    while (ecs_query_cache_next(&it)) {
         sys_count += it.count;
     }   
 
@@ -566,10 +566,10 @@ bool ecs_pipeline_stats_get(
             systems = ecs_vec_first_t(&s->systems, ecs_entity_t);
 
             /* Populate systems vector, keep track of sync points */
-            it = ecs_query_iter(stage, pq->query);
+            it = ecs_query_cache_iter(stage, pq->query);
             
             int32_t i, i_system = 0, ran_since_merge = 0;
-            while (ecs_query_next(&it)) {
+            while (ecs_query_cache_next(&it)) {
                 if (flecs_id_record_get_table(pq->idr_inactive, it.table) != NULL) {
                     continue;
                 }
@@ -616,8 +616,8 @@ bool ecs_pipeline_stats_get(
 
     /* Separately populate system stats map from build query, which includes
      * systems that aren't currently active */
-    it = ecs_query_iter(stage, pq->query);
-    while (ecs_query_next(&it)) {
+    it = ecs_query_cache_iter(stage, pq->query);
+    while (ecs_query_cache_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             ecs_system_stats_t *stats = ecs_map_ensure_alloc_t(&s->system_stats, 

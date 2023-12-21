@@ -5,7 +5,7 @@
 
 #include "../private_api.h"
 
-const char* flecs_rule_op_str(
+const char* flecs_query_op_str(
     uint16_t kind)
 {
     switch(kind) {
@@ -55,16 +55,16 @@ const char* flecs_rule_op_str(
 }
 
 static
-int32_t flecs_rule_op_ref_str(
-    const ecs_rule_t *rule,
-    ecs_rule_ref_t *ref,
+int32_t flecs_query_op_ref_str(
+    const ecs_query_impl_t *rule,
+    ecs_query_ref_t *ref,
     ecs_flags16_t flags,
     ecs_strbuf_t *buf)
 {
     int32_t color_chars = 0;
     if (flags & EcsRuleIsVar) {
         ecs_assert(ref->var < rule->var_count, ECS_INTERNAL_ERROR, NULL);
-        ecs_rule_var_t *var = &rule->vars[ref->var];
+        ecs_query_var_t *var = &rule->vars[ref->var];
         ecs_strbuf_appendlit(buf, "#[green]$#[reset]");
         if (var->kind == EcsVarTable) {
             ecs_strbuf_appendch(buf, '[');
@@ -101,26 +101,26 @@ int32_t flecs_rule_op_ref_str(
     return color_chars;
 }
 
-char* ecs_rule_str_w_profile(
-    const ecs_filter_t *q,
+char* ecs_query_str_w_profile(
+    const ecs_query_t *q,
     const ecs_iter_t *it)
 {
-    ecs_poly_assert(q, ecs_rule_t);
-    ecs_rule_t *impl = flecs_rule(q);
+    ecs_poly_assert(q, ecs_query_impl_t);
+    ecs_query_impl_t *impl = flecs_query_impl(q);
 
     ecs_strbuf_t buf = ECS_STRBUF_INIT;
-    ecs_rule_op_t *ops = impl->ops;
+    ecs_query_op_t *ops = impl->ops;
     int32_t i, count = impl->op_count, indent = 0;
     for (i = 0; i < count; i ++) {
-        ecs_rule_op_t *op = &ops[i];
+        ecs_query_op_t *op = &ops[i];
         ecs_flags16_t flags = op->flags;
-        ecs_flags16_t src_flags = flecs_rule_ref_flags(flags, EcsRuleSrc);
-        ecs_flags16_t first_flags = flecs_rule_ref_flags(flags, EcsRuleFirst);
-        ecs_flags16_t second_flags = flecs_rule_ref_flags(flags, EcsRuleSecond);
+        ecs_flags16_t src_flags = flecs_query_ref_flags(flags, EcsRuleSrc);
+        ecs_flags16_t first_flags = flecs_query_ref_flags(flags, EcsRuleFirst);
+        ecs_flags16_t second_flags = flecs_query_ref_flags(flags, EcsRuleSecond);
 
         if (it) {
 #ifdef FLECS_DEBUG
-            const ecs_rule_iter_t *rit = &it->priv.iter.rule;
+            const ecs_query_iter_t *rit = &it->priv.iter.rule;
             ecs_strbuf_append(&buf, 
                 "#[green]%4d -> #[red]%4d <- #[grey]  |   ",
                 rit->profile[i].count[0],
@@ -137,7 +137,7 @@ char* ecs_rule_str_w_profile(
         }
 
         ecs_strbuf_append(&buf, "%*s", indent, "");
-        ecs_strbuf_appendstr(&buf, flecs_rule_op_str(op->kind));
+        ecs_strbuf_appendstr(&buf, flecs_query_op_str(op->kind));
         ecs_strbuf_appendstr(&buf, " ");
 
         int32_t written = ecs_strbuf_written(&buf);
@@ -145,7 +145,7 @@ char* ecs_rule_str_w_profile(
             ecs_strbuf_appendch(&buf, ' ');
         }
     
-        hidden_chars = flecs_rule_op_ref_str(impl, &op->src, src_flags, &buf);
+        hidden_chars = flecs_query_op_ref_str(impl, &op->src, src_flags, &buf);
 
         if (op->kind == EcsRuleNot || 
             op->kind == EcsRuleOr || 
@@ -171,11 +171,11 @@ char* ecs_rule_str_w_profile(
         }
 
         ecs_strbuf_appendstr(&buf, "(");
-        flecs_rule_op_ref_str(impl, &op->first, first_flags, &buf);
+        flecs_query_op_ref_str(impl, &op->first, first_flags, &buf);
 
         if (second_flags) {
             ecs_strbuf_appendstr(&buf, ", ");
-            flecs_rule_op_ref_str(impl, &op->second, second_flags, &buf);
+            flecs_query_op_ref_str(impl, &op->second, second_flags, &buf);
         } else {
             switch (op->kind) {
             case EcsRulePredEqName:
@@ -213,14 +213,14 @@ char* ecs_rule_str_w_profile(
     return ecs_strbuf_get(&buf);
 }
 
-char* ecs_rule_plan(
-    const ecs_filter_t *q)
+char* ecs_query_plan(
+    const ecs_query_t *q)
 {
-    return ecs_rule_str_w_profile(q, NULL);
+    return ecs_query_str_w_profile(q, NULL);
 }
 
 static
-void flecs_filter_str_add_id(
+void flecs_query_str_add_id(
     const ecs_world_t *world,
     ecs_strbuf_t *buf,
     const ecs_term_t *term,
@@ -336,13 +336,13 @@ void flecs_term_str_w_strbuf(
     }
 
     if (!src_set) {
-        flecs_filter_str_add_id(world, buf, term, &term->first, false, 
+        flecs_query_str_add_id(world, buf, term, &term->first, false, 
             def_first_mask);
         if (!second_set) {
             ecs_strbuf_appendlit(buf, "()");
         } else {
             ecs_strbuf_appendlit(buf, "(0,");
-            flecs_filter_str_add_id(world, buf, term, &term->second, false, 
+            flecs_query_str_add_id(world, buf, term, &term->second, false, 
                 def_second_mask);
             ecs_strbuf_appendlit(buf, ")");
         }
@@ -353,11 +353,11 @@ void flecs_term_str_w_strbuf(
             if (second_set) {
                 ecs_strbuf_appendlit(buf, "(");
             }
-            flecs_filter_str_add_id(world, buf, term, &term->first, false, 
+            flecs_query_str_add_id(world, buf, term, &term->first, false, 
                 def_first_mask);
             if (second_set) {
                 ecs_strbuf_appendlit(buf, ",");
-                flecs_filter_str_add_id(
+                flecs_query_str_add_id(
                     world, buf, term, &term->second, false, def_second_mask);
                 ecs_strbuf_appendlit(buf, ")");
             }
@@ -373,18 +373,18 @@ void flecs_term_str_w_strbuf(
             ecs_strbuf_appendch(buf, '|');
         }
 
-        flecs_filter_str_add_id(world, buf, term, &term->first, false, 
+        flecs_query_str_add_id(world, buf, term, &term->first, false, 
             def_first_mask);
         ecs_strbuf_appendlit(buf, "(");
         if (term->src.id & EcsIsEntity && src_id == first_id) {
             ecs_strbuf_appendlit(buf, "$");
         } else {
-            flecs_filter_str_add_id(world, buf, term, &term->src, true, 
+            flecs_query_str_add_id(world, buf, term, &term->src, true, 
                 def_src_mask);
         }
         if (second_set) {
             ecs_strbuf_appendlit(buf, ",");
-            flecs_filter_str_add_id(world, buf, term, &term->second, false, 
+            flecs_query_str_add_id(world, buf, term, &term->second, false, 
                 def_second_mask);
         }
         ecs_strbuf_appendlit(buf, ")");
@@ -400,10 +400,10 @@ char* ecs_term_str(
     return ecs_strbuf_get(&buf);
 }
 
-char* flecs_filter_str(
+char* flecs_query_str(
     const ecs_world_t *world,
-    const ecs_filter_t *filter,
-    const ecs_rule_validator_ctx_t *ctx,
+    const ecs_query_t *filter,
+    const ecs_query_validator_ctx_t *ctx,
     int32_t *term_start_out)
 {
     ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
@@ -445,19 +445,19 @@ error:
     return NULL;
 }
 
-char* ecs_rule_str(
+char* ecs_query_str(
     const ecs_world_t *world,
-    const ecs_filter_t *filter)
+    const ecs_query_t *filter)
 {
-    return flecs_filter_str(world, filter, NULL, NULL);
+    return flecs_query_str(world, filter, NULL, NULL);
 }
 
-const char* ecs_rule_parse_vars(
-    ecs_filter_t *q,
+const char* ecs_query_parse_vars(
+    ecs_query_t *q,
     ecs_iter_t *it,
     const char *expr)
 {
-    ecs_poly_assert(q, ecs_rule_t);
+    ecs_poly_assert(q, ecs_query_impl_t);
 
     ecs_check(it != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(expr != NULL, ECS_INVALID_PARAMETER, NULL)
@@ -490,7 +490,7 @@ const char* ecs_rule_parse_vars(
             return NULL;
         }
 
-        int var = ecs_rule_find_var(q, token);
+        int var = ecs_query_find_var(q, token);
         if (var == -1) {
             ecs_parser_error(name, expr, (ptr - expr), 
                 "unknown variable '%s'", token);
@@ -550,9 +550,9 @@ error:
     return NULL;
 }
 
-int32_t flecs_rule_pivot_term(
+int32_t flecs_query_pivot_term(
     const ecs_world_t *world,
-    const ecs_filter_t *filter)
+    const ecs_query_t *filter)
 {
     ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(filter != NULL, ECS_INVALID_PARAMETER, NULL);
@@ -573,7 +573,7 @@ int32_t flecs_rule_pivot_term(
             continue;
         }
 
-        ecs_id_record_t *idr = flecs_query_id_record_get(world, id);
+        ecs_id_record_t *idr = flecs_query_cache_id_record_get(world, id);
         if (!idr) {
             /* If one of the terms does not match with any data, iterator 
              * should not return anything */
@@ -600,16 +600,16 @@ error:
 }
 
 
-void flecs_rule_apply_iter_flags(
+void flecs_query_apply_iter_flags(
     ecs_iter_t *it,
-    const ecs_filter_t *filter)
+    const ecs_query_t *filter)
 {
     ECS_BIT_COND(it->flags, EcsIterIsInstanced, 
-        ECS_BIT_IS_SET(filter->flags, EcsFilterIsInstanced));
+        ECS_BIT_IS_SET(filter->flags, EcsQueryIsInstanced));
     ECS_BIT_COND(it->flags, EcsIterNoData,
-        ECS_BIT_IS_SET(filter->flags, EcsFilterNoData));
+        ECS_BIT_IS_SET(filter->flags, EcsQueryNoData));
     ECS_BIT_COND(it->flags, EcsIterHasCondSet, 
-        ECS_BIT_IS_SET(filter->flags, EcsFilterHasCondSet));
+        ECS_BIT_IS_SET(filter->flags, EcsQueryHasCondSet));
 }
 
 ecs_id_t flecs_to_public_id(

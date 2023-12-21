@@ -93,7 +93,7 @@ The default query engine used by the search bar is the rules engine, which means
 It is also possible to inspect the results of existing queries. This can be done by entering a `?-`, followed by the name of the query. Queries can be given a name by setting the `.entity` field to a named entity in C:
 
 ```c
-ecs_query_t *q = ecs_query(world, {
+ecs_query_cache_t *q = ecs_query(world, {
   .entity = ecs_entity(world, { .name = "Move" }),
   .filter.terms = {
     { ecs_id(Position) },
@@ -119,7 +119,7 @@ When a named rule query has variables, variables can be optionally provided as a
 The underlying query that was used for this screenshot was created like this:
 
 ```c
-ecs_rule(world, {
+ecs_query(world, {
     .entity = ecs_entity(world, { .name = "eats_query" }),
     .expr = "(Eats, $food)"
 });

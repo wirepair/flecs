@@ -27,7 +27,7 @@ typedef struct ecs_data_t ecs_data_t;
 typedef struct ecs_switch_t ecs_switch_t;
 
 /* Cached query table data */
-typedef struct ecs_query_table_match_t ecs_query_table_match_t;
+typedef struct ecs_query_cache_table_match_t ecs_query_cache_table_match_t;
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Non-opaque types
@@ -131,43 +131,43 @@ typedef struct ecs_each_iter_t {
 } ecs_each_iter_t;
 
 /** Query-iterator specific data */
-typedef struct ecs_query_iter_t {
-    ecs_query_t *query;
-    ecs_query_table_match_t *node, *prev, *last;
+typedef struct ecs_query_cache_iter_t {
+    ecs_query_cache_t *query;
+    ecs_query_cache_table_match_t *node, *prev, *last;
     int32_t sparse_smallest;
     int32_t sparse_first;
     int32_t bitset_first;
     int32_t skip_count;
-} ecs_query_iter_t;
+} ecs_query_cache_iter_t;
 
 /** Snapshot-iterator specific data */
 typedef struct ecs_snapshot_iter_t {
-    ecs_filter_t filter;
+    ecs_query_t filter;
     ecs_vec_t tables; /* ecs_table_leaf_t */
     int32_t index;
 } ecs_snapshot_iter_t;
 
-typedef struct ecs_rule_op_profile_t {
+typedef struct ecs_query_op_profile_t {
     int32_t count[2]; /* 0 = enter, 1 = redo */
-} ecs_rule_op_profile_t;
+} ecs_query_op_profile_t;
 
 /** Rule-iterator specific data */
-typedef struct ecs_rule_iter_t {
-    const ecs_filter_t *rule;
+typedef struct ecs_query_iter_t {
+    const ecs_query_t *rule;
     struct ecs_var_t *vars;              /* Variable storage */
-    const struct ecs_rule_var_t *rule_vars;
-    const struct ecs_rule_op_t *ops;
-    struct ecs_rule_op_ctx_t *op_ctx;    /* Operation-specific state */
+    const struct ecs_query_var_t *rule_vars;
+    const struct ecs_query_op_t *ops;
+    struct ecs_query_op_ctx_t *op_ctx;    /* Operation-specific state */
     uint64_t *written;
     ecs_flags32_t source_set;
 
 #ifdef FLECS_DEBUG
-    ecs_rule_op_profile_t *profile;
+    ecs_query_op_profile_t *profile;
 #endif
 
     int16_t op;
     int16_t sp;
-} ecs_rule_iter_t;
+} ecs_query_iter_t;
 
 /* Bits for tracking whether a cache was used/whether the array was allocated.
  * Used by flecs_iter_init, flecs_iter_validate and ecs_iter_fini. 
@@ -190,15 +190,15 @@ typedef struct ecs_iter_cache_t {
  * progress & to provide builtin storage. */
 typedef struct ecs_iter_private_t {
     union {
-        ecs_query_iter_t query;
-        ecs_rule_iter_t rule;
+        ecs_query_cache_iter_t query;
+        ecs_query_iter_t rule;
         ecs_snapshot_iter_t snapshot;
         ecs_page_iter_t page;
         ecs_worker_iter_t worker;
         ecs_each_iter_t each;
     } iter;                       /* Iterator specific data */
 
-    void *entity_iter;            /* Filter applied after matching a table */
+    void *entity_iter;            /* Query applied after matching a table */
     ecs_iter_cache_t cache;       /* Inline arrays to reduce allocations */
 } ecs_iter_private_t;
 

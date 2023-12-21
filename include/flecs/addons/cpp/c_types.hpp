@@ -17,15 +17,15 @@ namespace flecs {
 
 using world_t = ecs_world_t;
 using world_info_t = ecs_world_info_t;
-using query_group_info_t = ecs_query_group_info_t;
+using query_group_info_t = ecs_query_cache_group_info_t;
 using id_t = ecs_id_t;
 using entity_t = ecs_entity_t;
 using type_t = ecs_type_t;
 using table_t = ecs_table_t;
-using filter_t = ecs_filter_t;
+using filter_t = ecs_query_t;
 using observer_t = ecs_observer_t;
-using query_t = ecs_query_t;
-using rule_t = ecs_rule_t;
+using query_t = ecs_query_cache_t;
+using rule_t = ecs_query_impl_t;
 using ref_t = ecs_ref_t;
 using iter_t = ecs_iter_t;
 using type_info_t = ecs_type_info_t;
@@ -35,7 +35,7 @@ using flags32_t = ecs_flags32_t;
 enum inout_kind_t {
     InOutDefault = EcsInOutDefault,
     InOutNone = EcsInOutNone,
-    InOutFilter = EcsInOutFilter,
+    InOutQuery = EcsInOutQuery,
     InOut = EcsInOut,
     In = EcsIn,
     Out = EcsOut

@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 
     // Create a query for Position, Velocity. We'll create a few entities that
     // have Velocity as owned and shared component.
-    ecs_query_t *q = ecs_query(world, {
+    ecs_query_cache_t *q = ecs_query(world, {
         .filter = {
             .terms = {
                 // Position must always be owned by the entity
@@ -76,8 +76,8 @@ int main(int argc, char *argv[]) {
     // to check whether a field is owned or not in order to know how to access
     // it. In the case of an owned field it is iterated as an array, whereas
     // in the case of a shared field, it is accessed as a pointer.
-    ecs_iter_t it = ecs_query_iter(world, q);
-    while (ecs_query_next(&it)) {
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
+    while (ecs_query_cache_next(&it)) {
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
 

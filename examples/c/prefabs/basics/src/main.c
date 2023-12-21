@@ -46,14 +46,14 @@ int main(int argc, char *argv[]) {
     printf("defense after set: %f\n", d_inst->value); // now prints 100
 
     // Prefab components can be iterated like regular components:
-    ecs_query_t *q = ecs_query(ecs, {
+    ecs_query_cache_t *q = ecs_query(ecs, {
         .filter.terms = {
             { .id = ecs_id(Defense) }
         }
     });
 
-    ecs_iter_t it = ecs_query_iter(ecs, q);
-    while (ecs_query_next(&it)) {
+    ecs_iter_t it = ecs_query_cache_iter(ecs, q);
+    while (ecs_query_cache_next(&it)) {
         Defense *d = ecs_field(&it, Defense, 1);
         for (int i = 0; i < it.count; i ++) {
             printf("%s: defense: %f\n", 

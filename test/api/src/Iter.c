@@ -17,13 +17,13 @@ void Iter_page_iter_0_0(void) {
     ecs_add(world, e4, TagA);
     ecs_add(world, e5, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
+    ecs_iter_t it = ecs_query_iter(world, &f);
     ecs_iter_t pit = ecs_page_iter(&it, 0, 0);
 
     {
@@ -68,7 +68,7 @@ void Iter_page_iter_0_0(void) {
 
     test_bool(ecs_page_next(&pit), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -90,13 +90,13 @@ void Iter_page_iter_1_0(void) {
     ecs_add(world, e4, TagA);
     ecs_add(world, e5, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
+    ecs_iter_t it = ecs_query_iter(world, &f);
     ecs_iter_t pit = ecs_page_iter(&it, 1, 0);
 
     {
@@ -136,7 +136,7 @@ void Iter_page_iter_1_0(void) {
 
     test_bool(ecs_page_next(&pit), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -158,13 +158,13 @@ void Iter_page_iter_0_1(void) {
     ecs_add(world, e4, TagA);
     ecs_add(world, e5, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
+    ecs_iter_t it = ecs_query_iter(world, &f);
     ecs_iter_t pit = ecs_page_iter(&it, 0, 1);
 
     {
@@ -180,7 +180,7 @@ void Iter_page_iter_0_1(void) {
 
     test_bool(ecs_page_next(&pit), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -201,13 +201,13 @@ void Iter_page_iter_n_0(void) {
     ecs_add(world, e4, TagA);
     ecs_add(world, e5, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
+    ecs_iter_t it = ecs_query_iter(world, &f);
     ecs_iter_t pit = ecs_page_iter(&it, 2, 0);
 
     {
@@ -245,7 +245,7 @@ void Iter_page_iter_n_0(void) {
 
     test_bool(ecs_page_next(&pit), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -266,13 +266,13 @@ void Iter_page_iter_0_n(void) {
     ecs_add(world, e4, TagA);
     ecs_add(world, e5, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
+    ecs_iter_t it = ecs_query_iter(world, &f);
     ecs_iter_t pit = ecs_page_iter(&it, 0, 2);
 
     {
@@ -290,7 +290,7 @@ void Iter_page_iter_0_n(void) {
 
     test_bool(ecs_page_next(&pit), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -313,13 +313,13 @@ void Iter_page_iter_m_n(void) {
     ecs_add(world, e5, TagA);
     ecs_add(world, e6, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
+    ecs_iter_t it = ecs_query_iter(world, &f);
     ecs_iter_t pit = ecs_page_iter(&it, 2, 3);
 
     {
@@ -347,7 +347,7 @@ void Iter_page_iter_m_n(void) {
 
     test_bool(ecs_page_next(&pit), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -369,13 +369,13 @@ void Iter_page_iter_skip_1_table(void) {
     ecs_add(world, e4, TagA);
     ecs_add(world, e5, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
+    ecs_iter_t it = ecs_query_iter(world, &f);
     ecs_iter_t pit = ecs_page_iter(&it, 2, 0);
 
     {
@@ -404,7 +404,7 @@ void Iter_page_iter_skip_1_table(void) {
 
     test_bool(ecs_page_next(&pit), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -426,13 +426,13 @@ void Iter_page_iter_skip_2_tables(void) {
     ecs_add(world, e4, TagB);
     ecs_add(world, e5, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
+    ecs_iter_t it = ecs_query_iter(world, &f);
     ecs_iter_t pit = ecs_page_iter(&it, 3, 0);
 
     {
@@ -450,7 +450,7 @@ void Iter_page_iter_skip_2_tables(void) {
 
     test_bool(ecs_page_next(&pit), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -472,13 +472,13 @@ void Iter_worker_iter_1(void) {
     ecs_add(world, e4, TagA);
     ecs_add(world, e5, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
+    ecs_iter_t it = ecs_query_iter(world, &f);
     ecs_iter_t pit = ecs_worker_iter(&it, 0, 1);
 
     {
@@ -520,7 +520,7 @@ void Iter_worker_iter_1(void) {
 
     test_bool(ecs_worker_next(&pit), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -542,15 +542,15 @@ void Iter_worker_iter_2(void) {
     ecs_add(world, e4, TagA);
     ecs_add(world, e5, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }}
     });
 
-    ecs_iter_t it_1 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_1 = ecs_query_iter(world, &f);
     ecs_iter_t pit_1 = ecs_worker_iter(&it_1, 0, 2);
-    ecs_iter_t it_2 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_2 = ecs_query_iter(world, &f);
     ecs_iter_t pit_2 = ecs_worker_iter(&it_2, 1, 2);
 
     /* Iter 1 */
@@ -614,7 +614,7 @@ void Iter_worker_iter_2(void) {
 
     test_bool(ecs_worker_next(&pit_2), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -637,17 +637,17 @@ void Iter_worker_iter_3(void) {
     ecs_add(world, e5, TagA);
     ecs_add(world, e6, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }}
     });
 
-    ecs_iter_t it_1 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_1 = ecs_query_iter(world, &f);
     ecs_iter_t pit_1 = ecs_worker_iter(&it_1, 0, 3);
-    ecs_iter_t it_2 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_2 = ecs_query_iter(world, &f);
     ecs_iter_t pit_2 = ecs_worker_iter(&it_2, 1, 3);
-    ecs_iter_t it_3 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_3 = ecs_query_iter(world, &f);
     ecs_iter_t pit_3 = ecs_worker_iter(&it_3, 2, 3);
 
     /* Iter 1 */
@@ -725,7 +725,7 @@ void Iter_worker_iter_3(void) {
 
     test_bool(ecs_worker_next(&pit_3), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -753,19 +753,19 @@ void Iter_worker_iter_4(void) {
     ecs_add(world, e8, TagB);
     ecs_add(world, e9, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }}
     });
 
-    ecs_iter_t it_1 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_1 = ecs_query_iter(world, &f);
     ecs_iter_t pit_1 = ecs_worker_iter(&it_1, 0, 4);
-    ecs_iter_t it_2 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_2 = ecs_query_iter(world, &f);
     ecs_iter_t pit_2 = ecs_worker_iter(&it_2, 1, 4);
-    ecs_iter_t it_3 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_3 = ecs_query_iter(world, &f);
     ecs_iter_t pit_3 = ecs_worker_iter(&it_3, 2, 4);
-    ecs_iter_t it_4 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_4 = ecs_query_iter(world, &f);
     ecs_iter_t pit_4 = ecs_worker_iter(&it_4, 3, 4);
 
     /* Iter 1 */
@@ -879,7 +879,7 @@ void Iter_worker_iter_4(void) {
 
     test_bool(ecs_worker_next(&pit_4), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -904,14 +904,14 @@ void Iter_paged_iter_w_shared_comp(void) {
     ecs_add(world, e4, TagA);
     ecs_add(world, e5, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }, { ecs_id(Position), .src.id = foo} },
         .instanced = true
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
+    ecs_iter_t it = ecs_query_iter(world, &f);
     ecs_iter_t pit = ecs_page_iter(&it, 0, 0);
 
     {
@@ -974,7 +974,7 @@ void Iter_paged_iter_w_shared_comp(void) {
 
     test_bool(ecs_page_next(&pit), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -999,16 +999,16 @@ void Iter_worker_iter_w_shared_comp(void) {
     ecs_add(world, e4, TagA);
     ecs_add(world, e5, TagB);
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self) }, { ecs_id(Position), .src.id = foo} },
         .instanced = true
     });
 
-    ecs_iter_t it_1 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_1 = ecs_query_iter(world, &f);
     ecs_iter_t pit_1 = ecs_worker_iter(&it_1, 0, 2);
-    ecs_iter_t it_2 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_2 = ecs_query_iter(world, &f);
     ecs_iter_t pit_2 = ecs_worker_iter(&it_2, 1, 2);
 
     /* Iter 1 */
@@ -1107,7 +1107,7 @@ void Iter_worker_iter_w_shared_comp(void) {
 
     test_bool(ecs_worker_next(&pit_2), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1119,13 +1119,13 @@ void Iter_paged_iter_w_task_query(void) {
 
     ecs_entity_t foo = ecs_new_id(world); ecs_set(world, foo, Self, {foo});
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self), .src.id = foo }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, &f);
+    ecs_iter_t it = ecs_query_iter(world, &f);
     ecs_iter_t pit = ecs_page_iter(&it, 0, 0);
 
     {
@@ -1141,7 +1141,7 @@ void Iter_paged_iter_w_task_query(void) {
 
     test_bool(ecs_page_next(&pit), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1153,15 +1153,15 @@ void Iter_worker_iter_w_task_query(void) {
 
     ecs_entity_t foo = ecs_new_id(world); ecs_set(world, foo, Self, {foo});
 
-    ecs_filter_t f = ECS_FILTER_INIT;
-    ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t f = ECS_FILTER_INIT;
+    ecs_query_init(world, &(ecs_query_desc_t){
         .storage = &f,
         .terms = {{ ecs_id(Self), .src.id = foo }}
     });
 
-    ecs_iter_t it_1 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_1 = ecs_query_iter(world, &f);
     ecs_iter_t pit_1 = ecs_worker_iter(&it_1, 0, 2);
-    ecs_iter_t it_2 = ecs_filter_iter(world, &f);
+    ecs_iter_t it_2 = ecs_query_iter(world, &f);
     ecs_iter_t pit_2 = ecs_worker_iter(&it_2, 1, 2);
 
     /* Iter 1 */
@@ -1182,7 +1182,7 @@ void Iter_worker_iter_w_task_query(void) {
 
     test_bool(ecs_worker_next(&pit_2), false);
 
-    ecs_filter_fini(&f);
+    ecs_query_fini(&f);
 
     ecs_fini(world);
 }
@@ -1199,11 +1199,11 @@ void Iter_worker_iter_w_singleton(void) {
     ecs_entity_t e3 = ecs_set(world, 0, Position, {30, 40});
     ecs_entity_t e4 = ecs_set(world, 0, Position, {40, 50});
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Singleton($)");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position, Singleton($)");
 
     Position *p;
 
-    ecs_iter_t it_1 = ecs_query_iter(world, q);
+    ecs_iter_t it_1 = ecs_query_cache_iter(world, q);
     ecs_iter_t wit_1 = ecs_worker_iter(&it_1, 0, 2);
     test_bool(ecs_worker_next(&wit_1), true);
     test_int(wit_1.count, 2);
@@ -1215,7 +1215,7 @@ void Iter_worker_iter_w_singleton(void) {
     test_int(p[1].x, 20);
     test_int(p[1].y, 30);
 
-    ecs_iter_t it_2 = ecs_query_iter(world, q);
+    ecs_iter_t it_2 = ecs_query_cache_iter(world, q);
     ecs_iter_t wit_2 = ecs_worker_iter(&it_2, 1, 2);
     test_bool(ecs_worker_next(&wit_2), true);
     test_int(wit_2.count, 2);
@@ -1245,12 +1245,12 @@ void Iter_worker_iter_w_singleton_component(void) {
     ecs_entity_t e3 = ecs_set(world, 0, Position, {30, 40});
     ecs_entity_t e4 = ecs_set(world, 0, Position, {40, 50});
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Velocity($)");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position, Velocity($)");
 
     Position *p;
     Velocity *v;
 
-    ecs_iter_t it_1 = ecs_query_iter(world, q);
+    ecs_iter_t it_1 = ecs_query_cache_iter(world, q);
     ecs_iter_t wit_1 = ecs_worker_iter(&it_1, 0, 2);
     test_bool(ecs_worker_next(&wit_1), true);
     test_int(wit_1.count, 1);
@@ -1274,7 +1274,7 @@ void Iter_worker_iter_w_singleton_component(void) {
 
     test_bool(ecs_worker_next(&wit_1), false);
 
-    ecs_iter_t it_2 = ecs_query_iter(world, q);
+    ecs_iter_t it_2 = ecs_query_cache_iter(world, q);
     ecs_iter_t wit_2 = ecs_worker_iter(&it_2, 1, 2);
     test_bool(ecs_worker_next(&wit_2), true);
     test_int(wit_2.count, 1);
@@ -1313,7 +1313,7 @@ void Iter_worker_iter_w_singleton_instanced(void) {
     ecs_entity_t e3 = ecs_set(world, 0, Position, {30, 40});
     ecs_entity_t e4 = ecs_set(world, 0, Position, {40, 50});
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter = {
             .expr = "Position, Singleton($)",
             .instanced = true
@@ -1322,7 +1322,7 @@ void Iter_worker_iter_w_singleton_instanced(void) {
 
     Position *p;
 
-    ecs_iter_t it_1 = ecs_query_iter(world, q);
+    ecs_iter_t it_1 = ecs_query_cache_iter(world, q);
     ecs_iter_t wit_1 = ecs_worker_iter(&it_1, 0, 2);
     test_bool(ecs_worker_next(&wit_1), true);
     test_int(wit_1.count, 2);
@@ -1335,7 +1335,7 @@ void Iter_worker_iter_w_singleton_instanced(void) {
     test_int(p[1].y, 30);
     test_bool(ecs_worker_next(&wit_1), false);
 
-    ecs_iter_t it_2 = ecs_query_iter(world, q);
+    ecs_iter_t it_2 = ecs_query_cache_iter(world, q);
     ecs_iter_t wit_2 = ecs_worker_iter(&it_2, 1, 2);
     test_bool(ecs_worker_next(&wit_2), true);
     test_int(wit_2.count, 2);
@@ -1363,7 +1363,7 @@ void Iter_worker_iter_w_singleton_component_instanced(void) {
     ecs_entity_t e3 = ecs_set(world, 0, Position, {30, 40});
     ecs_entity_t e4 = ecs_set(world, 0, Position, {40, 50});
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter = {
             .expr = "Position, Velocity($)",
             .instanced = true
@@ -1373,7 +1373,7 @@ void Iter_worker_iter_w_singleton_component_instanced(void) {
     Position *p;
     Velocity *v;
 
-    ecs_iter_t it_1 = ecs_query_iter(world, q);
+    ecs_iter_t it_1 = ecs_query_cache_iter(world, q);
     ecs_iter_t wit_1 = ecs_worker_iter(&it_1, 0, 2);
     test_bool(ecs_worker_next(&wit_1), true);
     test_int(wit_1.count, 2);
@@ -1389,7 +1389,7 @@ void Iter_worker_iter_w_singleton_component_instanced(void) {
     test_int(v[0].y, 2);
     test_bool(ecs_worker_next(&wit_1), false);
 
-    ecs_iter_t it_2 = ecs_query_iter(world, q);
+    ecs_iter_t it_2 = ecs_query_cache_iter(world, q);
     ecs_iter_t wit_2 = ecs_worker_iter(&it_2, 1, 2);
     test_bool(ecs_worker_next(&wit_2), true);
     test_int(wit_2.count, 2);
@@ -1420,11 +1420,11 @@ void Iter_paged_iter_w_singleton(void) {
     ecs_entity_t e3 = ecs_set(world, 0, Position, {30, 40});
     ecs_entity_t e4 = ecs_set(world, 0, Position, {40, 50});
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Singleton($)");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position, Singleton($)");
 
     Position *p;
 
-    ecs_iter_t it_1 = ecs_query_iter(world, q);
+    ecs_iter_t it_1 = ecs_query_cache_iter(world, q);
     ecs_iter_t pit_1 = ecs_page_iter(&it_1, 0, 2);
     test_bool(ecs_page_next(&pit_1), true);
     test_int(pit_1.count, 2);
@@ -1437,7 +1437,7 @@ void Iter_paged_iter_w_singleton(void) {
     test_int(p[1].y, 30);
     test_bool(ecs_page_next(&pit_1), false);
 
-    ecs_iter_t it_2 = ecs_query_iter(world, q);
+    ecs_iter_t it_2 = ecs_query_cache_iter(world, q);
     ecs_iter_t pit_2 = ecs_page_iter(&it_2, 2, 2);
     test_bool(ecs_page_next(&pit_2), true);
     test_int(pit_2.count, 2);
@@ -1465,12 +1465,12 @@ void Iter_paged_iter_w_singleton_component(void) {
     ecs_entity_t e3 = ecs_set(world, 0, Position, {30, 40});
     ecs_entity_t e4 = ecs_set(world, 0, Position, {40, 50});
 
-    ecs_query_t *q = ecs_query_new(world, "Position, Velocity($)");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position, Velocity($)");
 
     Position *p;
     Velocity *v;
 
-    ecs_iter_t it_1 = ecs_query_iter(world, q);
+    ecs_iter_t it_1 = ecs_query_cache_iter(world, q);
     ecs_iter_t pit_1 = ecs_page_iter(&it_1, 0, 2);
     test_bool(ecs_page_next(&pit_1), true);
     test_int(pit_1.count, 1);
@@ -1492,7 +1492,7 @@ void Iter_paged_iter_w_singleton_component(void) {
     test_int(v[0].y, 2);
     test_bool(ecs_page_next(&pit_1), false);
 
-    ecs_iter_t it_2 = ecs_query_iter(world, q);
+    ecs_iter_t it_2 = ecs_query_cache_iter(world, q);
     ecs_iter_t pit_2 = ecs_page_iter(&it_2, 2, 2);
     test_bool(ecs_page_next(&pit_2), true);
     test_int(pit_2.count, 1);
@@ -1529,7 +1529,7 @@ void Iter_paged_iter_w_singleton_instanced(void) {
     ecs_entity_t e3 = ecs_set(world, 0, Position, {30, 40});
     ecs_entity_t e4 = ecs_set(world, 0, Position, {40, 50});
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter = {
             .expr = "Position, Singleton($)",
             .instanced = true
@@ -1538,7 +1538,7 @@ void Iter_paged_iter_w_singleton_instanced(void) {
 
     Position *p;
 
-    ecs_iter_t it_1 = ecs_query_iter(world, q);
+    ecs_iter_t it_1 = ecs_query_cache_iter(world, q);
     ecs_iter_t pit_1 = ecs_page_iter(&it_1, 0, 2);
     test_bool(ecs_page_next(&pit_1), true);
     test_int(pit_1.count, 2);
@@ -1551,7 +1551,7 @@ void Iter_paged_iter_w_singleton_instanced(void) {
     test_int(p[1].y, 30);
     test_bool(ecs_page_next(&pit_1), false);
 
-    ecs_iter_t it_2 = ecs_query_iter(world, q);
+    ecs_iter_t it_2 = ecs_query_cache_iter(world, q);
     ecs_iter_t pit_2 = ecs_page_iter(&it_2, 2, 2);
     test_bool(ecs_page_next(&pit_2), true);
     test_int(pit_2.count, 2);
@@ -1579,7 +1579,7 @@ void Iter_paged_iter_w_singleton_component_instanced(void) {
     ecs_entity_t e3 = ecs_set(world, 0, Position, {30, 40});
     ecs_entity_t e4 = ecs_set(world, 0, Position, {40, 50});
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter = {
             .expr = "Position, Velocity($)",
             .instanced = true
@@ -1589,7 +1589,7 @@ void Iter_paged_iter_w_singleton_component_instanced(void) {
     Position *p;
     Velocity *v;
 
-    ecs_iter_t it_1 = ecs_query_iter(world, q);
+    ecs_iter_t it_1 = ecs_query_cache_iter(world, q);
     ecs_iter_t pit_1 = ecs_page_iter(&it_1, 0, 2);
     test_bool(ecs_page_next(&pit_1), true);
     test_int(pit_1.count, 2);
@@ -1605,7 +1605,7 @@ void Iter_paged_iter_w_singleton_component_instanced(void) {
     test_int(v[0].y, 2);
     test_bool(ecs_page_next(&pit_1), false);
 
-    ecs_iter_t it_2 = ecs_query_iter(world, q);
+    ecs_iter_t it_2 = ecs_query_cache_iter(world, q);
     ecs_iter_t pit_2 = ecs_page_iter(&it_2, 2, 2);
     test_bool(ecs_page_next(&pit_2), true);
     test_int(pit_2.count, 2);
@@ -1641,10 +1641,10 @@ void Iter_count(void) {
         }
     }
 
-    ecs_query_t *q = ecs_query_new(world, "TagA");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "TagA");
     test_assert(q != NULL);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     test_int(500, ecs_iter_count(&it));
 
     ecs_fini(world);
@@ -1656,7 +1656,7 @@ void Iter_interleaved_iter(void) {
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ TagA }}
     });
 
@@ -1666,29 +1666,29 @@ void Iter_interleaved_iter(void) {
 
     /* Bit of whitebox testing, check whether the stack cursor is restored to
      * its original position after the 2nd iterator is done */
-    ecs_iter_t it_1 = ecs_filter_iter(world, f);
+    ecs_iter_t it_1 = ecs_query_iter(world, f);
     ecs_stack_cursor_t cursor = *it_1.priv.cache.stack_cursor;
-    ecs_iter_t it_2 = ecs_filter_iter(world, f);
+    ecs_iter_t it_2 = ecs_query_iter(world, f);
 
-    test_bool(true, ecs_filter_next(&it_1));
-    test_bool(true, ecs_filter_next(&it_2));
+    test_bool(true, ecs_query_next(&it_1));
+    test_bool(true, ecs_query_next(&it_2));
     test_int(e1, it_1.entities[0]);
     test_int(e1, it_2.entities[0]);
 
-    test_bool(true, ecs_filter_next(&it_1));
-    test_bool(true, ecs_filter_next(&it_2));
+    test_bool(true, ecs_query_next(&it_1));
+    test_bool(true, ecs_query_next(&it_2));
     test_int(e2, it_1.entities[0]);
     test_int(e2, it_2.entities[0]);
 
-    test_bool(false, ecs_filter_next(&it_1));
-    test_bool(false, ecs_filter_next(&it_2));
+    test_bool(false, ecs_query_next(&it_1));
+    test_bool(false, ecs_query_next(&it_2));
 
-    it_1 = ecs_filter_iter(world, f);
+    it_1 = ecs_query_iter(world, f);
     test_assert(it_1.priv.cache.stack_cursor->page == cursor.page);
     test_assert(it_1.priv.cache.stack_cursor->sp == cursor.sp);
     ecs_iter_fini(&it_1);
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1698,20 +1698,20 @@ void Iter_iter_restore_stack_iter(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ ecs_id(Position) }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     ecs_stack_cursor_t cursor = *it.priv.cache.stack_cursor;
     ecs_iter_fini(&it);
 
-    it = ecs_filter_iter(world, f);
+    it = ecs_query_iter(world, f);
     test_assert(it.priv.cache.stack_cursor->page == cursor.page);
     test_assert(it.priv.cache.stack_cursor->sp == cursor.sp);
     ecs_iter_fini(&it);
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1725,15 +1725,15 @@ void Iter_get_first(void) {
     ecs_new(world, Tag);
     ecs_new(world, Tag);
 
-    ecs_filter_t *f = ecs_filter_init(world, &(ecs_filter_desc_t){
+    ecs_query_t *f = ecs_query_init(world, &(ecs_query_desc_t){
         .terms = {{ Tag }}
     });
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     ecs_entity_t first = ecs_iter_first(&it);
     test_assert(first == e);
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1743,14 +1743,14 @@ void Iter_page_iter_w_only_tag(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ Tag }}
     });
     
     ecs_new(world, Tag);
     ecs_entity_t e2 = ecs_new(world, Tag);
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     ecs_iter_t pit = ecs_page_iter(&it, 1, 0);
 
     test_assert(ecs_page_next(&pit));
@@ -1758,7 +1758,7 @@ void Iter_page_iter_w_only_tag(void) {
     test_uint(pit.entities[0], e2);
     test_assert(!ecs_page_next(&pit));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1768,14 +1768,14 @@ void Iter_worker_iter_w_only_tag(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ Tag }}
     });
     
     ecs_new(world, Tag);
     ecs_entity_t e2 = ecs_new(world, Tag);
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     ecs_iter_t pit = ecs_worker_iter(&it, 1, 2);
 
     test_assert(ecs_worker_next(&pit));
@@ -1783,7 +1783,7 @@ void Iter_worker_iter_w_only_tag(void) {
     test_uint(pit.entities[0], e2);
     test_assert(!ecs_worker_next(&pit));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1793,14 +1793,14 @@ void Iter_page_iter_w_inout_none(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ ecs_id(Position), .inout = EcsInOutNone }}
     });
     
     ecs_new(world, Position);
     ecs_entity_t e2 = ecs_new(world, Position);
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     ecs_iter_t pit = ecs_page_iter(&it, 1, 0);
 
     test_assert(ecs_page_next(&pit));
@@ -1808,7 +1808,7 @@ void Iter_page_iter_w_inout_none(void) {
     test_uint(pit.entities[0], e2);
     test_assert(!ecs_page_next(&pit));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1818,14 +1818,14 @@ void Iter_worker_iter_w_inout_none(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ ecs_id(Position), .inout = EcsInOutNone }}
     });
     
     ecs_new(world, Position);
     ecs_entity_t e2 = ecs_new(world, Position);
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     ecs_iter_t pit = ecs_worker_iter(&it, 1, 2);
 
     test_assert(ecs_worker_next(&pit));
@@ -1833,7 +1833,7 @@ void Iter_worker_iter_w_inout_none(void) {
     test_uint(pit.entities[0], e2);
     test_assert(!ecs_worker_next(&pit));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1843,7 +1843,7 @@ void Iter_page_iter_w_ctx(void) {
 
     ECS_TAG(world, TagA);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ TagA  }}
     });
     
@@ -1851,7 +1851,7 @@ void Iter_page_iter_w_ctx(void) {
 
     int ctx;
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     it.ctx = &ctx;
 
     ecs_iter_t pit = ecs_page_iter(&it, 0, 1);
@@ -1860,7 +1860,7 @@ void Iter_page_iter_w_ctx(void) {
     test_assert(ecs_page_next(&pit));
     test_assert(!ecs_page_next(&pit));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1870,7 +1870,7 @@ void Iter_page_iter_w_binding_ctx(void) {
 
     ECS_TAG(world, TagA);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ TagA  }}
     });
     
@@ -1878,7 +1878,7 @@ void Iter_page_iter_w_binding_ctx(void) {
 
     int ctx;
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     it.binding_ctx = &ctx;
 
     ecs_iter_t pit = ecs_page_iter(&it, 0, 1);
@@ -1887,7 +1887,7 @@ void Iter_page_iter_w_binding_ctx(void) {
     test_assert(ecs_page_next(&pit));
     test_assert(!ecs_page_next(&pit));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1897,7 +1897,7 @@ void Iter_worker_iter_w_ctx(void) {
 
     ECS_TAG(world, TagA);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ TagA  }}
     });
     
@@ -1905,7 +1905,7 @@ void Iter_worker_iter_w_ctx(void) {
 
     int ctx;
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     it.ctx = &ctx;
 
     ecs_iter_t pit = ecs_worker_iter(&it, 0, 2);
@@ -1914,7 +1914,7 @@ void Iter_worker_iter_w_ctx(void) {
     test_assert(ecs_worker_next(&pit));
     test_assert(!ecs_worker_next(&pit));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1924,7 +1924,7 @@ void Iter_worker_iter_w_binding_ctx(void) {
 
     ECS_TAG(world, TagA);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ TagA  }}
     });
     
@@ -1932,7 +1932,7 @@ void Iter_worker_iter_w_binding_ctx(void) {
 
     int ctx;
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     it.binding_ctx = &ctx;
 
     ecs_iter_t pit = ecs_worker_iter(&it, 0, 2);
@@ -1941,7 +1941,7 @@ void Iter_worker_iter_w_binding_ctx(void) {
     test_assert(ecs_worker_next(&pit));
     test_assert(!ecs_worker_next(&pit));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1954,7 +1954,7 @@ void Iter_column_index_owned(void) {
     ECS_TAG(world, TagB);
     ECS_TAG(world, TagC);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ TagB }, { TagC }, { TagA }}
     });
 
@@ -1968,24 +1968,24 @@ void Iter_column_index_owned(void) {
     ecs_add(world, e2, TagB);
     ecs_add(world, e2, TagC);
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
-    test_bool(true, ecs_filter_next(&it));
+    ecs_iter_t it = ecs_query_iter(world, f);
+    test_bool(true, ecs_query_next(&it));
     test_int(1, it.count);
     test_uint(e1, it.entities[0]);
     test_int(1, ecs_field_column_index(&it, 1));
     test_int(2, ecs_field_column_index(&it, 2));
     test_int(0, ecs_field_column_index(&it, 3));
 
-    test_bool(true, ecs_filter_next(&it));
+    test_bool(true, ecs_query_next(&it));
     test_int(1, it.count);
     test_uint(e2, it.entities[0]);
     test_int(2, ecs_field_column_index(&it, 1));
     test_int(3, ecs_field_column_index(&it, 2));
     test_int(1, ecs_field_column_index(&it, 3));
     
-    test_bool(false, ecs_filter_next(&it));
+    test_bool(false, ecs_query_next(&it));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -1998,7 +1998,7 @@ void Iter_column_index_shared(void) {
     ECS_TAG(world, TagB);
     ECS_TAG(world, TagC);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ TagB }, { TagC }, { TagA }}
     });
 
@@ -2014,24 +2014,24 @@ void Iter_column_index_shared(void) {
     ecs_add(world, e2, TagB);
     ecs_add(world, e2, TagC);
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
-    test_bool(true, ecs_filter_next(&it));
+    ecs_iter_t it = ecs_query_iter(world, f);
+    test_bool(true, ecs_query_next(&it));
     test_int(1, it.count);
     test_uint(e1, it.entities[0]);
     test_int(0, ecs_field_column_index(&it, 1));
     test_int(1, ecs_field_column_index(&it, 2));
     test_int(-1, ecs_field_column_index(&it, 3));
 
-    test_bool(true, ecs_filter_next(&it));
+    test_bool(true, ecs_query_next(&it));
     test_int(1, it.count);
     test_uint(e2, it.entities[0]);
     test_int(1, ecs_field_column_index(&it, 1));
     test_int(2, ecs_field_column_index(&it, 2));
     test_int(-1, ecs_field_column_index(&it, 3));
     
-    test_bool(false, ecs_filter_next(&it));
+    test_bool(false, ecs_query_next(&it));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -2044,7 +2044,7 @@ void Iter_column_index_not(void) {
     ECS_TAG(world, TagB);
     ECS_TAG(world, TagC);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ TagB }, { TagC }, { TagA, .oper = EcsNot }}
     });
 
@@ -2056,24 +2056,24 @@ void Iter_column_index_not(void) {
     ecs_add(world, e2, TagB);
     ecs_add(world, e2, TagC);
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
-    test_bool(true, ecs_filter_next(&it));
+    ecs_iter_t it = ecs_query_iter(world, f);
+    test_bool(true, ecs_query_next(&it));
     test_int(1, it.count);
     test_uint(e1, it.entities[0]);
     test_int(0, ecs_field_column_index(&it, 1));
     test_int(1, ecs_field_column_index(&it, 2));
     test_int(-1, ecs_field_column_index(&it, 3));
 
-    test_bool(true, ecs_filter_next(&it));
+    test_bool(true, ecs_query_next(&it));
     test_int(1, it.count);
     test_uint(e2, it.entities[0]);
     test_int(1, ecs_field_column_index(&it, 1));
     test_int(2, ecs_field_column_index(&it, 2));
     test_int(-1, ecs_field_column_index(&it, 3));
     
-    test_bool(false, ecs_filter_next(&it));
+    test_bool(false, ecs_query_next(&it));
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -2084,7 +2084,7 @@ void Iter_page_iter_w_fini(void) {
     ECS_COMPONENT(world, Position);
     ECS_TAG(world, Foo);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ ecs_id(Position) }}
     });
 
@@ -2092,7 +2092,7 @@ void Iter_page_iter_w_fini(void) {
     ecs_entity_t e2 = ecs_set(world, 0, Position, {20, 30});
     ecs_add(world, e2, Foo);
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     ecs_iter_t pit = ecs_page_iter(&it, 0, 2);
     test_bool(true, ecs_page_next(&pit));
     test_int(pit.count, 1);
@@ -2100,7 +2100,7 @@ void Iter_page_iter_w_fini(void) {
     
     ecs_iter_fini(&pit);
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -2111,7 +2111,7 @@ void Iter_worker_iter_w_fini(void) {
     ECS_COMPONENT(world, Position);
     ECS_TAG(world, Foo);
 
-    ecs_filter_t *f = ecs_filter(world, {
+    ecs_query_t *f = ecs_filter(world, {
         .terms = {{ ecs_id(Position) }}
     });
 
@@ -2119,14 +2119,14 @@ void Iter_worker_iter_w_fini(void) {
     ecs_entity_t e2 = ecs_set(world, 0, Position, {20, 30});
     ecs_add(world, e2, Foo);
 
-    ecs_iter_t it = ecs_filter_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, f);
     ecs_iter_t pit = ecs_worker_iter(&it, 0, 2);
     test_bool(true, ecs_worker_next(&pit));
     test_int(pit.count, 1);
     test_int(pit.entities[0], e1);
     ecs_iter_fini(&pit);
 
-    ecs_filter_fini(f);
+    ecs_query_fini(f);
 
     ecs_fini(world);
 }
@@ -2137,7 +2137,7 @@ void Iter_rule_page_iter_w_fini(void) {
     ECS_COMPONENT(world, Position);
     ECS_TAG(world, Foo);
 
-    ecs_filter_t *r = ecs_rule(world, {
+    ecs_query_t *r = ecs_query(world, {
         .terms = {{ ecs_id(Position) }}
     });
 
@@ -2145,14 +2145,14 @@ void Iter_rule_page_iter_w_fini(void) {
     ecs_entity_t e2 = ecs_set(world, 0, Position, {20, 30});
     ecs_add(world, e2, Foo);
 
-    ecs_iter_t it = ecs_rule_iter(world, r);
+    ecs_iter_t it = ecs_query_iter(world, r);
     ecs_iter_t pit = ecs_page_iter(&it, 0, 2);
     test_bool(true, ecs_page_next(&pit));
     test_int(pit.count, 1);
     test_int(pit.entities[0], e1);
     ecs_iter_fini(&pit);
 
-    ecs_rule_fini(r);
+    ecs_query_fini(r);
 
     ecs_fini(world);
 }
@@ -2163,7 +2163,7 @@ void Iter_rule_worker_iter_w_fini(void) {
     ECS_COMPONENT(world, Position);
     ECS_TAG(world, Foo);
 
-    ecs_filter_t *r = ecs_rule(world, {
+    ecs_query_t *r = ecs_query(world, {
         .terms = {{ ecs_id(Position) }}
     });
 
@@ -2171,14 +2171,14 @@ void Iter_rule_worker_iter_w_fini(void) {
     ecs_entity_t e2 = ecs_set(world, 0, Position, {20, 30});
     ecs_add(world, e2, Foo);
 
-    ecs_iter_t it = ecs_rule_iter(world, r);
+    ecs_iter_t it = ecs_query_iter(world, r);
     ecs_iter_t pit = ecs_worker_iter(&it, 0, 2);
     test_bool(true, ecs_worker_next(&pit));
     test_int(pit.count, 1);
     test_int(pit.entities[0], e1);
     ecs_iter_fini(&pit);
 
-    ecs_rule_fini(r);
+    ecs_query_fini(r);
 
     ecs_fini(world);
 }
@@ -2188,13 +2188,13 @@ void Iter_to_str_before_next(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Tag");
     test_assert(q != NULL);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     char *str = ecs_iter_str(&it);
     test_assert(str == NULL);
-    test_bool(false, ecs_query_next(&it));
+    test_bool(false, ecs_query_cache_next(&it));
 
     ecs_fini(world);
 }
@@ -2207,11 +2207,11 @@ void Iter_to_str(void) {
     ecs_entity_t e = ecs_new_entity(world, "foo");
     ecs_add(world, e, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Tag");
     test_assert(q != NULL);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
-    test_bool(true, ecs_query_next(&it));
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
+    test_bool(true, ecs_query_cache_next(&it));
     char *str = ecs_iter_str(&it);
     test_assert(str != NULL);
     test_str(str, 
@@ -2222,7 +2222,7 @@ void Iter_to_str(void) {
         "    - foo\n"
     );
     ecs_os_free(str);
-    test_bool(false, ecs_query_next(&it));
+    test_bool(false, ecs_query_cache_next(&it));
 
     ecs_fini(world);
 }

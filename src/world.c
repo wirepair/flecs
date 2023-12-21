@@ -79,7 +79,7 @@ const ecs_entity_t EcsOnDeleteTarget =              FLECS_HI_COMPONENT_ID + 46;
 /* Timers */
 const ecs_entity_t ecs_id(EcsTickSource) =          FLECS_HI_COMPONENT_ID + 47;
 const ecs_entity_t ecs_id(EcsTimer) =               FLECS_HI_COMPONENT_ID + 48;
-const ecs_entity_t ecs_id(EcsRateFilter) =          FLECS_HI_COMPONENT_ID + 49;
+const ecs_entity_t ecs_id(EcsRateQuery) =          FLECS_HI_COMPONENT_ID + 49;
 
 /* Actions */
 const ecs_entity_t EcsRemove =                      FLECS_HI_COMPONENT_ID + 50;
@@ -446,10 +446,10 @@ void flecs_eval_component_monitor(
         m->is_dirty = false;
 
         int32_t i, count = ecs_vec_count(&m->queries);
-        ecs_query_t **elems = ecs_vec_first(&m->queries);
+        ecs_query_cache_t **elems = ecs_vec_first(&m->queries);
         for (i = 0; i < count; i ++) {
-            ecs_query_t *q = elems[i];
-            flecs_query_notify(world, q, &(ecs_query_event_t) {
+            ecs_query_cache_t *q = elems[i];
+            flecs_query_cache_notify(world, q, &(ecs_query_cache_event_t) {
                 .kind = EcsQueryTableRematch
             });
         }
@@ -479,7 +479,7 @@ void flecs_monitor_mark_dirty(
 void flecs_monitor_register(
     ecs_world_t *world,
     ecs_entity_t id,
-    ecs_query_t *query)
+    ecs_query_cache_t *query)
 {
     ecs_assert(world != NULL, ECS_INTERNAL_ERROR, NULL);
     ecs_assert(id != 0, ECS_INTERNAL_ERROR, NULL);
@@ -488,16 +488,16 @@ void flecs_monitor_register(
     ecs_map_t *monitors = &world->monitors.monitors;
     ecs_map_init_if(monitors, &world->allocator);
     ecs_monitor_t *m = ecs_map_ensure_alloc_t(monitors, ecs_monitor_t, id);
-    ecs_vec_init_if_t(&m->queries, ecs_query_t*);
-    ecs_query_t **q = ecs_vec_append_t(
-        &world->allocator, &m->queries, ecs_query_t*);
+    ecs_vec_init_if_t(&m->queries, ecs_query_cache_t*);
+    ecs_query_cache_t **q = ecs_vec_append_t(
+        &world->allocator, &m->queries, ecs_query_cache_t*);
     *q = query;
 }
 
 void flecs_monitor_unregister(
     ecs_world_t *world,
     ecs_entity_t id,
-    ecs_query_t *query)
+    ecs_query_cache_t *query)
 {
     ecs_assert(world != NULL, ECS_INTERNAL_ERROR, NULL);
     ecs_assert(id != 0, ECS_INTERNAL_ERROR, NULL);
@@ -514,17 +514,17 @@ void flecs_monitor_unregister(
     }
 
     int32_t i, count = ecs_vec_count(&m->queries);
-    ecs_query_t **queries = ecs_vec_first(&m->queries);
+    ecs_query_cache_t **queries = ecs_vec_first(&m->queries);
     for (i = 0; i < count; i ++) {
         if (queries[i] == query) {
-            ecs_vec_remove_t(&m->queries, ecs_query_t*, i);
+            ecs_vec_remove_t(&m->queries, ecs_query_cache_t*, i);
             count --;
             break;
         }
     }
 
     if (!count) {
-        ecs_vec_fini_t(&world->allocator, &m->queries, ecs_query_t*);
+        ecs_vec_fini_t(&world->allocator, &m->queries, ecs_query_cache_t*);
         ecs_map_remove_free(monitors, id);
     }
 
@@ -607,7 +607,7 @@ void flecs_fini_root_tables(
     while ((tr = flecs_table_cache_next(&it, ecs_table_record_t))) {
         ecs_table_t *table = tr->hdr.table;
         if (table->flags & EcsTableHasBuiltins) {
-            continue; /* Filter out modules */
+            continue; /* Query out modules */
         }
 
         int32_t i, count = table->data.entities.count;
@@ -725,8 +725,8 @@ void flecs_world_allocators_init(
     ecs_map_params_init(&a->ptr, &world->allocator);
     ecs_map_params_init(&a->query_table_list, &world->allocator);
 
-    flecs_ballocator_init_t(&a->query_table, ecs_query_table_t);
-    flecs_ballocator_init_t(&a->query_table_match, ecs_query_table_match_t);
+    flecs_ballocator_init_t(&a->query_table, ecs_query_cache_table_t);
+    flecs_ballocator_init_t(&a->query_table_match, ecs_query_cache_table_match_t);
     flecs_ballocator_init_n(&a->graph_edge_lo, ecs_graph_edge_t, FLECS_HI_COMPONENT_ID);
     flecs_ballocator_init_t(&a->graph_edge, ecs_graph_edge_t);
     flecs_ballocator_init_t(&a->id_record, ecs_id_record_t);
@@ -1937,9 +1937,9 @@ void flecs_process_empty_queries(
             int32_t i, count = ecs_table_count(table);
 
             for (i = 0; i < count; i ++) {
-                ecs_query_t *query = queries[i].poly;
+                ecs_query_cache_t *query = queries[i].poly;
                 ecs_entity_t *entities = table->data.entities.array;
-                if (!ecs_query_table_count(query)) {
+                if (!ecs_query_cache_table_count(query)) {
                     ecs_add_id(world, entities[i], EcsEmpty);
                 }
             }

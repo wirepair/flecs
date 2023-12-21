@@ -6,10 +6,10 @@
 #include "../private_api.h"
 
 static
-void flecs_rule_build_down_cache(
+void flecs_query_build_down_cache(
     ecs_world_t *world,
     ecs_allocator_t *a,
-    const ecs_rule_run_ctx_t *ctx,
+    const ecs_query_run_ctx_t *ctx,
     ecs_trav_cache_t *cache,
     ecs_entity_t trav,
     ecs_entity_t entity)
@@ -39,7 +39,7 @@ void flecs_rule_build_down_cache(
             for (i = 0; i < count; i ++) {
                 ecs_record_t *r = flecs_entities_get(world, entities[i]);
                 if (r->row & EcsEntityIsTraversable) {
-                    flecs_rule_build_down_cache(
+                    flecs_query_build_down_cache(
                         world, a, ctx, cache, trav, entities[i]);
                 }
             }
@@ -48,10 +48,10 @@ void flecs_rule_build_down_cache(
 }
 
 static
-void flecs_rule_build_up_cache(
+void flecs_query_build_up_cache(
     ecs_world_t *world,
     ecs_allocator_t *a,
-    const ecs_rule_run_ctx_t *ctx,
+    const ecs_query_run_ctx_t *ctx,
     ecs_trav_cache_t *cache,
     ecs_entity_t trav,
     ecs_table_t *table,
@@ -81,44 +81,44 @@ void flecs_rule_build_up_cache(
             if (!r_tr) {
                 return;
             }
-            flecs_rule_build_up_cache(world, a, ctx, cache, trav, r->table, 
+            flecs_query_build_up_cache(world, a, ctx, cache, trav, r->table, 
                 r_tr, root_column);
         }
     }
 }
 
-void flecs_rule_trav_cache_fini(
+void flecs_query_impl_trav_cache_fini(
     ecs_allocator_t *a,
     ecs_trav_cache_t *cache)
 {
     ecs_vec_fini_t(a, &cache->entities, ecs_trav_elem_t);
 }
 
-void flecs_rule_get_trav_down_cache(
-    const ecs_rule_run_ctx_t *ctx,
+void flecs_query_get_trav_down_cache(
+    const ecs_query_run_ctx_t *ctx,
     ecs_trav_cache_t *cache,
     ecs_entity_t trav,
     ecs_entity_t entity)
 {
     if (cache->id != ecs_pair(trav, entity) || cache->up) {
         ecs_world_t *world = ctx->it->real_world;
-        ecs_allocator_t *a = flecs_rule_get_allocator(ctx->it);
+        ecs_allocator_t *a = flecs_query_get_allocator(ctx->it);
         ecs_vec_reset_t(a, &cache->entities, ecs_trav_elem_t);
-        flecs_rule_build_down_cache(world, a, ctx, cache, trav, entity);
+        flecs_query_build_down_cache(world, a, ctx, cache, trav, entity);
         cache->id = ecs_pair(trav, entity);
         cache->up = false;
     }
 }
 
-void flecs_rule_get_trav_up_cache(
-    const ecs_rule_run_ctx_t *ctx,
+void flecs_query_get_trav_up_cache(
+    const ecs_query_run_ctx_t *ctx,
     ecs_trav_cache_t *cache,
     ecs_entity_t trav,
     ecs_table_t *table)
 {
     ecs_assert(table != NULL, ECS_INTERNAL_ERROR, NULL);
     ecs_world_t *world = ctx->it->real_world;
-    ecs_allocator_t *a = flecs_rule_get_allocator(ctx->it);
+    ecs_allocator_t *a = flecs_query_get_allocator(ctx->it);
 
     ecs_id_record_t *idr = cache->idr;
     if (!idr || idr->id != ecs_pair(trav, EcsWildcard)) {
@@ -140,7 +140,7 @@ void flecs_rule_get_trav_up_cache(
 
     if (cache->id != id || !cache->up) {
         ecs_vec_reset_t(a, &cache->entities, ecs_trav_elem_t);
-        flecs_rule_build_up_cache(world, a, ctx, cache, trav, table, tr, -1);
+        flecs_query_build_up_cache(world, a, ctx, cache, trav, table, tr, -1);
         cache->id = id;
         cache->up = true;
     }

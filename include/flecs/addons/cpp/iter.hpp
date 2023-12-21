@@ -385,7 +385,7 @@ public:
     /** Check if the current table has changed since the last iteration.
      * Can only be used when iterating queries and/or systems. */
     bool changed() {
-        return ecs_query_changed(nullptr, m_iter);
+        return ecs_query_cache_changed(nullptr, m_iter);
     }
 
     /** Skip current table.
@@ -396,7 +396,7 @@ public:
      * When this operation is invoked, the components of the current table will
      * not be marked dirty. */
     void skip() {
-        ecs_query_skip(m_iter);
+        ecs_query_cache_skip(m_iter);
     }
 
     /* Return group id for current table (grouped queries only) */

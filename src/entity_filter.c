@@ -1,6 +1,6 @@
 /**
  * @file entity_filter.c
- * @brief Filters that are applied to entities in a table.
+ * @brief Querys that are applied to entities in a table.
  * 
  * After a table has been matched by a query, additional filters may have to
  * be applied before returning entities to the application. The two scenarios
@@ -367,7 +367,7 @@ int32_t flecs_get_flattened_target(
 void flecs_entity_filter_init(
     ecs_world_t *world,
     ecs_entity_filter_t **entity_filter,
-    const ecs_filter_t *filter,
+    const ecs_query_t *filter,
     const ecs_table_t *table,
     ecs_id_t *ids,
     int32_t *columns)

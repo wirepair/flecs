@@ -804,11 +804,11 @@ void Pairs_pair_w_component_query(void) {
     ecs_entity_t e = ecs_new(world, 0);
     ecs_add_pair(world, e, ecs_id(Rel), ecs_id(Position));
 
-    ecs_query_t *q = ecs_query_new(world, "(Rel, Position)");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "(Rel, Position)");
     
     int32_t count = 0;
-    ecs_iter_t it = ecs_query_iter(world, q);
-    while (ecs_query_next(&it)) {
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
+    while (ecs_query_cache_next(&it)) {
         Rel *t = ecs_field(&it, Rel, 1);
         test_assert(t != NULL);
 
@@ -834,11 +834,11 @@ void Pairs_query_pair_or_component(void) {
     ecs_add_pair(world, e1, Rel, ecs_id(Position));
     ecs_entity_t e2 = ecs_new(world, Position);
 
-    ecs_query_t *q = ecs_query_new(world, "(Rel, Position) || Position");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "(Rel, Position) || Position");
     
     int32_t count = 0;
-    ecs_iter_t it = ecs_query_iter(world, q);
-    while (ecs_query_next(&it)) {
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
+    while (ecs_query_cache_next(&it)) {
         int i;
         for (i = 0; i < it.count; i ++) {
             test_assert(it.entities[i] == e1 || it.entities[i] == e2);
@@ -863,11 +863,11 @@ void Pairs_query_pair_or_pair(void) {
     ecs_entity_t e2 = ecs_new(world, Position);
     ecs_add_pair(world, e2, RelB, ecs_id(Position));
 
-    ecs_query_t *q = ecs_query_new(world, "(RelA, Position) || (RelB, Position)");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "(RelA, Position) || (RelB, Position)");
     
     int32_t count = 0;
-    ecs_iter_t it = ecs_query_iter(world, q);
-    while (ecs_query_next(&it)) {
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
+    while (ecs_query_cache_next(&it)) {
         int i;
         for (i = 0; i < it.count; i ++) {
             test_assert(it.entities[i] == e1 || it.entities[i] == e2);
@@ -890,11 +890,11 @@ void Pairs_query_not_pair(void) {
     ecs_entity_t e2 = ecs_new(world, Position);
     ecs_add_pair(world, e2, Rel, ecs_id(Position));
 
-    ecs_query_t *q = ecs_query_new(world, "!(Rel, Position), Position");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "!(Rel, Position), Position");
     
     int32_t count = 0;
-    ecs_iter_t it = ecs_query_iter(world, q);
-    while (ecs_query_next(&it)) {
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
+    while (ecs_query_cache_next(&it)) {
         Position *t = ecs_field(&it, Position, 1);
         test_assert(t == NULL);
         Position *p = ecs_field(&it, Position, 2);
@@ -1021,7 +1021,7 @@ void Pairs_dsl_pair(void) {
     ECS_TAG(world, Obj);
     ECS_TAG(world, Obj_2);
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.expr = "(Rel, Obj)"
     });
 
@@ -1043,14 +1043,14 @@ void Pairs_dsl_pair(void) {
         .add = {ecs_pair(Rel_2, Obj_2)} });
     test_assert(e4 != 0);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e1);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel, Obj));
 
-    test_bool(ecs_query_next(&it), false); 
+    test_bool(ecs_query_cache_next(&it), false); 
 
     ecs_fini(world);
 }
@@ -1063,7 +1063,7 @@ void Pairs_dsl_pair_w_pred_wildcard(void) {
     ECS_TAG(world, Obj);
     ECS_TAG(world, Obj_2);
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.expr = "(*, Obj)"
     });
 
@@ -1085,19 +1085,19 @@ void Pairs_dsl_pair_w_pred_wildcard(void) {
         .add = {ecs_pair(Rel_2, Obj_2)} });
     test_assert(e4 != 0);    
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e1);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel, Obj));
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e3);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel_2, Obj));
 
-    test_bool(ecs_query_next(&it), false); 
+    test_bool(ecs_query_cache_next(&it), false); 
 
     ecs_fini(world);
 }
@@ -1110,7 +1110,7 @@ void Pairs_dsl_pair_w_obj_wildcard(void) {
     ECS_TAG(world, Obj);
     ECS_TAG(world, Obj_2);
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.expr = "(Rel_2, *)"
     });
 
@@ -1132,19 +1132,19 @@ void Pairs_dsl_pair_w_obj_wildcard(void) {
         .add = {ecs_pair(Rel_2, Obj_2)} });
     test_assert(e4 != 0);    
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e3);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel_2, Obj));
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e4);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel_2, Obj_2));
 
-    test_bool(ecs_query_next(&it), false); 
+    test_bool(ecs_query_cache_next(&it), false); 
 
     ecs_fini(world);
 }
@@ -1159,7 +1159,7 @@ void Pairs_dsl_pair_w_both_wildcard(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.expr = "(*, *), Tag" // add Tag or we'd match builtin entities
     });
 
@@ -1181,30 +1181,30 @@ void Pairs_dsl_pair_w_both_wildcard(void) {
         .add = {ecs_pair(Rel_2, Obj_2), Tag} });
     test_assert(e4 != 0);    
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e1);
 
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel, Obj));
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e2);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel, Obj_2));
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e3);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel_2, Obj));
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e4);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel_2, Obj_2));
 
-    test_bool(ecs_query_next(&it), false); 
+    test_bool(ecs_query_cache_next(&it), false); 
 
     ecs_fini(world);
 }
@@ -1217,7 +1217,7 @@ void Pairs_dsl_pair_w_explicit_subj_this(void) {
     ECS_TAG(world, Obj);
     ECS_TAG(world, Obj_2);
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.expr = "Rel($This, Obj)"
     });
 
@@ -1239,14 +1239,14 @@ void Pairs_dsl_pair_w_explicit_subj_this(void) {
         .add = {ecs_pair(Rel_2, Obj_2)} });
     test_assert(e4 != 0);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e1);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel, Obj));
 
-    test_bool(ecs_query_next(&it), false); 
+    test_bool(ecs_query_cache_next(&it), false); 
 
     ecs_fini(world);
 }
@@ -1265,7 +1265,7 @@ void Pairs_dsl_pair_w_explicit_subj(void) {
         .name = "Subj", .add = {ecs_pair(Rel, Obj)} });
     test_assert(Subj != 0);
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.expr = "Rel(Subj, Obj), Tag"
     });
 
@@ -1287,15 +1287,15 @@ void Pairs_dsl_pair_w_explicit_subj(void) {
         .add = {ecs_pair(Rel_2, Obj_2), Tag} });
     test_assert(e4 != 0);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e4);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel, Obj));
     test_int(ecs_field_src(&it, 1), Subj);
 
-    test_bool(ecs_query_next(&it), false); 
+    test_bool(ecs_query_cache_next(&it), false); 
 
     ecs_fini(world);
 }
@@ -1308,7 +1308,7 @@ void Pairs_api_pair(void) {
     ECS_TAG(world, Obj);
     ECS_TAG(world, Obj_2);
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.terms = {{ecs_pair(Rel, Obj)}}
     });
 
@@ -1330,14 +1330,14 @@ void Pairs_api_pair(void) {
         .add = {ecs_pair(Rel_2, Obj_2)} });
     test_assert(e4 != 0);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e1);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel, Obj));
 
-    test_bool(ecs_query_next(&it), false); 
+    test_bool(ecs_query_cache_next(&it), false); 
 
     ecs_fini(world);
 }
@@ -1350,7 +1350,7 @@ void Pairs_api_pair_w_pred_wildcard(void) {
     ECS_TAG(world, Obj);
     ECS_TAG(world, Obj_2);
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.terms = {{ecs_pair(EcsWildcard, Obj)}}
     });
 
@@ -1372,19 +1372,19 @@ void Pairs_api_pair_w_pred_wildcard(void) {
         .add = {ecs_pair(Rel_2, Obj_2)} });
     test_assert(e4 != 0);    
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e1);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel, Obj));
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e3);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel_2, Obj));
 
-    test_bool(ecs_query_next(&it), false); 
+    test_bool(ecs_query_cache_next(&it), false); 
 
     ecs_fini(world);
 }
@@ -1397,7 +1397,7 @@ void Pairs_api_pair_w_obj_wildcard(void) {
     ECS_TAG(world, Obj);
     ECS_TAG(world, Obj_2);
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.terms = {{ecs_pair(Rel_2, EcsWildcard)}}
     });
 
@@ -1419,19 +1419,19 @@ void Pairs_api_pair_w_obj_wildcard(void) {
         .add = {ecs_pair(Rel_2, Obj_2)} });
     test_assert(e4 != 0);    
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e3);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel_2, Obj));
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e4);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel_2, Obj_2));
 
-    test_bool(ecs_query_next(&it), false); 
+    test_bool(ecs_query_cache_next(&it), false); 
 
     ecs_fini(world);
 }
@@ -1446,7 +1446,7 @@ void Pairs_api_pair_w_both_wildcard(void) {
 
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         // add Tag or we'd match builtin entities
         .filter.terms = {{ecs_pair(EcsWildcard, EcsWildcard)}, {Tag}} 
     });
@@ -1469,29 +1469,29 @@ void Pairs_api_pair_w_both_wildcard(void) {
         .add = {ecs_pair(Rel_2, Obj_2), Tag} });
     test_assert(e4 != 0);    
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e1);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel, Obj));
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e2);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel, Obj_2));
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e3);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel_2, Obj));
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e4);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel_2, Obj_2));
 
-    test_bool(ecs_query_next(&it), false); 
+    test_bool(ecs_query_cache_next(&it), false); 
 
     ecs_fini(world);
 }
@@ -1504,7 +1504,7 @@ void Pairs_api_pair_w_explicit_subj_this(void) {
     ECS_TAG(world, Obj);
     ECS_TAG(world, Obj_2);
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.terms = {
             { ecs_pair(Rel, Obj), .src.id = EcsThis }
         }
@@ -1528,14 +1528,14 @@ void Pairs_api_pair_w_explicit_subj_this(void) {
         .add = {ecs_pair(Rel_2, Obj_2)} });
     test_assert(e4 != 0);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e1);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel, Obj));
 
-    test_bool(ecs_query_next(&it), false); 
+    test_bool(ecs_query_cache_next(&it), false); 
 
     ecs_fini(world);
 }
@@ -1554,7 +1554,7 @@ void Pairs_api_pair_w_explicit_subj(void) {
         .name = "Subj", .add = {ecs_pair(Rel, Obj)} });
     test_assert(Subj != 0);
 
-    ecs_query_t *q = ecs_query_init(world, &(ecs_query_desc_t){
+    ecs_query_cache_t *q = ecs_query_cache_init(world, &(ecs_query_desc_t){
         .filter.terms = {{ecs_pair(Rel, Obj), .src.id = Subj}, {Tag}}
     });
 
@@ -1576,15 +1576,15 @@ void Pairs_api_pair_w_explicit_subj(void) {
         .add = {ecs_pair(Rel_2, Obj_2), Tag} });
     test_assert(e4 != 0);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_int(it.entities[0], e4);
     test_int(ecs_field_id(&it, 1), ecs_pair(Rel, Obj));
     test_int(ecs_field_src(&it, 1), Subj);
 
-    test_bool(ecs_query_next(&it), false); 
+    test_bool(ecs_query_cache_next(&it), false); 
 
     ecs_fini(world);
 }

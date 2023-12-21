@@ -246,9 +246,9 @@ bool flecs_ignore_observer(
     ecs_flags32_t table_flags = table->flags, filter_flags = observer->query->flags;
 
     bool result = (table_flags & EcsTableIsPrefab) &&
-        !(filter_flags & EcsFilterMatchPrefab);
+        !(filter_flags & EcsQueryMatchPrefab);
     result = result || ((table_flags & EcsTableIsDisabled) &&
-        !(filter_flags & EcsFilterMatchDisabled));
+        !(filter_flags & EcsQueryMatchDisabled));
 
     return result;
 }
@@ -281,7 +281,7 @@ void flecs_observer_invoke(
 
     world->info.observers_ran_frame ++;
 
-    ecs_filter_t *query = observer->query;
+    ecs_query_t *query = observer->query;
     ecs_assert(term_index < query->term_count, ECS_INTERNAL_ERROR, NULL);
     ecs_term_t *term = &query->terms[term_index];
     if (term->oper != EcsNot) {
@@ -289,8 +289,8 @@ void flecs_observer_invoke(
             ECS_INTERNAL_ERROR, NULL);
     }
 
-    bool instanced = query->flags & EcsFilterIsInstanced;
-    bool match_this = query->flags & EcsFilterMatchThis;
+    bool instanced = query->flags & EcsQueryIsInstanced;
+    bool match_this = query->flags & EcsQueryMatchThis;
     bool table_only = it->flags & EcsIterTableOnly;
     if (match_this && (simple_result || instanced || table_only)) {
         callback(it);
@@ -355,7 +355,7 @@ void flecs_uni_observer_invoke(
     int32_t evtx,
     bool simple_result)
 {
-    ecs_filter_t *query = observer->query;
+    ecs_query_t *query = observer->query;
     ecs_term_t *term = &query->terms[0];
     if (flecs_ignore_observer(observer, table, evtx)) {
         return;
@@ -431,7 +431,7 @@ bool flecs_multi_observer_invoke(ecs_iter_t *it) {
     user_it.terms = o->query->terms;
     user_it.flags = 0;
     ECS_BIT_COND(user_it.flags, EcsIterNoData,    
-        ECS_BIT_IS_SET(o->query->flags, EcsFilterNoData));
+        ECS_BIT_IS_SET(o->query->flags, EcsQueryNoData));
     user_it.ids = NULL;
     user_it.columns = NULL;
     user_it.sources = NULL;
@@ -469,13 +469,13 @@ bool flecs_multi_observer_invoke(ecs_iter_t *it) {
     user_it.sizes = o->query->sizes;
 
     ecs_iter_t table_it;
-    if (ecs_rule_has_table(o->query, table, &table_it)) {
+    if (ecs_query_has_table(o->query, table, &table_it)) {
         ecs_iter_fini(&table_it);
 
         /* Monitor observers only invoke when the filter matches for the first
          * time with an entity */
         if (o->is_monitor) {
-            if (ecs_rule_has_table(o->query, prev_table, &table_it)) {
+            if (ecs_query_has_table(o->query, prev_table, &table_it)) {
                 ecs_iter_fini(&table_it);
                 goto done;
             }
@@ -486,7 +486,7 @@ bool flecs_multi_observer_invoke(ecs_iter_t *it) {
          * Repeat the matching process for the non-matching table so we get the
          * correct column ids and sources, which we need for populate_data */
         if (term->oper == EcsNot) {
-            ecs_rule_has_table(o->query, prev_table, &user_it);
+            ecs_query_has_table(o->query, prev_table, &user_it);
         }
 
         flecs_iter_populate_data(world, &user_it, it->table, it->offset, 
@@ -613,7 +613,7 @@ void flecs_multi_observer_yield_existing(
 
     ecs_defer_begin(world);
 
-    int32_t pivot_term = flecs_rule_pivot_term(world, observer->query);
+    int32_t pivot_term = flecs_query_pivot_term(world, observer->query);
     if (pivot_term < 0) {
         return;
     }
@@ -700,7 +700,7 @@ int flecs_multi_observer_init(
     observer->is_multi = true;
 
     /* Create a child observer for each term in the filter */
-    ecs_filter_t *query = observer->query;
+    ecs_query_t *query = observer->query;
     ecs_observer_desc_t child_desc = *desc;
     child_desc.last_event_id = observer->last_event_id;
     child_desc.run = NULL;
@@ -718,7 +718,7 @@ int flecs_multi_observer_init(
         ecs_entity_t, observer->event_count);
 
     int i, term_count = query->term_count;
-    bool optional_only = query->flags & EcsFilterMatchThis;
+    bool optional_only = query->flags & EcsQueryMatchThis;
     for (i = 0; i < term_count; i ++) {
         if (query->terms[i].oper != EcsOptional) {
             if (ecs_term_match_this(&query->terms[i])) {
@@ -727,18 +727,18 @@ int flecs_multi_observer_init(
         }
     }
 
-    if (query->flags & EcsFilterMatchPrefab) {
-        child_desc.filter.flags |= EcsFilterMatchPrefab;
+    if (query->flags & EcsQueryMatchPrefab) {
+        child_desc.filter.flags |= EcsQueryMatchPrefab;
     }
-    if (query->flags & EcsFilterMatchDisabled) {
-        child_desc.filter.flags |= EcsFilterMatchDisabled;
+    if (query->flags & EcsQueryMatchDisabled) {
+        child_desc.filter.flags |= EcsQueryMatchDisabled;
     }
 
     /* Create observers as children of observer */
     ecs_entity_t old_scope = ecs_set_scope(world, observer->query->entity);
 
     for (i = 0; i < term_count; i ++) {
-        if (query->terms[i].inout == EcsInOutFilter) {
+        if (query->terms[i].inout == EcsInOutQuery) {
             continue;
         }
 
@@ -836,10 +836,10 @@ ecs_entity_t ecs_observer_init(
         /* Make writeable copy of filter desc so that we can set name. This will
          * make debugging easier, as any error messages related to creating the
          * filter will have the name of the observer. */
-        ecs_filter_desc_t query_desc = desc->filter;
+        ecs_query_desc_t query_desc = desc->filter;
 
         /* Parse filter */
-        ecs_filter_t *query = observer->query = ecs_rule_init(world, &query_desc);
+        ecs_query_t *query = observer->query = ecs_query_init(world, &query_desc);
         if (query == NULL) {
             flecs_observer_fini(observer);
             return 0;
@@ -1004,7 +1004,7 @@ void flecs_observer_fini(
     }
 
     /* Cleanup filters */
-    ecs_rule_fini(observer->query);
+    ecs_query_fini(observer->query);
 
     /* Cleanup context */
     if (observer->ctx_free) {

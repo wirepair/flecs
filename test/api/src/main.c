@@ -1068,315 +1068,315 @@ void SortingEntireTable_dont_resort_after_set_unsorted_component(void);
 void SortingEntireTable_dont_resort_after_set_unsorted_component_w_tag(void);
 void SortingEntireTable_dont_resort_after_set_unsorted_component_w_tag_w_out_term(void);
 
-// Testsuite 'Filter'
-void Filter_filter_1_term(void);
-void Filter_filter_1_term_component(void);
-void Filter_filter_2_terms(void);
-void Filter_filter_3_terms(void);
-void Filter_filter_3_terms_w_or(void);
-void Filter_filter_4_terms_w_or_at_1(void);
-void Filter_filter_1_term_wildcard(void);
-void Filter_filter_1_term_any(void);
-void Filter_filter_1_term_same_subj_obj(void);
-void Filter_filter_1_term_acyclic_same_subj_obj(void);
-void Filter_filter_1_term_acyclic_reflexive_same_subj_obj(void);
-void Filter_filter_1_term_same_subj_obj_var(void);
-void Filter_filter_1_term_acyclic_same_subj_obj_var(void);
-void Filter_filter_1_term_acyclic_reflexive_same_subj_obj_var(void);
-void Filter_filter_1_term_non_acyclic_superset(void);
-void Filter_filter_1_term_dont_inherit_default_set(void);
-void Filter_filter_1_term_dont_inherit_pair_default_set(void);
-void Filter_filter_1_term_cascade_implicit_trav(void);
-void Filter_filter_1_term_cascade_isa(void);
-void Filter_filter_1_term_cascade_childof(void);
-void Filter_filter_1_term_cascade_down(void);
-void Filter_filter_1_term_optional_only(void);
-void Filter_filter_1_term_transitive_pair(void);
-void Filter_filter_1_variable_as_pred_only(void);
-void Filter_filter_1_variable_as_pred_w_subj(void);
-void Filter_filter_1_variable_as_pred_w_pair(void);
-void Filter_filter_1_variable_as_subj(void);
-void Filter_filter_1_variable_as_obj(void);
-void Filter_filter_2_terms_or_w_dontinherit(void);
-void Filter_filter_2_terms_or_w_both_dontinherit(void);
-void Filter_filter_w_pair_id(void);
-void Filter_filter_w_pred_obj(void);
-void Filter_filter_w_pair_id_and_subj(void);
-void Filter_filter_1_w_pred_name(void);
-void Filter_filter_1_w_final_pred_name(void);
-void Filter_filter_1_w_subj_name(void);
-void Filter_filter_1_w_obj_name(void);
-void Filter_filter_w_this_implicit_variable(void);
-void Filter_filter_w_this_explicit_entity(void);
-void Filter_filter_w_first_this_implicit_variable(void);
-void Filter_filter_w_first_this_explicit_entity(void);
-void Filter_filter_w_second_this_implicit_variable(void);
-void Filter_filter_w_second_this_explicit_entity(void);
-void Filter_filter_w_this_variable_name(void);
-void Filter_filter_w_src_var(void);
-void Filter_filter_w_first_var(void);
-void Filter_filter_w_second_var(void);
-void Filter_filter_w_0_source(void);
-void Filter_filter_w_0_target(void);
-void Filter_filter_2_terms_w_or(void);
-void Filter_filter_2_terms_w_or_mixed_src_flags(void);
-void Filter_filter_2_terms_w_or_mixed_src_id(void);
-void Filter_filter_2_terms_w_or_mixed_src_name(void);
-void Filter_filter_2_terms_w_or_same_src_w_id_and_name(void);
-void Filter_filter_move(void);
-void Filter_filter_copy(void);
-void Filter_filter_w_resources_copy(void);
-void Filter_filter_w_and_flag(void);
-void Filter_filter_w_or_flag(void);
-void Filter_filter_w_not_flag(void);
-void Filter_filter_filter(void);
-void Filter_filter_double_init(void);
-void Filter_filter_double_init_w_expr(void);
-void Filter_filter_double_init_w_expr_optional(void);
-void Filter_filter_w_tag_term_is_no_data(void);
-void Filter_filter_w_inout_none_term_is_no_data(void);
-void Filter_filter_w_tag_and_inout_none_term_is_no_data(void);
-void Filter_filter_w_not_term_is_no_data(void);
-void Filter_filter_w_no_transitive_pair(void);
-void Filter_filter_w_transitive_pair_any_src(void);
-void Filter_filter_w_transitive_pair(void);
-void Filter_filter_w_transitive_tag_no_pair(void);
-void Filter_filter_w_transitive_tag_self_tgt(void);
-void Filter_filter_w_transitive_tag_any_tgt(void);
-void Filter_filter_w_pair_same_vars(void);
-void Filter_filter_w_pair_not_same_vars(void);
-void Filter_filter_w_pair_no_vars_not_same_vars(void);
-void Filter_filter_w_pair_wildcard_not_same_vars(void);
-void Filter_filter_w_pair_any_not_same_vars(void);
-void Filter_filter_w_no_pair_not_same_vars(void);
-void Filter_filter_not_childof_any(void);
-void Filter_filter_w_inherited_id(void);
-void Filter_filter_w_inherited_pair(void);
-void Filter_filter_w_non_inherited_id(void);
-void Filter_filter_w_non_inherited_pair(void);
-void Filter_filter_w_first_wildcard_inout_none(void);
-void Filter_filter_w_first_var_inout_none(void);
-void Filter_filter_w_pair_wildcard_inout_none(void);
-void Filter_filter_w_pair_var_inout_none(void);
-void Filter_filter_w_unresolved_by_name(void);
-void Filter_filter_w_unresolved_by_name_eq(void);
-void Filter_filter_childof_this(void);
-void Filter_filter_childof_this_entity(void);
-void Filter_filter_childof_this_by_id(void);
-void Filter_term_w_id(void);
-void Filter_term_w_pair_id(void);
-void Filter_term_w_pred_obj(void);
-void Filter_term_w_pair_finalize_twice(void);
-void Filter_term_w_role(void);
-void Filter_term_w_self(void);
-void Filter_term_w_superset(void);
-void Filter_term_w_self_superset(void);
-void Filter_term_w_superset_custom_trav(void);
-void Filter_term_w_self_superset_custom_trav(void);
-void Filter_term_iter_component(void);
-void Filter_term_iter_w_pred(void);
-void Filter_term_iter_tag(void);
-void Filter_term_iter_pair(void);
-void Filter_term_iter_pair_w_rel_wildcard(void);
-void Filter_term_iter_pair_w_obj_wildcard(void);
-void Filter_term_iter_pair_w_rel_wildcard_n_matches(void);
-void Filter_term_iter_pair_w_rel_wildcard_n_matches_w_data(void);
-void Filter_term_iter_pair_w_obj_wildcard_n_matches(void);
-void Filter_term_iter_pair_w_obj_wildcard_n_matches_w_data(void);
-void Filter_term_iter_w_superset(void);
-void Filter_term_iter_w_superset_base_w_2_components(void);
-void Filter_term_iter_w_superset_childof(void);
-void Filter_term_iter_w_superset_self(void);
-void Filter_term_iter_w_superset_self_childof(void);
-void Filter_term_iter_w_superset_tag(void);
-void Filter_term_iter_w_superset_pair(void);
-void Filter_term_iter_w_superset_pair_obj_wildcard(void);
-void Filter_term_iter_in_stage(void);
-void Filter_term_iter_w_readonly_term(void);
-void Filter_term_iter_type_set(void);
-void Filter_term_iter_any_match_wildcard(void);
-void Filter_term_iter_any_match_tag_and_wildcard(void);
-void Filter_term_iter_any_obj(void);
-void Filter_children_iter(void);
-void Filter_filter_iter_1_tag(void);
-void Filter_filter_iter_2_tags(void);
-void Filter_filter_iter_2_tags_1_not(void);
-void Filter_filter_iter_3_tags_2_or(void);
-void Filter_filter_iter_only_optional(void);
-void Filter_filter_iter_only_2_or(void);
-void Filter_filter_iter_only_3_or(void);
-void Filter_filter_iter_2_or(void);
-void Filter_filter_iter_3_or(void);
-void Filter_filter_iter_2_or_other_type(void);
-void Filter_filter_iter_2_or_same_type(void);
-void Filter_filter_iter_1_component(void);
-void Filter_filter_iter_2_components(void);
-void Filter_filter_iter_pair_id(void);
-void Filter_filter_iter_2_pair_ids(void);
-void Filter_filter_iter_childof_pair_0_parent(void);
-void Filter_filter_iter_pair_pred_obj(void);
-void Filter_filter_iter_pair_2_pred_obj(void);
-void Filter_filter_iter_null(void);
-void Filter_filter_iter_1_not_tag(void);
-void Filter_filter_iter_2_tags_1_optional(void);
-void Filter_filter_iter_2_components_1_optional(void);
-void Filter_filter_iter_in_stage(void);
-void Filter_filter_iter_10_tags(void);
-void Filter_filter_iter_10_components(void);
-void Filter_filter_iter_superset(void);
-void Filter_filter_iter_superset_childof(void);
-void Filter_filter_iter_type_set(void);
-void Filter_filter_iter_w_readonly_term(void);
-void Filter_filter_iter_w_from_nothing_term(void);
-void Filter_filter_iter_pair_w_rel_wildcard_n_matches(void);
-void Filter_filter_iter_pair_w_obj_wildcard_n_matches(void);
-void Filter_filter_iter_pair_w_2_wildcards_1_match(void);
-void Filter_filter_iter_pair_w_2_wildcards_2x1_matches(void);
-void Filter_filter_iter_pair_w_2_wildcards_2x2_matches(void);
-void Filter_filter_iter_pair_w_3_wildcards_2x2x2_matches(void);
-void Filter_filter_iter_pair_w_wildcard_and_nothing(void);
-void Filter_filter_iter_any(void);
-void Filter_filter_iter_any_match_wildcard(void);
-void Filter_filter_iter_any_match_tag_and_wildcard(void);
-void Filter_filter_iter_wildcard_in_2nd_term(void);
-void Filter_filter_iter_wildcard_in_2nd_term_self(void);
-void Filter_filter_iter_2nd_term_self_create_id_after_filter(void);
-void Filter_filter_iter_any_obj(void);
-void Filter_filter_iter_not_any(void);
-void Filter_filter_iter_not_any_obj(void);
-void Filter_filter_iter_cascade_isa(void);
-void Filter_filter_iter_cascade_childof(void);
-void Filter_filter_iter_superset_2_rel_instances(void);
-void Filter_filter_iter_superset_2_rel_instances_match_2nd(void);
-void Filter_filter_iter_superset_2_levels(void);
-void Filter_filter_iter_superset_only_w_owned(void);
-void Filter_filter_iter_superset_after_add(void);
-void Filter_filter_iter_superset_after_remove(void);
-void Filter_filter_iter_superset_after_clear(void);
-void Filter_filter_iter_superset_after_delete(void);
-void Filter_filter_iter_2_terms_superset_2_rel_instances(void);
-void Filter_filter_iter_2_terms_superset_2_rel_instances_match_2nd(void);
-void Filter_filter_iter_superset_isa_after_remove_parent(void);
-void Filter_filter_iter_superset_isa_create_table_after_iter(void);
-void Filter_filter_iter_superset_2_relations(void);
-void Filter_filter_iter_superset_2_relations_instanced(void);
-void Filter_filter_iter_superset_2_relations_w_component(void);
-void Filter_filter_iter_superset_2_relations_instanced_w_component(void);
-void Filter_filter_iter_not_up_disabled(void);
-void Filter_filter_iter_pair_wildcard_component(void);
-void Filter_filter_w_10_terms(void);
-void Filter_filter_w_10_terms_move(void);
-void Filter_filter_w_10_terms_copy(void);
-void Filter_match_disabled(void);
-void Filter_match_prefab(void);
-void Filter_chain_term_iter(void);
-void Filter_chain_filter_iter(void);
-void Filter_chain_query_iter(void);
-void Filter_chain_rule_iter(void);
-void Filter_chain_iter_2_levels(void);
-void Filter_filter_from_expr_2_terms_err(void);
-void Filter_chain_term_iter_w_term_iter(void);
-void Filter_chain_filter_iter_w_term_iter(void);
-void Filter_chain_w_term_iter_component(void);
-void Filter_chain_iter_w_or(void);
-void Filter_filter_w_recycled_first(void);
-void Filter_filter_w_recycled_second(void);
-void Filter_filter_w_recycled_first_and_id(void);
-void Filter_filter_w_recycled_second_and_id(void);
-void Filter_filter_w_recycled_first_by_name_and_id(void);
-void Filter_filter_w_recycled_second_by_name_and_id(void);
-void Filter_filter_w_recycled_first_by_expr(void);
-void Filter_filter_w_recycled_second_by_expr(void);
-void Filter_filter_w_recycled_first_only_by_expr(void);
-void Filter_term_iter_w_filter_term(void);
-void Filter_filter_iter_w_filter_term(void);
-void Filter_filter_iter_w_2_terms_1_filter(void);
-void Filter_filter_iter_w_3_terms_2_filter(void);
-void Filter_filter_iter_2_terms_filter_all(void);
-void Filter_filter_iter_2_terms_filter_all_w_out(void);
-void Filter_filter_iter_switch_term_filter(void);
-void Filter_filter_iter_2_terms_switch_term_filter(void);
-void Filter_filter_iter_switch_superset(void);
-void Filter_filter_instanced_w_singleton(void);
-void Filter_filter_instanced_w_base(void);
-void Filter_filter_no_instancing_w_singleton(void);
-void Filter_filter_no_instancing_w_base(void);
-void Filter_filter_no_this_tag(void);
-void Filter_filter_no_this_component(void);
-void Filter_filter_no_this_tag_2_ents(void);
-void Filter_filter_no_this_component_2_ents(void);
-void Filter_filter_no_this_tag_2_ents_1_not(void);
-void Filter_filter_no_this_component_2_ents_1_not(void);
-void Filter_filter_no_this_component_1_not(void);
-void Filter_filter_iter_entities_optional_flag(void);
-void Filter_filter_iter_frame_offset(void);
-void Filter_move_self(void);
-void Filter_match_empty_tables(void);
-void Filter_match_empty_tables_w_no_empty_tables(void);
-void Filter_match_switch_w_switch(void);
-void Filter_match_switch_w_case(void);
-void Filter_match_switch_w_case_2_terms(void);
-void Filter_match_case_no_case(void);
-void Filter_and_term(void);
-void Filter_or_term(void);
-void Filter_iter_while_creating_components(void);
-void Filter_iter_w_this_var_as_entity(void);
-void Filter_iter_w_this_var_as_table(void);
-void Filter_iter_w_this_var_as_table_range(void);
-void Filter_filter_wo_this_var(void);
-void Filter_set_this_to_table_1_term(void);
-void Filter_set_this_to_table_2_terms(void);
-void Filter_set_this_to_table_1_wildcard(void);
-void Filter_set_this_to_table_no_match_no_data(void);
-void Filter_set_this_to_table_no_match(void);
-void Filter_set_this_to_table_2_terms_no_match(void);
-void Filter_set_this_to_empty_table(void);
-void Filter_set_this_to_empty_table_w_component(void);
-void Filter_set_this_to_implicit_isa_superset_match(void);
-void Filter_set_this_to_self_isa_superset_match(void);
-void Filter_set_this_to_isa_superset_match(void);
-void Filter_set_this_to_childof_superset_match(void);
-void Filter_set_this_to_superset_w_self_filter_no_match(void);
-void Filter_set_this_to_isa_cascade(void);
-void Filter_set_this_to_childof_cascade(void);
-void Filter_set_this_w_wildcard_2_matches(void);
-void Filter_set_this_to_entity_superset_self_has_component(void);
-void Filter_set_this_to_1_entity_in_table(void);
-void Filter_oneof(void);
-void Filter_oneof_expr(void);
-void Filter_oneof_w_mismatching_obj(void);
-void Filter_oneof_w_mismatching_obj_expr(void);
-void Filter_oneof_wildcard(void);
-void Filter_oneof_any(void);
-void Filter_flag_match_only_this(void);
-void Filter_flag_match_only_this_w_ref(void);
-void Filter_filter_w_alloc(void);
-void Filter_filter_w_short_notation(void);
+// Testsuite 'Query'
+void Query_filter_1_term(void);
+void Query_filter_1_term_component(void);
+void Query_filter_2_terms(void);
+void Query_filter_3_terms(void);
+void Query_filter_3_terms_w_or(void);
+void Query_filter_4_terms_w_or_at_1(void);
+void Query_filter_1_term_wildcard(void);
+void Query_filter_1_term_any(void);
+void Query_filter_1_term_same_subj_obj(void);
+void Query_filter_1_term_acyclic_same_subj_obj(void);
+void Query_filter_1_term_acyclic_reflexive_same_subj_obj(void);
+void Query_filter_1_term_same_subj_obj_var(void);
+void Query_filter_1_term_acyclic_same_subj_obj_var(void);
+void Query_filter_1_term_acyclic_reflexive_same_subj_obj_var(void);
+void Query_filter_1_term_non_acyclic_superset(void);
+void Query_filter_1_term_dont_inherit_default_set(void);
+void Query_filter_1_term_dont_inherit_pair_default_set(void);
+void Query_filter_1_term_cascade_implicit_trav(void);
+void Query_filter_1_term_cascade_isa(void);
+void Query_filter_1_term_cascade_childof(void);
+void Query_filter_1_term_cascade_down(void);
+void Query_filter_1_term_optional_only(void);
+void Query_filter_1_term_transitive_pair(void);
+void Query_filter_1_variable_as_pred_only(void);
+void Query_filter_1_variable_as_pred_w_subj(void);
+void Query_filter_1_variable_as_pred_w_pair(void);
+void Query_filter_1_variable_as_subj(void);
+void Query_filter_1_variable_as_obj(void);
+void Query_filter_2_terms_or_w_dontinherit(void);
+void Query_filter_2_terms_or_w_both_dontinherit(void);
+void Query_filter_w_pair_id(void);
+void Query_filter_w_pred_obj(void);
+void Query_filter_w_pair_id_and_subj(void);
+void Query_filter_1_w_pred_name(void);
+void Query_filter_1_w_final_pred_name(void);
+void Query_filter_1_w_subj_name(void);
+void Query_filter_1_w_obj_name(void);
+void Query_filter_w_this_implicit_variable(void);
+void Query_filter_w_this_explicit_entity(void);
+void Query_filter_w_first_this_implicit_variable(void);
+void Query_filter_w_first_this_explicit_entity(void);
+void Query_filter_w_second_this_implicit_variable(void);
+void Query_filter_w_second_this_explicit_entity(void);
+void Query_filter_w_this_variable_name(void);
+void Query_filter_w_src_var(void);
+void Query_filter_w_first_var(void);
+void Query_filter_w_second_var(void);
+void Query_filter_w_0_source(void);
+void Query_filter_w_0_target(void);
+void Query_filter_2_terms_w_or(void);
+void Query_filter_2_terms_w_or_mixed_src_flags(void);
+void Query_filter_2_terms_w_or_mixed_src_id(void);
+void Query_filter_2_terms_w_or_mixed_src_name(void);
+void Query_filter_2_terms_w_or_same_src_w_id_and_name(void);
+void Query_filter_move(void);
+void Query_filter_copy(void);
+void Query_filter_w_resources_copy(void);
+void Query_filter_w_and_flag(void);
+void Query_filter_w_or_flag(void);
+void Query_filter_w_not_flag(void);
+void Query_filter_filter(void);
+void Query_filter_double_init(void);
+void Query_filter_double_init_w_expr(void);
+void Query_filter_double_init_w_expr_optional(void);
+void Query_filter_w_tag_term_is_no_data(void);
+void Query_filter_w_inout_none_term_is_no_data(void);
+void Query_filter_w_tag_and_inout_none_term_is_no_data(void);
+void Query_filter_w_not_term_is_no_data(void);
+void Query_filter_w_no_transitive_pair(void);
+void Query_filter_w_transitive_pair_any_src(void);
+void Query_filter_w_transitive_pair(void);
+void Query_filter_w_transitive_tag_no_pair(void);
+void Query_filter_w_transitive_tag_self_tgt(void);
+void Query_filter_w_transitive_tag_any_tgt(void);
+void Query_filter_w_pair_same_vars(void);
+void Query_filter_w_pair_not_same_vars(void);
+void Query_filter_w_pair_no_vars_not_same_vars(void);
+void Query_filter_w_pair_wildcard_not_same_vars(void);
+void Query_filter_w_pair_any_not_same_vars(void);
+void Query_filter_w_no_pair_not_same_vars(void);
+void Query_filter_not_childof_any(void);
+void Query_filter_w_inherited_id(void);
+void Query_filter_w_inherited_pair(void);
+void Query_filter_w_non_inherited_id(void);
+void Query_filter_w_non_inherited_pair(void);
+void Query_filter_w_first_wildcard_inout_none(void);
+void Query_filter_w_first_var_inout_none(void);
+void Query_filter_w_pair_wildcard_inout_none(void);
+void Query_filter_w_pair_var_inout_none(void);
+void Query_filter_w_unresolved_by_name(void);
+void Query_filter_w_unresolved_by_name_eq(void);
+void Query_filter_childof_this(void);
+void Query_filter_childof_this_entity(void);
+void Query_filter_childof_this_by_id(void);
+void Query_term_w_id(void);
+void Query_term_w_pair_id(void);
+void Query_term_w_pred_obj(void);
+void Query_term_w_pair_finalize_twice(void);
+void Query_term_w_role(void);
+void Query_term_w_self(void);
+void Query_term_w_superset(void);
+void Query_term_w_self_superset(void);
+void Query_term_w_superset_custom_trav(void);
+void Query_term_w_self_superset_custom_trav(void);
+void Query_term_iter_component(void);
+void Query_term_iter_w_pred(void);
+void Query_term_iter_tag(void);
+void Query_term_iter_pair(void);
+void Query_term_iter_pair_w_rel_wildcard(void);
+void Query_term_iter_pair_w_obj_wildcard(void);
+void Query_term_iter_pair_w_rel_wildcard_n_matches(void);
+void Query_term_iter_pair_w_rel_wildcard_n_matches_w_data(void);
+void Query_term_iter_pair_w_obj_wildcard_n_matches(void);
+void Query_term_iter_pair_w_obj_wildcard_n_matches_w_data(void);
+void Query_term_iter_w_superset(void);
+void Query_term_iter_w_superset_base_w_2_components(void);
+void Query_term_iter_w_superset_childof(void);
+void Query_term_iter_w_superset_self(void);
+void Query_term_iter_w_superset_self_childof(void);
+void Query_term_iter_w_superset_tag(void);
+void Query_term_iter_w_superset_pair(void);
+void Query_term_iter_w_superset_pair_obj_wildcard(void);
+void Query_term_iter_in_stage(void);
+void Query_term_iter_w_readonly_term(void);
+void Query_term_iter_type_set(void);
+void Query_term_iter_any_match_wildcard(void);
+void Query_term_iter_any_match_tag_and_wildcard(void);
+void Query_term_iter_any_obj(void);
+void Query_children_iter(void);
+void Query_filter_iter_1_tag(void);
+void Query_filter_iter_2_tags(void);
+void Query_filter_iter_2_tags_1_not(void);
+void Query_filter_iter_3_tags_2_or(void);
+void Query_filter_iter_only_optional(void);
+void Query_filter_iter_only_2_or(void);
+void Query_filter_iter_only_3_or(void);
+void Query_filter_iter_2_or(void);
+void Query_filter_iter_3_or(void);
+void Query_filter_iter_2_or_other_type(void);
+void Query_filter_iter_2_or_same_type(void);
+void Query_filter_iter_1_component(void);
+void Query_filter_iter_2_components(void);
+void Query_filter_iter_pair_id(void);
+void Query_filter_iter_2_pair_ids(void);
+void Query_filter_iter_childof_pair_0_parent(void);
+void Query_filter_iter_pair_pred_obj(void);
+void Query_filter_iter_pair_2_pred_obj(void);
+void Query_filter_iter_null(void);
+void Query_filter_iter_1_not_tag(void);
+void Query_filter_iter_2_tags_1_optional(void);
+void Query_filter_iter_2_components_1_optional(void);
+void Query_filter_iter_in_stage(void);
+void Query_filter_iter_10_tags(void);
+void Query_filter_iter_10_components(void);
+void Query_filter_iter_superset(void);
+void Query_filter_iter_superset_childof(void);
+void Query_filter_iter_type_set(void);
+void Query_filter_iter_w_readonly_term(void);
+void Query_filter_iter_w_from_nothing_term(void);
+void Query_filter_iter_pair_w_rel_wildcard_n_matches(void);
+void Query_filter_iter_pair_w_obj_wildcard_n_matches(void);
+void Query_filter_iter_pair_w_2_wildcards_1_match(void);
+void Query_filter_iter_pair_w_2_wildcards_2x1_matches(void);
+void Query_filter_iter_pair_w_2_wildcards_2x2_matches(void);
+void Query_filter_iter_pair_w_3_wildcards_2x2x2_matches(void);
+void Query_filter_iter_pair_w_wildcard_and_nothing(void);
+void Query_filter_iter_any(void);
+void Query_filter_iter_any_match_wildcard(void);
+void Query_filter_iter_any_match_tag_and_wildcard(void);
+void Query_filter_iter_wildcard_in_2nd_term(void);
+void Query_filter_iter_wildcard_in_2nd_term_self(void);
+void Query_filter_iter_2nd_term_self_create_id_after_filter(void);
+void Query_filter_iter_any_obj(void);
+void Query_filter_iter_not_any(void);
+void Query_filter_iter_not_any_obj(void);
+void Query_filter_iter_cascade_isa(void);
+void Query_filter_iter_cascade_childof(void);
+void Query_filter_iter_superset_2_rel_instances(void);
+void Query_filter_iter_superset_2_rel_instances_match_2nd(void);
+void Query_filter_iter_superset_2_levels(void);
+void Query_filter_iter_superset_only_w_owned(void);
+void Query_filter_iter_superset_after_add(void);
+void Query_filter_iter_superset_after_remove(void);
+void Query_filter_iter_superset_after_clear(void);
+void Query_filter_iter_superset_after_delete(void);
+void Query_filter_iter_2_terms_superset_2_rel_instances(void);
+void Query_filter_iter_2_terms_superset_2_rel_instances_match_2nd(void);
+void Query_filter_iter_superset_isa_after_remove_parent(void);
+void Query_filter_iter_superset_isa_create_table_after_iter(void);
+void Query_filter_iter_superset_2_relations(void);
+void Query_filter_iter_superset_2_relations_instanced(void);
+void Query_filter_iter_superset_2_relations_w_component(void);
+void Query_filter_iter_superset_2_relations_instanced_w_component(void);
+void Query_filter_iter_not_up_disabled(void);
+void Query_filter_iter_pair_wildcard_component(void);
+void Query_filter_w_10_terms(void);
+void Query_filter_w_10_terms_move(void);
+void Query_filter_w_10_terms_copy(void);
+void Query_match_disabled(void);
+void Query_match_prefab(void);
+void Query_chain_term_iter(void);
+void Query_chain_filter_iter(void);
+void Query_chain_query_iter(void);
+void Query_chain_rule_iter(void);
+void Query_chain_iter_2_levels(void);
+void Query_filter_from_expr_2_terms_err(void);
+void Query_chain_term_iter_w_term_iter(void);
+void Query_chain_filter_iter_w_term_iter(void);
+void Query_chain_w_term_iter_component(void);
+void Query_chain_iter_w_or(void);
+void Query_filter_w_recycled_first(void);
+void Query_filter_w_recycled_second(void);
+void Query_filter_w_recycled_first_and_id(void);
+void Query_filter_w_recycled_second_and_id(void);
+void Query_filter_w_recycled_first_by_name_and_id(void);
+void Query_filter_w_recycled_second_by_name_and_id(void);
+void Query_filter_w_recycled_first_by_expr(void);
+void Query_filter_w_recycled_second_by_expr(void);
+void Query_filter_w_recycled_first_only_by_expr(void);
+void Query_term_iter_w_filter_term(void);
+void Query_filter_iter_w_filter_term(void);
+void Query_filter_iter_w_2_terms_1_filter(void);
+void Query_filter_iter_w_3_terms_2_filter(void);
+void Query_filter_iter_2_terms_filter_all(void);
+void Query_filter_iter_2_terms_filter_all_w_out(void);
+void Query_filter_iter_switch_term_filter(void);
+void Query_filter_iter_2_terms_switch_term_filter(void);
+void Query_filter_iter_switch_superset(void);
+void Query_filter_instanced_w_singleton(void);
+void Query_filter_instanced_w_base(void);
+void Query_filter_no_instancing_w_singleton(void);
+void Query_filter_no_instancing_w_base(void);
+void Query_filter_no_this_tag(void);
+void Query_filter_no_this_component(void);
+void Query_filter_no_this_tag_2_ents(void);
+void Query_filter_no_this_component_2_ents(void);
+void Query_filter_no_this_tag_2_ents_1_not(void);
+void Query_filter_no_this_component_2_ents_1_not(void);
+void Query_filter_no_this_component_1_not(void);
+void Query_filter_iter_entities_optional_flag(void);
+void Query_filter_iter_frame_offset(void);
+void Query_move_self(void);
+void Query_match_empty_tables(void);
+void Query_match_empty_tables_w_no_empty_tables(void);
+void Query_match_switch_w_switch(void);
+void Query_match_switch_w_case(void);
+void Query_match_switch_w_case_2_terms(void);
+void Query_match_case_no_case(void);
+void Query_and_term(void);
+void Query_or_term(void);
+void Query_iter_while_creating_components(void);
+void Query_iter_w_this_var_as_entity(void);
+void Query_iter_w_this_var_as_table(void);
+void Query_iter_w_this_var_as_table_range(void);
+void Query_filter_wo_this_var(void);
+void Query_set_this_to_table_1_term(void);
+void Query_set_this_to_table_2_terms(void);
+void Query_set_this_to_table_1_wildcard(void);
+void Query_set_this_to_table_no_match_no_data(void);
+void Query_set_this_to_table_no_match(void);
+void Query_set_this_to_table_2_terms_no_match(void);
+void Query_set_this_to_empty_table(void);
+void Query_set_this_to_empty_table_w_component(void);
+void Query_set_this_to_implicit_isa_superset_match(void);
+void Query_set_this_to_self_isa_superset_match(void);
+void Query_set_this_to_isa_superset_match(void);
+void Query_set_this_to_childof_superset_match(void);
+void Query_set_this_to_superset_w_self_filter_no_match(void);
+void Query_set_this_to_isa_cascade(void);
+void Query_set_this_to_childof_cascade(void);
+void Query_set_this_w_wildcard_2_matches(void);
+void Query_set_this_to_entity_superset_self_has_component(void);
+void Query_set_this_to_1_entity_in_table(void);
+void Query_oneof(void);
+void Query_oneof_expr(void);
+void Query_oneof_w_mismatching_obj(void);
+void Query_oneof_w_mismatching_obj_expr(void);
+void Query_oneof_wildcard(void);
+void Query_oneof_any(void);
+void Query_flag_match_only_this(void);
+void Query_flag_match_only_this_w_ref(void);
+void Query_filter_w_alloc(void);
+void Query_filter_w_short_notation(void);
 
-// Testsuite 'FilterStr'
-void FilterStr_one_term(void);
-void FilterStr_one_term_w_inout(void);
-void FilterStr_two_terms(void);
-void FilterStr_two_terms_w_inout(void);
-void FilterStr_three_terms_w_or(void);
-void FilterStr_three_terms_w_or_inout(void);
-void FilterStr_four_terms_three_w_or_inout(void);
-void FilterStr_one_term_w_pair(void);
-void FilterStr_one_term_w_pair_entity_src(void);
-void FilterStr_one_term_w_self(void);
-void FilterStr_one_term_w_up(void);
-void FilterStr_one_term_w_0(void);
-void FilterStr_one_term_w_singleton(void);
-void FilterStr_one_term_w_final_pair(void);
-void FilterStr_one_term_w_final_dont_inherit_pair(void);
-void FilterStr_one_term_w_src_var(void);
-void FilterStr_one_term_w_first_var(void);
-void FilterStr_one_term_w_second_var(void);
-void FilterStr_one_term_w_first_var_entity_src(void);
-void FilterStr_one_term_w_pair_w_0_entity(void);
-void FilterStr_not_term(void);
-void FilterStr_wildcard_term(void);
-void FilterStr_scopes(void);
+// Testsuite 'QueryStr'
+void QueryStr_one_term(void);
+void QueryStr_one_term_w_inout(void);
+void QueryStr_two_terms(void);
+void QueryStr_two_terms_w_inout(void);
+void QueryStr_three_terms_w_or(void);
+void QueryStr_three_terms_w_or_inout(void);
+void QueryStr_four_terms_three_w_or_inout(void);
+void QueryStr_one_term_w_pair(void);
+void QueryStr_one_term_w_pair_entity_src(void);
+void QueryStr_one_term_w_self(void);
+void QueryStr_one_term_w_up(void);
+void QueryStr_one_term_w_0(void);
+void QueryStr_one_term_w_singleton(void);
+void QueryStr_one_term_w_final_pair(void);
+void QueryStr_one_term_w_final_dont_inherit_pair(void);
+void QueryStr_one_term_w_src_var(void);
+void QueryStr_one_term_w_first_var(void);
+void QueryStr_one_term_w_second_var(void);
+void QueryStr_one_term_w_first_var_entity_src(void);
+void QueryStr_one_term_w_pair_w_0_entity(void);
+void QueryStr_not_term(void);
+void QueryStr_wildcard_term(void);
+void QueryStr_scopes(void);
 
 // Testsuite 'Query'
 void Query_simple_query_existing_table(void);
@@ -6722,1233 +6722,1233 @@ bake_test_case SortingEntireTable_testcases[] = {
     }
 };
 
-bake_test_case Filter_testcases[] = {
+bake_test_case Query_testcases[] = {
     {
         "filter_1_term",
-        Filter_filter_1_term
+        Query_filter_1_term
     },
     {
         "filter_1_term_component",
-        Filter_filter_1_term_component
+        Query_filter_1_term_component
     },
     {
         "filter_2_terms",
-        Filter_filter_2_terms
+        Query_filter_2_terms
     },
     {
         "filter_3_terms",
-        Filter_filter_3_terms
+        Query_filter_3_terms
     },
     {
         "filter_3_terms_w_or",
-        Filter_filter_3_terms_w_or
+        Query_filter_3_terms_w_or
     },
     {
         "filter_4_terms_w_or_at_1",
-        Filter_filter_4_terms_w_or_at_1
+        Query_filter_4_terms_w_or_at_1
     },
     {
         "filter_1_term_wildcard",
-        Filter_filter_1_term_wildcard
+        Query_filter_1_term_wildcard
     },
     {
         "filter_1_term_any",
-        Filter_filter_1_term_any
+        Query_filter_1_term_any
     },
     {
         "filter_1_term_same_subj_obj",
-        Filter_filter_1_term_same_subj_obj
+        Query_filter_1_term_same_subj_obj
     },
     {
         "filter_1_term_acyclic_same_subj_obj",
-        Filter_filter_1_term_acyclic_same_subj_obj
+        Query_filter_1_term_acyclic_same_subj_obj
     },
     {
         "filter_1_term_acyclic_reflexive_same_subj_obj",
-        Filter_filter_1_term_acyclic_reflexive_same_subj_obj
+        Query_filter_1_term_acyclic_reflexive_same_subj_obj
     },
     {
         "filter_1_term_same_subj_obj_var",
-        Filter_filter_1_term_same_subj_obj_var
+        Query_filter_1_term_same_subj_obj_var
     },
     {
         "filter_1_term_acyclic_same_subj_obj_var",
-        Filter_filter_1_term_acyclic_same_subj_obj_var
+        Query_filter_1_term_acyclic_same_subj_obj_var
     },
     {
         "filter_1_term_acyclic_reflexive_same_subj_obj_var",
-        Filter_filter_1_term_acyclic_reflexive_same_subj_obj_var
+        Query_filter_1_term_acyclic_reflexive_same_subj_obj_var
     },
     {
         "filter_1_term_non_acyclic_superset",
-        Filter_filter_1_term_non_acyclic_superset
+        Query_filter_1_term_non_acyclic_superset
     },
     {
         "filter_1_term_dont_inherit_default_set",
-        Filter_filter_1_term_dont_inherit_default_set
+        Query_filter_1_term_dont_inherit_default_set
     },
     {
         "filter_1_term_dont_inherit_pair_default_set",
-        Filter_filter_1_term_dont_inherit_pair_default_set
+        Query_filter_1_term_dont_inherit_pair_default_set
     },
     {
         "filter_1_term_cascade_implicit_trav",
-        Filter_filter_1_term_cascade_implicit_trav
+        Query_filter_1_term_cascade_implicit_trav
     },
     {
         "filter_1_term_cascade_isa",
-        Filter_filter_1_term_cascade_isa
+        Query_filter_1_term_cascade_isa
     },
     {
         "filter_1_term_cascade_childof",
-        Filter_filter_1_term_cascade_childof
+        Query_filter_1_term_cascade_childof
     },
     {
         "filter_1_term_cascade_down",
-        Filter_filter_1_term_cascade_down
+        Query_filter_1_term_cascade_down
     },
     {
         "filter_1_term_optional_only",
-        Filter_filter_1_term_optional_only
+        Query_filter_1_term_optional_only
     },
     {
         "filter_1_term_transitive_pair",
-        Filter_filter_1_term_transitive_pair
+        Query_filter_1_term_transitive_pair
     },
     {
         "filter_1_variable_as_pred_only",
-        Filter_filter_1_variable_as_pred_only
+        Query_filter_1_variable_as_pred_only
     },
     {
         "filter_1_variable_as_pred_w_subj",
-        Filter_filter_1_variable_as_pred_w_subj
+        Query_filter_1_variable_as_pred_w_subj
     },
     {
         "filter_1_variable_as_pred_w_pair",
-        Filter_filter_1_variable_as_pred_w_pair
+        Query_filter_1_variable_as_pred_w_pair
     },
     {
         "filter_1_variable_as_subj",
-        Filter_filter_1_variable_as_subj
+        Query_filter_1_variable_as_subj
     },
     {
         "filter_1_variable_as_obj",
-        Filter_filter_1_variable_as_obj
+        Query_filter_1_variable_as_obj
     },
     {
         "filter_2_terms_or_w_dontinherit",
-        Filter_filter_2_terms_or_w_dontinherit
+        Query_filter_2_terms_or_w_dontinherit
     },
     {
         "filter_2_terms_or_w_both_dontinherit",
-        Filter_filter_2_terms_or_w_both_dontinherit
+        Query_filter_2_terms_or_w_both_dontinherit
     },
     {
         "filter_w_pair_id",
-        Filter_filter_w_pair_id
+        Query_filter_w_pair_id
     },
     {
         "filter_w_pred_obj",
-        Filter_filter_w_pred_obj
+        Query_filter_w_pred_obj
     },
     {
         "filter_w_pair_id_and_subj",
-        Filter_filter_w_pair_id_and_subj
+        Query_filter_w_pair_id_and_subj
     },
     {
         "filter_1_w_pred_name",
-        Filter_filter_1_w_pred_name
+        Query_filter_1_w_pred_name
     },
     {
         "filter_1_w_final_pred_name",
-        Filter_filter_1_w_final_pred_name
+        Query_filter_1_w_final_pred_name
     },
     {
         "filter_1_w_subj_name",
-        Filter_filter_1_w_subj_name
+        Query_filter_1_w_subj_name
     },
     {
         "filter_1_w_obj_name",
-        Filter_filter_1_w_obj_name
+        Query_filter_1_w_obj_name
     },
     {
         "filter_w_this_implicit_variable",
-        Filter_filter_w_this_implicit_variable
+        Query_filter_w_this_implicit_variable
     },
     {
         "filter_w_this_explicit_entity",
-        Filter_filter_w_this_explicit_entity
+        Query_filter_w_this_explicit_entity
     },
     {
         "filter_w_first_this_implicit_variable",
-        Filter_filter_w_first_this_implicit_variable
+        Query_filter_w_first_this_implicit_variable
     },
     {
         "filter_w_first_this_explicit_entity",
-        Filter_filter_w_first_this_explicit_entity
+        Query_filter_w_first_this_explicit_entity
     },
     {
         "filter_w_second_this_implicit_variable",
-        Filter_filter_w_second_this_implicit_variable
+        Query_filter_w_second_this_implicit_variable
     },
     {
         "filter_w_second_this_explicit_entity",
-        Filter_filter_w_second_this_explicit_entity
+        Query_filter_w_second_this_explicit_entity
     },
     {
         "filter_w_this_variable_name",
-        Filter_filter_w_this_variable_name
+        Query_filter_w_this_variable_name
     },
     {
         "filter_w_src_var",
-        Filter_filter_w_src_var
+        Query_filter_w_src_var
     },
     {
         "filter_w_first_var",
-        Filter_filter_w_first_var
+        Query_filter_w_first_var
     },
     {
         "filter_w_second_var",
-        Filter_filter_w_second_var
+        Query_filter_w_second_var
     },
     {
         "filter_w_0_source",
-        Filter_filter_w_0_source
+        Query_filter_w_0_source
     },
     {
         "filter_w_0_target",
-        Filter_filter_w_0_target
+        Query_filter_w_0_target
     },
     {
         "filter_2_terms_w_or",
-        Filter_filter_2_terms_w_or
+        Query_filter_2_terms_w_or
     },
     {
         "filter_2_terms_w_or_mixed_src_flags",
-        Filter_filter_2_terms_w_or_mixed_src_flags
+        Query_filter_2_terms_w_or_mixed_src_flags
     },
     {
         "filter_2_terms_w_or_mixed_src_id",
-        Filter_filter_2_terms_w_or_mixed_src_id
+        Query_filter_2_terms_w_or_mixed_src_id
     },
     {
         "filter_2_terms_w_or_mixed_src_name",
-        Filter_filter_2_terms_w_or_mixed_src_name
+        Query_filter_2_terms_w_or_mixed_src_name
     },
     {
         "filter_2_terms_w_or_same_src_w_id_and_name",
-        Filter_filter_2_terms_w_or_same_src_w_id_and_name
+        Query_filter_2_terms_w_or_same_src_w_id_and_name
     },
     {
         "filter_move",
-        Filter_filter_move
+        Query_filter_move
     },
     {
         "filter_copy",
-        Filter_filter_copy
+        Query_filter_copy
     },
     {
         "filter_w_resources_copy",
-        Filter_filter_w_resources_copy
+        Query_filter_w_resources_copy
     },
     {
         "filter_w_and_flag",
-        Filter_filter_w_and_flag
+        Query_filter_w_and_flag
     },
     {
         "filter_w_or_flag",
-        Filter_filter_w_or_flag
+        Query_filter_w_or_flag
     },
     {
         "filter_w_not_flag",
-        Filter_filter_w_not_flag
+        Query_filter_w_not_flag
     },
     {
         "filter_filter",
-        Filter_filter_filter
+        Query_filter_filter
     },
     {
         "filter_double_init",
-        Filter_filter_double_init
+        Query_filter_double_init
     },
     {
         "filter_double_init_w_expr",
-        Filter_filter_double_init_w_expr
+        Query_filter_double_init_w_expr
     },
     {
         "filter_double_init_w_expr_optional",
-        Filter_filter_double_init_w_expr_optional
+        Query_filter_double_init_w_expr_optional
     },
     {
         "filter_w_tag_term_is_no_data",
-        Filter_filter_w_tag_term_is_no_data
+        Query_filter_w_tag_term_is_no_data
     },
     {
         "filter_w_inout_none_term_is_no_data",
-        Filter_filter_w_inout_none_term_is_no_data
+        Query_filter_w_inout_none_term_is_no_data
     },
     {
         "filter_w_tag_and_inout_none_term_is_no_data",
-        Filter_filter_w_tag_and_inout_none_term_is_no_data
+        Query_filter_w_tag_and_inout_none_term_is_no_data
     },
     {
         "filter_w_not_term_is_no_data",
-        Filter_filter_w_not_term_is_no_data
+        Query_filter_w_not_term_is_no_data
     },
     {
         "filter_w_no_transitive_pair",
-        Filter_filter_w_no_transitive_pair
+        Query_filter_w_no_transitive_pair
     },
     {
         "filter_w_transitive_pair_any_src",
-        Filter_filter_w_transitive_pair_any_src
+        Query_filter_w_transitive_pair_any_src
     },
     {
         "filter_w_transitive_pair",
-        Filter_filter_w_transitive_pair
+        Query_filter_w_transitive_pair
     },
     {
         "filter_w_transitive_tag_no_pair",
-        Filter_filter_w_transitive_tag_no_pair
+        Query_filter_w_transitive_tag_no_pair
     },
     {
         "filter_w_transitive_tag_self_tgt",
-        Filter_filter_w_transitive_tag_self_tgt
+        Query_filter_w_transitive_tag_self_tgt
     },
     {
         "filter_w_transitive_tag_any_tgt",
-        Filter_filter_w_transitive_tag_any_tgt
+        Query_filter_w_transitive_tag_any_tgt
     },
     {
         "filter_w_pair_same_vars",
-        Filter_filter_w_pair_same_vars
+        Query_filter_w_pair_same_vars
     },
     {
         "filter_w_pair_not_same_vars",
-        Filter_filter_w_pair_not_same_vars
+        Query_filter_w_pair_not_same_vars
     },
     {
         "filter_w_pair_no_vars_not_same_vars",
-        Filter_filter_w_pair_no_vars_not_same_vars
+        Query_filter_w_pair_no_vars_not_same_vars
     },
     {
         "filter_w_pair_wildcard_not_same_vars",
-        Filter_filter_w_pair_wildcard_not_same_vars
+        Query_filter_w_pair_wildcard_not_same_vars
     },
     {
         "filter_w_pair_any_not_same_vars",
-        Filter_filter_w_pair_any_not_same_vars
+        Query_filter_w_pair_any_not_same_vars
     },
     {
         "filter_w_no_pair_not_same_vars",
-        Filter_filter_w_no_pair_not_same_vars
+        Query_filter_w_no_pair_not_same_vars
     },
     {
         "filter_not_childof_any",
-        Filter_filter_not_childof_any
+        Query_filter_not_childof_any
     },
     {
         "filter_w_inherited_id",
-        Filter_filter_w_inherited_id
+        Query_filter_w_inherited_id
     },
     {
         "filter_w_inherited_pair",
-        Filter_filter_w_inherited_pair
+        Query_filter_w_inherited_pair
     },
     {
         "filter_w_non_inherited_id",
-        Filter_filter_w_non_inherited_id
+        Query_filter_w_non_inherited_id
     },
     {
         "filter_w_non_inherited_pair",
-        Filter_filter_w_non_inherited_pair
+        Query_filter_w_non_inherited_pair
     },
     {
         "filter_w_first_wildcard_inout_none",
-        Filter_filter_w_first_wildcard_inout_none
+        Query_filter_w_first_wildcard_inout_none
     },
     {
         "filter_w_first_var_inout_none",
-        Filter_filter_w_first_var_inout_none
+        Query_filter_w_first_var_inout_none
     },
     {
         "filter_w_pair_wildcard_inout_none",
-        Filter_filter_w_pair_wildcard_inout_none
+        Query_filter_w_pair_wildcard_inout_none
     },
     {
         "filter_w_pair_var_inout_none",
-        Filter_filter_w_pair_var_inout_none
+        Query_filter_w_pair_var_inout_none
     },
     {
         "filter_w_unresolved_by_name",
-        Filter_filter_w_unresolved_by_name
+        Query_filter_w_unresolved_by_name
     },
     {
         "filter_w_unresolved_by_name_eq",
-        Filter_filter_w_unresolved_by_name_eq
+        Query_filter_w_unresolved_by_name_eq
     },
     {
         "filter_childof_this",
-        Filter_filter_childof_this
+        Query_filter_childof_this
     },
     {
         "filter_childof_this_entity",
-        Filter_filter_childof_this_entity
+        Query_filter_childof_this_entity
     },
     {
         "filter_childof_this_by_id",
-        Filter_filter_childof_this_by_id
+        Query_filter_childof_this_by_id
     },
     {
         "term_w_id",
-        Filter_term_w_id
+        Query_term_w_id
     },
     {
         "term_w_pair_id",
-        Filter_term_w_pair_id
+        Query_term_w_pair_id
     },
     {
         "term_w_pred_obj",
-        Filter_term_w_pred_obj
+        Query_term_w_pred_obj
     },
     {
         "term_w_pair_finalize_twice",
-        Filter_term_w_pair_finalize_twice
+        Query_term_w_pair_finalize_twice
     },
     {
         "term_w_role",
-        Filter_term_w_role
+        Query_term_w_role
     },
     {
         "term_w_self",
-        Filter_term_w_self
+        Query_term_w_self
     },
     {
         "term_w_superset",
-        Filter_term_w_superset
+        Query_term_w_superset
     },
     {
         "term_w_self_superset",
-        Filter_term_w_self_superset
+        Query_term_w_self_superset
     },
     {
         "term_w_superset_custom_trav",
-        Filter_term_w_superset_custom_trav
+        Query_term_w_superset_custom_trav
     },
     {
         "term_w_self_superset_custom_trav",
-        Filter_term_w_self_superset_custom_trav
+        Query_term_w_self_superset_custom_trav
     },
     {
         "term_iter_component",
-        Filter_term_iter_component
+        Query_term_iter_component
     },
     {
         "term_iter_w_pred",
-        Filter_term_iter_w_pred
+        Query_term_iter_w_pred
     },
     {
         "term_iter_tag",
-        Filter_term_iter_tag
+        Query_term_iter_tag
     },
     {
         "term_iter_pair",
-        Filter_term_iter_pair
+        Query_term_iter_pair
     },
     {
         "term_iter_pair_w_rel_wildcard",
-        Filter_term_iter_pair_w_rel_wildcard
+        Query_term_iter_pair_w_rel_wildcard
     },
     {
         "term_iter_pair_w_obj_wildcard",
-        Filter_term_iter_pair_w_obj_wildcard
+        Query_term_iter_pair_w_obj_wildcard
     },
     {
         "term_iter_pair_w_rel_wildcard_n_matches",
-        Filter_term_iter_pair_w_rel_wildcard_n_matches
+        Query_term_iter_pair_w_rel_wildcard_n_matches
     },
     {
         "term_iter_pair_w_rel_wildcard_n_matches_w_data",
-        Filter_term_iter_pair_w_rel_wildcard_n_matches_w_data
+        Query_term_iter_pair_w_rel_wildcard_n_matches_w_data
     },
     {
         "term_iter_pair_w_obj_wildcard_n_matches",
-        Filter_term_iter_pair_w_obj_wildcard_n_matches
+        Query_term_iter_pair_w_obj_wildcard_n_matches
     },
     {
         "term_iter_pair_w_obj_wildcard_n_matches_w_data",
-        Filter_term_iter_pair_w_obj_wildcard_n_matches_w_data
+        Query_term_iter_pair_w_obj_wildcard_n_matches_w_data
     },
     {
         "term_iter_w_superset",
-        Filter_term_iter_w_superset
+        Query_term_iter_w_superset
     },
     {
         "term_iter_w_superset_base_w_2_components",
-        Filter_term_iter_w_superset_base_w_2_components
+        Query_term_iter_w_superset_base_w_2_components
     },
     {
         "term_iter_w_superset_childof",
-        Filter_term_iter_w_superset_childof
+        Query_term_iter_w_superset_childof
     },
     {
         "term_iter_w_superset_self",
-        Filter_term_iter_w_superset_self
+        Query_term_iter_w_superset_self
     },
     {
         "term_iter_w_superset_self_childof",
-        Filter_term_iter_w_superset_self_childof
+        Query_term_iter_w_superset_self_childof
     },
     {
         "term_iter_w_superset_tag",
-        Filter_term_iter_w_superset_tag
+        Query_term_iter_w_superset_tag
     },
     {
         "term_iter_w_superset_pair",
-        Filter_term_iter_w_superset_pair
+        Query_term_iter_w_superset_pair
     },
     {
         "term_iter_w_superset_pair_obj_wildcard",
-        Filter_term_iter_w_superset_pair_obj_wildcard
+        Query_term_iter_w_superset_pair_obj_wildcard
     },
     {
         "term_iter_in_stage",
-        Filter_term_iter_in_stage
+        Query_term_iter_in_stage
     },
     {
         "term_iter_w_readonly_term",
-        Filter_term_iter_w_readonly_term
+        Query_term_iter_w_readonly_term
     },
     {
         "term_iter_type_set",
-        Filter_term_iter_type_set
+        Query_term_iter_type_set
     },
     {
         "term_iter_any_match_wildcard",
-        Filter_term_iter_any_match_wildcard
+        Query_term_iter_any_match_wildcard
     },
     {
         "term_iter_any_match_tag_and_wildcard",
-        Filter_term_iter_any_match_tag_and_wildcard
+        Query_term_iter_any_match_tag_and_wildcard
     },
     {
         "term_iter_any_obj",
-        Filter_term_iter_any_obj
+        Query_term_iter_any_obj
     },
     {
         "children_iter",
-        Filter_children_iter
+        Query_children_iter
     },
     {
         "filter_iter_1_tag",
-        Filter_filter_iter_1_tag
+        Query_filter_iter_1_tag
     },
     {
         "filter_iter_2_tags",
-        Filter_filter_iter_2_tags
+        Query_filter_iter_2_tags
     },
     {
         "filter_iter_2_tags_1_not",
-        Filter_filter_iter_2_tags_1_not
+        Query_filter_iter_2_tags_1_not
     },
     {
         "filter_iter_3_tags_2_or",
-        Filter_filter_iter_3_tags_2_or
+        Query_filter_iter_3_tags_2_or
     },
     {
         "filter_iter_only_optional",
-        Filter_filter_iter_only_optional
+        Query_filter_iter_only_optional
     },
     {
         "filter_iter_only_2_or",
-        Filter_filter_iter_only_2_or
+        Query_filter_iter_only_2_or
     },
     {
         "filter_iter_only_3_or",
-        Filter_filter_iter_only_3_or
+        Query_filter_iter_only_3_or
     },
     {
         "filter_iter_2_or",
-        Filter_filter_iter_2_or
+        Query_filter_iter_2_or
     },
     {
         "filter_iter_3_or",
-        Filter_filter_iter_3_or
+        Query_filter_iter_3_or
     },
     {
         "filter_iter_2_or_other_type",
-        Filter_filter_iter_2_or_other_type
+        Query_filter_iter_2_or_other_type
     },
     {
         "filter_iter_2_or_same_type",
-        Filter_filter_iter_2_or_same_type
+        Query_filter_iter_2_or_same_type
     },
     {
         "filter_iter_1_component",
-        Filter_filter_iter_1_component
+        Query_filter_iter_1_component
     },
     {
         "filter_iter_2_components",
-        Filter_filter_iter_2_components
+        Query_filter_iter_2_components
     },
     {
         "filter_iter_pair_id",
-        Filter_filter_iter_pair_id
+        Query_filter_iter_pair_id
     },
     {
         "filter_iter_2_pair_ids",
-        Filter_filter_iter_2_pair_ids
+        Query_filter_iter_2_pair_ids
     },
     {
         "filter_iter_childof_pair_0_parent",
-        Filter_filter_iter_childof_pair_0_parent
+        Query_filter_iter_childof_pair_0_parent
     },
     {
         "filter_iter_pair_pred_obj",
-        Filter_filter_iter_pair_pred_obj
+        Query_filter_iter_pair_pred_obj
     },
     {
         "filter_iter_pair_2_pred_obj",
-        Filter_filter_iter_pair_2_pred_obj
+        Query_filter_iter_pair_2_pred_obj
     },
     {
         "filter_iter_null",
-        Filter_filter_iter_null
+        Query_filter_iter_null
     },
     {
         "filter_iter_1_not_tag",
-        Filter_filter_iter_1_not_tag
+        Query_filter_iter_1_not_tag
     },
     {
         "filter_iter_2_tags_1_optional",
-        Filter_filter_iter_2_tags_1_optional
+        Query_filter_iter_2_tags_1_optional
     },
     {
         "filter_iter_2_components_1_optional",
-        Filter_filter_iter_2_components_1_optional
+        Query_filter_iter_2_components_1_optional
     },
     {
         "filter_iter_in_stage",
-        Filter_filter_iter_in_stage
+        Query_filter_iter_in_stage
     },
     {
         "filter_iter_10_tags",
-        Filter_filter_iter_10_tags
+        Query_filter_iter_10_tags
     },
     {
         "filter_iter_10_components",
-        Filter_filter_iter_10_components
+        Query_filter_iter_10_components
     },
     {
         "filter_iter_superset",
-        Filter_filter_iter_superset
+        Query_filter_iter_superset
     },
     {
         "filter_iter_superset_childof",
-        Filter_filter_iter_superset_childof
+        Query_filter_iter_superset_childof
     },
     {
         "filter_iter_type_set",
-        Filter_filter_iter_type_set
+        Query_filter_iter_type_set
     },
     {
         "filter_iter_w_readonly_term",
-        Filter_filter_iter_w_readonly_term
+        Query_filter_iter_w_readonly_term
     },
     {
         "filter_iter_w_from_nothing_term",
-        Filter_filter_iter_w_from_nothing_term
+        Query_filter_iter_w_from_nothing_term
     },
     {
         "filter_iter_pair_w_rel_wildcard_n_matches",
-        Filter_filter_iter_pair_w_rel_wildcard_n_matches
+        Query_filter_iter_pair_w_rel_wildcard_n_matches
     },
     {
         "filter_iter_pair_w_obj_wildcard_n_matches",
-        Filter_filter_iter_pair_w_obj_wildcard_n_matches
+        Query_filter_iter_pair_w_obj_wildcard_n_matches
     },
     {
         "filter_iter_pair_w_2_wildcards_1_match",
-        Filter_filter_iter_pair_w_2_wildcards_1_match
+        Query_filter_iter_pair_w_2_wildcards_1_match
     },
     {
         "filter_iter_pair_w_2_wildcards_2x1_matches",
-        Filter_filter_iter_pair_w_2_wildcards_2x1_matches
+        Query_filter_iter_pair_w_2_wildcards_2x1_matches
     },
     {
         "filter_iter_pair_w_2_wildcards_2x2_matches",
-        Filter_filter_iter_pair_w_2_wildcards_2x2_matches
+        Query_filter_iter_pair_w_2_wildcards_2x2_matches
     },
     {
         "filter_iter_pair_w_3_wildcards_2x2x2_matches",
-        Filter_filter_iter_pair_w_3_wildcards_2x2x2_matches
+        Query_filter_iter_pair_w_3_wildcards_2x2x2_matches
     },
     {
         "filter_iter_pair_w_wildcard_and_nothing",
-        Filter_filter_iter_pair_w_wildcard_and_nothing
+        Query_filter_iter_pair_w_wildcard_and_nothing
     },
     {
         "filter_iter_any",
-        Filter_filter_iter_any
+        Query_filter_iter_any
     },
     {
         "filter_iter_any_match_wildcard",
-        Filter_filter_iter_any_match_wildcard
+        Query_filter_iter_any_match_wildcard
     },
     {
         "filter_iter_any_match_tag_and_wildcard",
-        Filter_filter_iter_any_match_tag_and_wildcard
+        Query_filter_iter_any_match_tag_and_wildcard
     },
     {
         "filter_iter_wildcard_in_2nd_term",
-        Filter_filter_iter_wildcard_in_2nd_term
+        Query_filter_iter_wildcard_in_2nd_term
     },
     {
         "filter_iter_wildcard_in_2nd_term_self",
-        Filter_filter_iter_wildcard_in_2nd_term_self
+        Query_filter_iter_wildcard_in_2nd_term_self
     },
     {
         "filter_iter_2nd_term_self_create_id_after_filter",
-        Filter_filter_iter_2nd_term_self_create_id_after_filter
+        Query_filter_iter_2nd_term_self_create_id_after_filter
     },
     {
         "filter_iter_any_obj",
-        Filter_filter_iter_any_obj
+        Query_filter_iter_any_obj
     },
     {
         "filter_iter_not_any",
-        Filter_filter_iter_not_any
+        Query_filter_iter_not_any
     },
     {
         "filter_iter_not_any_obj",
-        Filter_filter_iter_not_any_obj
+        Query_filter_iter_not_any_obj
     },
     {
         "filter_iter_cascade_isa",
-        Filter_filter_iter_cascade_isa
+        Query_filter_iter_cascade_isa
     },
     {
         "filter_iter_cascade_childof",
-        Filter_filter_iter_cascade_childof
+        Query_filter_iter_cascade_childof
     },
     {
         "filter_iter_superset_2_rel_instances",
-        Filter_filter_iter_superset_2_rel_instances
+        Query_filter_iter_superset_2_rel_instances
     },
     {
         "filter_iter_superset_2_rel_instances_match_2nd",
-        Filter_filter_iter_superset_2_rel_instances_match_2nd
+        Query_filter_iter_superset_2_rel_instances_match_2nd
     },
     {
         "filter_iter_superset_2_levels",
-        Filter_filter_iter_superset_2_levels
+        Query_filter_iter_superset_2_levels
     },
     {
         "filter_iter_superset_only_w_owned",
-        Filter_filter_iter_superset_only_w_owned
+        Query_filter_iter_superset_only_w_owned
     },
     {
         "filter_iter_superset_after_add",
-        Filter_filter_iter_superset_after_add
+        Query_filter_iter_superset_after_add
     },
     {
         "filter_iter_superset_after_remove",
-        Filter_filter_iter_superset_after_remove
+        Query_filter_iter_superset_after_remove
     },
     {
         "filter_iter_superset_after_clear",
-        Filter_filter_iter_superset_after_clear
+        Query_filter_iter_superset_after_clear
     },
     {
         "filter_iter_superset_after_delete",
-        Filter_filter_iter_superset_after_delete
+        Query_filter_iter_superset_after_delete
     },
     {
         "filter_iter_2_terms_superset_2_rel_instances",
-        Filter_filter_iter_2_terms_superset_2_rel_instances
+        Query_filter_iter_2_terms_superset_2_rel_instances
     },
     {
         "filter_iter_2_terms_superset_2_rel_instances_match_2nd",
-        Filter_filter_iter_2_terms_superset_2_rel_instances_match_2nd
+        Query_filter_iter_2_terms_superset_2_rel_instances_match_2nd
     },
     {
         "filter_iter_superset_isa_after_remove_parent",
-        Filter_filter_iter_superset_isa_after_remove_parent
+        Query_filter_iter_superset_isa_after_remove_parent
     },
     {
         "filter_iter_superset_isa_create_table_after_iter",
-        Filter_filter_iter_superset_isa_create_table_after_iter
+        Query_filter_iter_superset_isa_create_table_after_iter
     },
     {
         "filter_iter_superset_2_relations",
-        Filter_filter_iter_superset_2_relations
+        Query_filter_iter_superset_2_relations
     },
     {
         "filter_iter_superset_2_relations_instanced",
-        Filter_filter_iter_superset_2_relations_instanced
+        Query_filter_iter_superset_2_relations_instanced
     },
     {
         "filter_iter_superset_2_relations_w_component",
-        Filter_filter_iter_superset_2_relations_w_component
+        Query_filter_iter_superset_2_relations_w_component
     },
     {
         "filter_iter_superset_2_relations_instanced_w_component",
-        Filter_filter_iter_superset_2_relations_instanced_w_component
+        Query_filter_iter_superset_2_relations_instanced_w_component
     },
     {
         "filter_iter_not_up_disabled",
-        Filter_filter_iter_not_up_disabled
+        Query_filter_iter_not_up_disabled
     },
     {
         "filter_iter_pair_wildcard_component",
-        Filter_filter_iter_pair_wildcard_component
+        Query_filter_iter_pair_wildcard_component
     },
     {
         "filter_w_10_terms",
-        Filter_filter_w_10_terms
+        Query_filter_w_10_terms
     },
     {
         "filter_w_10_terms_move",
-        Filter_filter_w_10_terms_move
+        Query_filter_w_10_terms_move
     },
     {
         "filter_w_10_terms_copy",
-        Filter_filter_w_10_terms_copy
+        Query_filter_w_10_terms_copy
     },
     {
         "match_disabled",
-        Filter_match_disabled
+        Query_match_disabled
     },
     {
         "match_prefab",
-        Filter_match_prefab
+        Query_match_prefab
     },
     {
         "chain_term_iter",
-        Filter_chain_term_iter
+        Query_chain_term_iter
     },
     {
         "chain_filter_iter",
-        Filter_chain_filter_iter
+        Query_chain_filter_iter
     },
     {
         "chain_query_iter",
-        Filter_chain_query_iter
+        Query_chain_query_iter
     },
     {
         "chain_rule_iter",
-        Filter_chain_rule_iter
+        Query_chain_rule_iter
     },
     {
         "chain_iter_2_levels",
-        Filter_chain_iter_2_levels
+        Query_chain_iter_2_levels
     },
     {
         "filter_from_expr_2_terms_err",
-        Filter_filter_from_expr_2_terms_err
+        Query_filter_from_expr_2_terms_err
     },
     {
         "chain_term_iter_w_term_iter",
-        Filter_chain_term_iter_w_term_iter
+        Query_chain_term_iter_w_term_iter
     },
     {
         "chain_filter_iter_w_term_iter",
-        Filter_chain_filter_iter_w_term_iter
+        Query_chain_filter_iter_w_term_iter
     },
     {
         "chain_w_term_iter_component",
-        Filter_chain_w_term_iter_component
+        Query_chain_w_term_iter_component
     },
     {
         "chain_iter_w_or",
-        Filter_chain_iter_w_or
+        Query_chain_iter_w_or
     },
     {
         "filter_w_recycled_first",
-        Filter_filter_w_recycled_first
+        Query_filter_w_recycled_first
     },
     {
         "filter_w_recycled_second",
-        Filter_filter_w_recycled_second
+        Query_filter_w_recycled_second
     },
     {
         "filter_w_recycled_first_and_id",
-        Filter_filter_w_recycled_first_and_id
+        Query_filter_w_recycled_first_and_id
     },
     {
         "filter_w_recycled_second_and_id",
-        Filter_filter_w_recycled_second_and_id
+        Query_filter_w_recycled_second_and_id
     },
     {
         "filter_w_recycled_first_by_name_and_id",
-        Filter_filter_w_recycled_first_by_name_and_id
+        Query_filter_w_recycled_first_by_name_and_id
     },
     {
         "filter_w_recycled_second_by_name_and_id",
-        Filter_filter_w_recycled_second_by_name_and_id
+        Query_filter_w_recycled_second_by_name_and_id
     },
     {
         "filter_w_recycled_first_by_expr",
-        Filter_filter_w_recycled_first_by_expr
+        Query_filter_w_recycled_first_by_expr
     },
     {
         "filter_w_recycled_second_by_expr",
-        Filter_filter_w_recycled_second_by_expr
+        Query_filter_w_recycled_second_by_expr
     },
     {
         "filter_w_recycled_first_only_by_expr",
-        Filter_filter_w_recycled_first_only_by_expr
+        Query_filter_w_recycled_first_only_by_expr
     },
     {
         "term_iter_w_filter_term",
-        Filter_term_iter_w_filter_term
+        Query_term_iter_w_filter_term
     },
     {
         "filter_iter_w_filter_term",
-        Filter_filter_iter_w_filter_term
+        Query_filter_iter_w_filter_term
     },
     {
         "filter_iter_w_2_terms_1_filter",
-        Filter_filter_iter_w_2_terms_1_filter
+        Query_filter_iter_w_2_terms_1_filter
     },
     {
         "filter_iter_w_3_terms_2_filter",
-        Filter_filter_iter_w_3_terms_2_filter
+        Query_filter_iter_w_3_terms_2_filter
     },
     {
         "filter_iter_2_terms_filter_all",
-        Filter_filter_iter_2_terms_filter_all
+        Query_filter_iter_2_terms_filter_all
     },
     {
         "filter_iter_2_terms_filter_all_w_out",
-        Filter_filter_iter_2_terms_filter_all_w_out
+        Query_filter_iter_2_terms_filter_all_w_out
     },
     {
         "filter_iter_switch_term_filter",
-        Filter_filter_iter_switch_term_filter
+        Query_filter_iter_switch_term_filter
     },
     {
         "filter_iter_2_terms_switch_term_filter",
-        Filter_filter_iter_2_terms_switch_term_filter
+        Query_filter_iter_2_terms_switch_term_filter
     },
     {
         "filter_iter_switch_superset",
-        Filter_filter_iter_switch_superset
+        Query_filter_iter_switch_superset
     },
     {
         "filter_instanced_w_singleton",
-        Filter_filter_instanced_w_singleton
+        Query_filter_instanced_w_singleton
     },
     {
         "filter_instanced_w_base",
-        Filter_filter_instanced_w_base
+        Query_filter_instanced_w_base
     },
     {
         "filter_no_instancing_w_singleton",
-        Filter_filter_no_instancing_w_singleton
+        Query_filter_no_instancing_w_singleton
     },
     {
         "filter_no_instancing_w_base",
-        Filter_filter_no_instancing_w_base
+        Query_filter_no_instancing_w_base
     },
     {
         "filter_no_this_tag",
-        Filter_filter_no_this_tag
+        Query_filter_no_this_tag
     },
     {
         "filter_no_this_component",
-        Filter_filter_no_this_component
+        Query_filter_no_this_component
     },
     {
         "filter_no_this_tag_2_ents",
-        Filter_filter_no_this_tag_2_ents
+        Query_filter_no_this_tag_2_ents
     },
     {
         "filter_no_this_component_2_ents",
-        Filter_filter_no_this_component_2_ents
+        Query_filter_no_this_component_2_ents
     },
     {
         "filter_no_this_tag_2_ents_1_not",
-        Filter_filter_no_this_tag_2_ents_1_not
+        Query_filter_no_this_tag_2_ents_1_not
     },
     {
         "filter_no_this_component_2_ents_1_not",
-        Filter_filter_no_this_component_2_ents_1_not
+        Query_filter_no_this_component_2_ents_1_not
     },
     {
         "filter_no_this_component_1_not",
-        Filter_filter_no_this_component_1_not
+        Query_filter_no_this_component_1_not
     },
     {
         "filter_iter_entities_optional_flag",
-        Filter_filter_iter_entities_optional_flag
+        Query_filter_iter_entities_optional_flag
     },
     {
         "filter_iter_frame_offset",
-        Filter_filter_iter_frame_offset
+        Query_filter_iter_frame_offset
     },
     {
         "move_self",
-        Filter_move_self
+        Query_move_self
     },
     {
         "match_empty_tables",
-        Filter_match_empty_tables
+        Query_match_empty_tables
     },
     {
         "match_empty_tables_w_no_empty_tables",
-        Filter_match_empty_tables_w_no_empty_tables
+        Query_match_empty_tables_w_no_empty_tables
     },
     {
         "match_switch_w_switch",
-        Filter_match_switch_w_switch
+        Query_match_switch_w_switch
     },
     {
         "match_switch_w_case",
-        Filter_match_switch_w_case
+        Query_match_switch_w_case
     },
     {
         "match_switch_w_case_2_terms",
-        Filter_match_switch_w_case_2_terms
+        Query_match_switch_w_case_2_terms
     },
     {
         "match_case_no_case",
-        Filter_match_case_no_case
+        Query_match_case_no_case
     },
     {
         "and_term",
-        Filter_and_term
+        Query_and_term
     },
     {
         "or_term",
-        Filter_or_term
+        Query_or_term
     },
     {
         "iter_while_creating_components",
-        Filter_iter_while_creating_components
+        Query_iter_while_creating_components
     },
     {
         "iter_w_this_var_as_entity",
-        Filter_iter_w_this_var_as_entity
+        Query_iter_w_this_var_as_entity
     },
     {
         "iter_w_this_var_as_table",
-        Filter_iter_w_this_var_as_table
+        Query_iter_w_this_var_as_table
     },
     {
         "iter_w_this_var_as_table_range",
-        Filter_iter_w_this_var_as_table_range
+        Query_iter_w_this_var_as_table_range
     },
     {
         "filter_wo_this_var",
-        Filter_filter_wo_this_var
+        Query_filter_wo_this_var
     },
     {
         "set_this_to_table_1_term",
-        Filter_set_this_to_table_1_term
+        Query_set_this_to_table_1_term
     },
     {
         "set_this_to_table_2_terms",
-        Filter_set_this_to_table_2_terms
+        Query_set_this_to_table_2_terms
     },
     {
         "set_this_to_table_1_wildcard",
-        Filter_set_this_to_table_1_wildcard
+        Query_set_this_to_table_1_wildcard
     },
     {
         "set_this_to_table_no_match_no_data",
-        Filter_set_this_to_table_no_match_no_data
+        Query_set_this_to_table_no_match_no_data
     },
     {
         "set_this_to_table_no_match",
-        Filter_set_this_to_table_no_match
+        Query_set_this_to_table_no_match
     },
     {
         "set_this_to_table_2_terms_no_match",
-        Filter_set_this_to_table_2_terms_no_match
+        Query_set_this_to_table_2_terms_no_match
     },
     {
         "set_this_to_empty_table",
-        Filter_set_this_to_empty_table
+        Query_set_this_to_empty_table
     },
     {
         "set_this_to_empty_table_w_component",
-        Filter_set_this_to_empty_table_w_component
+        Query_set_this_to_empty_table_w_component
     },
     {
         "set_this_to_implicit_isa_superset_match",
-        Filter_set_this_to_implicit_isa_superset_match
+        Query_set_this_to_implicit_isa_superset_match
     },
     {
         "set_this_to_self_isa_superset_match",
-        Filter_set_this_to_self_isa_superset_match
+        Query_set_this_to_self_isa_superset_match
     },
     {
         "set_this_to_isa_superset_match",
-        Filter_set_this_to_isa_superset_match
+        Query_set_this_to_isa_superset_match
     },
     {
         "set_this_to_childof_superset_match",
-        Filter_set_this_to_childof_superset_match
+        Query_set_this_to_childof_superset_match
     },
     {
         "set_this_to_superset_w_self_filter_no_match",
-        Filter_set_this_to_superset_w_self_filter_no_match
+        Query_set_this_to_superset_w_self_filter_no_match
     },
     {
         "set_this_to_isa_cascade",
-        Filter_set_this_to_isa_cascade
+        Query_set_this_to_isa_cascade
     },
     {
         "set_this_to_childof_cascade",
-        Filter_set_this_to_childof_cascade
+        Query_set_this_to_childof_cascade
     },
     {
         "set_this_w_wildcard_2_matches",
-        Filter_set_this_w_wildcard_2_matches
+        Query_set_this_w_wildcard_2_matches
     },
     {
         "set_this_to_entity_superset_self_has_component",
-        Filter_set_this_to_entity_superset_self_has_component
+        Query_set_this_to_entity_superset_self_has_component
     },
     {
         "set_this_to_1_entity_in_table",
-        Filter_set_this_to_1_entity_in_table
+        Query_set_this_to_1_entity_in_table
     },
     {
         "oneof",
-        Filter_oneof
+        Query_oneof
     },
     {
         "oneof_expr",
-        Filter_oneof_expr
+        Query_oneof_expr
     },
     {
         "oneof_w_mismatching_obj",
-        Filter_oneof_w_mismatching_obj
+        Query_oneof_w_mismatching_obj
     },
     {
         "oneof_w_mismatching_obj_expr",
-        Filter_oneof_w_mismatching_obj_expr
+        Query_oneof_w_mismatching_obj_expr
     },
     {
         "oneof_wildcard",
-        Filter_oneof_wildcard
+        Query_oneof_wildcard
     },
     {
         "oneof_any",
-        Filter_oneof_any
+        Query_oneof_any
     },
     {
         "flag_match_only_this",
-        Filter_flag_match_only_this
+        Query_flag_match_only_this
     },
     {
         "flag_match_only_this_w_ref",
-        Filter_flag_match_only_this_w_ref
+        Query_flag_match_only_this_w_ref
     },
     {
         "filter_w_alloc",
-        Filter_filter_w_alloc
+        Query_filter_w_alloc
     },
     {
         "filter_w_short_notation",
-        Filter_filter_w_short_notation
+        Query_filter_w_short_notation
     }
 };
 
-bake_test_case FilterStr_testcases[] = {
+bake_test_case QueryStr_testcases[] = {
     {
         "one_term",
-        FilterStr_one_term
+        QueryStr_one_term
     },
     {
         "one_term_w_inout",
-        FilterStr_one_term_w_inout
+        QueryStr_one_term_w_inout
     },
     {
         "two_terms",
-        FilterStr_two_terms
+        QueryStr_two_terms
     },
     {
         "two_terms_w_inout",
-        FilterStr_two_terms_w_inout
+        QueryStr_two_terms_w_inout
     },
     {
         "three_terms_w_or",
-        FilterStr_three_terms_w_or
+        QueryStr_three_terms_w_or
     },
     {
         "three_terms_w_or_inout",
-        FilterStr_three_terms_w_or_inout
+        QueryStr_three_terms_w_or_inout
     },
     {
         "four_terms_three_w_or_inout",
-        FilterStr_four_terms_three_w_or_inout
+        QueryStr_four_terms_three_w_or_inout
     },
     {
         "one_term_w_pair",
-        FilterStr_one_term_w_pair
+        QueryStr_one_term_w_pair
     },
     {
         "one_term_w_pair_entity_src",
-        FilterStr_one_term_w_pair_entity_src
+        QueryStr_one_term_w_pair_entity_src
     },
     {
         "one_term_w_self",
-        FilterStr_one_term_w_self
+        QueryStr_one_term_w_self
     },
     {
         "one_term_w_up",
-        FilterStr_one_term_w_up
+        QueryStr_one_term_w_up
     },
     {
         "one_term_w_0",
-        FilterStr_one_term_w_0
+        QueryStr_one_term_w_0
     },
     {
         "one_term_w_singleton",
-        FilterStr_one_term_w_singleton
+        QueryStr_one_term_w_singleton
     },
     {
         "one_term_w_final_pair",
-        FilterStr_one_term_w_final_pair
+        QueryStr_one_term_w_final_pair
     },
     {
         "one_term_w_final_dont_inherit_pair",
-        FilterStr_one_term_w_final_dont_inherit_pair
+        QueryStr_one_term_w_final_dont_inherit_pair
     },
     {
         "one_term_w_src_var",
-        FilterStr_one_term_w_src_var
+        QueryStr_one_term_w_src_var
     },
     {
         "one_term_w_first_var",
-        FilterStr_one_term_w_first_var
+        QueryStr_one_term_w_first_var
     },
     {
         "one_term_w_second_var",
-        FilterStr_one_term_w_second_var
+        QueryStr_one_term_w_second_var
     },
     {
         "one_term_w_first_var_entity_src",
-        FilterStr_one_term_w_first_var_entity_src
+        QueryStr_one_term_w_first_var_entity_src
     },
     {
         "one_term_w_pair_w_0_entity",
-        FilterStr_one_term_w_pair_w_0_entity
+        QueryStr_one_term_w_pair_w_0_entity
     },
     {
         "not_term",
-        FilterStr_not_term
+        QueryStr_not_term
     },
     {
         "wildcard_term",
-        FilterStr_wildcard_term
+        QueryStr_wildcard_term
     },
     {
         "scopes",
-        FilterStr_scopes
+        QueryStr_scopes
     }
 };
 
@@ -13069,18 +13069,18 @@ static bake_test_suite suites[] = {
         SortingEntireTable_testcases
     },
     {
-        "Filter",
+        "Query",
         NULL,
         NULL,
         283,
-        Filter_testcases
+        Query_testcases
     },
     {
-        "FilterStr",
+        "QueryStr",
         NULL,
         NULL,
         23,
-        FilterStr_testcases
+        QueryStr_testcases
     },
     {
         "Query",

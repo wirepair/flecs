@@ -1155,8 +1155,8 @@ void Hierarchies_delete_tree_count_tables(void) {
     test_assert(ecs_get_type(world, grand_child) != NULL);
     ecs_add(world, grand_child, Position);
 
-    ecs_query_t *q = ecs_query_new(world, "Position");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     test_int(it.table_count, 3);
     ecs_iter_fini(&it);
 
@@ -1166,7 +1166,7 @@ void Hierarchies_delete_tree_count_tables(void) {
     test_bool(ecs_is_alive(world, child), false);
     test_bool(ecs_is_alive(world, grand_child), false);
 
-    it = ecs_query_iter(world, q);
+    it = ecs_query_cache_iter(world, q);
     test_int(it.table_count, 0);
     ecs_iter_fini(&it);
 
@@ -1189,8 +1189,8 @@ void Hierarchies_delete_tree_staged(void) {
     test_assert(ecs_get_type(world, grand_child) != NULL);
     ecs_add(world, grand_child, Position);
 
-    ecs_query_t *q = ecs_query_new(world, "Position");
-    ecs_iter_t it = ecs_query_iter(world, q);
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Position");
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
     test_int(it.table_count, 3);
     ecs_iter_fini(&it);
 
@@ -1202,7 +1202,7 @@ void Hierarchies_delete_tree_staged(void) {
     test_bool(ecs_is_alive(world, child), false);
     test_bool(ecs_is_alive(world, grand_child), false);
 
-    it = ecs_query_iter(world, q);
+    it = ecs_query_cache_iter(world, q);
     test_int(it.table_count, 0);
     ecs_iter_fini(&it);
 
@@ -1466,7 +1466,7 @@ void Hierarchies_rematch_after_add_to_recycled_parent(void) {
     ECS_COMPONENT(world, Position);
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag, Position(up)");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Tag, Position(up)");
     test_assert(q != NULL);
 
     ecs_entity_t parent = ecs_new(world, 0);
@@ -1483,15 +1483,15 @@ void Hierarchies_rematch_after_add_to_recycled_parent(void) {
     test_assert( ecs_has_pair(world, e, EcsChildOf, parent));
     ecs_add(world, e, Tag);
 
-    ecs_iter_t it = ecs_query_iter(world, q);
-    test_bool(ecs_query_next(&it), false);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_set(world, parent, Position, {10, 20});
 
     ecs_run_aperiodic(world, 0);
 
-    it = ecs_query_iter(world, q);
-    test_bool(ecs_query_next(&it), true);
+    it = ecs_query_cache_iter(world, q);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
 
     const Position *p = ecs_field(&it, Position, 2);
@@ -1500,7 +1500,7 @@ void Hierarchies_rematch_after_add_to_recycled_parent(void) {
     test_int(p->y, 20);
 
     test_assert(ecs_field_src(&it, 2) == parent);
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }
@@ -1511,7 +1511,7 @@ void Hierarchies_cascade_after_recycled_parent_change(void) {
     ECS_COMPONENT(world, Position);
     ECS_TAG(world, Tag);
 
-    ecs_query_t *q = ecs_query_new(world, "Tag, ?Position(cascade)");
+    ecs_query_cache_t *q = ecs_query_cache_new(world, "Tag, ?Position(cascade)");
 
     ecs_entity_t parent = ecs_new(world, 0);
     test_assert(parent != 0);
@@ -1535,44 +1535,44 @@ void Hierarchies_cascade_after_recycled_parent_change(void) {
     ecs_add_pair(world, e, EcsChildOf, child);
     test_assert( ecs_has_pair(world, e, EcsChildOf, child));
 
-    ecs_iter_t it = ecs_query_iter(world, q);
-    test_bool(ecs_query_next(&it), true);
+    ecs_iter_t it = ecs_query_cache_iter(world, q);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_assert(it.entities[0] == parent);
     test_assert(ecs_field_src(&it, 2) == 0);
     const Position *p = ecs_field(&it, Position, 2);
     test_assert(p == NULL);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_assert(it.entities[0] == child);
     test_assert(ecs_field_src(&it, 2) == 0);
     p = ecs_field(&it, Position, 2);
     test_assert(p == NULL);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_assert(it.entities[0] == e);
     test_assert(ecs_field_src(&it, 2) == 0);
     p = ecs_field(&it, Position, 2);
     test_assert(p == NULL);
 
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_set(world, parent, Position, {10, 20});
     ecs_set(world, child, Position, {20, 30});
 
     ecs_run_aperiodic(world, 0);
 
-    it = ecs_query_iter(world, q);
-    test_bool(ecs_query_next(&it), true);
+    it = ecs_query_cache_iter(world, q);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_assert(it.entities[0] == parent);
     test_assert(ecs_field_src(&it, 2) == 0);
     p = ecs_field(&it, Position, 2);
     test_assert(p == NULL);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_assert(it.entities[0] == child);
     test_assert(ecs_field_src(&it, 2) == parent);
@@ -1581,7 +1581,7 @@ void Hierarchies_cascade_after_recycled_parent_change(void) {
     test_int(p->x, 10);
     test_int(p->y, 20);
 
-    test_bool(ecs_query_next(&it), true);
+    test_bool(ecs_query_cache_next(&it), true);
     test_int(it.count, 1);
     test_assert(it.entities[0] == e);
     test_assert(ecs_field_src(&it, 2) == child);
@@ -1590,7 +1590,7 @@ void Hierarchies_cascade_after_recycled_parent_change(void) {
     test_int(p->x, 20);
     test_int(p->y, 30);
 
-    test_bool(ecs_query_next(&it), false);
+    test_bool(ecs_query_cache_next(&it), false);
 
     ecs_fini(world);
 }

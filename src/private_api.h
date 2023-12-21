@@ -115,9 +115,9 @@ void flecs_invoke_hook(
 //// Query API
 ////////////////////////////////////////////////////////////////////////////////
 
-ecs_iter_t flecs_filter_iter_w_flags(
+ecs_iter_t flecs_query_iter_w_flags(
     const ecs_world_t *stage,
-    const ecs_filter_t *filter,
+    const ecs_query_t *filter,
     ecs_flags32_t flags);
 
 ecs_id_t flecs_to_public_id(
@@ -127,9 +127,9 @@ ecs_id_t flecs_from_public_id(
     ecs_world_t *world,
     ecs_id_t id);
 
-void flecs_rule_apply_iter_flags(
+void flecs_query_apply_iter_flags(
     ecs_iter_t *it,
-    const ecs_filter_t *filter);
+    const ecs_query_t *filter);
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Safe(r) integer casting
@@ -196,7 +196,7 @@ uint64_t flecs_ito_(
 void flecs_entity_filter_init(
     ecs_world_t *world,
     ecs_entity_filter_t **entity_filter,
-    const ecs_filter_t *filter,
+    const ecs_query_t *filter,
     const ecs_table_t *table,
     ecs_id_t *ids,
     int32_t *columns);
@@ -302,8 +302,8 @@ int ecs_term_finalize(
     const ecs_world_t *world,
     ecs_term_t *term);
 
-int32_t flecs_rule_pivot_term(
+int32_t flecs_query_pivot_term(
     const ecs_world_t *world,
-    const ecs_filter_t *filter);
+    const ecs_query_t *filter);
 
 #endif

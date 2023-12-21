@@ -698,7 +698,7 @@ void flecs_run_startup_systems(
     ecs_log_push_2();
     ecs_entity_t start_pip = ecs_pipeline_init(world, &(ecs_pipeline_desc_t){
         .query = {
-            .filter.terms = {
+            .terms = {
                 { .id = EcsSystem },
                 { .id = EcsPhase, .src.id = EcsCascade, .trav = EcsDependsOn },
                 { .id = ecs_dependson(EcsOnStart), .trav = EcsDependsOn },
@@ -815,11 +815,11 @@ ecs_entity_t ecs_pipeline_init(
         result = ecs_new(world, 0);
     }
 
-    ecs_query_desc_t qd = desc->query;
+    ecs_filter_desc_t qd = desc->query;
     if (!qd.order_by) {
         qd.order_by = flecs_entity_compare;
     }
-    qd.filter.entity = result;
+    qd.entity = result;
 
     ecs_query_t *query = ecs_query_init(world, &qd);
     if (!query) {
@@ -919,7 +919,7 @@ void FlecsPipelineImport(
     world->pipeline = ecs_pipeline(world, {
         .entity = ecs_entity(world, { .name = "BuiltinPipeline" }),
         .query = {
-            .filter.terms = {
+            .terms = {
                 { .id = EcsSystem },
                 { .id = EcsPhase, .src.id = EcsCascade, .trav = EcsDependsOn },
                 { .id = ecs_dependson(EcsOnStart), .trav = EcsDependsOn, .oper = EcsNot },

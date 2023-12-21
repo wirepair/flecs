@@ -74,7 +74,7 @@ typedef struct ecs_pipeline_desc_t {
     
     /* Query descriptor. The first term of the query must match the EcsSystem
      * component. */
-    ecs_query_desc_t query;
+    ecs_filter_desc_t query;
 } ecs_pipeline_desc_t;
 
 /** Create a custom pipeline.

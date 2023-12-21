@@ -942,39 +942,14 @@ typedef struct ecs_component_desc_t {
 typedef struct ecs_filter_desc_t {
     int32_t _canary;
 
-    /** Terms of the filter. If a filter has more terms than 
-     * FLECS_TERM_COUNT_MAX use terms_buffer */
+    /** Query terms */
     ecs_term_t terms[FLECS_TERM_COUNT_MAX];
 
-    /** When true, terms returned by an iterator may either contain 1 or N 
-     * elements, where terms with N elements are owned, and terms with 1 element 
-     * are shared, for example from a parent or base entity. When false, the 
-     * iterator will at most return 1 element when the result contains both 
-     * owned and shared terms. */ 
-    bool instanced;
-
-    /** Flags for advanced usage */
-    ecs_flags32_t flags;
-
-    /** Filter expression */
+    /** Query DSL expression (optional) */
     const char *expr;
 
-    /** Entity associated with query (optional) */
-    ecs_entity_t entity;
-} ecs_filter_desc_t;
-
-/** Used with ecs_query_init. 
- * 
- * \ingroup queries
- */
-typedef struct ecs_query_desc_t {
-    int32_t _canary;
-
-    /** Filter for the query */
-    ecs_filter_desc_t filter;
-
-    /** Component to be used by order_by */
-    ecs_entity_t order_by_component;
+    /** Flags for enabling filter features */
+    ecs_flags32_t flags;
 
     /** Callback used for ordering query results. If order_by_id is 0, the 
      * pointer provided to the callback will be NULL. If the callback is not
@@ -984,6 +959,9 @@ typedef struct ecs_query_desc_t {
     /** Callback used for ordering query results. Same as order_by,
      * but more efficient. */
     ecs_sort_table_action_t sort_table;
+
+    /** Component to sort on, used together with order_by */
+    ecs_entity_t order_by_component;
 
     /** Id to be used by group_by. This id is passed to the group_by function and
      * can be used identify the part of an entity type that should be used for
@@ -1030,7 +1008,10 @@ typedef struct ecs_query_desc_t {
 
     /** Callback to free binding_ctx */     
     ecs_ctx_free_t binding_ctx_free;
-} ecs_query_desc_t;
+
+    /** Entity associated with query (optional) */
+    ecs_entity_t entity;
+} ecs_filter_desc_t;
 
 /** Used with ecs_observer_init. 
  * 
@@ -4004,7 +3985,7 @@ bool ecs_children_next(
 FLECS_API
 ecs_query_t* ecs_query_init(
     ecs_world_t *world, 
-    const ecs_query_desc_t *desc);
+    const ecs_filter_desc_t *desc);
 
 /** Destroy a query.
  * This operation destroys a query and its resources. If the query is used as

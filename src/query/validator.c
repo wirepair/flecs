@@ -1209,7 +1209,6 @@ int flecs_rule_finalize_query(
     ecs_check(desc->_canary == 0, ECS_INVALID_PARAMETER, NULL);
     ecs_stage_t *stage = flecs_stage_from_world(&world);
 
-    ECS_BIT_COND(q->flags, EcsFilterIsInstanced, desc->instanced);
     q->flags |= desc->flags;
 
     /* Populate term array from desc terms & DSL expression */

@@ -284,8 +284,8 @@ ecs_entity_t ecs_system_init(
         system->dtor = (ecs_poly_dtor_t)flecs_system_fini;
         system->entity = entity;
 
-        ecs_query_desc_t query_desc = desc->query;
-        query_desc.filter.entity = entity;
+        ecs_filter_desc_t query_desc = desc->query;
+        query_desc.entity = entity;
 
         ecs_query_t *query = ecs_query_init(world, &query_desc);
         if (!query) {
@@ -355,7 +355,7 @@ ecs_entity_t ecs_system_init(
         if (desc->binding_ctx_free) {
             system->binding_ctx_free = desc->binding_ctx_free;
         }
-        if (desc->query.filter.instanced) {
+        if (desc->query.flags & EcsFilterIsInstanced) {
             ECS_BIT_SET(system->query->query->flags, EcsFilterIsInstanced);
         }
         if (desc->multi_threaded) {

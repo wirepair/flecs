@@ -24505,7 +24505,7 @@ void flecs_stats_monitor_import(
     // Called each frame, collects 60 measurements per second
     ecs_system(world, {
         .entity = ecs_entity(world, { .name = "Monitor1s", .add = {ecs_dependson(EcsPreFrame)} }),
-        .query.filter.terms = {{
+        .query.terms = {{
             .id = ecs_pair(kind, EcsPeriod1s),
             .src.id = EcsWorld 
         }},
@@ -24515,7 +24515,7 @@ void flecs_stats_monitor_import(
     // Called each second, reduces into 60 measurements per minute
     ecs_entity_t mw1m = ecs_system(world, {
         .entity = ecs_entity(world, { .name = "Monitor1m", .add = {ecs_dependson(EcsPreFrame)} }),
-        .query.filter.terms = {{
+        .query.terms = {{
             .id = ecs_pair(kind, EcsPeriod1m),
             .src.id = EcsWorld 
         }, {
@@ -24529,7 +24529,7 @@ void flecs_stats_monitor_import(
     // Called each minute, reduces into 60 measurements per hour
     ecs_system(world, {
         .entity = ecs_entity(world, { .name = "Monitor1h", .add = {ecs_dependson(EcsPreFrame)} }),
-        .query.filter.terms = {{
+        .query.terms = {{
             .id = ecs_pair(kind, EcsPeriod1h),
             .src.id = EcsWorld 
         }, {
@@ -24544,7 +24544,7 @@ void flecs_stats_monitor_import(
     // Called each minute, reduces into 60 measurements per day
     ecs_system(world, {
         .entity = ecs_entity(world, { .name = "Monitor1d", .add = {ecs_dependson(EcsPreFrame)} }),
-        .query.filter.terms = {{
+        .query.terms = {{
             .id = ecs_pair(kind, EcsPeriod1d),
             .src.id = EcsWorld 
         }, {
@@ -24560,7 +24560,7 @@ void flecs_stats_monitor_import(
     // Called each hour, reduces into 60 measurements per week
     ecs_system(world, {
         .entity = ecs_entity(world, { .name = "Monitor1w", .add = {ecs_dependson(EcsPreFrame)} }),
-        .query.filter.terms = {{
+        .query.terms = {{
             .id = ecs_pair(kind, EcsPeriod1w),
             .src.id = EcsWorld 
         }, {
@@ -24652,7 +24652,7 @@ void FlecsMonitorImport(
             .name = "UpdateWorldSummary", 
             .add = {ecs_dependson(EcsPreFrame)} 
         }),
-        .query.filter.terms[0] = { .id = ecs_id(EcsWorldSummary) },
+        .query.terms[0] = { .id = ecs_id(EcsWorldSummary) },
         .callback = UpdateWorldSummary
     });
 
@@ -30884,7 +30884,7 @@ void FlecsTimerImport(
     /* Add EcsTickSource to timers and rate filters */
     ecs_system(world, {
         .entity = ecs_entity(world, {.name = "AddTickSource", .add = { ecs_dependson(EcsPreFrame) }}),
-        .query.filter.terms = {
+        .query.terms = {
             { .id = ecs_id(EcsTimer), .oper = EcsOr, .inout = EcsIn },
             { .id = ecs_id(EcsRateFilter), .oper = EcsAnd, .inout = EcsIn },
             { .id = ecs_id(EcsTickSource), .oper = EcsNot, .inout = EcsOut}
@@ -30895,7 +30895,7 @@ void FlecsTimerImport(
     /* Timer handling */
     ecs_system(world, {
         .entity = ecs_entity(world, {.name = "ProgressTimers", .add = { ecs_dependson(EcsPreFrame)}}),
-        .query.filter.terms = {
+        .query.terms = {
             { .id = ecs_id(EcsTimer) },
             { .id = ecs_id(EcsTickSource) }
         },
@@ -30905,7 +30905,7 @@ void FlecsTimerImport(
     /* Rate filter handling */
     ecs_system(world, {
         .entity = ecs_entity(world, {.name = "ProgressRateFilters", .add = { ecs_dependson(EcsPreFrame)}}),
-        .query.filter.terms = {
+        .query.terms = {
             { .id = ecs_id(EcsRateFilter), .inout = EcsIn },
             { .id = ecs_id(EcsTickSource), .inout = EcsOut }
         },
@@ -30915,7 +30915,7 @@ void FlecsTimerImport(
     /* TickSource without a timer or rate filter just increases each frame */
     ecs_system(world, {
         .entity = ecs_entity(world, { .name = "ProgressTickSource", .add = { ecs_dependson(EcsPreFrame)}}),
-        .query.filter.terms = {
+        .query.terms = {
             { .id = ecs_id(EcsTickSource), .inout = EcsOut },
             { .id = ecs_id(EcsRateFilter), .oper = EcsNot },
             { .id = ecs_id(EcsTimer), .oper = EcsNot }
@@ -38655,7 +38655,7 @@ void flecs_query_fini(
 
 ecs_query_t* ecs_query_init(
     ecs_world_t *world,
-    const ecs_query_desc_t *desc)
+    const ecs_filter_desc_t *desc)
 {
     ecs_check(world != NULL, ECS_INTERNAL_ERROR, NULL);
     ecs_check(desc != NULL, ECS_INVALID_PARAMETER, NULL);
@@ -38663,8 +38663,8 @@ ecs_query_t* ecs_query_init(
     ecs_check(!(world->flags & EcsWorldFini), ECS_INVALID_OPERATION, NULL);
 
     ecs_query_t *result = ecs_poly_new(ecs_query_t);
-    ecs_observer_desc_t observer_desc = { .filter = desc->filter };
-    ecs_entity_t entity = desc->filter.entity;
+    ecs_observer_desc_t observer_desc = { .filter = *desc };
+    ecs_entity_t entity = desc->entity;
 
     observer_desc.filter.flags = EcsFilterMatchEmptyTables;
 
@@ -38689,8 +38689,7 @@ ecs_query_t* ecs_query_init(
             observer_desc.events[2] = EcsOnTableCreate;
             observer_desc.events[3] = EcsOnTableDelete;
         }
-        observer_desc.filter.flags |= EcsFilterNoData;
-        observer_desc.filter.instanced = true;
+        observer_desc.filter.flags |= EcsFilterNoData|EcsFilterIsInstanced;
 
         /* ecs_filter_init could have moved away resources from the terms array
          * in the descriptor, so use the terms array from the filter. */
@@ -47099,7 +47098,6 @@ int flecs_rule_finalize_query(
     ecs_check(desc->_canary == 0, ECS_INVALID_PARAMETER, NULL);
     ecs_stage_t *stage = flecs_stage_from_world(&world);
 
-    ECS_BIT_COND(q->flags, EcsFilterIsInstanced, desc->instanced);
     q->flags |= desc->flags;
 
     /* Populate term array from desc terms & DSL expression */
@@ -64826,7 +64824,7 @@ void flecs_run_startup_systems(
     ecs_log_push_2();
     ecs_entity_t start_pip = ecs_pipeline_init(world, &(ecs_pipeline_desc_t){
         .query = {
-            .filter.terms = {
+            .terms = {
                 { .id = EcsSystem },
                 { .id = EcsPhase, .src.id = EcsCascade, .trav = EcsDependsOn },
                 { .id = ecs_dependson(EcsOnStart), .trav = EcsDependsOn },
@@ -64943,11 +64941,11 @@ ecs_entity_t ecs_pipeline_init(
         result = ecs_new(world, 0);
     }
 
-    ecs_query_desc_t qd = desc->query;
+    ecs_filter_desc_t qd = desc->query;
     if (!qd.order_by) {
         qd.order_by = flecs_entity_compare;
     }
-    qd.filter.entity = result;
+    qd.entity = result;
 
     ecs_query_t *query = ecs_query_init(world, &qd);
     if (!query) {
@@ -65047,7 +65045,7 @@ void FlecsPipelineImport(
     world->pipeline = ecs_pipeline(world, {
         .entity = ecs_entity(world, { .name = "BuiltinPipeline" }),
         .query = {
-            .filter.terms = {
+            .terms = {
                 { .id = EcsSystem },
                 { .id = EcsPhase, .src.id = EcsCascade, .trav = EcsDependsOn },
                 { .id = ecs_dependson(EcsOnStart), .trav = EcsDependsOn, .oper = EcsNot },
@@ -65654,8 +65652,8 @@ ecs_entity_t ecs_system_init(
         system->dtor = (ecs_poly_dtor_t)flecs_system_fini;
         system->entity = entity;
 
-        ecs_query_desc_t query_desc = desc->query;
-        query_desc.filter.entity = entity;
+        ecs_filter_desc_t query_desc = desc->query;
+        query_desc.entity = entity;
 
         ecs_query_t *query = ecs_query_init(world, &query_desc);
         if (!query) {
@@ -65725,7 +65723,7 @@ ecs_entity_t ecs_system_init(
         if (desc->binding_ctx_free) {
             system->binding_ctx_free = desc->binding_ctx_free;
         }
-        if (desc->query.filter.instanced) {
+        if (desc->query.flags & EcsFilterIsInstanced) {
             ECS_BIT_SET(system->query->query->flags, EcsFilterIsInstanced);
         }
         if (desc->multi_threaded) {

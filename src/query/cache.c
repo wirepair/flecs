@@ -2033,7 +2033,7 @@ void flecs_query_fini(
 
 ecs_query_t* ecs_query_init(
     ecs_world_t *world,
-    const ecs_query_desc_t *desc)
+    const ecs_filter_desc_t *desc)
 {
     ecs_check(world != NULL, ECS_INTERNAL_ERROR, NULL);
     ecs_check(desc != NULL, ECS_INVALID_PARAMETER, NULL);
@@ -2041,8 +2041,8 @@ ecs_query_t* ecs_query_init(
     ecs_check(!(world->flags & EcsWorldFini), ECS_INVALID_OPERATION, NULL);
 
     ecs_query_t *result = ecs_poly_new(ecs_query_t);
-    ecs_observer_desc_t observer_desc = { .filter = desc->filter };
-    ecs_entity_t entity = desc->filter.entity;
+    ecs_observer_desc_t observer_desc = { .filter = *desc };
+    ecs_entity_t entity = desc->entity;
 
     observer_desc.filter.flags = EcsFilterMatchEmptyTables;
 
@@ -2067,8 +2067,7 @@ ecs_query_t* ecs_query_init(
             observer_desc.events[2] = EcsOnTableCreate;
             observer_desc.events[3] = EcsOnTableDelete;
         }
-        observer_desc.filter.flags |= EcsFilterNoData;
-        observer_desc.filter.instanced = true;
+        observer_desc.filter.flags |= EcsFilterNoData|EcsFilterIsInstanced;
 
         /* ecs_filter_init could have moved away resources from the terms array
          * in the descriptor, so use the terms array from the filter. */

@@ -42,7 +42,7 @@ typedef struct ecs_system_desc_t {
     ecs_entity_t entity;
 
     /** System query parameters */
-    ecs_query_desc_t query;
+    ecs_filter_desc_t query;
 
     /** Callback that is invoked when a system is ran. 
      * When left to NULL, the default system runner is used, which calls the 
@@ -117,7 +117,7 @@ ecs_entity_t ecs_system_init(
         edesc.add[0] = ((phase) ? ecs_pair(EcsDependsOn, (phase)) : 0); \
         edesc.add[1] = (phase); \
         desc.entity = ecs_entity_init(world, &edesc);\
-        desc.query.filter.expr = #__VA_ARGS__; \
+        desc.query.expr = #__VA_ARGS__; \
         desc.callback = id_; \
         ecs_id(id_) = ecs_system_init(world, &desc); \
     } \

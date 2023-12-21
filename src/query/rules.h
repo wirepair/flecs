@@ -285,7 +285,7 @@ typedef struct {
 } ecs_rule_var_cache_t;
 
 struct ecs_rule_t {
-    ecs_filter_t filter;          /* Public query data */
+    ecs_filter_t pub;             /* Public query data */
 
     /* Variables */
     ecs_rule_var_t *vars;         /* Variables */

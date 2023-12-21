@@ -91,7 +91,7 @@ int32_t flecs_rule_op_ref_str(
         }
         color_chars = ecs_os_strlen("#[green]#[reset]#[green]#[reset]");
     } else if (flags & EcsRuleIsEntity) {
-        char *path = ecs_get_fullpath(rule->filter.world, ref->entity);
+        char *path = ecs_get_fullpath(rule->pub.world, ref->entity);
         ecs_strbuf_appendlit(buf, "#[blue]");
         ecs_strbuf_appendstr(buf, path);
         ecs_strbuf_appendlit(buf, "#[reset]");
@@ -184,7 +184,7 @@ char* ecs_rule_str_w_profile(
             case EcsRulePredNeqMatch: {
                 int8_t term_index = op->term_index;
                 ecs_strbuf_appendstr(&buf, ", #[yellow]\"");
-                ecs_strbuf_appendstr(&buf, impl->filter.terms[term_index].second.name);
+                ecs_strbuf_appendstr(&buf, q->terms[term_index].second.name);
                 ecs_strbuf_appendstr(&buf, "\"#[reset]");
                 break;
             }
@@ -458,7 +458,6 @@ const char* ecs_rule_parse_vars(
     const char *expr)
 {
     ecs_poly_assert(q, ecs_rule_t);
-    ecs_rule_t *impl = flecs_rule(q);
 
     ecs_check(it != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(expr != NULL, ECS_INVALID_PARAMETER, NULL)
@@ -467,8 +466,8 @@ const char* ecs_rule_parse_vars(
     bool paren = false;
 
     const char *name = NULL;
-    if (impl->filter.entity) {
-        name = ecs_get_name(impl->filter.world, impl->filter.entity);
+    if (q->entity) {
+        name = ecs_get_name(q->world, q->entity);
     }
 
     ptr = ecs_parse_ws_eol(ptr);

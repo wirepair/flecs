@@ -37,12 +37,12 @@ bool flecs_rule_trivial_test(
     int32_t term_count)
 {
     if (first) {
-        const ecs_filter_t *filter = &rule->filter;
-        const ecs_term_t *terms = filter->terms;
+        const ecs_filter_t *q = &rule->pub;
+        const ecs_term_t *terms = q->terms;
         ecs_iter_t *it = ctx->it;
         int32_t t;
 
-        if (!flecs_rule_trivial_init(ctx->world, filter)) {
+        if (!flecs_rule_trivial_init(ctx->world, q)) {
             return false;
         }
 
@@ -108,12 +108,12 @@ bool flecs_rule_trivial_search(
     bool first,
     int32_t term_count)
 {
-    const ecs_filter_t *filter = &rule->filter;
-    const ecs_term_t *terms = filter->terms;
+    const ecs_filter_t *q = &rule->pub;
+    const ecs_term_t *terms = q->terms;
     ecs_iter_t *it = ctx->it;
     int32_t t;
 
-    if (!flecs_rule_trivial_search_init(ctx, op_ctx, filter, first)) {
+    if (!flecs_rule_trivial_search_init(ctx, op_ctx, q, first)) {
         return false;
     }
 
@@ -208,12 +208,12 @@ bool flecs_rule_trivial_search_nodata(
     bool first,
     int32_t term_count)
 {
-    const ecs_filter_t *filter = &rule->filter;
-    const ecs_term_t *terms = filter->terms;
+    const ecs_filter_t *q = &rule->pub;
+    const ecs_term_t *terms = q->terms;
     ecs_iter_t *it = ctx->it;
     int32_t t;
 
-    if (!flecs_rule_trivial_search_init(ctx, op_ctx, filter, first)) {
+    if (!flecs_rule_trivial_search_init(ctx, op_ctx, q, first)) {
         return false;
     }
 

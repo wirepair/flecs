@@ -36167,7 +36167,7 @@ typedef struct {
 } ecs_rule_var_cache_t;
 
 struct ecs_rule_t {
-    ecs_filter_t filter;          /* Public query data */
+    ecs_filter_t pub;             /* Public query data */
 
     /* Variables */
     ecs_rule_var_t *vars;         /* Variables */
@@ -36356,8 +36356,8 @@ int flecs_rule_finalize_query(
 static ecs_mixins_t ecs_rule_t_mixins = {
     .type_name = "ecs_rule_t",
     .elems = {
-        [EcsMixinWorld] = offsetof(ecs_rule_t, filter.world),
-        [EcsMixinEntity] = offsetof(ecs_rule_t, filter.entity),
+        [EcsMixinWorld] = offsetof(ecs_rule_t, pub.world),
+        [EcsMixinEntity] = offsetof(ecs_rule_t, pub.entity),
         [EcsMixinIterable] = offsetof(ecs_rule_t, iterable),
         [EcsMixinDtor] = offsetof(ecs_rule_t, dtor)
     }
@@ -36380,7 +36380,7 @@ int32_t ecs_rule_find_var(
     ecs_rule_t *impl = flecs_rule(q);
     ecs_var_id_t var_id = flecs_rule_find_var_id(impl, name, EcsVarEntity);
     if (var_id == EcsVarNone) {
-        if (impl->filter.flags & EcsFilterMatchThis) {
+        if (q->flags & EcsFilterMatchThis) {
             if (!ecs_os_strcmp(name, "This")) {
                 name = "this";
             }
@@ -36448,7 +36448,7 @@ void flecs_rule_fini(
     flecs_name_index_fini(&impl->tvar_index);
     flecs_name_index_fini(&impl->evar_index);
 
-    ecs_filter_t *q = &impl->filter;
+    ecs_filter_t *q = &impl->pub;
     int i, count = q->term_count;
     for (i = 0; i < count; i ++) {
         ecs_term_t *term = &q->terms[i];
@@ -36484,7 +36484,7 @@ static
 void flecs_rule_populate_tokens(
     ecs_rule_t *impl)
 {
-    ecs_filter_t *q = &impl->filter;
+    ecs_filter_t *q = &impl->pub;
     int32_t i, term_count = q->term_count;
     
     /* Step 1: determine size of token buffer */
@@ -36535,12 +36535,11 @@ void ecs_rule_fini(
 {
     ecs_poly_assert(q, ecs_rule_t);
 
-    ecs_rule_t *impl = flecs_rule(q);
-    if (impl->filter.entity) {
+    if (q->entity) {
         /* If filter is associated with entity, use poly dtor path */
-        ecs_delete(impl->filter.world, impl->filter.entity);
+        ecs_delete(q->world, q->entity);
     } else {
-        flecs_rule_fini(impl);
+        flecs_rule_fini(flecs_rule(q));
     }
 }
 
@@ -36553,7 +36552,7 @@ ecs_filter_t* ecs_rule_init(
 
     /* Initialize the query */
     ecs_filter_desc_t desc = *const_desc;
-    if (flecs_rule_finalize_query(world, &result->filter, &desc)) {
+    if (flecs_rule_finalize_query(world, &result->pub, &desc)) {
         goto error;
     }
 
@@ -36569,9 +36568,9 @@ ecs_filter_t* ecs_rule_init(
     ecs_entity_t entity = const_desc->entity;
     result->dtor = (ecs_poly_dtor_t)flecs_rule_fini;
     result->iterable.init = flecs_rule_iter_mixin_init;
-    result->filter.entity = entity;
-    result->filter.world = world;
-    result->filter.stage = stage;
+    result->pub.entity = entity;
+    result->pub.world = world;
+    result->pub.stage = stage;
 
     if (entity) {
         EcsPoly *poly = ecs_poly_bind(world, entity, ecs_rule_t);
@@ -36579,9 +36578,9 @@ ecs_filter_t* ecs_rule_init(
         ecs_poly_modified(world, entity, ecs_rule_t);
     }
 
-    return &result->filter;
+    return &result->pub;
 error:
-    ecs_rule_fini(&result->filter);
+    ecs_rule_fini(&result->pub);
     return NULL;
 }
 
@@ -39655,8 +39654,8 @@ int flecs_rule_discover_vars(
     ecs_vec_t *vars = &stage->variables; /* Buffer to reduce allocs */
     ecs_vec_reset_t(NULL, vars, ecs_rule_var_t);
 
-    ecs_term_t *terms = rule->filter.terms;
-    int32_t a, i, anonymous_count = 0, count = rule->filter.term_count;
+    ecs_term_t *terms = rule->pub.terms;
+    int32_t a, i, anonymous_count = 0, count = rule->pub.term_count;
     int32_t anonymous_table_count = 0, scope = 0, scoped_var_index = 0;
     bool table_this = false, entity_before_table_this = false;
 
@@ -39746,7 +39745,7 @@ int flecs_rule_discover_vars(
                     /* Track which variable ids are used as field source */
                     if (!rule->src_vars) {
                         rule->src_vars = ecs_os_calloc_n(ecs_var_id_t,
-                            rule->filter.field_count);
+                            rule->pub.field_count);
                     }
 
                     rule->src_vars[term->field_index] = var_id;
@@ -40274,9 +40273,9 @@ void flecs_rule_insert_inheritance(
     ecs_var_id_t tvar = flecs_rule_add_var(rule, NULL, NULL, EcsVarTable);
     ecs_var_id_t evar = flecs_rule_add_var(rule, NULL, NULL, EcsVarEntity);
 
-    flecs_set_var_label(&rule->vars[tvar], ecs_get_name(rule->filter.world, 
+    flecs_set_var_label(&rule->vars[tvar], ecs_get_name(rule->pub.world, 
         ECS_TERM_REF_ID(&term->first)));
-    flecs_set_var_label(&rule->vars[evar], ecs_get_name(rule->filter.world, 
+    flecs_set_var_label(&rule->vars[evar], ecs_get_name(rule->pub.world, 
         ECS_TERM_REF_ID(&term->first)));
 
     ecs_rule_op_t trav_op = {0};
@@ -40464,7 +40463,7 @@ void flecs_rule_insert_pair_eq(
 
 static
 bool flecs_rule_term_fixed_id(
-    ecs_filter_t *filter,
+    ecs_filter_t *q,
     ecs_term_t *term)
 {
     /* Transitive/inherited terms have variable ids */
@@ -40476,7 +40475,7 @@ bool flecs_rule_term_fixed_id(
     if (term->oper == EcsOr) {
         return false;
     }
-    if ((term != filter->terms) && term[-1].oper == EcsOr) {
+    if ((term != q->terms) && term[-1].oper == EcsOr) {
         return false;
     }
 
@@ -40492,7 +40491,7 @@ bool flecs_rule_term_fixed_id(
 
     /* First terms that are Not or Optional require special handling */
     if (term->oper == EcsNot || term->oper == EcsOptional) {
-        if (term == filter->terms) {
+        if (term == q->terms) {
             return false;
         }
     }
@@ -40631,10 +40630,10 @@ void flecs_rule_compile_pop(
 
 static
 bool flecs_rule_term_is_or(
-    const ecs_filter_t *filter,
+    const ecs_filter_t *q,
     const ecs_term_t *term)
 {
-    bool first_term = term == filter->terms;
+    bool first_term = term == q->terms;
     return (term->oper == EcsOr) || (!first_term && term[-1].oper == EcsOr);
 }
 
@@ -40645,14 +40644,14 @@ int flecs_rule_compile_term(
     ecs_term_t *term,
     ecs_rule_compile_ctx_t *ctx)
 {
-    ecs_filter_t *filter = &rule->filter;
-    bool first_term = term == filter->terms;
+    ecs_filter_t *q = &rule->pub;
+    bool first_term = term == q->terms;
     bool first_is_var = term->first.id & EcsIsVariable;
     bool second_is_var = term->second.id & EcsIsVariable;
     bool src_is_var = term->src.id & EcsIsVariable;
     bool builtin_pred = flecs_rule_is_builtin_pred(term);
     bool is_not = (term->oper == EcsNot) && !builtin_pred;
-    bool is_or = flecs_rule_term_is_or(filter, term);
+    bool is_or = flecs_rule_term_is_or(q, term);
     bool first_or = false, last_or = false;
     bool cond_write = term->oper == EcsOptional || is_or;
     ecs_rule_op_t op = {0};
@@ -40712,7 +40711,7 @@ int flecs_rule_compile_term(
      * just matches against a source (vs. finding a source). */
     op.kind = src_is_var ? EcsRuleAnd : EcsRuleWith;
     op.field_index = flecs_ito(int8_t, term->field_index);
-    op.term_index = flecs_ito(int8_t, term - filter->terms);
+    op.term_index = flecs_ito(int8_t, term - q->terms);
 
     /* If rule is transitive, use Trav(ersal) instruction */
     if (term->flags & EcsTermTransitive) {
@@ -40732,7 +40731,7 @@ int flecs_rule_compile_term(
 
     /* If term has fixed id, insert simpler instruction that skips dealing with
      * wildcard terms and variables */
-    if (flecs_rule_term_fixed_id(filter, term)) {
+    if (flecs_rule_term_fixed_id(q, term)) {
         if (op.kind == EcsRuleAnd) {
             op.kind = EcsRuleAndId;
         } else if (op.kind == EcsRuleSelfUp) {
@@ -40932,7 +40931,7 @@ int flecs_rule_compile_term(
      * filtering out disabled/prefab entities is the default and this check is
      * cheap to perform on table flags, it's worth special casing. */
     if (!src_written && src_var == 0) {
-        ecs_flags32_t filter_flags = filter->flags;
+        ecs_flags32_t filter_flags = q->flags;
         if (!(filter_flags & EcsFilterMatchDisabled) || 
             !(filter_flags & EcsFilterMatchPrefab)) 
         {
@@ -41077,9 +41076,9 @@ int32_t flecs_rule_term_next_known(
     int32_t offset,
     ecs_flags64_t compiled) 
 {
-    ecs_filter_t *filter = &rule->filter;
-    ecs_term_t *terms = filter->terms;
-    int32_t i, count = filter->term_count;
+    ecs_filter_t *q = &rule->pub;
+    ecs_term_t *terms = q->terms;
+    int32_t i, count = q->term_count;
 
     for (i = offset; i < count; i ++) {
         ecs_term_t *term = &terms[i];
@@ -41088,7 +41087,7 @@ int32_t flecs_rule_term_next_known(
         }
 
         /* Only evaluate And terms */
-        if (term->oper != EcsAnd || flecs_rule_term_is_or(&rule->filter, term)){
+        if (term->oper != EcsAnd || flecs_rule_term_is_or(q, term)){
             continue;
         }
 
@@ -41115,9 +41114,9 @@ int32_t flecs_rule_insert_trivial_search(
     ecs_rule_t *rule,
     ecs_rule_compile_ctx_t *ctx)
 {
-    ecs_filter_t *filter = &rule->filter;
-    ecs_term_t *terms = filter->terms;
-    int32_t i, term_count = filter->term_count;
+    ecs_filter_t *q = &rule->pub;
+    ecs_term_t *terms = q->terms;
+    int32_t i, term_count = q->term_count;
 
     /* Find trivial terms, which can be handled in single instruction */
     int32_t trivial_wildcard_terms = 0;
@@ -41188,14 +41187,14 @@ void flecs_rule_insert_populate(
     ecs_rule_compile_ctx_t *ctx,
     int32_t trivial_terms)
 {
-    ecs_filter_t *filter = &rule->filter;
-    int32_t i, term_count = filter->term_count;
+    ecs_filter_t *q = &rule->pub;
+    int32_t i, term_count = q->term_count;
 
     /* Insert instruction that populates data. This instruction does not
      * have to be inserted if the filter provides no data, or if all terms
      * of the filter are trivial, in which case the trivial search operation
      * also sets the data. */
-    if (!(filter->flags & EcsFilterNoData) && (trivial_terms != term_count)) {
+    if (!(q->flags & EcsFilterNoData) && (trivial_terms != term_count)) {
         int32_t data_fields = 0;
         bool only_self = true;
 
@@ -41204,7 +41203,7 @@ void flecs_rule_insert_populate(
          * of field. Loop through (remaining) terms to check which one we
          * need to use. */
         for (i = trivial_terms; i < term_count; i ++) {
-            ecs_term_t *term = &filter->terms[i];
+            ecs_term_t *term = &q->terms[i];
             if (term->flags & EcsTermNoData) {
                 /* Don't care about terms that have no data */
                 continue;
@@ -41221,7 +41220,7 @@ void flecs_rule_insert_populate(
             }
         }
 
-        if (i != filter->term_count) {
+        if (i != q->term_count) {
             only_self = false; /* Needs the more complex operation */
         }
 
@@ -41244,8 +41243,8 @@ int flecs_rule_compile(
     ecs_stage_t *stage,
     ecs_rule_t *rule)
 {
-    ecs_filter_t *filter = &rule->filter;
-    ecs_term_t *terms = filter->terms;
+    ecs_filter_t *q = &rule->pub;
+    ecs_term_t *terms = q->terms;
     ecs_rule_compile_ctx_t ctx = {0};
     ecs_vec_reset_t(NULL, &stage->operations, ecs_rule_op_t);
     ctx.ops = &stage->operations;
@@ -41260,7 +41259,7 @@ int flecs_rule_compile(
     }
 
     /* If rule contains fixed source terms, insert operation to set sources */
-    int32_t i, term_count = filter->term_count;
+    int32_t i, term_count = q->term_count;
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
         if (term->src.id & EcsIsEntity) {
@@ -41276,7 +41275,7 @@ int flecs_rule_compile(
      * insertion of simpler instructions later on. */
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
-        if (flecs_rule_term_fixed_id(filter, term) || 
+        if (flecs_rule_term_fixed_id(q, term) || 
            (term->src.id & EcsIsEntity && !(term->src.id & ~EcsTermRefFlags))) 
         {
             ecs_rule_op_t set_ids = {0};
@@ -41300,7 +41299,7 @@ int flecs_rule_compile(
         }
 
         bool can_reorder = true;
-        if (term->oper != EcsAnd || flecs_rule_term_is_or(&rule->filter, term)){
+        if (term->oper != EcsAnd || flecs_rule_term_is_or(q, term)){
             can_reorder = false;
         }
 
@@ -41315,7 +41314,7 @@ int flecs_rule_compile(
             int32_t term_index = flecs_rule_term_next_known(
                 rule, &ctx, i + 1, compiled);
             if (term_index != -1) {
-                term = &rule->filter.terms[term_index];
+                term = &q->terms[term_index];
                 compile = term_index;
                 i --; /* Repeat current term */
             }
@@ -41362,7 +41361,7 @@ int flecs_rule_compile(
         ecs_assert(rule->vars != NULL, ECS_INTERNAL_ERROR, NULL);
         bool only_anonymous = true;
 
-        for (i = 0; i < filter->field_count; i ++) {
+        for (i = 0; i < q->field_count; i ++) {
             ecs_var_id_t var_id = rule->src_vars[i];
             if (!var_id) {
                 continue;
@@ -41378,8 +41377,8 @@ int flecs_rule_compile(
                  * as table variables (each is not guaranteed to be inserted for
                  * anonymous variables) the iterator may not have sufficient
                  * information to resolve component data. */
-                for (int32_t t = 0; t < filter->term_count; t ++) {
-                    ecs_term_t *term = &filter->terms[t];
+                for (int32_t t = 0; t < q->term_count; t ++) {
+                    ecs_term_t *term = &q->terms[t];
                     if (term->field_index == i) {
                         term->inout = EcsInOutNone;
                     }
@@ -41394,7 +41393,7 @@ int flecs_rule_compile(
             flecs_rule_op_insert(&set_vars, &ctx);
         }
 
-        for (i = 0; i < filter->field_count; i ++) {
+        for (i = 0; i < q->field_count; i ++) {
             ecs_var_id_t var_id = rule->src_vars[i];
             if (!var_id) {
                 continue;
@@ -41958,7 +41957,7 @@ bool flecs_rule_select_w_id(
             }
         }
 
-        if (ctx->rule->filter.flags & EcsFilterMatchEmptyTables) {
+        if (ctx->rule->pub.flags & EcsFilterMatchEmptyTables) {
             if (!flecs_table_cache_all_iter(&idr->cache, &op_ctx->it)) {
                 return false;
             }
@@ -42090,7 +42089,7 @@ bool flecs_rule_select_id(
             }
         }
 
-        if (ctx->rule->filter.flags & EcsFilterMatchEmptyTables) {
+        if (ctx->rule->pub.flags & EcsFilterMatchEmptyTables) {
             if (!flecs_table_cache_all_iter(&idr->cache, &op_ctx->it)) {
                 return false;
             }
@@ -42183,10 +42182,10 @@ bool flecs_rule_up_select(
     ecs_world_t *world = ctx->world;
     ecs_iter_t *it = ctx->it;
     bool redo_select = redo;
-    const ecs_filter_t *filter = &ctx->rule->filter;
+    const ecs_filter_t *q = &ctx->rule->pub;
 
     /* Early out if traversal relationship doesn't exist */
-    op_ctx->trav = filter->terms[op->term_index].trav;
+    op_ctx->trav = q->terms[op->term_index].trav;
     if (!op_ctx->idr_trav) {
         op_ctx->idr_trav = flecs_id_record_get(ctx->world, 
             ecs_pair(op_ctx->trav, EcsWildcard));
@@ -42324,12 +42323,12 @@ bool flecs_rule_up_with(
     bool redo,
     const ecs_rule_run_ctx_t *ctx)
 {
-    const ecs_filter_t *filter = &ctx->rule->filter;
+    const ecs_filter_t *q = &ctx->rule->pub;
     ecs_rule_up_ctx_t *op_ctx = flecs_op_ctx(ctx, up);
     ecs_iter_t *it = ctx->it;
 
     /* Early out if traversal relationship doesn't exist */
-    op_ctx->trav = filter->terms[op->term_index].trav;
+    op_ctx->trav = q->terms[op->term_index].trav;
     if (!op_ctx->idr_trav) {
         op_ctx->idr_trav = flecs_id_record_get(ctx->world, 
             ecs_pair(op_ctx->trav, EcsWildcard));
@@ -42339,7 +42338,7 @@ bool flecs_rule_up_with(
     }
 
     if (!redo) {
-        op_ctx->trav = filter->terms[op->term_index].trav;
+        op_ctx->trav = q->terms[op->term_index].trav;
         op_ctx->with = flecs_rule_op_get_id(op, ctx);
         op_ctx->idr_with = flecs_id_record_get(ctx->world, op_ctx->with);
 
@@ -43063,7 +43062,7 @@ const char* flecs_rule_name_arg(
     ecs_rule_run_ctx_t *ctx)
 {
     int8_t term_index = op->term_index;
-    const ecs_term_t *term = &ctx->rule->filter.terms[term_index];
+    const ecs_term_t *term = &ctx->rule->pub.terms[term_index];
     return term->second.name;
 }
 
@@ -43402,7 +43401,7 @@ bool flecs_rule_setvars(
     (void)op;
 
     const ecs_rule_t *rule = ctx->rule;
-    const ecs_filter_t *filter = &rule->filter;
+    const ecs_filter_t *q = &rule->pub;
     ecs_var_id_t *src_vars = rule->src_vars;
     ecs_iter_t *it = ctx->it;
 
@@ -43412,7 +43411,7 @@ bool flecs_rule_setvars(
 
     int32_t i;
     ecs_flags32_t source_set = *ctx->source_set;
-    for (i = 0; i < filter->field_count; i ++) {
+    for (i = 0; i < q->field_count; i ++) {
         ecs_var_id_t var_id = src_vars[i];
         if (!var_id) {
             continue;
@@ -43463,7 +43462,7 @@ bool flecs_rule_setfixed(
 {
     (void)op;
     const ecs_rule_t *rule = ctx->rule;
-    const ecs_filter_t *filter = &rule->filter;
+    const ecs_filter_t *q = &rule->pub;
     ecs_iter_t *it = ctx->it;
 
     if (redo) {
@@ -43471,8 +43470,8 @@ bool flecs_rule_setfixed(
     }
 
     int32_t i;
-    for (i = 0; i < filter->term_count; i ++) {
-        const ecs_term_t *term = &filter->terms[i];
+    for (i = 0; i < q->term_count; i ++) {
+        const ecs_term_t *term = &q->terms[i];
         const ecs_term_ref_t *src = &term->src;
         if (src->id & EcsIsEntity) {
             it->sources[term->field_index] = ECS_TERM_REF_ID(src);
@@ -43490,7 +43489,7 @@ bool flecs_rule_setids(
 {
     (void)op;
     const ecs_rule_t *rule = ctx->rule;
-    const ecs_filter_t *filter = &rule->filter;
+    const ecs_filter_t *q = &rule->pub;
     ecs_iter_t *it = ctx->it;
 
     if (redo) {
@@ -43498,8 +43497,8 @@ bool flecs_rule_setids(
     }
 
     int32_t i;
-    for (i = 0; i < filter->term_count; i ++) {
-        const ecs_term_t *term = &filter->terms[i];
+    for (i = 0; i < q->term_count; i ++) {
+        const ecs_term_t *term = &q->terms[i];
         it->ids[term->field_index] = term->id;
     }
 
@@ -43773,9 +43772,9 @@ bool flecs_rule_populate(
         ECS_BIT_CLEAR(it->flags, EcsIterHasShared);
 
         const ecs_rule_t *rule = ctx->rule;
-        const ecs_filter_t *filter = &rule->filter;
-        int32_t i, field_count = filter->field_count;
-        ecs_flags64_t data_fields = filter->data_fields;
+        const ecs_filter_t *q = &rule->pub;
+        int32_t i, field_count = q->field_count;
+        ecs_flags64_t data_fields = q->data_fields;
         ecs_table_range_t *range = &ctx->vars[0].range;
         ecs_table_t *table = range->table;
         if (table && !range->count) {
@@ -43838,9 +43837,9 @@ bool flecs_rule_populate_self(
     (void)op;
     if (!redo) {
         const ecs_rule_t *rule = ctx->rule;
-        const ecs_filter_t *filter = &rule->filter;
-        int32_t i, field_count = filter->field_count;
-        ecs_flags64_t data_fields = filter->data_fields;
+        const ecs_filter_t *q = &rule->pub;
+        int32_t i, field_count = q->field_count;
+        ecs_flags64_t data_fields = q->data_fields;
         ecs_iter_t *it = ctx->it;
 
         ecs_table_range_t *range = &ctx->vars[0].range;
@@ -43983,13 +43982,14 @@ void flecs_rule_iter_init(
     ecs_iter_t *it = ctx->it;
 
     const ecs_rule_t *rule = ctx->rule;
+    const ecs_filter_t *q = &rule->pub;
     ecs_flags64_t it_written = it->constrained_vars;
     ctx->written[0] = it_written;
     if (it_written && ctx->rule->src_vars) {
         /* If variables were constrained, check if there are any table
          * variables that have a constrained entity variable. */
         ecs_var_t *vars = ctx->vars;
-        int32_t i, count = rule->filter.field_count;
+        int32_t i, count = q->field_count;
         for (i = 0; i < count; i ++) {
             ecs_var_id_t var_id = rule->src_vars[i];
             ecs_rule_var_t *var = &rule->vars[var_id];
@@ -44007,7 +44007,7 @@ void flecs_rule_iter_init(
         }
     }
 
-    ecs_flags32_t flags = rule->filter.flags;
+    ecs_flags32_t flags = q->flags;
     if (flags & EcsFilterIsTrivial) {
         if ((flags & EcsFilterMatchOnlySelf) || 
             !flecs_table_cache_count(&ctx->world->idr_isa_wildcard->cache)) 
@@ -44071,7 +44071,7 @@ bool ecs_rule_next_instanced(
     /* Specialized iterator modes for trivial queries */
     if (it->flags & EcsIterTrivialSearch) {
         ecs_rule_trivial_ctx_t *op_ctx = &ctx.op_ctx[0].is.trivial;
-        int32_t fields = ctx.rule->filter.term_count;
+        int32_t fields = ctx.rule->pub.term_count;
         if (!flecs_rule_trivial_search(ctx.rule, &ctx, op_ctx, !redo, fields)) {
             goto done;
         }
@@ -44081,7 +44081,7 @@ bool ecs_rule_next_instanced(
         return true;
     } else if (it->flags & EcsIterTrivialSearchNoData) {
         ecs_rule_trivial_ctx_t *op_ctx = &ctx.op_ctx[0].is.trivial;
-        int32_t fields = ctx.rule->filter.term_count;
+        int32_t fields = ctx.rule->pub.term_count;
         if (!flecs_rule_trivial_search_nodata(ctx.rule, &ctx, op_ctx, !redo, fields)) {
             goto done;
         }
@@ -44090,14 +44090,14 @@ bool ecs_rule_next_instanced(
         it->entities = flecs_table_entities_array(it->table);
         return true;
     } else if (it->flags & EcsIterTrivialTest) {
-        int32_t fields = ctx.rule->filter.term_count;
+        int32_t fields = ctx.rule->pub.term_count;
         if (!flecs_rule_trivial_test(ctx.rule, &ctx, !redo, fields)) {
             goto done;
         }
         return true;
     } else if (it->flags & EcsIterTrivialSearchWildcard) {
         ecs_rule_trivial_ctx_t *op_ctx = &ctx.op_ctx[0].is.trivial;
-        int32_t fields = ctx.rule->filter.term_count;
+        int32_t fields = ctx.rule->pub.term_count;
         if (!flecs_rule_trivial_search_w_wildcards(ctx.rule, &ctx, op_ctx, !redo, fields)) {
             goto done;
         }
@@ -44228,7 +44228,7 @@ ecs_iter_t ecs_rule_iter(
     ecs_poly_assert(q, ecs_rule_t);
     ecs_rule_t *impl = flecs_rule(q);
 
-    ecs_run_aperiodic(impl->filter.world, EcsAperiodicEmptyTables);
+    ecs_run_aperiodic(q->world, EcsAperiodicEmptyTables);
 
     int32_t i, var_count = impl->var_count, op_count = impl->op_count;
     it.world = ECS_CONST_CAST(ecs_world_t*, world);
@@ -44928,12 +44928,12 @@ bool flecs_rule_trivial_test(
     int32_t term_count)
 {
     if (first) {
-        const ecs_filter_t *filter = &rule->filter;
-        const ecs_term_t *terms = filter->terms;
+        const ecs_filter_t *q = &rule->pub;
+        const ecs_term_t *terms = q->terms;
         ecs_iter_t *it = ctx->it;
         int32_t t;
 
-        if (!flecs_rule_trivial_init(ctx->world, filter)) {
+        if (!flecs_rule_trivial_init(ctx->world, q)) {
             return false;
         }
 
@@ -44999,12 +44999,12 @@ bool flecs_rule_trivial_search(
     bool first,
     int32_t term_count)
 {
-    const ecs_filter_t *filter = &rule->filter;
-    const ecs_term_t *terms = filter->terms;
+    const ecs_filter_t *q = &rule->pub;
+    const ecs_term_t *terms = q->terms;
     ecs_iter_t *it = ctx->it;
     int32_t t;
 
-    if (!flecs_rule_trivial_search_init(ctx, op_ctx, filter, first)) {
+    if (!flecs_rule_trivial_search_init(ctx, op_ctx, q, first)) {
         return false;
     }
 
@@ -45099,12 +45099,12 @@ bool flecs_rule_trivial_search_nodata(
     bool first,
     int32_t term_count)
 {
-    const ecs_filter_t *filter = &rule->filter;
-    const ecs_term_t *terms = filter->terms;
+    const ecs_filter_t *q = &rule->pub;
+    const ecs_term_t *terms = q->terms;
     ecs_iter_t *it = ctx->it;
     int32_t t;
 
-    if (!flecs_rule_trivial_search_init(ctx, op_ctx, filter, first)) {
+    if (!flecs_rule_trivial_search_init(ctx, op_ctx, q, first)) {
         return false;
     }
 
@@ -45237,7 +45237,7 @@ int32_t flecs_rule_op_ref_str(
         }
         color_chars = ecs_os_strlen("#[green]#[reset]#[green]#[reset]");
     } else if (flags & EcsRuleIsEntity) {
-        char *path = ecs_get_fullpath(rule->filter.world, ref->entity);
+        char *path = ecs_get_fullpath(rule->pub.world, ref->entity);
         ecs_strbuf_appendlit(buf, "#[blue]");
         ecs_strbuf_appendstr(buf, path);
         ecs_strbuf_appendlit(buf, "#[reset]");
@@ -45330,7 +45330,7 @@ char* ecs_rule_str_w_profile(
             case EcsRulePredNeqMatch: {
                 int8_t term_index = op->term_index;
                 ecs_strbuf_appendstr(&buf, ", #[yellow]\"");
-                ecs_strbuf_appendstr(&buf, impl->filter.terms[term_index].second.name);
+                ecs_strbuf_appendstr(&buf, q->terms[term_index].second.name);
                 ecs_strbuf_appendstr(&buf, "\"#[reset]");
                 break;
             }
@@ -45604,7 +45604,6 @@ const char* ecs_rule_parse_vars(
     const char *expr)
 {
     ecs_poly_assert(q, ecs_rule_t);
-    ecs_rule_t *impl = flecs_rule(q);
 
     ecs_check(it != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(expr != NULL, ECS_INVALID_PARAMETER, NULL)
@@ -45613,8 +45612,8 @@ const char* ecs_rule_parse_vars(
     bool paren = false;
 
     const char *name = NULL;
-    if (impl->filter.entity) {
-        name = ecs_get_name(impl->filter.world, impl->filter.entity);
+    if (q->entity) {
+        name = ecs_get_name(q->world, q->entity);
     }
 
     ptr = ecs_parse_ws_eol(ptr);

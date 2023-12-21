@@ -316,8 +316,8 @@ int flecs_rule_discover_vars(
     ecs_vec_t *vars = &stage->variables; /* Buffer to reduce allocs */
     ecs_vec_reset_t(NULL, vars, ecs_rule_var_t);
 
-    ecs_term_t *terms = rule->filter.terms;
-    int32_t a, i, anonymous_count = 0, count = rule->filter.term_count;
+    ecs_term_t *terms = rule->pub.terms;
+    int32_t a, i, anonymous_count = 0, count = rule->pub.term_count;
     int32_t anonymous_table_count = 0, scope = 0, scoped_var_index = 0;
     bool table_this = false, entity_before_table_this = false;
 
@@ -407,7 +407,7 @@ int flecs_rule_discover_vars(
                     /* Track which variable ids are used as field source */
                     if (!rule->src_vars) {
                         rule->src_vars = ecs_os_calloc_n(ecs_var_id_t,
-                            rule->filter.field_count);
+                            rule->pub.field_count);
                     }
 
                     rule->src_vars[term->field_index] = var_id;
@@ -935,9 +935,9 @@ void flecs_rule_insert_inheritance(
     ecs_var_id_t tvar = flecs_rule_add_var(rule, NULL, NULL, EcsVarTable);
     ecs_var_id_t evar = flecs_rule_add_var(rule, NULL, NULL, EcsVarEntity);
 
-    flecs_set_var_label(&rule->vars[tvar], ecs_get_name(rule->filter.world, 
+    flecs_set_var_label(&rule->vars[tvar], ecs_get_name(rule->pub.world, 
         ECS_TERM_REF_ID(&term->first)));
-    flecs_set_var_label(&rule->vars[evar], ecs_get_name(rule->filter.world, 
+    flecs_set_var_label(&rule->vars[evar], ecs_get_name(rule->pub.world, 
         ECS_TERM_REF_ID(&term->first)));
 
     ecs_rule_op_t trav_op = {0};
@@ -1125,7 +1125,7 @@ void flecs_rule_insert_pair_eq(
 
 static
 bool flecs_rule_term_fixed_id(
-    ecs_filter_t *filter,
+    ecs_filter_t *q,
     ecs_term_t *term)
 {
     /* Transitive/inherited terms have variable ids */
@@ -1137,7 +1137,7 @@ bool flecs_rule_term_fixed_id(
     if (term->oper == EcsOr) {
         return false;
     }
-    if ((term != filter->terms) && term[-1].oper == EcsOr) {
+    if ((term != q->terms) && term[-1].oper == EcsOr) {
         return false;
     }
 
@@ -1153,7 +1153,7 @@ bool flecs_rule_term_fixed_id(
 
     /* First terms that are Not or Optional require special handling */
     if (term->oper == EcsNot || term->oper == EcsOptional) {
-        if (term == filter->terms) {
+        if (term == q->terms) {
             return false;
         }
     }
@@ -1292,10 +1292,10 @@ void flecs_rule_compile_pop(
 
 static
 bool flecs_rule_term_is_or(
-    const ecs_filter_t *filter,
+    const ecs_filter_t *q,
     const ecs_term_t *term)
 {
-    bool first_term = term == filter->terms;
+    bool first_term = term == q->terms;
     return (term->oper == EcsOr) || (!first_term && term[-1].oper == EcsOr);
 }
 
@@ -1306,14 +1306,14 @@ int flecs_rule_compile_term(
     ecs_term_t *term,
     ecs_rule_compile_ctx_t *ctx)
 {
-    ecs_filter_t *filter = &rule->filter;
-    bool first_term = term == filter->terms;
+    ecs_filter_t *q = &rule->pub;
+    bool first_term = term == q->terms;
     bool first_is_var = term->first.id & EcsIsVariable;
     bool second_is_var = term->second.id & EcsIsVariable;
     bool src_is_var = term->src.id & EcsIsVariable;
     bool builtin_pred = flecs_rule_is_builtin_pred(term);
     bool is_not = (term->oper == EcsNot) && !builtin_pred;
-    bool is_or = flecs_rule_term_is_or(filter, term);
+    bool is_or = flecs_rule_term_is_or(q, term);
     bool first_or = false, last_or = false;
     bool cond_write = term->oper == EcsOptional || is_or;
     ecs_rule_op_t op = {0};
@@ -1373,7 +1373,7 @@ int flecs_rule_compile_term(
      * just matches against a source (vs. finding a source). */
     op.kind = src_is_var ? EcsRuleAnd : EcsRuleWith;
     op.field_index = flecs_ito(int8_t, term->field_index);
-    op.term_index = flecs_ito(int8_t, term - filter->terms);
+    op.term_index = flecs_ito(int8_t, term - q->terms);
 
     /* If rule is transitive, use Trav(ersal) instruction */
     if (term->flags & EcsTermTransitive) {
@@ -1393,7 +1393,7 @@ int flecs_rule_compile_term(
 
     /* If term has fixed id, insert simpler instruction that skips dealing with
      * wildcard terms and variables */
-    if (flecs_rule_term_fixed_id(filter, term)) {
+    if (flecs_rule_term_fixed_id(q, term)) {
         if (op.kind == EcsRuleAnd) {
             op.kind = EcsRuleAndId;
         } else if (op.kind == EcsRuleSelfUp) {
@@ -1593,7 +1593,7 @@ int flecs_rule_compile_term(
      * filtering out disabled/prefab entities is the default and this check is
      * cheap to perform on table flags, it's worth special casing. */
     if (!src_written && src_var == 0) {
-        ecs_flags32_t filter_flags = filter->flags;
+        ecs_flags32_t filter_flags = q->flags;
         if (!(filter_flags & EcsFilterMatchDisabled) || 
             !(filter_flags & EcsFilterMatchPrefab)) 
         {
@@ -1738,9 +1738,9 @@ int32_t flecs_rule_term_next_known(
     int32_t offset,
     ecs_flags64_t compiled) 
 {
-    ecs_filter_t *filter = &rule->filter;
-    ecs_term_t *terms = filter->terms;
-    int32_t i, count = filter->term_count;
+    ecs_filter_t *q = &rule->pub;
+    ecs_term_t *terms = q->terms;
+    int32_t i, count = q->term_count;
 
     for (i = offset; i < count; i ++) {
         ecs_term_t *term = &terms[i];
@@ -1749,7 +1749,7 @@ int32_t flecs_rule_term_next_known(
         }
 
         /* Only evaluate And terms */
-        if (term->oper != EcsAnd || flecs_rule_term_is_or(&rule->filter, term)){
+        if (term->oper != EcsAnd || flecs_rule_term_is_or(q, term)){
             continue;
         }
 
@@ -1776,9 +1776,9 @@ int32_t flecs_rule_insert_trivial_search(
     ecs_rule_t *rule,
     ecs_rule_compile_ctx_t *ctx)
 {
-    ecs_filter_t *filter = &rule->filter;
-    ecs_term_t *terms = filter->terms;
-    int32_t i, term_count = filter->term_count;
+    ecs_filter_t *q = &rule->pub;
+    ecs_term_t *terms = q->terms;
+    int32_t i, term_count = q->term_count;
 
     /* Find trivial terms, which can be handled in single instruction */
     int32_t trivial_wildcard_terms = 0;
@@ -1849,14 +1849,14 @@ void flecs_rule_insert_populate(
     ecs_rule_compile_ctx_t *ctx,
     int32_t trivial_terms)
 {
-    ecs_filter_t *filter = &rule->filter;
-    int32_t i, term_count = filter->term_count;
+    ecs_filter_t *q = &rule->pub;
+    int32_t i, term_count = q->term_count;
 
     /* Insert instruction that populates data. This instruction does not
      * have to be inserted if the filter provides no data, or if all terms
      * of the filter are trivial, in which case the trivial search operation
      * also sets the data. */
-    if (!(filter->flags & EcsFilterNoData) && (trivial_terms != term_count)) {
+    if (!(q->flags & EcsFilterNoData) && (trivial_terms != term_count)) {
         int32_t data_fields = 0;
         bool only_self = true;
 
@@ -1865,7 +1865,7 @@ void flecs_rule_insert_populate(
          * of field. Loop through (remaining) terms to check which one we
          * need to use. */
         for (i = trivial_terms; i < term_count; i ++) {
-            ecs_term_t *term = &filter->terms[i];
+            ecs_term_t *term = &q->terms[i];
             if (term->flags & EcsTermNoData) {
                 /* Don't care about terms that have no data */
                 continue;
@@ -1882,7 +1882,7 @@ void flecs_rule_insert_populate(
             }
         }
 
-        if (i != filter->term_count) {
+        if (i != q->term_count) {
             only_self = false; /* Needs the more complex operation */
         }
 
@@ -1905,8 +1905,8 @@ int flecs_rule_compile(
     ecs_stage_t *stage,
     ecs_rule_t *rule)
 {
-    ecs_filter_t *filter = &rule->filter;
-    ecs_term_t *terms = filter->terms;
+    ecs_filter_t *q = &rule->pub;
+    ecs_term_t *terms = q->terms;
     ecs_rule_compile_ctx_t ctx = {0};
     ecs_vec_reset_t(NULL, &stage->operations, ecs_rule_op_t);
     ctx.ops = &stage->operations;
@@ -1921,7 +1921,7 @@ int flecs_rule_compile(
     }
 
     /* If rule contains fixed source terms, insert operation to set sources */
-    int32_t i, term_count = filter->term_count;
+    int32_t i, term_count = q->term_count;
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
         if (term->src.id & EcsIsEntity) {
@@ -1937,7 +1937,7 @@ int flecs_rule_compile(
      * insertion of simpler instructions later on. */
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
-        if (flecs_rule_term_fixed_id(filter, term) || 
+        if (flecs_rule_term_fixed_id(q, term) || 
            (term->src.id & EcsIsEntity && !(term->src.id & ~EcsTermRefFlags))) 
         {
             ecs_rule_op_t set_ids = {0};
@@ -1961,7 +1961,7 @@ int flecs_rule_compile(
         }
 
         bool can_reorder = true;
-        if (term->oper != EcsAnd || flecs_rule_term_is_or(&rule->filter, term)){
+        if (term->oper != EcsAnd || flecs_rule_term_is_or(q, term)){
             can_reorder = false;
         }
 
@@ -1976,7 +1976,7 @@ int flecs_rule_compile(
             int32_t term_index = flecs_rule_term_next_known(
                 rule, &ctx, i + 1, compiled);
             if (term_index != -1) {
-                term = &rule->filter.terms[term_index];
+                term = &q->terms[term_index];
                 compile = term_index;
                 i --; /* Repeat current term */
             }
@@ -2023,7 +2023,7 @@ int flecs_rule_compile(
         ecs_assert(rule->vars != NULL, ECS_INTERNAL_ERROR, NULL);
         bool only_anonymous = true;
 
-        for (i = 0; i < filter->field_count; i ++) {
+        for (i = 0; i < q->field_count; i ++) {
             ecs_var_id_t var_id = rule->src_vars[i];
             if (!var_id) {
                 continue;
@@ -2039,8 +2039,8 @@ int flecs_rule_compile(
                  * as table variables (each is not guaranteed to be inserted for
                  * anonymous variables) the iterator may not have sufficient
                  * information to resolve component data. */
-                for (int32_t t = 0; t < filter->term_count; t ++) {
-                    ecs_term_t *term = &filter->terms[t];
+                for (int32_t t = 0; t < q->term_count; t ++) {
+                    ecs_term_t *term = &q->terms[t];
                     if (term->field_index == i) {
                         term->inout = EcsInOutNone;
                     }
@@ -2055,7 +2055,7 @@ int flecs_rule_compile(
             flecs_rule_op_insert(&set_vars, &ctx);
         }
 
-        for (i = 0; i < filter->field_count; i ++) {
+        for (i = 0; i < q->field_count; i ++) {
             ecs_var_id_t var_id = rule->src_vars[i];
             if (!var_id) {
                 continue;

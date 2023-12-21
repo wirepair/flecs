@@ -11,8 +11,8 @@
 static ecs_mixins_t ecs_rule_t_mixins = {
     .type_name = "ecs_rule_t",
     .elems = {
-        [EcsMixinWorld] = offsetof(ecs_rule_t, filter.world),
-        [EcsMixinEntity] = offsetof(ecs_rule_t, filter.entity),
+        [EcsMixinWorld] = offsetof(ecs_rule_t, pub.world),
+        [EcsMixinEntity] = offsetof(ecs_rule_t, pub.entity),
         [EcsMixinIterable] = offsetof(ecs_rule_t, iterable),
         [EcsMixinDtor] = offsetof(ecs_rule_t, dtor)
     }
@@ -35,7 +35,7 @@ int32_t ecs_rule_find_var(
     ecs_rule_t *impl = flecs_rule(q);
     ecs_var_id_t var_id = flecs_rule_find_var_id(impl, name, EcsVarEntity);
     if (var_id == EcsVarNone) {
-        if (impl->filter.flags & EcsFilterMatchThis) {
+        if (q->flags & EcsFilterMatchThis) {
             if (!ecs_os_strcmp(name, "This")) {
                 name = "this";
             }
@@ -103,7 +103,7 @@ void flecs_rule_fini(
     flecs_name_index_fini(&impl->tvar_index);
     flecs_name_index_fini(&impl->evar_index);
 
-    ecs_filter_t *q = &impl->filter;
+    ecs_filter_t *q = &impl->pub;
     int i, count = q->term_count;
     for (i = 0; i < count; i ++) {
         ecs_term_t *term = &q->terms[i];
@@ -139,7 +139,7 @@ static
 void flecs_rule_populate_tokens(
     ecs_rule_t *impl)
 {
-    ecs_filter_t *q = &impl->filter;
+    ecs_filter_t *q = &impl->pub;
     int32_t i, term_count = q->term_count;
     
     /* Step 1: determine size of token buffer */
@@ -190,12 +190,11 @@ void ecs_rule_fini(
 {
     ecs_poly_assert(q, ecs_rule_t);
 
-    ecs_rule_t *impl = flecs_rule(q);
-    if (impl->filter.entity) {
+    if (q->entity) {
         /* If filter is associated with entity, use poly dtor path */
-        ecs_delete(impl->filter.world, impl->filter.entity);
+        ecs_delete(q->world, q->entity);
     } else {
-        flecs_rule_fini(impl);
+        flecs_rule_fini(flecs_rule(q));
     }
 }
 
@@ -208,7 +207,7 @@ ecs_filter_t* ecs_rule_init(
 
     /* Initialize the query */
     ecs_filter_desc_t desc = *const_desc;
-    if (flecs_rule_finalize_query(world, &result->filter, &desc)) {
+    if (flecs_rule_finalize_query(world, &result->pub, &desc)) {
         goto error;
     }
 
@@ -224,9 +223,9 @@ ecs_filter_t* ecs_rule_init(
     ecs_entity_t entity = const_desc->entity;
     result->dtor = (ecs_poly_dtor_t)flecs_rule_fini;
     result->iterable.init = flecs_rule_iter_mixin_init;
-    result->filter.entity = entity;
-    result->filter.world = world;
-    result->filter.stage = stage;
+    result->pub.entity = entity;
+    result->pub.world = world;
+    result->pub.stage = stage;
 
     if (entity) {
         EcsPoly *poly = ecs_poly_bind(world, entity, ecs_rule_t);
@@ -234,9 +233,9 @@ ecs_filter_t* ecs_rule_init(
         ecs_poly_modified(world, entity, ecs_rule_t);
     }
 
-    return &result->filter;
+    return &result->pub;
 error:
-    ecs_rule_fini(&result->filter);
+    ecs_rule_fini(&result->pub);
     return NULL;
 }
 

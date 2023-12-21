@@ -2562,7 +2562,7 @@ void Filter_filter_w_unresolved_by_name(void) {
     test_assert(NULL == ecs_filter(world, {
         .storage = &f,
         .terms = { { .first.name = "Foo" } },
-        .flags = EcsFilterUnresolvedByName
+        .flags = EcsFilterAllowUnresolvedByName
     }));
 
     ecs_fini(world);
@@ -2575,7 +2575,7 @@ void Filter_filter_w_unresolved_by_name_eq(void) {
     test_assert(NULL != ecs_filter(world, {
         .storage = &f,
         .expr = "$this == Foo",
-        .flags = EcsFilterUnresolvedByName
+        .flags = EcsFilterAllowUnresolvedByName
     }));
 
     test_assert(f.terms[0].second.id & EcsIsName);

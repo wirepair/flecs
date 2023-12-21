@@ -246,9 +246,6 @@ struct ecs_query_t {
     ecs_query_t *parent;
     ecs_vec_t subqueries;
 
-    /* Flags for query properties */
-    ecs_flags32_t flags;
-
     /* Monitor generation */
     int32_t monitor_generation;
 

@@ -118,7 +118,7 @@ int flecs_term_ref_lookup(
     }
 
     if (!e) {
-        if (ctx->filter && (ctx->filter->flags & EcsFilterUnresolvedByName)) {
+        if (ctx->filter && (ctx->filter->flags & EcsFilterAllowUnresolvedByName)) {
             ref->id |= EcsIsName;
             ref->id &= ~EcsIsEntity;
             return 0;
@@ -889,7 +889,7 @@ int flecs_rule_query_finalize_terms(
         term->field_index = flecs_ito(int16_t, field_count - 1);
 
         if (ecs_id_is_wildcard(term->id)) {
-            q->flags |= EcsFilterHasWildcards;
+            q->flags |= EcsFilterMatchWildcards;
         }
 
         if (ecs_term_match_this(term)) {
@@ -944,7 +944,20 @@ int flecs_rule_query_finalize_terms(
                 }
             }
         }
-    
+
+        if (term->inout != EcsIn && term->inout != EcsInOutNone) {
+            /* Non-this terms default to EcsIn */
+            if (ecs_term_match_this(term) || term->inout != EcsInOutDefault) {
+                q->flags |= EcsFilterHasOutTerms;
+            }
+
+            bool match_non_this = !ecs_term_match_this(term) || 
+                (term->src.id & EcsUp);
+            if (match_non_this && term->inout != EcsInOutDefault) {
+                q->flags |= EcsFilterHasNonThisOutTerms;
+            }
+        }
+
         if (!filter_term) {
             if (term->oper == EcsOr || (i && term[-1].oper == EcsOr)) {
                 ecs_term_t *first = flecs_rule_or_other_type(q, i);

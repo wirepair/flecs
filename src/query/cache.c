@@ -536,7 +536,7 @@ bool flecs_query_get_match_monitor(
 
     match->monitor = monitor;
 
-    query->flags |= EcsQueryHasMonitor;
+    query->query->flags |= EcsFilterHasMonitor;
 
     return true;
 }
@@ -549,7 +549,7 @@ void flecs_query_sync_match_monitor(
 {
     ecs_assert(match != NULL, ECS_INTERNAL_ERROR, NULL);
     if (!match->monitor) {
-        if (query->flags & EcsQueryHasMonitor) {
+        if (query->query->flags & EcsFilterHasMonitor) {
             flecs_query_get_match_monitor(query, match);
         } else {
             return;
@@ -863,7 +863,7 @@ void flecs_query_add_ref(
         };
     }
 
-    query->flags |= EcsQueryHasRefs;
+    query->query->flags |= EcsFilterHasRefs;
 }
 
 static
@@ -930,13 +930,6 @@ void flecs_query_set_table_match(
 
         flecs_entity_filter_init(world, &qm->entity_filter, filter, 
             table, qm->ids, qm->columns);
-
-        if (qm->entity_filter) {
-            query->flags &= ~EcsQueryTrivialIter;
-        }
-        if (table->flags & EcsTableHasUnion) {
-            query->flags &= ~EcsQueryTrivialIter;
-        }
     }
 
     /* Add references for substituted terms */
@@ -1436,7 +1429,6 @@ int flecs_query_process_signature(
         ecs_term_ref_t *first = &term->first;
         ecs_term_ref_t *src = &term->src;
         ecs_term_ref_t *second = &term->second;
-        int16_t inout = term->inout;
 
         bool is_src_ok = flecs_query_is_term_ref_supported(src);
         bool is_first_ok = flecs_query_is_term_ref_supported(first);
@@ -1456,19 +1448,6 @@ int flecs_query_process_signature(
         ecs_check(term->inout != EcsInOutFilter, ECS_INVALID_PARAMETER,
             "invalid usage of InOutFilter for query");
 
-        if (inout != EcsIn && inout != EcsInOutNone) {
-            /* Non-this terms default to EcsIn */
-            if (ecs_term_match_this(term) || inout != EcsInOutDefault) {
-                query->flags |= EcsQueryHasOutTerms;
-            }
-
-            bool match_non_this = !ecs_term_match_this(term) || 
-                (term->src.id & EcsUp);
-            if (match_non_this && inout != EcsInOutDefault) {
-                query->flags |= EcsQueryHasNonThisOutTerms;
-            }
-        }
-
         if (src->id & EcsCascade) {
             /* Query can only have one cascade column */
             ecs_assert(query->cascade_by == 0, ECS_INVALID_PARAMETER, NULL);
@@ -1476,9 +1455,9 @@ int flecs_query_process_signature(
         }
     }
 
-    query->flags |= (ecs_flags32_t)(flecs_query_has_refs(query) * EcsQueryHasRefs);
+    query->query->flags |= (ecs_flags32_t)(flecs_query_has_refs(query) * EcsFilterHasRefs);
 
-    if (!(query->flags & EcsQueryIsSubquery)) {
+    if (!(query->query->flags & EcsFilterIsSubquery)) {
         flecs_query_for_each_component_monitor(world, query, flecs_monitor_register);
     }
 
@@ -1763,8 +1742,8 @@ void flecs_query_notify(
         flecs_query_rematch_tables(world, query, event->parent_query);
         break;        
     case EcsQueryOrphan:
-        ecs_assert(query->flags & EcsQueryIsSubquery, ECS_INTERNAL_ERROR, NULL);
-        query->flags |= EcsQueryIsOrphaned;
+        ecs_assert(query->query->flags & EcsFilterIsSubquery, ECS_INTERNAL_ERROR, NULL);
+        query->query->flags |= EcsFilterIsOrphaned;
         query->parent = NULL;
         break;
     }
@@ -1783,7 +1762,7 @@ void flecs_query_order_by(
     ecs_sort_table_action_t action)
 {
     ecs_check(query != NULL, ECS_INVALID_PARAMETER, NULL);
-    ecs_check(!(query->flags & EcsQueryIsOrphaned), ECS_INVALID_PARAMETER, NULL);
+    ecs_check(!(query->query->flags & EcsFilterIsOrphaned), ECS_INVALID_PARAMETER, NULL);
     ecs_check(!ecs_id_is_wildcard(order_by_component), 
         ECS_INVALID_PARAMETER, NULL);
 
@@ -1818,8 +1797,6 @@ void flecs_query_order_by(
     if (!query->table_slices.array) {
         flecs_query_build_sorted_tables(query);
     }
-
-    query->flags &= ~EcsQueryTrivialIter;
 error:
     return;
 }
@@ -1997,8 +1974,8 @@ void flecs_query_fini(
         }
     }
 
-    if ((query->flags & EcsQueryIsSubquery) &&
-        !(query->flags & EcsQueryIsOrphaned))
+    if ((query->query->flags & EcsFilterIsSubquery) &&
+        !(query->query->flags & EcsFilterIsOrphaned))
     {
         flecs_query_remove_subquery(query->parent, query);
     }
@@ -2051,9 +2028,6 @@ ecs_query_t* ecs_query_init(
     if (!filter) {
         goto error;
     }
-
-    ECS_BIT_COND(result->flags, EcsQueryTrivialIter, 
-        !!(filter->flags & EcsFilterMatchOnlyThis));
 
     flecs_query_allocators_init(result);
 
@@ -2124,7 +2098,7 @@ ecs_query_t* ecs_query_init(
     }
 
     if (desc->parent != NULL) {
-        result->flags |= EcsQueryIsSubquery;
+        result->query->flags |= EcsFilterIsSubquery;
     }
 
     /* If the query refers to itself, add the components that were queried for
@@ -2243,7 +2217,7 @@ ecs_iter_t ecs_query_iter(
     ecs_query_t *query)
 {
     ecs_poly_assert(query, ecs_query_t);
-    ecs_check(!(query->flags & EcsQueryIsOrphaned),
+    ecs_check(!(query->query->flags & EcsFilterIsOrphaned),
         ECS_INVALID_PARAMETER, NULL);
 
     ecs_world_t *world = query->query->world;
@@ -2257,7 +2231,7 @@ ecs_iter_t ecs_query_iter(
     flecs_query_sort_tables(world, query);
 
     /* If monitors changed, do query rematching */
-    if (!(world->flags & EcsWorldReadonly) && query->flags & EcsQueryHasRefs) {
+    if (!(world->flags & EcsWorldReadonly) && query->query->flags & EcsFilterHasRefs) {
         flecs_eval_component_monitors(world);
     }
 
@@ -2296,37 +2270,32 @@ ecs_iter_t ecs_query_iter(
 
     ecs_filter_t *filter = query->query;
     ecs_iter_t fit;
-    if (!(query->flags & EcsQueryTrivialIter)) {
-        /* Check if non-This terms (like singleton terms) still match */
-        if (!(filter->flags & EcsFilterMatchOnlyThis)) {
-            /* TODO */
-            // fit = flecs_filter_iter_w_flags(ECS_CONST_CAST(ecs_world_t*, stage),
-            //     query->query, EcsIterIgnoreThis);
-            if (!ecs_rule_next(&fit)) {
-                /* No match, so return nothing */
-                goto noresults;
-            }
-        }
 
-        flecs_iter_init(stage, &result, flecs_iter_cache_all);
-
-        /* Copy the data */
-        if (!(filter->flags & EcsFilterMatchOnlyThis)) {
-            int32_t field_count = filter->field_count;
-            if (field_count) {
-                if (result.ptrs) {
-                    ecs_os_memcpy_n(result.ptrs, fit.ptrs, void*, field_count);
-                }
-                ecs_os_memcpy_n(result.ids, fit.ids, ecs_id_t, field_count);
-                ecs_os_memcpy_n(result.columns, fit.columns, int32_t, field_count);
-                ecs_os_memcpy_n(result.sources, fit.sources, int32_t, field_count);
-            }
-            ecs_iter_fini(&fit);
+    /* Check if non-This terms (like singleton terms) still match */
+    if (!(filter->flags & EcsFilterMatchOnlyThis)) {
+        /* TODO */
+        // fit = flecs_filter_iter_w_flags(ECS_CONST_CAST(ecs_world_t*, stage),
+        //     query->query, EcsIterIgnoreThis);
+        if (!ecs_rule_next(&fit)) {
+            /* No match, so return nothing */
+            goto noresults;
         }
-    } else {
-        /* Trivial iteration, use arrays from query cache */
-        flecs_iter_init(stage, &result, 
-            flecs_iter_cache_ptrs|flecs_iter_cache_variables);
+    }
+
+    flecs_iter_init(stage, &result, flecs_iter_cache_all);
+
+    /* Copy the data */
+    if (!(filter->flags & EcsFilterMatchOnlyThis)) {
+        int32_t field_count = filter->field_count;
+        if (field_count) {
+            if (result.ptrs) {
+                ecs_os_memcpy_n(result.ptrs, fit.ptrs, void*, field_count);
+            }
+            ecs_os_memcpy_n(result.ids, fit.ids, ecs_id_t, field_count);
+            ecs_os_memcpy_n(result.columns, fit.columns, int32_t, field_count);
+            ecs_os_memcpy_n(result.sources, fit.sources, int32_t, field_count);
+        }
+        ecs_iter_fini(&fit);
     }
 
     result.sizes = query->query->sizes;
@@ -2401,7 +2370,7 @@ void flecs_query_mark_columns_dirty(
 {
     ecs_table_t *table = qm->table;
     ecs_filter_t *filter = query->query;
-    if ((table && table->dirty_state) || (query->flags & EcsQueryHasNonThisOutTerms)) {
+    if ((table && table->dirty_state) || (query->query->flags & EcsFilterHasNonThisOutTerms)) {
         ecs_term_t *terms = filter->terms;
         int32_t i, count = filter->term_count;
 
@@ -2453,10 +2422,10 @@ bool ecs_query_next_table(
 
     ecs_query_table_match_t *prev = iter->prev;
     if (prev) {
-        if (query->flags & EcsQueryHasMonitor) {
+        if (query->query->flags & EcsFilterHasMonitor) {
             flecs_query_sync_match_monitor(query, prev);
         }
-        if (query->flags & EcsQueryHasOutTerms) {
+        if (query->query->flags & EcsFilterHasOutTerms) {
             if (it->count) {
                 flecs_query_mark_columns_dirty(query, prev);
             }
@@ -2478,59 +2447,6 @@ error:
     return false;
 }
 
-static
-void flecs_query_populate_trivial(
-    ecs_iter_t *it,
-    ecs_query_table_match_t *match)
-{;
-    ecs_table_t *table = match->table;
-    int32_t offset, count;
-    if (!it->constrained_vars) {
-        it->offset = offset = 0;
-        it->count = count = ecs_table_count(table);
-    } else {
-        offset = it->offset;
-        count = it->count;
-    }
-
-    it->ids = match->ids;
-    it->sources = match->sources;
-    it->columns = match->columns;
-    it->group_id = match->group_id;
-    it->instance_count = 0;
-    it->references = ecs_vec_first(&match->refs);
-
-    if (!it->references) {
-        ecs_data_t *data = &table->data;
-        if (!(it->flags & EcsIterNoData)) {
-            int32_t i;
-            for (i = 0; i < it->field_count; i ++) {
-                int32_t column = match->storage_columns[i];
-                if (column < 0) {
-                    it->ptrs[i] = NULL;
-                    continue;
-                }
-
-                ecs_size_t size = it->sizes[i];
-                if (!size) {
-                    it->ptrs[i] = NULL;
-                    continue;
-                }
-
-                it->ptrs[i] = ecs_vec_get(&data->columns[column].data,
-                    it->sizes[i], offset);
-            }
-        }
-
-        it->frame_offset += it->table ? ecs_table_count(it->table) : 0;
-        it->table = table;
-        it->entities = ecs_vec_get_t(&data->entities, ecs_entity_t, offset);
-    } else {
-        flecs_iter_populate_data(
-            it->real_world, it, table, offset, count, it->ptrs);
-    }
-}
-
 int ecs_query_populate(
     ecs_iter_t *it,
     bool when_changed)
@@ -2544,10 +2460,6 @@ int ecs_query_populate(
     ecs_query_t *query = iter->query;
     ecs_query_table_match_t *match = iter->prev;
     ecs_assert(match != NULL, ECS_INVALID_OPERATION, NULL);
-    if (query->flags & EcsQueryTrivialIter) {
-        flecs_query_populate_trivial(it, match);
-        return EcsIterNextYield;
-    }
 
     ecs_table_t *table = match->table;
     ecs_world_t *world = query->query->world;
@@ -2645,33 +2557,21 @@ bool ecs_query_next_instanced(
 
     ecs_query_iter_t *iter = &it->priv.iter.query;
     ecs_query_t *query = iter->query;
-    ecs_flags32_t flags = query->flags;
+    ecs_flags32_t flags = query->query->flags;
 
     ecs_query_table_match_t *prev, *next, *cur = iter->node, *last = iter->last;
     if ((prev = iter->prev)) {
         /* Match has been iterated, update monitor for change tracking */
-        if (flags & EcsQueryHasMonitor) {
+        if (flags & EcsFilterHasMonitor) {
             flecs_query_sync_match_monitor(query, prev);
         }
-        if (flags & EcsQueryHasOutTerms) {
+        if (flags & EcsFilterHasOutTerms) {
             flecs_query_mark_columns_dirty(query, prev);
         }
     }
 
     flecs_iter_validate(it);
     iter->skip_count = 0;
-
-    /* Trivial iteration: each entry in the cache is a full match and ids are
-     * only matched on $this or through traversal starting from $this. */
-    if (flags & EcsQueryTrivialIter) {
-        if (cur == last) {
-            goto done;
-        }
-        iter->node = cur->next;
-        iter->prev = cur;
-        flecs_query_populate_trivial(it, cur);
-        return true;
-    }
 
     /* Non-trivial iteration: query matches with static sources, or matches with
      * tables that require per-entity filtering. */
@@ -2686,7 +2586,7 @@ bool ecs_query_next_instanced(
         }
     }
 
-done: error:
+error:
     query->match_count = query->prev_match_count;
     ecs_iter_fini(it);
     return false;
@@ -2724,13 +2624,13 @@ bool ecs_query_changed(
     }
 
     ecs_poly_assert(query, ecs_query_t);
-    ecs_check(!(query->flags & EcsQueryIsOrphaned), 
+    ecs_check(!(query->query->flags & EcsFilterIsOrphaned), 
         ECS_INVALID_PARAMETER, NULL);
 
     flecs_process_pending_tables(query->query->world);
 
-    if (!(query->flags & EcsQueryHasMonitor)) {
-        query->flags |= EcsQueryHasMonitor;
+    if (!(query->query->flags & EcsFilterHasMonitor)) {
+        query->query->flags |= EcsFilterHasMonitor;
         flecs_query_init_query_monitors(query);
         return true; /* Monitors didn't exist yet */
     }
@@ -2766,7 +2666,7 @@ bool ecs_query_orphaned(
     const ecs_query_t *query)
 {
     ecs_poly_assert(query, ecs_query_t);
-    return query->flags & EcsQueryIsOrphaned;
+    return query->query->flags & EcsFilterIsOrphaned;
 }
 
 char* ecs_query_str(

@@ -2498,7 +2498,7 @@ void flecs_rule_iter_init(
                 it->flags |= EcsIterTrivialTest;
                 flecs_rule_setids(&rule->ops[0], false, ctx);
             } else {
-                if (flags & EcsFilterHasWildcards) {
+                if (flags & EcsFilterMatchWildcards) {
                     it->flags |= EcsIterTrivialSearchWildcard;
                     flecs_rule_setids(&rule->ops[0], false, ctx);
                 } else if (flags & EcsFilterNoData) {

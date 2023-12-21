@@ -2689,7 +2689,7 @@ void RulesBuiltinPredicates_unresolved_by_name(void) {
 
     ecs_filter_t *r = ecs_rule(world, {
         .expr = "$this == ent",
-        .flags = EcsFilterUnresolvedByName
+        .flags = EcsFilterAllowUnresolvedByName
     });
 
     test_assert(r != NULL);

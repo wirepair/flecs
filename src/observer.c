@@ -837,7 +837,6 @@ ecs_entity_t ecs_observer_init(
          * make debugging easier, as any error messages related to creating the
          * filter will have the name of the observer. */
         ecs_filter_desc_t query_desc = desc->filter;
-        query_desc.entity = entity;
 
         /* Parse filter */
         ecs_filter_t *query = observer->query = ecs_rule_init(world, &query_desc);

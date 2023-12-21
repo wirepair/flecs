@@ -31,6 +31,9 @@ ecs_iter_t ecs_each_id(
     ecs_each_iter_t *each_iter = &it.priv.iter.each;
     each_iter->ids = id;
     each_iter->sizes = 0;
+    if (idr->type_info) {
+        each_iter->sizes = idr->type_info->size;
+    }
     each_iter->sources = 0;
     flecs_table_cache_iter((ecs_table_cache_t*)idr, &each_iter->it);
 
@@ -45,6 +48,7 @@ bool ecs_each_next(
     ecs_each_iter_t *each_iter = &it->priv.iter.each;
     ecs_table_record_t *next = flecs_table_cache_next(
         &each_iter->it, ecs_table_record_t);
+    it->flags |= EcsIterIsValid;
     if (next) {
         it->table = next->hdr.table;
         it->count = ecs_table_count(it->table);
@@ -53,7 +57,13 @@ bool ecs_each_next(
         it->columns = &each_iter->columns;
         it->sources = &each_iter->sources;
         it->sizes = &each_iter->sizes;
+        it->ptrs = &each_iter->ptrs;
         each_iter->columns = next->index;
+
+        if (next->column) {
+            each_iter->ptrs = ecs_vec_first(
+                &it->table->data.columns[next->column].data);
+        }
         return true;
     } else {
         return false;

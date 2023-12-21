@@ -3243,69 +3243,65 @@ void flecs_bootstrap(
     /* Create triggers in internals scope */
     ecs_set_scope(world, EcsFlecsInternals);
 
-    /* Term used to also match prefabs */
-    ecs_term_t match_prefab = { 
-        .id = EcsPrefab, 
-        .oper = EcsOptional,
-        .src.id = EcsSelf 
-    };
-
     /* Register observers for components/relationship properties. Most observers
      * set flags on an id record when a property is added to a component, which
      * allows for quick property testing in various operations. */
     ecs_observer(world, {
-        .filter.terms = {{ .id = EcsFinal, .src.id = EcsSelf }, match_prefab },
+        .filter.terms = {{ .id = EcsFinal, .src.id = EcsSelf } },
+        .filter.flags = EcsFilterMatchPrefab,
         .events = {EcsOnAdd},
         .callback = flecs_register_final
     });
 
     ecs_observer(world, {
         .filter.terms = {
-            { .id = ecs_pair(EcsOnDelete, EcsWildcard), .src.id = EcsSelf },
-            match_prefab
+            { .id = ecs_pair(EcsOnDelete, EcsWildcard), .src.id = EcsSelf }
         },
+        .filter.flags = EcsFilterMatchPrefab,
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = flecs_register_on_delete
     });
 
     ecs_observer(world, {
         .filter.terms = {
-            { .id = ecs_pair(EcsOnDeleteTarget, EcsWildcard), .src.id = EcsSelf },
-            match_prefab
+            { .id = ecs_pair(EcsOnDeleteTarget, EcsWildcard), .src.id = EcsSelf }
         },
+        .filter.flags = EcsFilterMatchPrefab,
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = flecs_register_on_delete_object
     });
 
     ecs_observer(world, {
-        .filter.terms = {
-            { .id = EcsTraversable, .src.id = EcsSelf },
-            match_prefab
-        },
+        .filter.terms = { { .id = EcsTraversable, .src.id = EcsSelf } },
+        .filter.flags = EcsFilterMatchPrefab,
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = flecs_register_traversable
     });
 
     ecs_observer(world, {
-        .filter.terms = {{ .id = EcsExclusive, .src.id = EcsSelf  }, match_prefab },
+        .filter.terms = {{ .id = EcsExclusive, .src.id = EcsSelf  } },
+        .filter.flags = EcsFilterMatchPrefab,
         .events = {EcsOnAdd, EcsOnRemove},
         .callback = flecs_register_exclusive
     });
 
     ecs_observer(world, {
-        .filter.terms = {{ .id = EcsSymmetric, .src.id = EcsSelf  }, match_prefab },
+        .filter.terms = {{ .id = EcsSymmetric, .src.id = EcsSelf  } },
+        .filter.flags = EcsFilterMatchPrefab,
         .events = {EcsOnAdd},
         .callback = flecs_register_symmetric
     });
 
     ecs_observer(world, {
-        .filter.terms = {{ .id = EcsDontInherit, .src.id = EcsSelf }, match_prefab },
+        .filter.terms = {{ .id = EcsDontInherit, .src.id = EcsSelf } },
+        .filter.flags = EcsFilterMatchPrefab,
         .events = {EcsOnAdd},
         .callback = flecs_register_dont_inherit
     });
 
     ecs_observer(world, {
         .filter.terms = {{ .id = EcsAlwaysOverride, .src.id = EcsSelf } },
+        .filter.flags = EcsFilterMatchPrefab,
         .events = {EcsOnAdd},
         .callback = flecs_register_always_override
     });
@@ -3313,14 +3309,15 @@ void flecs_bootstrap(
     ecs_observer(world, {
         .filter.terms = {
             { .id = ecs_pair(EcsWith, EcsWildcard), .src.id = EcsSelf },
-            match_prefab
         },
+        .filter.flags = EcsFilterMatchPrefab,
         .events = {EcsOnAdd},
         .callback = flecs_register_with
     });
 
     ecs_observer(world, {
-        .filter.terms = {{ .id = EcsUnion, .src.id = EcsSelf }, match_prefab },
+        .filter.terms = {{ .id = EcsUnion, .src.id = EcsSelf } },
+        .filter.flags = EcsFilterMatchPrefab,
         .events = {EcsOnAdd},
         .callback = flecs_register_union
     });
@@ -3329,9 +3326,9 @@ void flecs_bootstrap(
      * only point to a single entity. */
     ecs_observer(world, {
         .filter.terms = {
-            { .id = ecs_pair(EcsSlotOf, EcsWildcard), .src.id = EcsSelf },
-            match_prefab
+            { .id = ecs_pair(EcsSlotOf, EcsWildcard), .src.id = EcsSelf }
         },
+        .filter.flags = EcsFilterMatchPrefab,
         .events = {EcsOnAdd},
         .callback = flecs_register_slot_of
     });
@@ -3339,7 +3336,8 @@ void flecs_bootstrap(
     /* Define observer to make sure that adding a module to a child entity also
      * adds it to the parent. */
     ecs_observer(world, {
-        .filter.terms = {{ .id = EcsModule, .src.id = EcsSelf }, match_prefab},
+        .filter.terms = {{ .id = EcsModule, .src.id = EcsSelf } },
+        .filter.flags = EcsFilterMatchPrefab,
         .events = {EcsOnAdd},
         .callback = flecs_ensure_module_tag
     });
@@ -13491,7 +13489,6 @@ ecs_entity_t ecs_observer_init(
          * make debugging easier, as any error messages related to creating the
          * filter will have the name of the observer. */
         ecs_filter_desc_t query_desc = desc->filter;
-        query_desc.entity = entity;
 
         /* Parse filter */
         ecs_filter_t *query = observer->query = ecs_rule_init(world, &query_desc);
@@ -41579,6 +41576,9 @@ ecs_iter_t ecs_each_id(
     ecs_each_iter_t *each_iter = &it.priv.iter.each;
     each_iter->ids = id;
     each_iter->sizes = 0;
+    if (idr->type_info) {
+        each_iter->sizes = idr->type_info->size;
+    }
     each_iter->sources = 0;
     flecs_table_cache_iter((ecs_table_cache_t*)idr, &each_iter->it);
 
@@ -41593,6 +41593,7 @@ bool ecs_each_next(
     ecs_each_iter_t *each_iter = &it->priv.iter.each;
     ecs_table_record_t *next = flecs_table_cache_next(
         &each_iter->it, ecs_table_record_t);
+    it->flags |= EcsIterIsValid;
     if (next) {
         it->table = next->hdr.table;
         it->count = ecs_table_count(it->table);
@@ -41601,7 +41602,13 @@ bool ecs_each_next(
         it->columns = &each_iter->columns;
         it->sources = &each_iter->sources;
         it->sizes = &each_iter->sizes;
+        it->ptrs = &each_iter->ptrs;
         each_iter->columns = next->index;
+
+        if (next->column) {
+            each_iter->ptrs = ecs_vec_first(
+                &it->table->data.columns[next->column].data);
+        }
         return true;
     } else {
         return false;

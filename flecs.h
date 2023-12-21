@@ -3224,6 +3224,7 @@ typedef struct ecs_each_iter_t {
     ecs_entity_t sources;
     ecs_size_t sizes;
     int32_t columns;
+    void *ptrs;
 } ecs_each_iter_t;
 
 /** Query-iterator specific data */

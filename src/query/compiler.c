@@ -1122,7 +1122,7 @@ void flecs_query_insert_pair_eq(
 }
 
 static
-bool flecs_query_impl_term_fixed_id(
+bool flecs_query_term_fixed_id(
     ecs_query_t *q,
     ecs_term_t *term)
 {
@@ -1289,7 +1289,7 @@ void flecs_query_compile_pop(
 }
 
 static
-bool flecs_query_impl_term_is_or(
+bool flecs_query_term_is_or(
     const ecs_query_t *q,
     const ecs_term_t *term)
 {
@@ -1311,7 +1311,7 @@ int flecs_query_compile_term(
     bool src_is_var = term->src.id & EcsIsVariable;
     bool builtin_pred = flecs_query_is_builtin_pred(term);
     bool is_not = (term->oper == EcsNot) && !builtin_pred;
-    bool is_or = flecs_query_impl_term_is_or(q, term);
+    bool is_or = flecs_query_term_is_or(q, term);
     bool first_or = false, last_or = false;
     bool cond_write = term->oper == EcsOptional || is_or;
     ecs_query_op_t op = {0};
@@ -1391,7 +1391,7 @@ int flecs_query_compile_term(
 
     /* If term has fixed id, insert simpler instruction that skips dealing with
      * wildcard terms and variables */
-    if (flecs_query_impl_term_fixed_id(q, term)) {
+    if (flecs_query_term_fixed_id(q, term)) {
         if (op.kind == EcsRuleAnd) {
             op.kind = EcsRuleAndId;
         } else if (op.kind == EcsRuleSelfUp) {
@@ -1684,7 +1684,7 @@ bool flecs_query_var_is_unknown(
 /* Returns whether term is unkown. A term is unknown when it has variable 
  * elements (first, second, src) that are all unknown. */
 static
-bool flecs_query_impl_term_is_unknown(
+bool flecs_query_term_is_unknown(
     ecs_query_impl_t *rule, 
     ecs_term_t *term, 
     ecs_query_compile_ctx_t *ctx) 
@@ -1730,7 +1730,7 @@ bool flecs_query_impl_term_is_unknown(
  * a term that can be evaluated before a term that is unknown. Evaluating known
  * before unknown terms can significantly decrease the search space. */
 static
-int32_t flecs_query_impl_term_next_known(
+int32_t flecs_query_term_next_known(
     ecs_query_impl_t *rule, 
     ecs_query_compile_ctx_t *ctx,
     int32_t offset,
@@ -1747,7 +1747,7 @@ int32_t flecs_query_impl_term_next_known(
         }
 
         /* Only evaluate And terms */
-        if (term->oper != EcsAnd || flecs_query_impl_term_is_or(q, term)){
+        if (term->oper != EcsAnd || flecs_query_term_is_or(q, term)){
             continue;
         }
 
@@ -1757,7 +1757,7 @@ int32_t flecs_query_impl_term_next_known(
             return -1;
         }
 
-        if (flecs_query_impl_term_is_unknown(rule, term, ctx)) {
+        if (flecs_query_term_is_unknown(rule, term, ctx)) {
             continue;
         }
 
@@ -1772,6 +1772,7 @@ int32_t flecs_query_impl_term_next_known(
 static
 int32_t flecs_query_insert_trivial_search(
     ecs_query_impl_t *rule,
+    ecs_flags64_t *compiled,
     ecs_query_compile_ctx_t *ctx)
 {
     ecs_query_t *q = &rule->pub;
@@ -1782,6 +1783,11 @@ int32_t flecs_query_insert_trivial_search(
     int32_t trivial_wildcard_terms = 0;
     int32_t trivial_data_terms = 0;
     for (i = 0; i < term_count; i ++) {
+        /* Term is already compiled */
+        if (*compiled & (1ull << i)) {
+            break;
+        }
+
         ecs_term_t *term = &terms[i];
         if (!(term->flags & EcsTermIsTrivial)) {
             break;
@@ -1803,6 +1809,11 @@ int32_t flecs_query_insert_trivial_search(
 
     int32_t trivial_terms = i;
     if (trivial_terms >= 2) {
+        /* Mark terms as compiled */
+        for (i = 0; i < trivial_terms; i ++) {
+            *compiled |= (1ull << i);
+        }
+
         /* If there's more than 1 trivial term, batch them in trivial search */
         ecs_query_op_t trivial = {0};
         if (trivial_wildcard_terms) {
@@ -1838,6 +1849,29 @@ int32_t flecs_query_insert_trivial_search(
     }
 
     return trivial_terms;
+}
+
+static
+void flecs_query_insert_cache_search(
+    ecs_query_impl_t *rule,
+    ecs_flags64_t *compiled,
+    ecs_query_compile_ctx_t *ctx,
+    const ecs_query_desc_t *desc)
+{
+    if (!rule->cache) {
+        return;
+    }
+
+    ecs_query_t *q = &rule->pub;
+    if (q->cache_kind == EcsQueryCacheAll) {
+        /* If all terms are cacheable, make sure no other terms are compiled */
+        *compiled = 0xFFFFFFFFFFFFFFFF;
+
+        /* Insert the operation for cache traversal */
+        ecs_query_op_t op = {0};
+        op.kind = EcsRuleCache;
+        flecs_query_op_insert(&op, ctx);
+    }
 }
 
 /* Insert instruction to populate data fields. */
@@ -1901,7 +1935,8 @@ void flecs_query_insert_populate(
 int flecs_query_compile(
     ecs_world_t *world,
     ecs_stage_t *stage,
-    ecs_query_impl_t *rule)
+    ecs_query_impl_t *rule,
+    const ecs_query_desc_t *desc)
 {
     ecs_query_t *q = &rule->pub;
     ecs_term_t *terms = q->terms;
@@ -1935,7 +1970,7 @@ int flecs_query_compile(
      * insertion of simpler instructions later on. */
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
-        if (flecs_query_impl_term_fixed_id(q, term) || 
+        if (flecs_query_term_fixed_id(q, term) || 
            (term->src.id & EcsIsEntity && !(term->src.id & ~EcsTermRefFlags))) 
         {
             ecs_query_op_t set_ids = {0};
@@ -1944,12 +1979,18 @@ int flecs_query_compile(
             break;
         }
     }
+    
+    ecs_flags64_t compiled = 0;
+
+    /* Compile cacheable terms. Should always be the first compilation step */
+    // flecs_query_insert_cache_search(
+    //     rule, &compiled, &ctx, desc);
 
     /* Insert trivial term search if query allows for it */
-    int32_t trivial_terms = flecs_query_insert_trivial_search(rule, &ctx);
+    int32_t trivial_terms = flecs_query_insert_trivial_search(
+        rule, &compiled, &ctx);
 
     /* Compile remaining query terms to instructions */
-    ecs_flags64_t compiled = 0;
     for (i = trivial_terms; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
         int32_t compile = i;
@@ -1959,7 +2000,7 @@ int flecs_query_compile(
         }
 
         bool can_reorder = true;
-        if (term->oper != EcsAnd || flecs_query_impl_term_is_or(q, term)){
+        if (term->oper != EcsAnd || flecs_query_term_is_or(q, term)){
             can_reorder = false;
         }
 
@@ -1969,9 +2010,9 @@ int flecs_query_compile(
          * Only perform this optimization after at least one variable has been
          * written to, as all terms are unknown otherwise. */
         if (can_reorder && ctx.written && 
-            flecs_query_impl_term_is_unknown(rule, term, &ctx)) 
+            flecs_query_term_is_unknown(rule, term, &ctx)) 
         {
-            int32_t term_index = flecs_query_impl_term_next_known(
+            int32_t term_index = flecs_query_term_next_known(
                 rule, &ctx, i + 1, compiled);
             if (term_index != -1) {
                 term = &q->terms[term_index];

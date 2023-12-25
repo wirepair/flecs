@@ -725,7 +725,8 @@ int flecs_term_finalize(
         }
     }
 
-    /* Is term trivial */
+    /* Is term trivial/cacheable */
+    bool cacheable_term = true;
     bool trivial_term = true;
     if (term->oper != EcsAnd) {
         trivial_term = false;
@@ -738,19 +739,23 @@ int flecs_term_finalize(
         if (first->id & EcsIsVariable) {
             if (!ecs_id_is_wildcard(first_id) || first_id == EcsAny) {
                 trivial_term = false;
+                cacheable_term = false;
             }
         }
         if (second->id & EcsIsVariable) {
             if (!ecs_id_is_wildcard(second_id) || second_id == EcsAny) {
                 trivial_term = false;
+                cacheable_term = false;
             }
         }
     }
     if (term->flags & EcsTermTransitive) {
         trivial_term = false;
+        cacheable_term = false;
     }
     if (term->flags & EcsTermIdInherited) {
         trivial_term = false;
+        cacheable_term = false;
     }
     if (term->trav && term->trav != EcsIsA) {
         trivial_term = false;
@@ -758,9 +763,12 @@ int flecs_term_finalize(
     if (!(src->id & EcsSelf)) {
         trivial_term = false;
     }
-    if (trivial_term) {
-        ECS_BIT_SET(term->flags, EcsTermIsTrivial);
+    if (ECS_TERM_REF_ID(src) != EcsThis) {
+        cacheable_term = false;
     }
+
+    ECS_BIT_COND(term->flags, EcsTermIsTrivial, trivial_term);
+    ECS_BIT_COND(term->flags, EcsTermIsCacheable, cacheable_term);
 
     if (flecs_term_verify(world, term, ctx)) {
         return -1;
@@ -855,7 +863,7 @@ int flecs_query_query_finalize_terms(
 {
     int32_t i, term_count = q->term_count, field_count = 0;
     ecs_term_t *terms = q->terms;
-    int32_t filter_terms = 0, scope_nesting = 0;
+    int32_t filter_terms = 0, scope_nesting = 0, cacheable_terms = 0;
     bool cond_set = false;
 
     ecs_query_validator_ctx_t ctx = {0};
@@ -870,6 +878,10 @@ int flecs_query_query_finalize_terms(
         ctx.term_index = i;
         if (flecs_term_finalize(world, term, &ctx)) {
             return -1;
+        }
+
+        if (term->flags & EcsTermIsCacheable) {
+            cacheable_terms ++;
         }
 
         if (i && term[-1].oper == EcsOr) {
@@ -1105,6 +1117,10 @@ int flecs_query_query_finalize_terms(
             }
         }
     }
+
+    /* Set cacheable flags */
+    ECS_BIT_COND(q->flags, EcsQueryHasCacheable, cacheable_terms != 0);
+    ECS_BIT_COND(q->flags, EcsQueryIsCacheable, cacheable_terms == term_count);
 
     return 0;
 }

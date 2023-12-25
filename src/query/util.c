@@ -15,6 +15,7 @@ const char* flecs_query_op_str(
     case EcsRuleTriv:          return "triv    ";
     case EcsRuleTrivData:      return "trivpop ";
     case EcsRuleTrivWildcard:  return "trivwc  ";
+    case EcsRuleCache:         return "cache   ";
     case EcsRuleSelectAny:     return "any     ";
     case EcsRuleUp:            return "up      ";
     case EcsRuleUpId:          return "upid    ";
@@ -446,10 +447,9 @@ error:
 }
 
 char* ecs_query_str(
-    const ecs_world_t *world,
-    const ecs_query_t *filter)
+    const ecs_query_t *q)
 {
-    return flecs_query_str(world, filter, NULL, NULL);
+    return flecs_query_str(q->world, q, NULL, NULL);
 }
 
 const char* ecs_query_parse_vars(

@@ -738,7 +738,7 @@ int flecs_multi_observer_init(
     ecs_entity_t old_scope = ecs_set_scope(world, observer->query->entity);
 
     for (i = 0; i < term_count; i ++) {
-        if (query->terms[i].inout == EcsInOutQuery) {
+        if (query->terms[i].inout == EcsInOutFilter) {
             continue;
         }
 

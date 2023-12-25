@@ -89,9 +89,95 @@ void flecs_query_iter_mixin_init(
 }
 
 static
+int flecs_query_set_caching_policy(
+    ecs_query_impl_t *impl,
+    const ecs_query_desc_t *desc)
+{
+    ecs_query_cache_kind_t kind = desc->cache_kind;
+
+    /* If caching policy is default, try to pick a policy that does the right
+     * thing in most cases. */
+    if (kind == EcsQueryCacheDefault) {
+        if (desc->entity) {
+            /* If the query is created with an entity handle (typically 
+             * indicating that the query is named or belongs to a system) the
+             * chance is very high that the query will be reused, so enable
+             * caching. */
+            kind =  EcsQueryCacheAuto;
+        } else {
+            /* Be conservative in other scenario's, as caching adds significant
+             * overhead to the cost of query creation which doesn't offset the
+             * benefit of faster iteration if it's only used once. */
+            kind = EcsQueryCacheNone;
+        }
+    }
+
+    /* Don't cache query, even if it has cacheable terms */
+    if (kind == EcsQueryCacheNone) {
+        impl->pub.cache_kind = EcsQueryCacheNone;
+        return 0;
+    }
+
+    /* Entire query must be cached */
+    if (desc->cache_kind == EcsQueryCacheAll) {
+        if (impl->pub.flags & EcsQueryIsCacheable) {
+            impl->pub.cache_kind = EcsQueryCacheAll;
+            return 0;
+        } else {
+            ecs_err("cannot enforce QueryCacheAll, "
+                "query contains uncacheable terms");
+            return -1;
+        }
+    }
+
+    /* Only cache terms that are cacheable */
+    if (desc->cache_kind == EcsQueryCacheAuto) {
+        if (impl->pub.flags & EcsQueryIsCacheable) {
+            /* If all terms of the query are cacheable, just set the policy to 
+             * All which simplifies work for the compiler. */
+            impl->pub.cache_kind = EcsQueryCacheAll;
+        } else if (!(impl->pub.flags & EcsQueryHasCacheable)) {
+            /* Same for when the query has no cacheable terms */
+            impl->pub.cache_kind = EcsQueryCacheAll;
+        } else {
+            /* Part of the query is cacheable */
+            impl->pub.cache_kind = EcsQueryCacheAuto;
+        }
+    }
+
+    return 0;
+}
+
+static
+int flecs_query_create_cache(
+    ecs_query_impl_t *impl,
+    const ecs_query_desc_t *desc)
+{
+    if (flecs_query_set_caching_policy(impl, desc)) {
+        return -1;
+    }
+
+    ecs_query_t *q = &impl->pub;
+    if (q->cache_kind == EcsQueryCacheAll) {
+        /* Create query cache for all terms */
+        impl->cache = flecs_query_cache_init(impl->pub.world, desc);
+    }
+
+    return 0;
+}
+
+static
 void flecs_query_fini(
     ecs_query_impl_t *impl)
 {
+    if (impl->ctx_free) {
+        impl->ctx_free(impl->pub.ctx);
+    }
+
+    if (impl->binding_ctx_free) {
+        impl->binding_ctx_free(impl->pub.binding_ctx);
+    }
+
     if (impl->vars != &impl->vars_cache.var) {
         ecs_os_free(impl->vars);
     }
@@ -118,6 +204,10 @@ void flecs_query_fini(
 
     if (impl->tokens) {
         flecs_free(&q->stage->allocator, impl->tokens_len, impl->tokens);
+    }
+
+    if (impl->cache) {
+        flecs_query_cache_fini(impl->cache);
     }
 
     ecs_poly_free(impl, ecs_query_impl_t);
@@ -209,21 +299,31 @@ ecs_query_t* ecs_query_init(
         goto error;
     }
 
+    /* Initialize static context & mixins */
+    ecs_entity_t entity = const_desc->entity;
+    result->pub.entity = entity;
+    result->pub.world = world;
+    result->pub.stage = stage;
+    result->pub.ctx = const_desc->ctx;
+    result->pub.binding_ctx = const_desc->binding_ctx;
+    result->ctx_free = const_desc->ctx_free;
+    result->binding_ctx_free = const_desc->binding_ctx_free;
+    result->dtor = (ecs_poly_dtor_t)flecs_query_fini;
+    result->iterable.init = flecs_query_iter_mixin_init;
+
+    /* Initialize query cache if necessary */
+    if (flecs_query_create_cache(result, const_desc)) {
+        goto error;
+    }
+
     /* Compile filter to operations */
-    if (flecs_query_compile(world, stage, result)) {
+    if (flecs_query_compile(world, stage, result, const_desc)) {
         goto error;
     }
 
     /* Store remaining string tokens in terms (after entity lookups) in single
      * token buffer which simplifies memory management & reduces allocations. */
     flecs_query_populate_tokens(result);
-
-    ecs_entity_t entity = const_desc->entity;
-    result->dtor = (ecs_poly_dtor_t)flecs_query_fini;
-    result->iterable.init = flecs_query_iter_mixin_init;
-    result->pub.entity = entity;
-    result->pub.world = world;
-    result->pub.stage = stage;
 
     if (entity) {
         EcsPoly *poly = ecs_poly_bind(world, entity, ecs_query_impl_t);

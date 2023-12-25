@@ -20,7 +20,7 @@ typedef struct ecs_pipeline_op_t {
 } ecs_pipeline_op_t;
 
 struct ecs_pipeline_state_t {
-    ecs_query_cache_t *query;         /* Pipeline query */
+    ecs_query_t *query;         /* Pipeline query */
     ecs_vec_t ops;              /* Pipeline schedule */
     ecs_vec_t systems;          /* Vector with system ids */
 

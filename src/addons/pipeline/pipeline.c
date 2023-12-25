@@ -18,7 +18,7 @@ static void flecs_pipeline_free(
         ecs_vec_fini_t(a, &p->ops, ecs_pipeline_op_t);
         ecs_vec_fini_t(a, &p->systems, ecs_entity_t);
         ecs_os_free(p->iters);
-        ecs_query_cache_fini(p->query);
+        ecs_query_fini(p->query);
         ecs_os_free(p);
     }
 }
@@ -131,7 +131,7 @@ bool flecs_pipeline_check_term(
     (void)world;
 
     ecs_term_ref_t *src = &term->src;
-    if (term->inout == EcsInOutNone || term->inout == EcsInOutQuery) {
+    if (term->inout == EcsInOutNone || term->inout == EcsInOutFilter) {
         return false;
     }
 
@@ -183,7 +183,7 @@ bool flecs_pipeline_check_term(
             break;
         case EcsInOutDefault:
         case EcsInOutNone:
-        case EcsInOutQuery:
+        case EcsInOutFilter:
         case EcsIn:
             break;
         }
@@ -199,7 +199,7 @@ bool flecs_pipeline_check_term(
             /* fall through */
         case EcsInOutDefault:
         case EcsInOutNone:
-        case EcsInOutQuery:
+        case EcsInOutFilter:
         case EcsOut:
             break;
         }
@@ -256,13 +256,14 @@ bool flecs_pipeline_build(
     ecs_world_t *world,
     ecs_pipeline_state_t *pq)
 {
-    ecs_iter_t it = ecs_query_cache_iter(world, pq->query);
+    ecs_iter_t it = ecs_query_iter(world, pq->query);
 
-    if (pq->match_count == pq->query->match_count) {
-        /* No need to rebuild the pipeline */
-        ecs_iter_fini(&it);
-        return false;
-    }
+    /* TODO */
+    // if (pq->match_count == pq->query->match_count) {
+    //     /* No need to rebuild the pipeline */
+    //     ecs_iter_fini(&it);
+    //     return false;
+    // }
 
     world->info.pipeline_build_count_total ++;
     pq->rebuild_count ++;
@@ -281,7 +282,7 @@ bool flecs_pipeline_build(
     bool first = true;
 
     /* Iterate systems in pipeline, add ops for running / merging */
-    while (ecs_query_cache_next(&it)) {
+    while (ecs_query_next(&it)) {
         EcsPoly *poly = flecs_pipeline_term_system(&it);
         bool is_active = ecs_table_get_type_index(world, it.table, EcsEmpty) == -1;
 
@@ -289,11 +290,11 @@ bool flecs_pipeline_build(
         for (i = 0; i < it.count; i ++) {
             ecs_poly_assert(poly[i].poly, ecs_system_t);
             ecs_system_t *sys = (ecs_system_t*)poly[i].poly;
-            ecs_query_cache_t *q = sys->query;
+            ecs_query_t *q = sys->query;
 
             bool needs_merge = false;
             needs_merge = flecs_pipeline_check_terms(
-                world, q->query, is_active, &ws);
+                world, q, is_active, &ws);
 
             if (is_active) {
                 if (first) {
@@ -335,7 +336,7 @@ bool flecs_pipeline_build(
                 needs_merge = false;
                 if (is_active) {
                     needs_merge = flecs_pipeline_check_terms(
-                        world, q->query, true, &ws);
+                        world, q, true, &ws);
                 }
 
                 /* The component states were just reset, so if we conclude that
@@ -449,7 +450,8 @@ bool flecs_pipeline_build(
         ecs_log_pop_1();
     }
 
-    pq->match_count = pq->query->match_count;
+    // TODO
+    // pq->match_count = pq->query->match_count;
 
     ecs_assert(pq->cur_op <= ecs_vec_last_t(&pq->ops, ecs_pipeline_op_t),
         ECS_INTERNAL_ERROR, NULL);
@@ -498,7 +500,7 @@ bool flecs_pipeline_update(
         int32_t i, count = pq->iter_count;
         for (i = 0; i < count; i ++) {
             ecs_world_t *stage = ecs_get_stage(world, i);
-            pq->iters[i] = ecs_query_cache_iter(stage, pq->query);
+            pq->iters[i] = ecs_query_iter(stage, pq->query);
         }
         pq->cur_op = ecs_vec_first_t(&pq->ops, ecs_pipeline_op_t);
         pq->cur_i = 0;
@@ -821,15 +823,15 @@ ecs_entity_t ecs_pipeline_init(
     }
     qd.entity = result;
 
-    ecs_query_cache_t *query = ecs_query_cache_init(world, &qd);
+    ecs_query_t *query = ecs_query_init(world, &qd);
     if (!query) {
         ecs_delete(world, result);
         return 0;
     }
 
-    ecs_check(query->query->terms != NULL, ECS_INVALID_PARAMETER, 
+    ecs_check(query->terms != NULL, ECS_INVALID_PARAMETER, 
         "pipeline query cannot be empty");
-    ecs_check(query->query->terms[0].id == EcsSystem,
+    ecs_check(query->terms[0].id == EcsSystem,
         ECS_INVALID_PARAMETER, "pipeline must start with System term");
 
     ecs_pipeline_state_t *pq = ecs_os_calloc_t(ecs_pipeline_state_t);

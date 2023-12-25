@@ -8687,7 +8687,7 @@ void Query_query_w_invalid_filter_flag(void) {
     test_expect_abort();
     ecs_query(world, {
         .filter.terms = {
-            { .inout = EcsInOutQuery, .id = ecs_id(Position) }
+            { .inout = EcsInOutFilter, .id = ecs_id(Position) }
         }
     });
 }

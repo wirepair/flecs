@@ -647,7 +647,7 @@ typedef struct ecs_iterable_t {
 typedef enum ecs_inout_kind_t {
     EcsInOutDefault,  /**< InOut for regular terms, In for shared terms */
     EcsInOutNone,     /**< Term is neither read nor written */
-    EcsInOutQuery,   /**< Same as InOutNOne + prevents term from triggering observers */
+    EcsInOutFilter,   /**< Same as InOutNOne + prevents term from triggering observers */
     EcsInOut,         /**< Term is both read and written */
     EcsIn,            /**< Term is only read */
     EcsOut,           /**< Term is only written */
@@ -663,6 +663,14 @@ typedef enum ecs_oper_kind_t {
     EcsOrFrom,        /**< Term must match at least one component from term id */
     EcsNotFrom,       /**< Term must match none of the components from term id */
 } ecs_oper_kind_t;
+
+/** Specify cache policy for query */
+typedef enum ecs_query_cache_kind_t {
+    EcsQueryCacheDefault,   /**< Behavior determined by query creation context */
+    EcsQueryCacheAuto,      /**< Cache query terms that are cacheable */
+    EcsQueryCacheAll,       /**< Require that all query terms can be cached */
+    EcsQueryCacheNone,      /**< No caching */
+} ecs_query_cache_kind_t;
 
 /* Term id flags  */
 #define EcsSelf                       (1llu << 63)  /**< Match on self */
@@ -685,6 +693,7 @@ typedef enum ecs_oper_kind_t {
 #define EcsTermIdInherited            (1u << 4)
 #define EcsTermIsTrivial              (1u << 5)
 #define EcsTermNoData                 (1u << 6)
+#define EcsTermIsCacheable            (1u << 7)
 
 /** Type that describes a reference to an entity or variable in a term. */
 typedef struct ecs_term_ref_t {
@@ -737,6 +746,11 @@ struct ecs_query_t {
 
     ecs_flags32_t flags;       /**< Query flags */
     ecs_flags64_t data_fields; /**< Bitset with fields that have data */
+
+    ecs_query_cache_kind_t cache_kind;  /**< Actual caching policy of query */
+
+    void *ctx;                 /**< User context to pass to callback */
+    void *binding_ctx;         /**< Context to be used for language bindings */
 
     ecs_entity_t entity;       /**< Entity associated with filter (optional) */
     ecs_world_t *world;        /**< World mixin */
@@ -988,6 +1002,9 @@ typedef struct ecs_query_desc_t {
 
     /** Function to free group_by_ctx */
     ecs_ctx_free_t group_by_ctx_free;
+
+    /** Caching policy of query */
+    ecs_query_cache_kind_t cache_kind;
 
     /** User context to pass to callback */
     void *ctx;
@@ -3901,13 +3918,11 @@ char* ecs_term_str(
  * Convert filter terms to a string expression. The resulting expression can be
  * parsed to create the same filter.
  * 
- * @param world The world.
  * @param filter The filter.
  * @return The filter converted to a string.
  */
 FLECS_API 
 char* ecs_query_str(
-    const ecs_world_t *world,
     const ecs_query_t *filter); 
 
 /** @} */
@@ -3939,162 +3954,6 @@ bool ecs_children_next(
  * @brief Functions for working with `ecs_query_cache_t`.
  * @{
  */
-
-/** Create a query.
- * This operation creates a query. Queries are used to iterate over entities
- * that match a filter and are the fastest way to find and iterate over entities
- * and their components.
- * 
- * Queries should be created once, and reused multiple times. While iterating a
- * query is a cheap operation, creating and deleting a query is expensive. The
- * reason for this is that queries are "prematched", which means that a query
- * stores state about which entities (or rather, tables) match with the query.
- * Building up this state happens during query creation.
- *
- * Once a query is created, matching only happens when new tables are created.
- * In most applications this is an infrequent process, since it only occurs when
- * a new combination of components is introduced. While matching is expensive,
- * it is importent to note that matching does not happen on a per-entity basis,
- * but on a per-table basis. This means that the average time spent on matching
- * per frame should rapidly approach zero over the lifetime of an application.
- *
- * A query provides direct access to the component arrays. When an application
- * creates/deletes entities or adds/removes components, these arrays can shift
- * component values around, or may grow in size. This can cause unexpected or
- * undefined behavior to occur if these operations are performed while 
- * iterating. To prevent this from happening an application should either not
- * perform these operations while iterating, or use deferred operations (see
- * ecs_defer_begin and ecs_defer_end).
- *
- * Queries can be created and deleted dynamically. If a query was not deleted
- * (using ecs_query_cache_fini) before the world is deleted, it will be deleted 
- * automatically.
- *
- * @param world The world.
- * @param desc A structure describing the query properties.
- * @return The new query.
- */
-FLECS_API
-ecs_query_cache_t* ecs_query_cache_init(
-    ecs_world_t *world, 
-    const ecs_query_desc_t *desc);
-
-/** Destroy a query.
- * This operation destroys a query and its resources. If the query is used as
- * the parent of subqueries, those subqueries will be orphaned and must be
- * deinitialized as well.
- *
- * @param query The query.
- */
-FLECS_API
-void ecs_query_cache_fini(
-    ecs_query_cache_t *query);
-
-/** Get filter from a query.
- * This operation obtains a pointer to the internally constructed filter
- * of the query and can be used to introspect the query terms.
- *
- * @param query The query.
- * @return The filter.
- */
-FLECS_API
-const ecs_query_t* ecs_query_cache_get_filter(
-    const ecs_query_cache_t *query);
-
-/** Return a query iterator.
- * A query iterator lets an application iterate over entities that match the
- * specified query. If a sorting function is specified, the query will check
- * whether a resort is required upon creating the iterator.
- *
- * Creating a query iterator is a cheap operation that does not allocate any
- * resources. An application does not need to deinitialize or free a query 
- * iterator before it goes out of scope.
- *
- * To iterate the iterator, an application should use ecs_query_cache_next to progress
- * the iterator and test if it has data.
- *
- * Query iteration requires an outer and an inner loop. The outer loop uses
- * ecs_query_cache_next to test if new tables are available. The inner loop iterates
- * the entities in the table, and is usually a for loop that uses iter.count to
- * loop through the entities and component arrays.
- *
- * The two loops are necessary because of how data is stored internally. 
- * Entities are grouped by the components they have, in tables. A single query 
- * can (and often does) match with multiple tables. Because each table has its
- * own set of arrays, an application has to reobtain pointers to those arrays
- * for each matching table.
- *
- * @param world The world or stage, when iterating in readonly mode.
- * @param query The query to iterate.
- * @return The query iterator.
- */
-FLECS_API
-ecs_iter_t ecs_query_cache_iter(
-    const ecs_world_t *world,
-    ecs_query_cache_t *query);
-
-/** Progress the query iterator.
- * This operation progresses the query iterator to the next table. The 
- * iterator must have been initialized with `ecs_query_cache_iter`. This operation 
- * must be invoked at least once before interpreting the contents of the 
- * iterator.
- *
- * @param iter The iterator.
- * @returns True if more data is available, false if not.
- */
-FLECS_API
-bool ecs_query_cache_next(
-    ecs_iter_t *iter);
-
-/** Same as ecs_query_cache_next, but always instanced.
- * See "instanced" property of ecs_query_desc_t.
- * 
- * @param iter The iterator.
- * @returns True if more data is available, false if not.
- */
-FLECS_API
-bool ecs_query_cache_next_instanced(
-    ecs_iter_t *iter);
-
-/** Fast alternative to ecs_query_cache_next that only returns matched tables.
- * This operation only populates the ecs_iter_t::table field. To access the
- * matched components, call ecs_query_cache_populate.
- * 
- * If this operation is used with a query that has inout/out terms, those terms
- * will not be marked dirty unless ecs_query_cache_populate is called. 
- * 
- * @param iter The iterator.
- * @returns True if more data is available, false if not.
- */
-FLECS_API
-bool ecs_query_cache_next_table(
-    ecs_iter_t *iter);
-
-/** Populate iterator fields.
- * This operation can be combined with ecs_query_cache_next_table to populate the
- * iterator fields for the current table.
- * 
- * Populating fields conditionally can save time when a query uses change 
- * detection, and only needs iterator data when the table has changed. When this
- * operation is called, inout/out terms will be marked dirty.
- * 
- * In cases where inout/out terms are conditionally written and no changes
- * were made after calling ecs_query_cache_populate, the ecs_query_cache_skip function can
- * be called to prevent the matched table components from being marked dirty.
- * 
- * This operation does should not be used with queries that match disabled 
- * components, union relationships, or with queries that use order_by.
- * 
- * When the when_changed argument is set to true, the iterator data will only
- * populate when the data has changed, using query change detection.
- * 
- * @param iter The iterator.
- * @param when_changed Only populate data when result has changed.
- */
-FLECS_API
-int ecs_query_cache_populate(
-    ecs_iter_t *iter,
-    bool when_changed);
 
 /** Returns whether the query data changed since the last iteration.
  * The operation will return true after:
@@ -4197,16 +4056,6 @@ const ecs_query_cache_group_info_t* ecs_query_cache_get_group_info(
     const ecs_query_cache_t *query,
     uint64_t group_id);
 
-
-/** Convert query to string.
- *
- * @param query The query.
- * @return The query string.
- */
-FLECS_API
-char* ecs_query_cache_str(
-    const ecs_query_cache_t *query);
-
 /** Returns number of tables query matched with.
  *
  * @param query The query.
@@ -4234,26 +4083,6 @@ int32_t ecs_query_cache_empty_table_count(
  */
 FLECS_API
 int32_t ecs_query_cache_entity_count(
-    const ecs_query_cache_t *query);
-
-/** Get query ctx.
- * Return the value set in ecs_query_desc_t::ctx.
- * 
- * @param query The query.
- * @return The context.
- */
-FLECS_API
-void* ecs_query_cache_get_ctx(
-    const ecs_query_cache_t *query);
-
-/** Get query binding ctx.
- * Return the value set in ecs_query_desc_t::binding_ctx.
- * 
- * @param query The query.
- * @return The context.
- */
-FLECS_API
-void* ecs_query_cache_get_binding_ctx(
     const ecs_query_cache_t *query);
 
 /** @} */

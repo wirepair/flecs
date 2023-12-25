@@ -8987,45 +8987,6 @@ void Query_filter_no_this_component_1_not(void) {
     ecs_fini(world);
 }
 
-void Query_filter_iter_entities_optional_flag(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_TAG(world, TagA);
-    ECS_TAG(world, TagB);
-
-    ecs_entity_t e1 = ecs_new(world, TagA);
-    ecs_entity_t e2 = ecs_new_entity(world, "e");
-
-    ecs_query_t f = ECS_FILTER_INIT;
-    test_assert(NULL != ecs_query_init(world, &(ecs_query_desc_t){
-        .storage = &f,
-        .expr = "TagA, TagB(e)",
-    }));
-
-    /* e2 doesn't have TagB, so regular iteration doesn't return anything */
-    ecs_iter_t it = ecs_query_iter(world, &f);
-    test_bool(false, ecs_query_next(&it));
-
-    /* Treat terms matched on entities as optional */
-    it = ecs_query_iter(world, &f);
-    it.flags |= EcsIterEntityOptional;
-
-    test_bool(true, ecs_query_next(&it));
-    test_int(it.count, 1);
-    test_uint(it.entities[0], e1);
-    test_uint(it.sources[0], 0);
-    test_uint(it.sources[1], e2);
-    test_uint(ecs_field_id(&it, 1), TagA);
-    test_uint(ecs_field_id(&it, 2), TagB);
-    test_bool(true, ecs_field_is_set(&it, 1));
-    test_bool(false, ecs_field_is_set(&it, 2));
-    test_bool(false, ecs_query_next(&it));
-
-    ecs_query_fini(&f);
-
-    ecs_fini(world);
-}
-
 void Query_filter_iter_frame_offset(void) {
     ecs_world_t *world = ecs_mini();
 

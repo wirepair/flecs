@@ -35,7 +35,7 @@ using flags32_t = ecs_flags32_t;
 enum inout_kind_t {
     InOutDefault = EcsInOutDefault,
     InOutNone = EcsInOutNone,
-    InOutQuery = EcsInOutQuery,
+    InOutQuery = EcsInOutFilter,
     InOut = EcsInOut,
     In = EcsIn,
     Out = EcsOut

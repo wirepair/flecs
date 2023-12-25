@@ -102,7 +102,6 @@ extern "C" {
 #define EcsIterIsInstanced             (1u << 2u)  /* Is iterator instanced */
 #define EcsIterHasShared               (1u << 3u)  /* Does result have shared terms */
 #define EcsIterTableOnly               (1u << 4u)  /* Result only populates table */
-#define EcsIterEntityOptional          (1u << 5u)  /* Treat terms with entity subject as optional */
 #define EcsIterNoResults               (1u << 6u)  /* Iterator has no results */
 #define EcsIterIgnoreThis              (1u << 7u)  /* Only evaluate non-this terms */
 #define EcsIterMatchVar                (1u << 8u)  
@@ -139,6 +138,8 @@ extern "C" {
 #define EcsQueryHasNonThisOutTerms    (1u << 21u) /* Query has [out] terms with no $this source */
 #define EcsQueryHasMonitor            (1u << 22u) /* Query has monitor for change detection */
 #define EcsQueryIsTrivial             (1u << 14u) /* Query can use trivial evaluation function */
+#define EcsQueryHasCacheable          (1u << 15u) /* Query has cacheable terms */
+#define EcsQueryIsCacheable           (1u << 16u) /* All terms of query are cacheable */
 
 /* Flags that may be set by the application to enable query features */
 #define EcsQueryMatchPrefab           (1u << 3u)  /* Query must match prefabs */

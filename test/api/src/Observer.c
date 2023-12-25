@@ -3125,7 +3125,7 @@ void Observer_observer_w_filter_term(void) {
 
     Probe ctx = {0};
     ecs_observer(world, {
-        .filter.terms = {{ .id = TagA }, { .id = TagB, .inout = EcsInOutQuery }},
+        .filter.terms = {{ .id = TagA }, { .id = TagB, .inout = EcsInOutFilter }},
         .events = { EcsOnAdd },
         .callback = Observer,
         .ctx = &ctx

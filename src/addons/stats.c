@@ -453,13 +453,14 @@ bool ecs_system_stats_get(
         return false;
     }
 
-    ecs_query_cache_stats_get(world, ptr->query, &s->query);
+    // TODO
+    // ecs_query_cache_stats_get(world, ptr->query, &s->query);
     int32_t t = s->query.t;
 
     ECS_COUNTER_RECORD(&s->time_spent, t, ptr->time_spent);
     ECS_COUNTER_RECORD(&s->invoke_count, t, ptr->invoke_count);
 
-    s->task = !(ptr->query->query->flags & EcsQueryMatchThis);
+    s->task = !(ptr->query->flags & EcsQueryMatchThis);
 
     return true;
 error:
@@ -529,8 +530,8 @@ bool ecs_pipeline_stats_get(
     int32_t sys_count = 0, active_sys_count = 0;
 
     /* Count number of active systems */
-    ecs_iter_t it = ecs_query_cache_iter(stage, pq->query);
-    while (ecs_query_cache_next(&it)) {
+    ecs_iter_t it = ecs_query_iter(stage, pq->query);
+    while (ecs_query_next(&it)) {
         if (flecs_id_record_get_table(pq->idr_inactive, it.table) != NULL) {
             continue;
         }
@@ -538,8 +539,8 @@ bool ecs_pipeline_stats_get(
     }
 
     /* Count total number of systems in pipeline */
-    it = ecs_query_cache_iter(stage, pq->query);
-    while (ecs_query_cache_next(&it)) {
+    it = ecs_query_iter(stage, pq->query);
+    while (ecs_query_next(&it)) {
         sys_count += it.count;
     }   
 
@@ -566,10 +567,10 @@ bool ecs_pipeline_stats_get(
             systems = ecs_vec_first_t(&s->systems, ecs_entity_t);
 
             /* Populate systems vector, keep track of sync points */
-            it = ecs_query_cache_iter(stage, pq->query);
+            it = ecs_query_iter(stage, pq->query);
             
             int32_t i, i_system = 0, ran_since_merge = 0;
-            while (ecs_query_cache_next(&it)) {
+            while (ecs_query_next(&it)) {
                 if (flecs_id_record_get_table(pq->idr_inactive, it.table) != NULL) {
                     continue;
                 }
@@ -616,8 +617,8 @@ bool ecs_pipeline_stats_get(
 
     /* Separately populate system stats map from build query, which includes
      * systems that aren't currently active */
-    it = ecs_query_cache_iter(stage, pq->query);
-    while (ecs_query_cache_next(&it)) {
+    it = ecs_query_iter(stage, pq->query);
+    while (ecs_query_next(&it)) {
         int32_t i;
         for (i = 0; i < it.count; i ++) {
             ecs_system_stats_t *stats = ecs_map_ensure_alloc_t(&s->system_stats, 

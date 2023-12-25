@@ -87,7 +87,7 @@ void flecs_query_build_up_cache(
     }
 }
 
-void flecs_query_impl_trav_cache_fini(
+void flecs_query_trav_cache_fini(
     ecs_allocator_t *a,
     ecs_trav_cache_t *cache)
 {

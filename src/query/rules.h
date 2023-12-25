@@ -45,6 +45,7 @@ typedef enum {
     EcsRuleTrivData,       /* Trivial search with setting data fields */
     EcsRuleTrivWildcard,   /* Trivial search with (exclusive) wildcard ids */
     EcsRuleSelectAny,      /* Dedicated instruction for _ queries where the src is unknown */
+    EcsRuleCache,          /* Cached search */
     EcsRuleUp,             /* Up traversal */
     EcsRuleUpId,           /* Up traversal for fixed id (like AndId) */
     EcsRuleSelfUp,         /* Self|up traversal */
@@ -220,11 +221,16 @@ typedef struct {
     ecs_id_t field_id;
 } ecs_query_ctrl_ctx_t;
 
-/* Trivial context */
+/* Trivial iterator context */
 typedef struct {
     ecs_table_cache_iter_t it;
     const ecs_table_record_t *tr;
 } ecs_query_impl_trivial_ctx_t;
+
+/* Cache iterator context */
+typedef struct {
+    ecs_query_cache_table_match_t *node, *prev, *last;
+} ecs_query_impl_cache_ctx_t;
 
 typedef struct ecs_query_op_ctx_t {
     union {
@@ -237,6 +243,7 @@ typedef struct ecs_query_op_ctx_t {
         ecs_query_setthis_ctx_t setthis;
         ecs_query_ctrl_ctx_t ctrl;
         ecs_query_impl_trivial_ctx_t trivial;
+        ecs_query_impl_cache_ctx_t cache;
     } is;
 } ecs_query_op_ctx_t;
 
@@ -283,10 +290,10 @@ typedef struct {
 } ecs_query_var_cache_t;
 
 struct ecs_query_impl_t {
-    ecs_query_t pub;             /* Public query data */
+    ecs_query_t pub;              /* Public query data */
 
     /* Variables */
-    ecs_query_var_t *vars;         /* Variables */
+    ecs_query_var_t *vars;        /* Variables */
     int32_t var_count;            /* Number of variables */
     int32_t var_pub_count;        /* Number of public variables */
     bool has_table_this;          /* Does rule have [$this] */
@@ -296,11 +303,17 @@ struct ecs_query_impl_t {
     char **var_names;             /* Array with variable names for iterator */
     
     ecs_var_id_t *src_vars;       /* Array with ids to source variables for fields */
-    ecs_query_op_t *ops;           /* Operations */
+    ecs_query_op_t *ops;          /* Operations */
     int32_t op_count;             /* Number of operations */
 
-    int16_t tokens_len;           /**< Length of tokens buffer */
-    char *tokens;                 /**< Buffer with string tokens used by terms */
+    ecs_query_cache_t *cache;     /* Cache, if query contains cached terms */
+
+    int16_t tokens_len;           /* Length of tokens buffer */
+    char *tokens;                 /* Buffer with string tokens used by terms */
+
+    /* User context */
+    ecs_ctx_free_t ctx_free;         /* Callback to free ctx */
+    ecs_ctx_free_t binding_ctx_free; /* Callback to free binding_ctx */
 
     /* Mixins */
     ecs_iterable_t iterable;
@@ -342,7 +355,8 @@ bool flecs_ref_is_written(
 int flecs_query_compile(
     ecs_world_t *world,
     ecs_stage_t *stage,
-    ecs_query_impl_t *rule);
+    ecs_query_impl_t *rule,
+    const ecs_query_desc_t *desc);
 
 /* Get allocator from iterator */
 ecs_allocator_t* flecs_query_get_allocator(
@@ -367,7 +381,7 @@ void flecs_query_get_trav_up_cache(
     ecs_table_t *table);
 
 /* Free traversal cache */
-void flecs_query_impl_trav_cache_fini(
+void flecs_query_trav_cache_fini(
     ecs_allocator_t *a,
     ecs_trav_cache_t *cache);
 
@@ -407,7 +421,7 @@ const char* flecs_query_op_str(
     uint16_t kind);
 
 /* Iterator for trivial queries. */
-bool flecs_query_impl_trivial_search(
+bool flecs_query_trivial_search(
     const ecs_query_impl_t *rule,
     const ecs_query_run_ctx_t *ctx,
     ecs_query_impl_trivial_ctx_t *op_ctx,
@@ -415,7 +429,7 @@ bool flecs_query_impl_trivial_search(
     int32_t until);
 
 /* Iterator for trivial queries. */
-bool flecs_query_impl_trivial_search_nodata(
+bool flecs_query_trivial_search_nodata(
     const ecs_query_impl_t *rule,
     const ecs_query_run_ctx_t *ctx,
     ecs_query_impl_trivial_ctx_t *op_ctx,
@@ -423,7 +437,7 @@ bool flecs_query_impl_trivial_search_nodata(
     int32_t until);
 
 /* Iterator for trivial queries with wildcard matching. */
-bool flecs_query_impl_trivial_search_w_wildcards(
+bool flecs_query_trivial_search_w_wildcards(
     const ecs_query_impl_t *rule,
     const ecs_query_run_ctx_t *ctx,
     ecs_query_impl_trivial_ctx_t *op_ctx,
@@ -431,14 +445,14 @@ bool flecs_query_impl_trivial_search_w_wildcards(
     int32_t until);
 
 /* Trivial test for constrained $this. */
-bool flecs_query_impl_trivial_test(
+bool flecs_query_trivial_test(
     const ecs_query_impl_t *rule,
     const ecs_query_run_ctx_t *ctx,
     bool first,
     int32_t term_count);
 
 /* Trivial test for constrained $this with wildcard matching. */
-bool flecs_query_impl_trivial_test_w_wildcards(
+bool flecs_query_trivial_test_w_wildcards(
     const ecs_query_impl_t *rule,
     const ecs_query_run_ctx_t *ctx,
     bool first,
@@ -462,3 +476,21 @@ int flecs_query_finalize_query(
     ecs_world_t *world,
     ecs_query_t *q,
     const ecs_query_desc_t *desc);
+
+bool flecs_query_cache_search(
+    const ecs_query_impl_t *impl,
+    const ecs_query_run_ctx_t *ctx,
+    ecs_query_impl_cache_ctx_t *op_ctx,
+    bool first);
+
+void flecs_query_cache_sort_tables(
+    ecs_world_t *world,
+    ecs_query_cache_t *query);
+
+void flecs_query_cache_sync_match_monitor(
+    ecs_query_cache_t *query,
+    ecs_query_cache_table_match_t *match);
+
+void flecs_query_cache_mark_columns_dirty(
+    ecs_query_cache_t *query,
+    ecs_query_cache_table_match_t *qm);

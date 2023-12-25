@@ -402,7 +402,7 @@ struct term_builder_i : term_id_builder_i<Base> {
 
     /* Query terms are not triggered on by observers */
     Base& filter() {
-        m_term->inout = EcsInOutQuery;
+        m_term->inout = EcsInOutFilter;
         return *this;
     }
 

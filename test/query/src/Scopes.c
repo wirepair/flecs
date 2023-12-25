@@ -1,7 +1,7 @@
-#include <addons.h>
+#include <query.h>
 
-void RulesScopes_term_w_not_scope_1_term(void) {
-    ecs_world_t *world = ecs_init();
+void Scopes_term_w_not_scope_1_term(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Root);
     ECS_TAG(world, TagA);
@@ -32,8 +32,8 @@ void RulesScopes_term_w_not_scope_1_term(void) {
     ecs_fini(world);
 }
 
-void RulesScopes_term_w_not_scope_2_terms(void) {
-    ecs_world_t *world = ecs_init();
+void Scopes_term_w_not_scope_2_terms(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Root);
     ECS_TAG(world, TagA);
@@ -78,8 +78,8 @@ void RulesScopes_term_w_not_scope_2_terms(void) {
     ecs_fini(world);
 }
 
-void RulesScopes_term_w_not_scope_1_term_w_not(void) {
-    ecs_world_t *world = ecs_init();
+void Scopes_term_w_not_scope_1_term_w_not(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Root);
     ECS_TAG(world, TagA);
@@ -110,8 +110,8 @@ void RulesScopes_term_w_not_scope_1_term_w_not(void) {
     ecs_fini(world);
 }
 
-void RulesScopes_term_w_not_scope_2_terms_w_not(void) {
-    ecs_world_t *world = ecs_init();
+void Scopes_term_w_not_scope_2_terms_w_not(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Root);
     ECS_TAG(world, TagA);
@@ -156,8 +156,8 @@ void RulesScopes_term_w_not_scope_2_terms_w_not(void) {
     ecs_fini(world);
 }
 
-void RulesScopes_term_w_not_scope_1_term_w_var(void) {
-    ecs_world_t *world = ecs_init();
+void Scopes_term_w_not_scope_1_term_w_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Root);
 
@@ -191,8 +191,8 @@ void RulesScopes_term_w_not_scope_1_term_w_var(void) {
     ecs_fini(world);
 }
 
-void RulesScopes_term_w_not_scope_2_terms_w_var(void) {
-    ecs_world_t *world = ecs_init();
+void Scopes_term_w_not_scope_2_terms_w_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Root);
     ECS_COMPONENT(world, Position);
@@ -239,8 +239,8 @@ void RulesScopes_term_w_not_scope_2_terms_w_var(void) {
     ecs_fini(world);
 }
 
-void RulesScopes_term_w_not_scope_1_term_w_not_w_var(void) {
-    ecs_world_t *world = ecs_init();
+void Scopes_term_w_not_scope_1_term_w_not_w_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Root);
 
@@ -274,8 +274,8 @@ void RulesScopes_term_w_not_scope_1_term_w_not_w_var(void) {
     ecs_fini(world);
 }
 
-void RulesScopes_term_w_not_scope_2_terms_w_not_w_var(void) {
-    ecs_world_t *world = ecs_init();
+void Scopes_term_w_not_scope_2_terms_w_not_w_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Root);
     ECS_COMPONENT(world, Position);
@@ -327,8 +327,8 @@ void RulesScopes_term_w_not_scope_2_terms_w_not_w_var(void) {
     ecs_fini(world);
 }
 
-void RulesScopes_term_w_not_scope_2_terms_w_or(void) {
-    ecs_world_t *world = ecs_init();
+void Scopes_term_w_not_scope_2_terms_w_or(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Root);
     ECS_TAG(world, TagA);
@@ -364,8 +364,8 @@ void RulesScopes_term_w_not_scope_2_terms_w_or(void) {
     ecs_fini(world);
 }
 
-void RulesScopes_term_w_not_scope_3_terms_w_or(void) {
-    ecs_world_t *world = ecs_init();
+void Scopes_term_w_not_scope_3_terms_w_or(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Root);
     ECS_TAG(world, TagA);

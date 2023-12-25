@@ -1982,113 +1982,6 @@ error:
     return NULL;
 }
 
-void ecs_query_cache_fini(
-    ecs_query_cache_t *query)
-{
-    ecs_poly_assert(query, ecs_query_cache_t);
-    ecs_delete(query->query->world, query->query->entity);
-}
-
-const ecs_query_t* ecs_query_cache_get_filter(
-    const ecs_query_cache_t *query)
-{
-    ecs_poly_assert(query, ecs_query_cache_t);
-    return query->query;
-}
-
-static
-void flecs_query_cache_set_var(
-    ecs_iter_t *it)
-{
-    ecs_check(it->constrained_vars == 1, ECS_INVALID_OPERATION, 
-        "can only set $this variable for queries");
-
-    ecs_var_t *var = &it->variables[0];
-    ecs_table_t *table = var->range.table;
-    if (!table) {
-        goto nodata;
-    }
-
-    ecs_query_cache_iter_t *qit = &it->priv.iter.query;
-    ecs_query_cache_t *query = qit->query;
-    ecs_query_cache_table_t *qt = ecs_table_cache_get(&query->cache, table);
-    if (!qt) {
-        goto nodata;
-    }
-
-    qit->node = qt->first;
-    qit->last = qt->last->next_match;
-    it->offset = var->range.offset;
-    it->count = var->range.count;
-    return;
-error:
-nodata:
-    it->priv.iter.query.node = NULL;
-    it->priv.iter.query.last = NULL;
-    return;
-}
-
-ecs_iter_t ecs_query_cache_iter(
-    const ecs_world_t *stage,
-    ecs_query_cache_t *query)
-{
-    ecs_poly_assert(query, ecs_query_cache_t);
-
-    ecs_world_t *world = query->query->world;
-    ecs_poly_assert(world, ecs_world_t);
-
-    /* Process table events to ensure that the list of iterated tables doesn't
-     * contain empty tables. */
-    flecs_process_pending_tables(world);
-
-    /* If query has order_by, apply sort */
-    flecs_query_cache_sort_tables(world, query);
-
-    /* If monitors changed, do query rematching */
-    if (!(world->flags & EcsWorldReadonly) && query->query->flags & EcsQueryHasRefs) {
-        flecs_eval_component_monitors(world);
-    }
-
-    /* Prepare iterator */
-
-    // int32_t table_count;
-    // if (ecs_vec_count(&query->table_slices)) {
-    //     table_count = ecs_vec_count(&query->table_slices);
-    // } else {
-    //     table_count = ecs_query_cache_table_count(query);
-    // }
-
-    ecs_query_cache_iter_t it = {
-        .query = query,
-        .node = query->list.first,
-        .last = NULL
-    };
-
-    if (query->order_by && query->list.info.table_count) {
-        it.node = ecs_vec_first(&query->table_slices);
-    }
-
-    // ecs_iter_t result = {
-    //     .real_world = world,
-    //     .world = ECS_CONST_CAST(ecs_world_t*, stage),
-    //     .terms = query->query->terms,
-    //     .field_count = query->query->field_count,
-    //     .table_count = table_count,
-    //     .variable_count = 1,
-    //     .priv.iter.query = it,
-    //     .next = ecs_query_cache_next,
-    //     .set_var = flecs_query_cache_set_var
-    // };
-
-    // flecs_query_apply_iter_flags(&result, query->query);
-    // flecs_iter_init(stage, &result, flecs_iter_cache_all);
-
-    // result.sizes = query->query->sizes;
-
-    // TODO
-    return (ecs_iter_t){0};
-}
-
 void ecs_query_cache_set_group(
     ecs_iter_t *it,
     uint64_t group_id)
@@ -2189,162 +2082,12 @@ void flecs_query_cache_mark_columns_dirty(
     }
 }
 
-int ecs_query_cache_populate(
-    ecs_iter_t *it,
-    bool when_changed)
-{
-//     ecs_check(it != NULL, ECS_INVALID_PARAMETER, NULL);
-//     ecs_check(it->next == ecs_query_cache_next, ECS_INVALID_PARAMETER, NULL);
-//     ecs_check(ECS_BIT_IS_SET(it->flags, EcsIterIsValid), 
-//         ECS_INVALID_PARAMETER, NULL);
-
-//     ecs_query_cache_iter_t *iter = &it->priv.iter.query;
-//     ecs_query_cache_t *query = iter->query;
-//     ecs_query_cache_table_match_t *match = iter->prev;
-//     ecs_assert(match != NULL, ECS_INVALID_OPERATION, NULL);
-
-//     ecs_table_t *table = match->table;
-//     ecs_world_t *world = query->query->world;
-//     const ecs_query_t *filter = query->query;
-//     ecs_entity_filter_iter_t *ent_it = it->priv.entity_iter;
-//     ecs_assert(ent_it != NULL, ECS_INTERNAL_ERROR, NULL);
-//     ecs_table_range_t *range = &ent_it->range;
-//     int32_t t, term_count = filter->term_count;
-//     int result;
-
-// repeat:
-//     result = EcsIterNextYield;
-
-//     ecs_os_memcpy_n(it->sources, match->sources, ecs_entity_t, 
-//         filter->field_count);
-
-//     for (t = 0; t < term_count; t ++) {
-//         const ecs_term_t *term = &filter->terms[t];
-//         int32_t field = term->field_index;
-//         if (!ecs_term_match_this(term)) {
-//             continue;
-//         }
-
-//         it->ids[field] = match->ids[field];
-//         it->columns[field] = match->columns[field];
-//     }
-
-//     if (table) {
-//         range->offset = match->offset;
-//         range->count = match->count;
-//         if (!range->count) {
-//             range->count = ecs_table_count(table);
-//             ecs_assert(range->count != 0, ECS_INTERNAL_ERROR, NULL);
-//         }
-
-//         if (match->entity_filter) {
-//             ent_it->entity_filter = match->entity_filter;
-//             ent_it->columns = match->columns;
-//             ent_it->range.table = table;
-//             ent_it->it = it;
-//             result = flecs_entity_filter_next(ent_it);
-//             if (result == EcsIterNext) {
-//                 goto done;
-//             }
-//         }
-
-//         it->group_id = match->group_id;
-//     } else {
-//         range->offset = 0;
-//         range->count = 0;
-//     }
-
-//     if (when_changed) {
-//         if (!ecs_query_cache_changed(NULL, it)) {
-//             if (result == EcsIterYield) {
-//                 goto repeat;
-//             } else {
-//                 result = EcsIterNext;
-//                 goto done;
-//             }
-//         }
-//     }
-
-//     it->references = ecs_vec_first(&match->refs);
-//     it->instance_count = 0;
-
-//     flecs_iter_populate_data(world, it, table, range->offset, range->count,
-//         it->ptrs);
-
-// error:
-// done:
-//     return result;
-}
-
-bool ecs_query_cache_next(
-    ecs_iter_t *it)
-{
-//     ecs_check(it != NULL, ECS_INVALID_PARAMETER, NULL);
-//     ecs_check(it->next == ecs_query_cache_next, ECS_INVALID_PARAMETER, NULL);
-
-//     if (flecs_iter_next_row(it)) {
-//         return true;
-//     }
-
-//     return flecs_iter_next_instanced(it, ecs_query_cache_next_instanced(it));
-// error:
-//     return false;
-}
-
-bool ecs_query_cache_next_instanced(
-    ecs_iter_t *it)
-{
-//     ecs_check(it != NULL, ECS_INVALID_PARAMETER, NULL);
-//     ecs_check(it->next == ecs_query_cache_next, ECS_INVALID_PARAMETER, NULL);
-
-//     ecs_query_cache_iter_t *iter = &it->priv.iter.query;
-//     ecs_query_cache_t *query = iter->query;
-//     ecs_flags32_t flags = query->query->flags;
-
-//     ecs_query_cache_table_match_t *prev, *next, *cur = iter->node, *last = iter->last;
-//     if ((prev = iter->prev)) {
-//         /* Match has been iterated, update monitor for change tracking */
-//         if (flags & EcsQueryHasMonitor) {
-//             flecs_query_cache_sync_match_monitor(query, prev);
-//         }
-//         if (flags & EcsQueryHasOutTerms) {
-//             flecs_query_cache_mark_columns_dirty(query, prev);
-//         }
-//     }
-
-//     flecs_iter_validate(it);
-//     iter->skip_count = 0;
-
-//     /* Non-trivial iteration: query matches with static sources, or matches with
-//      * tables that require per-entity filtering. */
-//     for (; cur != last; cur = next) {
-//         next = cur->next;
-//         iter->prev = cur;
-//         switch(ecs_query_cache_populate(it, false)) {
-//         case EcsIterNext: iter->node = next; continue;
-//         case EcsIterYield: next = cur; /* fall through */
-//         case EcsIterNextYield: goto yield;
-//         default: ecs_abort(ECS_INTERNAL_ERROR, NULL);
-//         }
-//     }
-
-// error:
-//     query->match_count = query->prev_match_count;
-//     ecs_iter_fini(it);
-//     return false;
-
-// yield:
-//     iter->node = next;
-//     iter->prev = cur;
-//     return true;
-}
-
 bool ecs_query_cache_changed(
     ecs_query_cache_t *query,
     const ecs_iter_t *it)
 {
     if (it) {
-        ecs_check(it->next == ecs_query_cache_next, ECS_INVALID_PARAMETER, NULL);
+        ecs_check(it->next == ecs_query_next, ECS_INVALID_PARAMETER, NULL);
         ecs_check(ECS_BIT_IS_SET(it->flags, EcsIterIsValid), 
             ECS_INVALID_PARAMETER, NULL);
 
@@ -2360,12 +2103,9 @@ bool ecs_query_cache_changed(
         }
 
         ecs_check(query != NULL, ECS_INVALID_PARAMETER, NULL);
-        ecs_poly_assert(query, ecs_query_cache_t);
 
         return flecs_query_cache_check_match_monitor(query, qm, it);
     }
-
-    ecs_poly_assert(query, ecs_query_cache_t);
 
     flecs_process_pending_tables(query->query->world);
 
@@ -2387,7 +2127,7 @@ error:
 void ecs_query_cache_skip(
     ecs_iter_t *it)
 {
-    ecs_assert(it->next == ecs_query_cache_next, ECS_INVALID_PARAMETER, NULL);
+    ecs_assert(it->next == ecs_query_next, ECS_INVALID_PARAMETER, NULL);
     ecs_assert(ECS_BIT_IS_SET(it->flags, EcsIterIsValid), 
         ECS_INVALID_PARAMETER, NULL);
 

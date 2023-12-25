@@ -64,8 +64,6 @@ typedef struct ecs_query_cache_allocators_t {
 
 /** Query that is automatically matched against tables */
 struct ecs_query_cache_t {
-    ecs_header_t hdr;
-
     /* Query filter */
     ecs_query_t *query;
 
@@ -102,8 +100,6 @@ struct ecs_query_cache_t {
     int32_t rematch_count;           /* Track which tables were added during rematch */
 
     /* Mixins */
-    ecs_iterable_t iterable;
-    ecs_poly_dtor_t dtor;
     ecs_world_t *world;
     ecs_entity_t entity;
 

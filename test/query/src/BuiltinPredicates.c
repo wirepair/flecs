@@ -1,7 +1,7 @@
-#include <addons.h>
+#include <query.h>
 
-void RulesBuiltinPredicates_this_eq_id(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_eq_id(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
@@ -25,8 +25,8 @@ void RulesBuiltinPredicates_this_eq_id(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_eq_name(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_eq_name(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
@@ -50,8 +50,8 @@ void RulesBuiltinPredicates_this_eq_name(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_eq_var(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_eq_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
     ecs_query_t *r = ecs_query(world, {
@@ -63,8 +63,8 @@ void RulesBuiltinPredicates_this_eq_var(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_eq_id_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_eq_id_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -97,8 +97,8 @@ void RulesBuiltinPredicates_this_eq_id_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_eq_id_written_no_match(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_eq_id_written_no_match(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -128,8 +128,8 @@ void RulesBuiltinPredicates_this_eq_id_written_no_match(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_eq_name_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_eq_name_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -162,8 +162,8 @@ void RulesBuiltinPredicates_this_eq_name_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_eq_name_written_no_match(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_eq_name_written_no_match(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -193,8 +193,8 @@ void RulesBuiltinPredicates_this_eq_name_written_no_match(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_eq_var_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_eq_var_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -230,8 +230,8 @@ void RulesBuiltinPredicates_this_eq_var_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_id(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_id(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
@@ -258,8 +258,8 @@ void RulesBuiltinPredicates_var_eq_id(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_name(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_name(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t ent = ecs_new_entity(world, "ent");
 
@@ -286,8 +286,8 @@ void RulesBuiltinPredicates_var_eq_name(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_var(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
     ecs_query_t *r = ecs_query(world, {
@@ -299,8 +299,8 @@ void RulesBuiltinPredicates_var_eq_var(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_id_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_id_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -336,8 +336,8 @@ void RulesBuiltinPredicates_var_eq_id_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_id_written_no_match(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_id_written_no_match(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -370,8 +370,8 @@ void RulesBuiltinPredicates_var_eq_id_written_no_match(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_name_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_name_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -407,8 +407,8 @@ void RulesBuiltinPredicates_var_eq_name_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_name_written_no_match(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_name_written_no_match(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -441,8 +441,8 @@ void RulesBuiltinPredicates_var_eq_name_written_no_match(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_var_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_var_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -481,7 +481,139 @@ void RulesBuiltinPredicates_var_eq_var_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_neq_id(void) {
+void BuiltinPredicates_var_eq_var_written_table(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, RelA);
+
+    ecs_entity_t ent_1 = ecs_new_entity(world, "ent_1");
+    ecs_entity_t ent_2 = ecs_new_entity(world, "ent_1");
+    ecs_add(world, ent_1, RelA);
+    ecs_add(world, ent_2, RelA);
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "RelA($y), $x == $y"
+    });
+
+    test_assert(r != NULL);
+    
+    int x_var = ecs_query_find_var(r, "x");
+    test_assert(x_var != -1);
+    int y_var = ecs_query_find_var(r, "y");
+    test_assert(y_var != -1);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, r);
+        test_bool(true, ecs_query_next(&it));
+        test_uint(0, it.count);
+        test_uint(ecs_pair(RelA, ent_2), ecs_field_id(&it, 1));
+        test_uint(true, ecs_field_is_set(&it, 1));
+        test_uint(false, ecs_field_is_set(&it, 2));
+        test_uint(ent_1, ecs_iter_get_var(&it, x_var));
+        test_uint(ent_1, ecs_iter_get_var(&it, y_var));
+        test_bool(false, ecs_query_next(&it));
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(0, it.count);
+        test_uint(ecs_pair(RelA, ent_2), ecs_field_id(&it, 1));
+        test_uint(true, ecs_field_is_set(&it, 1));
+        test_uint(false, ecs_field_is_set(&it, 2));
+        test_uint(ent_2, ecs_iter_get_var(&it, x_var));
+        test_uint(ent_2, ecs_iter_get_var(&it, y_var));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void BuiltinPredicates_var_eq_this_written(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, RelA);
+
+    ecs_entity_t ent_2 = ecs_new_entity(world, "ent_2");
+    ecs_entity_t ent_1 = ecs_new_entity(world, "ent_1");
+    ecs_add_pair(world, ent_1, RelA, ent_2);
+    ecs_add_pair(world, ent_2, RelA, ent_2);
+    ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
+    ecs_add_pair(world, ent_3, RelA, ent_2);
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "RelA($x, $this), $x == $this"
+    });
+
+    test_assert(r != NULL);
+    
+    int x_var = ecs_query_find_var(r, "x");
+    test_assert(x_var != -1);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, r);
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(ent_2, it.entities[0]);
+        test_uint(ecs_pair(RelA, ent_2), ecs_field_id(&it, 1));
+        test_uint(true, ecs_field_is_set(&it, 1));
+        test_uint(false, ecs_field_is_set(&it, 2));
+        test_uint(ent_2, ecs_iter_get_var(&it, x_var));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void BuiltinPredicates_var_eq_this_written_table(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, RelA);
+
+    ecs_entity_t ent_1 = ecs_new_entity(world, "ent_1");
+    ecs_entity_t ent_2 = ecs_new_entity(world, "ent_1");
+    ecs_add(world, ent_1, RelA);
+    ecs_add(world, ent_2, RelA);
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "RelA($y), $x == $y"
+    });
+
+    test_assert(r != NULL);
+    
+    int x_var = ecs_query_find_var(r, "x");
+    test_assert(x_var != -1);
+    int y_var = ecs_query_find_var(r, "y");
+    test_assert(y_var != -1);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, r);
+        test_bool(true, ecs_query_next(&it));
+        test_uint(0, it.count);
+        test_uint(ecs_pair(RelA, ent_2), ecs_field_id(&it, 1));
+        test_uint(true, ecs_field_is_set(&it, 1));
+        test_uint(false, ecs_field_is_set(&it, 2));
+        test_uint(ent_1, ecs_iter_get_var(&it, x_var));
+        test_uint(ent_1, ecs_iter_get_var(&it, y_var));
+        test_bool(false, ecs_query_next(&it));
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(0, it.count);
+        test_uint(ecs_pair(RelA, ent_2), ecs_field_id(&it, 1));
+        test_uint(true, ecs_field_is_set(&it, 1));
+        test_uint(false, ecs_field_is_set(&it, 2));
+        test_uint(ent_2, ecs_iter_get_var(&it, x_var));
+        test_uint(ent_2, ecs_iter_get_var(&it, y_var));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void BuiltinPredicates_this_neq_id(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -527,7 +659,7 @@ void RulesBuiltinPredicates_this_neq_id(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_neq_name(void) {
+void BuiltinPredicates_this_neq_name(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -573,8 +705,8 @@ void RulesBuiltinPredicates_this_neq_name(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_neq_var(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_neq_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
     ecs_query_t *r = ecs_query(world, {
@@ -586,8 +718,8 @@ void RulesBuiltinPredicates_this_neq_var(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_neq_id_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_neq_id_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -628,8 +760,8 @@ void RulesBuiltinPredicates_this_neq_id_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_neq_id_written_no_match(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_neq_id_written_no_match(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -666,8 +798,8 @@ void RulesBuiltinPredicates_this_neq_id_written_no_match(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_neq_name_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_neq_name_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -708,8 +840,8 @@ void RulesBuiltinPredicates_this_neq_name_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_neq_name_written_no_match(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_neq_name_written_no_match(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -746,8 +878,8 @@ void RulesBuiltinPredicates_this_neq_name_written_no_match(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_neq_var_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_neq_var_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -792,7 +924,53 @@ void RulesBuiltinPredicates_this_neq_var_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_neq_id(void) {
+void BuiltinPredicates_var_neq_var_written_table(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, RelA);
+
+    ecs_entity_t ent_2 = ecs_new_entity(world, "ent_2");
+    ecs_entity_t ent_1 = ecs_new_entity(world, "ent_1");
+    ecs_add_pair(world, ent_1, RelA, ent_2);
+    ecs_add_pair(world, ent_2, RelA, ent_2);
+    ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
+    ecs_add_pair(world, ent_3, RelA, ent_2);
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "RelA($x, $this), $this != $x"
+    });
+
+    test_assert(r != NULL);
+    int x_var = ecs_query_find_var(r, "x");
+    test_assert(x_var != -1);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, r);
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(ecs_pair(RelA, ent_2), ecs_field_id(&it, 1));
+        test_uint(true, ecs_field_is_set(&it, 1));
+        test_uint(false, ecs_field_is_set(&it, 2));
+        test_uint(ent_2, ecs_iter_get_var(&it, x_var));
+        test_uint(ent_1, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(ecs_pair(RelA, ent_2), ecs_field_id(&it, 1));
+        test_uint(true, ecs_field_is_set(&it, 1));
+        test_uint(false, ecs_field_is_set(&it, 2));
+        test_uint(ent_2, ecs_iter_get_var(&it, x_var));
+        test_uint(ent_3, it.entities[0]);
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void BuiltinPredicates_var_neq_id(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -841,7 +1019,7 @@ void RulesBuiltinPredicates_var_neq_id(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_neq_name(void) {
+void BuiltinPredicates_var_neq_name(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -890,8 +1068,8 @@ void RulesBuiltinPredicates_var_neq_name(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_neq_var(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_neq_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_log_set_level(-4);
     ecs_query_t *r = ecs_query(world, {
@@ -903,8 +1081,8 @@ void RulesBuiltinPredicates_var_neq_var(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_neq_id_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_neq_id_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -948,8 +1126,8 @@ void RulesBuiltinPredicates_var_neq_id_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_neq_id_written_no_match(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_neq_id_written_no_match(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -989,8 +1167,8 @@ void RulesBuiltinPredicates_var_neq_id_written_no_match(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_neq_name_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_neq_name_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1034,8 +1212,8 @@ void RulesBuiltinPredicates_var_neq_name_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_neq_name_written_no_match(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_neq_name_written_no_match(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -1075,8 +1253,8 @@ void RulesBuiltinPredicates_var_neq_name_written_no_match(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_neq_var_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_neq_var_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1124,7 +1302,7 @@ void RulesBuiltinPredicates_var_neq_var_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_2_neq_id(void) {
+void BuiltinPredicates_this_2_neq_id(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -1172,7 +1350,7 @@ void RulesBuiltinPredicates_this_2_neq_id(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_2_neq_name(void) {
+void BuiltinPredicates_this_2_neq_name(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -1220,7 +1398,7 @@ void RulesBuiltinPredicates_this_2_neq_name(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_2_neq_id(void) {
+void BuiltinPredicates_var_2_neq_id(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -1271,7 +1449,7 @@ void RulesBuiltinPredicates_var_2_neq_id(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_2_neq_name(void) {
+void BuiltinPredicates_var_2_neq_name(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -1322,8 +1500,8 @@ void RulesBuiltinPredicates_var_2_neq_name(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_2_neq_id_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_2_neq_id_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1369,8 +1547,8 @@ void RulesBuiltinPredicates_this_2_neq_id_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_2_neq_name_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_2_neq_name_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1416,8 +1594,8 @@ void RulesBuiltinPredicates_this_2_neq_name_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_2_neq_id_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_2_neq_id_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1472,8 +1650,8 @@ void RulesBuiltinPredicates_var_2_neq_id_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_2_neq_name_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_2_neq_name_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1528,8 +1706,8 @@ void RulesBuiltinPredicates_var_2_neq_name_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_2_or_id(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_2_or_id(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1565,8 +1743,8 @@ void RulesBuiltinPredicates_this_2_or_id(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_2_or_name(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_2_or_name(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1602,8 +1780,8 @@ void RulesBuiltinPredicates_this_2_or_name(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_2_or_id(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_2_or_id(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1641,8 +1819,8 @@ void RulesBuiltinPredicates_var_2_or_id(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_2_or_name(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_2_or_name(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1680,8 +1858,8 @@ void RulesBuiltinPredicates_var_2_or_name(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_2_or_id_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_2_or_id_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1726,8 +1904,8 @@ void RulesBuiltinPredicates_this_2_or_id_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_2_or_name_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_this_2_or_name_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1772,8 +1950,8 @@ void RulesBuiltinPredicates_this_2_or_name_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_2_or_id_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_2_or_id_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1821,8 +1999,8 @@ void RulesBuiltinPredicates_var_2_or_id_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_2_or_name_written(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_2_or_name_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -1870,7 +2048,7 @@ void RulesBuiltinPredicates_var_2_or_name_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_match_eq(void) {
+void BuiltinPredicates_this_match_eq(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -1916,7 +2094,7 @@ void RulesBuiltinPredicates_this_match_eq(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_match_eq(void) {
+void BuiltinPredicates_var_match_eq(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -1969,7 +2147,7 @@ void RulesBuiltinPredicates_var_match_eq(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_match_eq_written(void) {
+void BuiltinPredicates_this_match_eq_written(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2024,7 +2202,7 @@ void RulesBuiltinPredicates_this_match_eq_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_match_eq_written(void) {
+void BuiltinPredicates_var_match_eq_written(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2087,7 +2265,7 @@ void RulesBuiltinPredicates_var_match_eq_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_match_neq(void) {
+void BuiltinPredicates_this_match_neq(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2134,7 +2312,7 @@ void RulesBuiltinPredicates_this_match_neq(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_match_neq(void) {
+void BuiltinPredicates_var_match_neq(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2184,7 +2362,7 @@ void RulesBuiltinPredicates_var_match_neq(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_match_neq_written(void) {
+void BuiltinPredicates_this_match_neq_written(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2237,7 +2415,7 @@ void RulesBuiltinPredicates_this_match_neq_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_match_neq_written(void) {
+void BuiltinPredicates_var_match_neq_written(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2293,7 +2471,7 @@ void RulesBuiltinPredicates_var_match_neq_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_match_2_neq(void) {
+void BuiltinPredicates_this_match_2_neq(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2340,7 +2518,7 @@ void RulesBuiltinPredicates_this_match_2_neq(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_match_2_neq(void) {
+void BuiltinPredicates_var_match_2_neq(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2389,7 +2567,7 @@ void RulesBuiltinPredicates_var_match_2_neq(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_match_2_neq_written(void) {
+void BuiltinPredicates_this_match_2_neq_written(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2442,7 +2620,7 @@ void RulesBuiltinPredicates_this_match_2_neq_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_match_2_neq_written(void) {
+void BuiltinPredicates_var_match_2_neq_written(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2497,7 +2675,7 @@ void RulesBuiltinPredicates_var_match_2_neq_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_match_2_or(void) {
+void BuiltinPredicates_this_match_2_or(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2537,7 +2715,7 @@ void RulesBuiltinPredicates_this_match_2_or(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_match_2_or_written(void) {
+void BuiltinPredicates_this_match_2_or_written(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2585,7 +2763,7 @@ void RulesBuiltinPredicates_this_match_2_or_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_match_3_or(void) {
+void BuiltinPredicates_this_match_3_or(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2630,7 +2808,7 @@ void RulesBuiltinPredicates_this_match_3_or(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_this_match_3_or_written(void) {
+void BuiltinPredicates_this_match_3_or_written(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
@@ -2684,8 +2862,8 @@ void RulesBuiltinPredicates_this_match_3_or_written(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_unresolved_by_name(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_unresolved_by_name(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_query_t *r = ecs_query(world, {
         .expr = "$this == ent",
@@ -2715,8 +2893,8 @@ void RulesBuiltinPredicates_unresolved_by_name(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_wildcard(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_wildcard(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
 
@@ -2746,8 +2924,8 @@ void RulesBuiltinPredicates_var_eq_wildcard(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_any(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_any(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
 
@@ -2777,8 +2955,8 @@ void RulesBuiltinPredicates_var_eq_any(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_wildcard_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_wildcard_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
 
@@ -2808,8 +2986,8 @@ void RulesBuiltinPredicates_var_eq_wildcard_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_any_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_any_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
 
@@ -2839,8 +3017,8 @@ void RulesBuiltinPredicates_var_eq_any_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesBuiltinPredicates_var_eq_after_var_0_src(void) {
-    ecs_world_t *world = ecs_init();
+void BuiltinPredicates_var_eq_after_var_0_src(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_query_t *r = ecs_query(world, {
         .expr = "$x(), $x == flecs"

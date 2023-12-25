@@ -1032,7 +1032,8 @@ int flecs_query_query_finalize_terms(
     }
 
     if (term_count && (terms[term_count - 1].oper == EcsOr)) {
-        flecs_query_validator_error(&ctx, "last term of filter can't have OR operator");
+        flecs_query_validator_error(&ctx, 
+            "last term of filter can't have OR operator");
         return -1;
     }
 
@@ -1119,8 +1120,12 @@ int flecs_query_query_finalize_terms(
     }
 
     /* Set cacheable flags */
-    ECS_BIT_COND(q->flags, EcsQueryHasCacheable, cacheable_terms != 0);
-    ECS_BIT_COND(q->flags, EcsQueryIsCacheable, cacheable_terms == term_count);
+    if (!(q->flags & EcsQueryMatchEmptyTables)) {
+        ECS_BIT_COND(q->flags, EcsQueryHasCacheable, 
+            cacheable_terms != 0);
+        ECS_BIT_COND(q->flags, EcsQueryIsCacheable, 
+            cacheable_terms == term_count);
+    }
 
     return 0;
 }

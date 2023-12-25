@@ -34,6 +34,7 @@ ecs_iter_t ecs_each_id(
     if (idr->type_info) {
         each_iter->sizes = idr->type_info->size;
     }
+
     each_iter->sources = 0;
     flecs_table_cache_iter((ecs_table_cache_t*)idr, &each_iter->it);
 

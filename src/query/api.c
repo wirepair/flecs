@@ -131,14 +131,14 @@ int flecs_query_set_caching_policy(
     }
 
     /* Only cache terms that are cacheable */
-    if (desc->cache_kind == EcsQueryCacheAuto) {
+    if (kind == EcsQueryCacheAuto) {
         if (impl->pub.flags & EcsQueryIsCacheable) {
             /* If all terms of the query are cacheable, just set the policy to 
              * All which simplifies work for the compiler. */
             impl->pub.cache_kind = EcsQueryCacheAll;
         } else if (!(impl->pub.flags & EcsQueryHasCacheable)) {
             /* Same for when the query has no cacheable terms */
-            impl->pub.cache_kind = EcsQueryCacheAll;
+            impl->pub.cache_kind = EcsQueryCacheNone;
         } else {
             /* Part of the query is cacheable */
             impl->pub.cache_kind = EcsQueryCacheAuto;
@@ -151,13 +151,19 @@ int flecs_query_set_caching_policy(
 static
 int flecs_query_create_cache(
     ecs_query_impl_t *impl,
-    const ecs_query_desc_t *desc)
+    ecs_query_desc_t *desc)
 {
+    ecs_query_t *q = &impl->pub;
     if (flecs_query_set_caching_policy(impl, desc)) {
         return -1;
     }
 
-    ecs_query_t *q = &impl->pub;
+    if ((q->cache_kind != EcsQueryCacheNone) && !q->entity) {
+        /* Cached queries need an entity handle for observer components */
+        q->entity = ecs_new_id(q->world);
+        desc->entity = q->entity;
+    }
+
     if (q->cache_kind == EcsQueryCacheAll) {
         /* Create query cache for all terms */
         impl->cache = flecs_query_cache_init(impl->pub.world, desc);
@@ -295,14 +301,14 @@ ecs_query_t* ecs_query_init(
 
     /* Initialize the query */
     ecs_query_desc_t desc = *const_desc;
+    ecs_entity_t entity = const_desc->entity;
+    result->pub.entity = entity;
+    result->pub.world = world;
     if (flecs_query_finalize_query(world, &result->pub, &desc)) {
         goto error;
     }
 
     /* Initialize static context & mixins */
-    ecs_entity_t entity = const_desc->entity;
-    result->pub.entity = entity;
-    result->pub.world = world;
     result->pub.stage = stage;
     result->pub.ctx = const_desc->ctx;
     result->pub.binding_ctx = const_desc->binding_ctx;
@@ -312,12 +318,12 @@ ecs_query_t* ecs_query_init(
     result->iterable.init = flecs_query_iter_mixin_init;
 
     /* Initialize query cache if necessary */
-    if (flecs_query_create_cache(result, const_desc)) {
+    if (flecs_query_create_cache(result, &desc)) {
         goto error;
     }
 
     /* Compile filter to operations */
-    if (flecs_query_compile(world, stage, result, const_desc)) {
+    if (flecs_query_compile(world, stage, result, &desc)) {
         goto error;
     }
 
@@ -325,6 +331,8 @@ ecs_query_t* ecs_query_init(
      * token buffer which simplifies memory management & reduces allocations. */
     flecs_query_populate_tokens(result);
 
+    /* Entity could've been set by finalize query if query is cached */
+    entity = result->pub.entity;
     if (entity) {
         EcsPoly *poly = ecs_poly_bind(world, entity, ecs_query_impl_t);
         poly->poly = result;

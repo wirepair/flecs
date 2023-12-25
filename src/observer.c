@@ -133,7 +133,7 @@ void flecs_register_observer_for_id(
 
         ecs_map_t *observers = ECS_OFFSET(idt, offset);
         ecs_map_init_w_params_if(observers, &world->allocators.ptr);
-        ecs_map_insert_ptr(observers, observer->query->entity, observer);
+        ecs_map_insert_ptr(observers, observer->entity, observer);
 
         flecs_inc_observer_count(world, event, er, term_id, 1);
         if (trav) {
@@ -735,7 +735,7 @@ int flecs_multi_observer_init(
     }
 
     /* Create observers as children of observer */
-    ecs_entity_t old_scope = ecs_set_scope(world, observer->query->entity);
+    ecs_entity_t old_scope = ecs_set_scope(world, observer->entity);
 
     for (i = 0; i < term_count; i ++) {
         if (query->terms[i].inout == EcsInOutFilter) {
@@ -790,6 +790,7 @@ int flecs_multi_observer_init(
         } else if (term->oper == EcsOptional) {
             continue;
         }
+
         if (ecs_observer_init(world, &child_desc) == 0) {
             goto error;
         }
@@ -832,18 +833,24 @@ ecs_entity_t ecs_observer_init(
         ecs_observer_t *observer = ecs_poly_new(ecs_observer_t);
         ecs_assert(observer != NULL, ECS_INTERNAL_ERROR, NULL);
         observer->dtor = (ecs_poly_dtor_t)flecs_observer_fini;
+        observer->entity = entity;
 
         /* Make writeable copy of filter desc so that we can set name. This will
          * make debugging easier, as any error messages related to creating the
          * filter will have the name of the observer. */
         ecs_query_desc_t query_desc = desc->filter;
+        query_desc.entity = 0;
+        query_desc.cache_kind = EcsQueryCacheNone;
 
         /* Parse filter */
-        ecs_query_t *query = observer->query = ecs_query_init(world, &query_desc);
+        ecs_query_t *query = observer->query = ecs_query_init(
+            world, &query_desc);
         if (query == NULL) {
             flecs_observer_fini(observer);
             return 0;
         }
+
+        ecs_poly_assert(query, ecs_query_impl_t);
 
         /* Observer must have at least one term */
         ecs_check(observer->query->term_count > 0, ECS_INVALID_PARAMETER, NULL);

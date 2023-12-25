@@ -1773,6 +1773,7 @@ static
 int32_t flecs_query_insert_trivial_search(
     ecs_query_impl_t *rule,
     ecs_flags64_t *compiled,
+    ecs_flags64_t *populated,
     ecs_query_compile_ctx_t *ctx)
 {
     ecs_query_t *q = &rule->pub;
@@ -1812,6 +1813,7 @@ int32_t flecs_query_insert_trivial_search(
         /* Mark terms as compiled */
         for (i = 0; i < trivial_terms; i ++) {
             *compiled |= (1ull << i);
+            *populated |= (1ull << i);
         }
 
         /* If there's more than 1 trivial term, batch them in trivial search */
@@ -1855,6 +1857,7 @@ static
 void flecs_query_insert_cache_search(
     ecs_query_impl_t *rule,
     ecs_flags64_t *compiled,
+    ecs_flags64_t *populated,
     ecs_query_compile_ctx_t *ctx,
     const ecs_query_desc_t *desc)
 {
@@ -1866,10 +1869,24 @@ void flecs_query_insert_cache_search(
     if (q->cache_kind == EcsQueryCacheAll) {
         /* If all terms are cacheable, make sure no other terms are compiled */
         *compiled = 0xFFFFFFFFFFFFFFFF;
+        *populated = 0xFFFFFFFFFFFFFFFF;
 
         /* Insert the operation for cache traversal */
         ecs_query_op_t op = {0};
-        op.kind = EcsRuleCache;
+        if (q->flags & EcsQueryNoData) {
+            if (q->flags & EcsQueryIsCacheable) {
+                op.kind = EcsRuleIsCache;
+            } else {
+                op.kind = EcsRuleCache;
+            }
+        } else {
+            if (q->flags & EcsQueryIsCacheable) {
+                op.kind = EcsRuleIsCacheData;
+            } else {
+                op.kind = EcsRuleCacheData;
+            }
+        }
+
         flecs_query_op_insert(&op, ctx);
     }
 }
@@ -1879,7 +1896,7 @@ static
 void flecs_query_insert_populate(
     ecs_query_impl_t *rule,
     ecs_query_compile_ctx_t *ctx,
-    int32_t trivial_terms)
+    ecs_flags64_t populated)
 {
     ecs_query_t *q = &rule->pub;
     int32_t i, term_count = q->term_count;
@@ -1888,7 +1905,7 @@ void flecs_query_insert_populate(
      * have to be inserted if the filter provides no data, or if all terms
      * of the filter are trivial, in which case the trivial search operation
      * also sets the data. */
-    if (!(q->flags & EcsQueryNoData) && (trivial_terms != term_count)) {
+    if (!(q->flags & EcsQueryNoData)) {
         int32_t data_fields = 0;
         bool only_self = true;
 
@@ -1896,8 +1913,13 @@ void flecs_query_insert_populate(
          * that only supports owned fields, and one that supports any kind
          * of field. Loop through (remaining) terms to check which one we
          * need to use. */
-        for (i = trivial_terms; i < term_count; i ++) {
+        for (i = 0; i < term_count; i ++) {
             ecs_term_t *term = &q->terms[i];
+
+            if (populated & (1ull << i)) {
+                continue; /* Already populated */
+            }
+
             if (term->flags & EcsTermNoData) {
                 /* Don't care about terms that have no data */
                 continue;
@@ -1967,28 +1989,32 @@ int flecs_query_compile(
 
     /* If the rule contains terms with fixed ids (no wildcards, variables), 
      * insert instruction that initializes ecs_iter_t::ids. This allows for the
-     * insertion of simpler instructions later on. */
-    for (i = 0; i < term_count; i ++) {
-        ecs_term_t *term = &terms[i];
-        if (flecs_query_term_fixed_id(q, term) || 
-           (term->src.id & EcsIsEntity && !(term->src.id & ~EcsTermRefFlags))) 
-        {
-            ecs_query_op_t set_ids = {0};
-            set_ids.kind = EcsRuleSetIds;
-            flecs_query_op_insert(&set_ids, &ctx);
-            break;
+     * insertion of simpler instructions later on. 
+     * If the query is entirely cacheable, ids are populated by the cache. */
+    if (q->cache_kind != EcsQueryCacheAll) {
+        for (i = 0; i < term_count; i ++) {
+            ecs_term_t *term = &terms[i];
+            if (flecs_query_term_fixed_id(q, term) || 
+            (term->src.id & EcsIsEntity && !(term->src.id & ~EcsTermRefFlags))) 
+            {
+                ecs_query_op_t set_ids = {0};
+                set_ids.kind = EcsRuleSetIds;
+                flecs_query_op_insert(&set_ids, &ctx);
+                break;
+            }
         }
     }
     
     ecs_flags64_t compiled = 0;
+    ecs_flags64_t populated = 0;
 
     /* Compile cacheable terms. Should always be the first compilation step */
-    // flecs_query_insert_cache_search(
-    //     rule, &compiled, &ctx, desc);
+    flecs_query_insert_cache_search(
+        rule, &compiled, &populated, &ctx, desc);
 
     /* Insert trivial term search if query allows for it */
     int32_t trivial_terms = flecs_query_insert_trivial_search(
-        rule, &compiled, &ctx);
+        rule, &compiled, &populated, &ctx);
 
     /* Compile remaining query terms to instructions */
     for (i = trivial_terms; i < term_count; i ++) {
@@ -2119,7 +2145,7 @@ int flecs_query_compile(
         flecs_query_op_insert(&nothing, &ctx);
     } else {
         /* Insert instruction to populate data fields */
-        flecs_query_insert_populate(rule, &ctx, trivial_terms);
+        flecs_query_insert_populate(rule, &ctx, populated);
 
         /* Insert yield. If program reaches this operation, a result was found */
         ecs_query_op_t yield = {0};

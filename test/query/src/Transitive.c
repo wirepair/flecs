@@ -1,4 +1,4 @@
-#include <addons.h>
+#include <query.h>
 
 ECS_ENTITY_DECLARE(LocatedIn);
 ECS_TAG_DECLARE(Earth);
@@ -29,8 +29,8 @@ void populate_facts(ecs_world_t *world) {
     ECS_ENTITY_DEFINE(world, Amsterdam, Location, (LocatedIn, NoordHolland));
 }
 
-void RulesTransitive_1_fact_0_lvl_true(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_fact_0_lvl_true(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -65,8 +65,8 @@ void RulesTransitive_1_fact_0_lvl_true(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_fact_1_lvl_true(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_fact_1_lvl_true(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -101,8 +101,8 @@ void RulesTransitive_1_fact_1_lvl_true(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_fact_2_lvl_true(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_fact_2_lvl_true(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -137,8 +137,8 @@ void RulesTransitive_1_fact_2_lvl_true(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_fact_0_lvl_false(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_fact_0_lvl_false(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -167,8 +167,8 @@ void RulesTransitive_1_fact_0_lvl_false(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_fact_1_lvl_false(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_fact_1_lvl_false(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -197,8 +197,8 @@ void RulesTransitive_1_fact_1_lvl_false(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_fact_2_lvl_false(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_fact_2_lvl_false(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -227,8 +227,8 @@ void RulesTransitive_1_fact_2_lvl_false(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_fact_reflexive(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_fact_reflexive(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -269,8 +269,8 @@ void RulesTransitive_1_fact_reflexive(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_this_src_written_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_this_src_written_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -318,8 +318,8 @@ void RulesTransitive_1_this_src_written_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_this_src_written_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_this_src_written_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -375,8 +375,8 @@ void RulesTransitive_1_this_src_written_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_this_src_written_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_this_src_written_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -440,8 +440,8 @@ void RulesTransitive_1_this_src_written_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_this_src_written_reflexive(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_this_src_written_reflexive(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -517,8 +517,8 @@ void RulesTransitive_1_this_src_written_reflexive(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_this_src_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_this_src_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -574,8 +574,8 @@ void RulesTransitive_1_this_src_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_this_src_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_this_src_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -639,8 +639,8 @@ void RulesTransitive_1_this_src_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_this_src_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_this_src_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -723,8 +723,8 @@ void RulesTransitive_1_this_src_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_this_src_reflexive(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_this_src_reflexive(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -796,8 +796,8 @@ void RulesTransitive_1_this_src_reflexive(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_ent_src_tgt_var_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_ent_src_tgt_var_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -843,8 +843,8 @@ void RulesTransitive_1_ent_src_tgt_var_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_ent_src_tgt_var_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_ent_src_tgt_var_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -896,8 +896,8 @@ void RulesTransitive_1_ent_src_tgt_var_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_ent_src_tgt_var_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_ent_src_tgt_var_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -955,8 +955,8 @@ void RulesTransitive_1_ent_src_tgt_var_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_ent_src_tgt_var_reflexive(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_ent_src_tgt_var_reflexive(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -1017,8 +1017,8 @@ void RulesTransitive_1_ent_src_tgt_var_reflexive(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_this_src_tgt_var(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_this_src_tgt_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -1147,8 +1147,8 @@ void RulesTransitive_1_this_src_tgt_var(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_this_src_tgt_var_reflexive(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_this_src_tgt_var_reflexive(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -1343,8 +1343,8 @@ void RulesTransitive_1_this_src_tgt_var_reflexive(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_var_src_written_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_var_src_written_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -1402,8 +1402,8 @@ void RulesTransitive_1_var_src_written_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_var_src_written_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_var_src_written_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -1469,8 +1469,8 @@ void RulesTransitive_1_var_src_written_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_var_src_written_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_var_src_written_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -1544,8 +1544,8 @@ void RulesTransitive_1_var_src_written_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_var_src_written_reflexive(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_var_src_written_reflexive(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -1631,8 +1631,8 @@ void RulesTransitive_1_var_src_written_reflexive(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_var_src_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_var_src_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -1696,8 +1696,8 @@ void RulesTransitive_1_var_src_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_var_src_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_var_src_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -1774,8 +1774,8 @@ void RulesTransitive_1_var_src_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_var_src_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_var_src_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -1876,8 +1876,8 @@ void RulesTransitive_1_var_src_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_var_src_reflexive(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_var_src_reflexive(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -1962,8 +1962,8 @@ void RulesTransitive_1_var_src_reflexive(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_var_src_tgt_var(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_var_src_tgt_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -2131,8 +2131,8 @@ void RulesTransitive_1_var_src_tgt_var(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_var_src_tgt_var_reflexive(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_var_src_tgt_var_reflexive(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -2366,8 +2366,8 @@ void RulesTransitive_1_var_src_tgt_var_reflexive(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_ent_src_tgt_this_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_ent_src_tgt_this_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -2416,8 +2416,8 @@ void RulesTransitive_1_ent_src_tgt_this_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_ent_src_tgt_this_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_ent_src_tgt_this_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -2473,8 +2473,8 @@ void RulesTransitive_1_ent_src_tgt_this_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_ent_src_tgt_this_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_ent_src_tgt_this_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -2537,8 +2537,8 @@ void RulesTransitive_1_ent_src_tgt_this_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_ent_src_tgt_this_reflexive(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_ent_src_tgt_this_reflexive(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -2605,8 +2605,8 @@ void RulesTransitive_1_ent_src_tgt_this_reflexive(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_var_src_tgt_this(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_var_src_tgt_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -2795,8 +2795,8 @@ void RulesTransitive_1_var_src_tgt_this(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_var_src_tgt_this_reflexive(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_var_src_tgt_this_reflexive(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -3059,8 +3059,8 @@ void RulesTransitive_1_var_src_tgt_this_reflexive(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_ent_src_constrain_tgt_var_before_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_ent_src_constrain_tgt_var_before_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, City);
 
@@ -3105,8 +3105,8 @@ void RulesTransitive_2_ent_src_constrain_tgt_var_before_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_ent_src_constrain_tgt_var_before_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_ent_src_constrain_tgt_var_before_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, State);
 
@@ -3150,8 +3150,8 @@ void RulesTransitive_2_ent_src_constrain_tgt_var_before_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_ent_src_constrain_tgt_var_before_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_ent_src_constrain_tgt_var_before_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Country);
 
@@ -3194,8 +3194,8 @@ void RulesTransitive_2_ent_src_constrain_tgt_var_before_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_ent_src_constrain_tgt_var_after_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_ent_src_constrain_tgt_var_after_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, City);
 
@@ -3240,8 +3240,8 @@ void RulesTransitive_2_ent_src_constrain_tgt_var_after_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_ent_src_constrain_tgt_var_after_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_ent_src_constrain_tgt_var_after_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, State);
 
@@ -3285,8 +3285,8 @@ void RulesTransitive_2_ent_src_constrain_tgt_var_after_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_ent_src_constrain_tgt_var_after_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_ent_src_constrain_tgt_var_after_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Country);
 
@@ -3329,8 +3329,8 @@ void RulesTransitive_2_ent_src_constrain_tgt_var_after_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_this_src_constrain_tgt_var_before_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_this_src_constrain_tgt_var_before_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, City);
 
@@ -3397,8 +3397,8 @@ void RulesTransitive_2_this_src_constrain_tgt_var_before_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_this_src_constrain_tgt_var_before_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_this_src_constrain_tgt_var_before_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, State);
 
@@ -3492,8 +3492,8 @@ void RulesTransitive_2_this_src_constrain_tgt_var_before_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_this_src_constrain_tgt_var_before_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_this_src_constrain_tgt_var_before_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Country);
 
@@ -3605,8 +3605,8 @@ void RulesTransitive_2_this_src_constrain_tgt_var_before_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_this_src_constrain_tgt_var_after_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_this_src_constrain_tgt_var_after_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, City);
 
@@ -3673,8 +3673,8 @@ void RulesTransitive_2_this_src_constrain_tgt_var_after_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_this_src_constrain_tgt_var_after_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_this_src_constrain_tgt_var_after_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, State);
 
@@ -3768,8 +3768,8 @@ void RulesTransitive_2_this_src_constrain_tgt_var_after_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_this_src_constrain_tgt_var_after_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_this_src_constrain_tgt_var_after_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Country);
 
@@ -3881,10 +3881,10 @@ void RulesTransitive_2_this_src_constrain_tgt_var_after_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_src_tgt_same_var(void) {
+void Transitive_1_src_tgt_same_var(void) {
     ecs_log_set_level(-4);
 
-    ecs_world_t *world = ecs_init();
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -3897,8 +3897,8 @@ void RulesTransitive_1_src_tgt_same_var(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_src_tgt_same_var_reflexive(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_src_tgt_same_var_reflexive(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -3977,8 +3977,8 @@ void RulesTransitive_1_src_tgt_same_var_reflexive(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_src_tgt_same_this_var_reflexive(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_src_tgt_same_this_var_reflexive(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -4067,8 +4067,8 @@ void RulesTransitive_1_src_tgt_same_this_var_reflexive(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_1_any_src_tgt_var(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_1_any_src_tgt_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -4127,8 +4127,8 @@ void RulesTransitive_1_any_src_tgt_var(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_not_transitive_ent_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_not_transitive_ent_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -4189,8 +4189,8 @@ void RulesTransitive_not_transitive_ent_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_not_transitive_var_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_not_transitive_var_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -4224,8 +4224,8 @@ void RulesTransitive_not_transitive_var_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_not_transitive_ent_tgt_written(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_not_transitive_ent_tgt_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -4286,8 +4286,8 @@ void RulesTransitive_not_transitive_ent_tgt_written(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_not_transitive_var_tgt_written(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_not_transitive_var_tgt_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -4321,8 +4321,8 @@ void RulesTransitive_not_transitive_var_tgt_written(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_optional_transitive_ent_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_optional_transitive_ent_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -4415,8 +4415,8 @@ void RulesTransitive_optional_transitive_ent_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_optional_transitive_var_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_optional_transitive_var_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -4589,8 +4589,8 @@ void RulesTransitive_optional_transitive_var_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_optional_transitive_ent_tgt_written(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_optional_transitive_ent_tgt_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -4683,8 +4683,8 @@ void RulesTransitive_optional_transitive_ent_tgt_written(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_optional_transitive_var_tgt_written(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_optional_transitive_var_tgt_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -4856,8 +4856,8 @@ void RulesTransitive_optional_transitive_var_tgt_written(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_2_var_src_w_same_tgt_ent(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_2_var_src_w_same_tgt_ent(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -4959,8 +4959,8 @@ void RulesTransitive_2_var_src_w_same_tgt_ent(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_self_target(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_self_target(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -5034,8 +5034,8 @@ void RulesTransitive_self_target(void) {
     ecs_fini(world);
 }
 
-void RulesTransitive_any_target(void) {
-    ecs_world_t *world = ecs_init();
+void Transitive_any_target(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 

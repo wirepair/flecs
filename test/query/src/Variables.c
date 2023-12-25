@@ -1,7 +1,7 @@
-#include <addons.h>
+#include <query.h>
 
-void RulesVariables_1_ent_src_w_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_w_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -58,8 +58,8 @@ void RulesVariables_1_ent_src_w_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_ent_src_w_pair_rel_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_w_pair_rel_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -117,8 +117,8 @@ void RulesVariables_1_ent_src_w_pair_rel_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_ent_src_w_pair_tgt_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_w_pair_tgt_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -176,8 +176,8 @@ void RulesVariables_1_ent_src_w_pair_tgt_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_ent_src_w_pair_rel_tgt_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_w_pair_rel_tgt_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -296,8 +296,8 @@ void RulesVariables_1_ent_src_w_pair_rel_tgt_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_ent_src_w_pair_rel_tgt_same_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_w_pair_rel_tgt_same_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -363,8 +363,8 @@ void RulesVariables_1_ent_src_w_pair_rel_tgt_same_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_ent_src_w_pair_rel_tgt_same_var_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_w_pair_rel_tgt_same_var_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -457,8 +457,8 @@ void RulesVariables_1_ent_src_w_pair_rel_tgt_same_var_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_this_src_w_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_this_src_w_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -531,8 +531,8 @@ void RulesVariables_1_this_src_w_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_this_src_w_pair_rel_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_this_src_w_pair_rel_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -610,8 +610,8 @@ void RulesVariables_1_this_src_w_pair_rel_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_this_src_w_pair_tgt_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_this_src_w_pair_tgt_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -689,8 +689,8 @@ void RulesVariables_1_this_src_w_pair_tgt_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_this_src_w_pair_rel_tgt_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_this_src_w_pair_rel_tgt_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -851,8 +851,8 @@ void RulesVariables_1_this_src_w_pair_rel_tgt_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_this_src_w_pair_rel_tgt_same_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_this_src_w_pair_rel_tgt_same_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -939,8 +939,8 @@ void RulesVariables_1_this_src_w_pair_rel_tgt_same_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_this_src_w_pair_rel_tgt_same_var_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_this_src_w_pair_rel_tgt_same_var_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -1071,8 +1071,8 @@ void RulesVariables_1_this_src_w_pair_rel_tgt_same_var_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_id_same_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_id_same_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -1137,8 +1137,8 @@ void RulesVariables_1_src_id_same_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_pair_first_same_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_pair_first_same_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TgtA);
@@ -1211,8 +1211,8 @@ void RulesVariables_1_src_pair_first_same_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_pair_second_same_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_pair_second_same_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, RelA);
@@ -1285,8 +1285,8 @@ void RulesVariables_1_src_pair_second_same_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_pair_first_and_second_same_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_pair_first_and_second_same_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, RelA);
@@ -1370,8 +1370,8 @@ void RulesVariables_1_src_pair_first_and_second_same_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_id_same_var_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_id_same_var_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -1436,8 +1436,8 @@ void RulesVariables_1_src_id_same_var_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_pair_first_same_var_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_pair_first_same_var_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TagA);
@@ -1518,8 +1518,8 @@ void RulesVariables_1_src_pair_first_same_var_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_pair_second_same_var_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_pair_second_same_var_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TagA);
@@ -1600,8 +1600,8 @@ void RulesVariables_1_src_pair_second_same_var_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_pair_first_and_second_same_var_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_pair_first_and_second_same_var_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TagA);
@@ -1693,8 +1693,8 @@ void RulesVariables_1_src_pair_first_and_second_same_var_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_pair_first_same_var_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_pair_first_same_var_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -1763,8 +1763,8 @@ void RulesVariables_1_src_pair_first_same_var_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_pair_second_same_var_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_pair_second_same_var_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TgtA);
@@ -1842,8 +1842,8 @@ void RulesVariables_1_src_pair_second_same_var_this(void) {
 
 }
 
-void RulesVariables_1_src_pair_first_and_second_same_var_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_pair_first_and_second_same_var_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, RelA);
@@ -1920,8 +1920,8 @@ void RulesVariables_1_src_pair_first_and_second_same_var_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_id_same_var_this_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_id_same_var_this_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -1990,8 +1990,8 @@ void RulesVariables_1_src_id_same_var_this_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_pair_first_same_var_this_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_pair_first_same_var_this_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TagA);
@@ -2076,8 +2076,8 @@ void RulesVariables_1_src_pair_first_same_var_this_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_pair_second_same_var_this_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_pair_second_same_var_this_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TagA);
@@ -2161,8 +2161,8 @@ void RulesVariables_1_src_pair_second_same_var_this_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_pair_first_and_second_same_var_this_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_src_pair_first_and_second_same_var_this_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TagA);
@@ -2257,8 +2257,8 @@ void RulesVariables_1_src_pair_first_and_second_same_var_this_after_write(void) 
     ecs_fini(world);
 }
 
-void RulesVariables_1_ent_src_w_this_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_w_this_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -2307,8 +2307,8 @@ void RulesVariables_1_ent_src_w_this_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_ent_src_w_pair_this_rel(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_w_pair_this_rel(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -2366,8 +2366,8 @@ void RulesVariables_1_ent_src_w_pair_this_rel(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_ent_src_w_pair_this_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_w_pair_this_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -2425,8 +2425,8 @@ void RulesVariables_1_ent_src_w_pair_this_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_ent_src_w_pair_this_rel_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_w_pair_this_rel_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -2492,8 +2492,8 @@ void RulesVariables_1_ent_src_w_pair_this_rel_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_this_src_w_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_this_src_w_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
@@ -2542,8 +2542,8 @@ void RulesVariables_1_this_src_w_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_this_src_w_pair_this_rel_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_this_src_w_pair_this_rel_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
@@ -2599,8 +2599,8 @@ void RulesVariables_1_this_src_w_pair_this_rel_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_this_src_w_this_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_this_src_w_this_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
@@ -2649,8 +2649,8 @@ void RulesVariables_1_this_src_w_this_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_this_src_w_pair_this_rel_tgt_after_write(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_this_src_w_pair_this_rel_tgt_after_write(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
@@ -2706,8 +2706,8 @@ void RulesVariables_1_this_src_w_pair_this_rel_tgt_after_write(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_src_from_src(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_src_from_src(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -2772,8 +2772,8 @@ void RulesVariables_2_constrain_src_from_src(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_rel_from_src_w_ent(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_rel_from_src_w_ent(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -2822,8 +2822,8 @@ void RulesVariables_2_constrain_rel_from_src_w_ent(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_rel_from_src_w_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_rel_from_src_w_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
 
@@ -2893,8 +2893,8 @@ void RulesVariables_2_constrain_rel_from_src_w_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_rel_from_src_w_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_rel_from_src_w_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -2955,8 +2955,8 @@ void RulesVariables_2_constrain_rel_from_src_w_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_pair_rel_from_src_w_ent(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_pair_rel_from_src_w_ent(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -3020,8 +3020,8 @@ void RulesVariables_2_constrain_pair_rel_from_src_w_ent(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_pair_rel_from_src_w_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_pair_rel_from_src_w_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -3106,8 +3106,8 @@ void RulesVariables_2_constrain_pair_rel_from_src_w_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_pair_rel_from_src_w_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_pair_rel_from_src_w_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -3182,8 +3182,8 @@ void RulesVariables_2_constrain_pair_rel_from_src_w_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_pair_tgt_from_src_w_ent(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_pair_tgt_from_src_w_ent(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -3247,8 +3247,8 @@ void RulesVariables_2_constrain_pair_tgt_from_src_w_ent(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_pair_tgt_from_src_w_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_pair_tgt_from_src_w_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -3333,8 +3333,8 @@ void RulesVariables_2_constrain_pair_tgt_from_src_w_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_pair_tgt_from_src_w_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_pair_tgt_from_src_w_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -3409,8 +3409,8 @@ void RulesVariables_2_constrain_pair_tgt_from_src_w_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_pair_rel_tgt_from_src_w_ent(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_pair_rel_tgt_from_src_w_ent(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -3481,8 +3481,8 @@ void RulesVariables_2_constrain_pair_rel_tgt_from_src_w_ent(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_pair_rel_tgt_from_src_w_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_pair_rel_tgt_from_src_w_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -3574,8 +3574,8 @@ void RulesVariables_2_constrain_pair_rel_tgt_from_src_w_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_constrain_pair_rel_tgt_from_src_w_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_constrain_pair_rel_tgt_from_src_w_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -3650,8 +3650,8 @@ void RulesVariables_2_constrain_pair_rel_tgt_from_src_w_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_ent_src_set_rel_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_set_rel_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -3688,8 +3688,8 @@ void RulesVariables_1_ent_src_set_rel_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_ent_src_set_pair_rel_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_set_pair_rel_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -3748,8 +3748,8 @@ void RulesVariables_1_ent_src_set_pair_rel_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_ent_src_set_pair_tgt_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_ent_src_set_pair_tgt_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -3808,8 +3808,8 @@ void RulesVariables_1_ent_src_set_pair_tgt_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_set_src_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -3858,8 +3858,8 @@ void RulesVariables_1_set_src_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_var_w_pair(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_set_src_var_w_pair(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -3909,8 +3909,8 @@ void RulesVariables_1_set_src_var_w_pair(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_var_w_pair_set_rel(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_set_src_var_w_pair_set_rel(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -3971,8 +3971,8 @@ void RulesVariables_1_set_src_var_w_pair_set_rel(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_var_w_pair_set_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_set_src_var_w_pair_set_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -4031,8 +4031,8 @@ void RulesVariables_1_set_src_var_w_pair_set_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_var_w_pair_set_rel_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_set_src_var_w_pair_set_rel_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -4091,8 +4091,8 @@ void RulesVariables_1_set_src_var_w_pair_set_rel_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_set_src_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -4142,8 +4142,8 @@ void RulesVariables_1_set_src_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_this_w_pair(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_set_src_this_w_pair(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -4194,8 +4194,8 @@ void RulesVariables_1_set_src_this_w_pair(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_this_w_pair_set_rel(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_set_src_this_w_pair_set_rel(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, RelB);
@@ -4258,8 +4258,8 @@ void RulesVariables_1_set_src_this_w_pair_set_rel(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_this_w_pair_set_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_set_src_this_w_pair_set_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -4320,8 +4320,8 @@ void RulesVariables_1_set_src_this_w_pair_set_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_this_w_pair_set_rel_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_set_src_this_w_pair_set_rel_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, RelA);
     ECS_TAG(world, TgtA);
@@ -4382,7 +4382,7 @@ void RulesVariables_1_set_src_this_w_pair_set_rel_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_this_to_empty_table(void) {
+void Variables_1_set_src_this_to_empty_table(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
@@ -4419,7 +4419,7 @@ void RulesVariables_1_set_src_this_to_empty_table(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_this_to_empty_table_w_component(void) {
+void Variables_1_set_src_this_to_empty_table_w_component(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -4457,7 +4457,7 @@ void RulesVariables_1_set_src_this_to_empty_table_w_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_this_to_empty_table_w_component_self(void) {
+void Variables_1_set_src_this_to_empty_table_w_component_self(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -4495,8 +4495,8 @@ void RulesVariables_1_set_src_this_to_empty_table_w_component_self(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_this_to_entiy_in_table(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_set_src_this_to_entiy_in_table(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
 
@@ -4538,8 +4538,8 @@ void RulesVariables_1_set_src_this_to_entiy_in_table(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_set_src_this_to_entiy_in_table_self(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_set_src_this_to_entiy_in_table_self(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
 
@@ -4581,8 +4581,8 @@ void RulesVariables_1_set_src_this_to_entiy_in_table_self(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_set_src_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_set_src_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
@@ -4647,8 +4647,8 @@ void RulesVariables_2_set_src_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_set_src_this_self(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_set_src_this_self(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
@@ -4706,8 +4706,8 @@ void RulesVariables_2_set_src_this_self(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_set_src_this_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_set_src_this_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
@@ -4796,8 +4796,8 @@ void RulesVariables_2_set_src_this_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_set_src_this_self_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_set_src_this_self_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
@@ -4867,8 +4867,8 @@ void RulesVariables_2_set_src_this_self_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_set_src_this_w_up(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_set_src_this_w_up(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
@@ -4945,8 +4945,8 @@ void RulesVariables_2_set_src_this_w_up(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_set_src_this_self_w_up(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_set_src_this_self_w_up(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
@@ -5014,8 +5014,8 @@ void RulesVariables_2_set_src_this_self_w_up(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_set_src_this_component_w_up(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_set_src_this_component_w_up(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
@@ -5125,8 +5125,8 @@ void RulesVariables_2_set_src_this_component_w_up(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_set_src_this_self_component_w_up(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_set_src_this_self_component_w_up(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
@@ -5216,8 +5216,8 @@ void RulesVariables_2_set_src_this_self_component_w_up(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_set_src_this_w_exclusive_wildcard(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_set_src_this_w_exclusive_wildcard(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
@@ -5294,8 +5294,8 @@ void RulesVariables_2_set_src_this_w_exclusive_wildcard(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_set_src_this_self_w_exclusive_wildcard(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_set_src_this_self_w_exclusive_wildcard(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
@@ -5363,7 +5363,7 @@ void RulesVariables_2_set_src_this_self_w_exclusive_wildcard(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_this_var_as_entity(void) {
+void Variables_1_src_this_var_as_entity(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
@@ -5415,7 +5415,7 @@ void RulesVariables_1_src_this_var_as_entity(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_this_var_as_table(void) {
+void Variables_1_src_this_var_as_table(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
@@ -5481,7 +5481,7 @@ void RulesVariables_1_src_this_var_as_table(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_src_this_var_as_table_range(void) {
+void Variables_1_src_this_var_as_table_range(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
@@ -5552,8 +5552,8 @@ void RulesVariables_1_src_this_var_as_table_range(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_join_by_rel_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_join_by_rel_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
@@ -5640,8 +5640,8 @@ void RulesVariables_2_join_by_rel_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_join_by_pair_rel_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_join_by_pair_rel_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, RelA);
@@ -5728,8 +5728,8 @@ void RulesVariables_2_join_by_pair_rel_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_join_by_pair_tgt_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_join_by_pair_tgt_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, RelA);
@@ -5816,8 +5816,8 @@ void RulesVariables_2_join_by_pair_tgt_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_cycle_w_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_cycle_w_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -5877,8 +5877,8 @@ void RulesVariables_2_cycle_w_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_cycle_w_this_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_cycle_w_this_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -5940,8 +5940,8 @@ void RulesVariables_2_cycle_w_this_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_cycle_w_var_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_cycle_w_var_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -6003,8 +6003,8 @@ void RulesVariables_2_cycle_w_var_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_cycle_pair_w_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_cycle_pair_w_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -6070,8 +6070,8 @@ void RulesVariables_2_cycle_pair_w_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_cycle_pair_w_this_var_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_cycle_pair_w_this_var_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -6139,8 +6139,8 @@ void RulesVariables_2_cycle_pair_w_this_var_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_cycle_pair_w_var_this_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_cycle_pair_w_var_this_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -6208,8 +6208,8 @@ void RulesVariables_2_cycle_pair_w_var_this_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_cycle_pair_w_var_var_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_cycle_pair_w_var_var_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -6277,8 +6277,8 @@ void RulesVariables_2_cycle_pair_w_var_var_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_cycle_pair_ent_var_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_cycle_pair_ent_var_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Likes);
 
@@ -6365,8 +6365,8 @@ void RulesVariables_2_cycle_pair_ent_var_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_cycle_pair_ent_this_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_cycle_pair_ent_this_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Likes);
 
@@ -6459,8 +6459,8 @@ void RulesVariables_2_cycle_pair_ent_this_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_cycle_pair_ent_var_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_cycle_pair_ent_var_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Likes);
 
@@ -6553,8 +6553,8 @@ void RulesVariables_2_cycle_pair_ent_var_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_0_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_0_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_query_t *r = ecs_query(world, {
         .expr = "$x($this, $y)"
@@ -6577,8 +6577,8 @@ void RulesVariables_parse_0_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_1_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_1_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
@@ -6603,8 +6603,8 @@ void RulesVariables_parse_1_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_2_vars(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_2_vars(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
     ecs_entity_t e2 = ecs_new_entity(world, "e2");
@@ -6630,8 +6630,8 @@ void RulesVariables_parse_2_vars(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_0_var_paren(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_0_var_paren(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_query_t *r = ecs_query(world, {
         .expr = "$x($this, $y)"
@@ -6654,8 +6654,8 @@ void RulesVariables_parse_0_var_paren(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_1_var_paren(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_1_var_paren(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
@@ -6680,8 +6680,8 @@ void RulesVariables_parse_1_var_paren(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_2_vars_paren(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_2_vars_paren(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
     ecs_entity_t e2 = ecs_new_entity(world, "e2");
@@ -6707,8 +6707,8 @@ void RulesVariables_parse_2_vars_paren(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_1_vars_w_path(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_1_vars_w_path(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t e1 = ecs_new_entity(world, "parent.e1");
 
@@ -6733,8 +6733,8 @@ void RulesVariables_parse_1_vars_w_path(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_missing_close_paren(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_missing_close_paren(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_query_t *r = ecs_query(world, {
         .expr = "$x($this, $y)"
@@ -6756,8 +6756,8 @@ void RulesVariables_parse_missing_close_paren(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_missing_open_paren(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_missing_open_paren(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_query_t *r = ecs_query(world, {
         .expr = "$x($this, $y)"
@@ -6779,8 +6779,8 @@ void RulesVariables_parse_missing_open_paren(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_missing_value(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_missing_value(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_query_t *r = ecs_query(world, {
         .expr = "$x($this, $y)"
@@ -6802,8 +6802,8 @@ void RulesVariables_parse_missing_value(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_0_var_w_spaces(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_0_var_w_spaces(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_query_t *r = ecs_query(world, {
         .expr = "$x($this, $y)"
@@ -6826,8 +6826,8 @@ void RulesVariables_parse_0_var_w_spaces(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_1_var_w_spaces(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_1_var_w_spaces(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
@@ -6852,8 +6852,8 @@ void RulesVariables_parse_1_var_w_spaces(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_2_vars_w_spaces(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_2_vars_w_spaces(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
     ecs_entity_t e2 = ecs_new_entity(world, "e2");
@@ -6879,8 +6879,8 @@ void RulesVariables_parse_2_vars_w_spaces(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_0_var_paren_w_spaces(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_0_var_paren_w_spaces(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_query_t *r = ecs_query(world, {
         .expr = "$x($this, $y)"
@@ -6903,8 +6903,8 @@ void RulesVariables_parse_0_var_paren_w_spaces(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_1_var_paren_w_spaces(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_1_var_paren_w_spaces(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
 
@@ -6929,8 +6929,8 @@ void RulesVariables_parse_1_var_paren_w_spaces(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_parse_2_vars_paren_w_spaces(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_parse_2_vars_paren_w_spaces(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_entity_t e1 = ecs_new_entity(world, "e1");
     ecs_entity_t e2 = ecs_new_entity(world, "e2");
@@ -6956,8 +6956,8 @@ void RulesVariables_parse_2_vars_paren_w_spaces(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_var_count(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_var_count(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_query_t *r = ecs_query(world, {
         .expr = "$x($this, $y), $x($this), $y($this)"
@@ -6971,8 +6971,8 @@ void RulesVariables_var_count(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_var_name(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_var_name(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_query_t *r = ecs_query(world, {
         .expr = "$x($this, $y), $x($this), $y($this)"
@@ -6996,8 +6996,8 @@ void RulesVariables_var_name(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_var_is_entity(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_var_is_entity(void) {
+    ecs_world_t *world = ecs_mini();
 
     ecs_query_t *r = ecs_query(world, {
         .expr = "$x($this, $y), $x($this), $y($this)"
@@ -7021,8 +7021,8 @@ void RulesVariables_var_is_entity(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_no_this_anonymous_src(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_no_this_anonymous_src(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -7044,8 +7044,8 @@ void RulesVariables_no_this_anonymous_src(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_no_this_anonymous_src_w_pair(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_no_this_anonymous_src_w_pair(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -7075,8 +7075,8 @@ void RulesVariables_no_this_anonymous_src_w_pair(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_no_this_anonymous_component_src(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_no_this_anonymous_component_src(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
 
@@ -7098,8 +7098,8 @@ void RulesVariables_no_this_anonymous_component_src(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_no_this_anonymous_component_src_w_pair(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_no_this_anonymous_component_src_w_pair(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
 
@@ -7117,8 +7117,8 @@ void RulesVariables_no_this_anonymous_component_src_w_pair(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_table_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_table_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
@@ -7174,8 +7174,8 @@ void RulesVariables_lookup_from_table_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_entity_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_entity_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
     ECS_TAG(world, TagA);
@@ -7241,8 +7241,8 @@ void RulesVariables_lookup_from_entity_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_table(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_table(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
@@ -7299,8 +7299,8 @@ void RulesVariables_lookup_from_table(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_entity(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_entity(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
     ECS_TAG(world, TagA);
@@ -7366,8 +7366,8 @@ void RulesVariables_lookup_from_entity(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_not_written(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_not_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
 
@@ -7382,8 +7382,8 @@ void RulesVariables_lookup_from_not_written(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_table_this_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_table_this_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_COMPONENT(world, Position);
@@ -7451,8 +7451,8 @@ void RulesVariables_lookup_from_table_this_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_entity_this_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_entity_this_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
     ECS_TAG(world, TagA);
@@ -7530,8 +7530,8 @@ void RulesVariables_lookup_from_entity_this_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_table_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_table_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_COMPONENT(world, Position);
@@ -7600,8 +7600,8 @@ void RulesVariables_lookup_from_table_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_entity_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_entity_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
     ECS_TAG(world, TagA);
@@ -7679,8 +7679,8 @@ void RulesVariables_lookup_from_entity_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_table_two_children(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_table_two_children(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
@@ -7742,8 +7742,8 @@ void RulesVariables_lookup_from_table_two_children(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_entity_two_children(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_entity_two_children(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
     ECS_TAG(world, TagB);
@@ -7813,8 +7813,8 @@ void RulesVariables_lookup_from_entity_two_children(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_table_same_child_twice(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_table_same_child_twice(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
@@ -7865,8 +7865,8 @@ void RulesVariables_lookup_from_table_same_child_twice(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_entity_same_child_twice(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_entity_same_child_twice(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
     ECS_TAG(world, TagB);
@@ -7925,8 +7925,8 @@ void RulesVariables_lookup_from_entity_same_child_twice(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_table_not(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_table_not(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
@@ -7986,8 +7986,8 @@ void RulesVariables_lookup_from_table_not(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_entity_not(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_entity_not(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
     ECS_TAG(world, TagA);
@@ -8053,8 +8053,8 @@ void RulesVariables_lookup_from_entity_not(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_table_w_any_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_table_w_any_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
     ECS_TAG(world, TagB);
@@ -8113,8 +8113,8 @@ void RulesVariables_lookup_from_table_w_any_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_from_entity_w_any_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_from_entity_w_any_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
     ECS_TAG(world, TagA);
@@ -8182,8 +8182,8 @@ void RulesVariables_lookup_from_entity_w_any_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_as_tag(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_as_tag(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8243,8 +8243,8 @@ void RulesVariables_lookup_as_tag(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_as_relationship(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_as_relationship(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
     ECS_TAG(world, Tgt);
@@ -8305,8 +8305,8 @@ void RulesVariables_lookup_as_relationship(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_as_target(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_as_target(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
     ECS_TAG(world, Foo);
@@ -8367,8 +8367,8 @@ void RulesVariables_lookup_as_target(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_assign_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_assign_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
     ECS_TAG(world, Foo);
@@ -8416,8 +8416,8 @@ void RulesVariables_lookup_assign_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_eq_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_eq_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
     ECS_TAG(world, Foo);
@@ -8473,8 +8473,8 @@ void RulesVariables_lookup_eq_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_lookup_neq_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_lookup_neq_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Rel);
     ECS_TAG(world, Foo);
@@ -8538,8 +8538,8 @@ void RulesVariables_lookup_neq_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_check_vars_this(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_check_vars_this(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8556,8 +8556,8 @@ void RulesVariables_check_vars_this(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_check_vars_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_check_vars_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8575,8 +8575,8 @@ void RulesVariables_check_vars_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_check_vars_wildcard(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_check_vars_wildcard(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8593,8 +8593,8 @@ void RulesVariables_check_vars_wildcard(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_check_vars_any(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_check_vars_any(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8611,8 +8611,8 @@ void RulesVariables_check_vars_any(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_check_vars_var_as_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_check_vars_var_as_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8630,8 +8630,8 @@ void RulesVariables_check_vars_var_as_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_check_vars_this_as_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_check_vars_this_as_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8650,8 +8650,8 @@ void RulesVariables_check_vars_this_as_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_check_vars_this_w_lookup_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_check_vars_this_w_lookup_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8671,8 +8671,8 @@ void RulesVariables_check_vars_this_w_lookup_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_check_vars_var_w_lookup_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_check_vars_var_w_lookup_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8692,8 +8692,8 @@ void RulesVariables_check_vars_var_w_lookup_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_check_vars_anonymous_var_as_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_check_vars_anonymous_var_as_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8711,8 +8711,8 @@ void RulesVariables_check_vars_anonymous_var_as_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_check_vars_wildcard_as_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_check_vars_wildcard_as_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8729,8 +8729,8 @@ void RulesVariables_check_vars_wildcard_as_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_check_vars_any_as_tgt(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_check_vars_any_as_tgt(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8747,8 +8747,8 @@ void RulesVariables_check_vars_any_as_tgt(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_trivial_1_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_trivial_1_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8779,8 +8779,8 @@ void RulesVariables_1_trivial_1_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_trivial_1_var(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_trivial_1_var(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
@@ -8814,8 +8814,8 @@ void RulesVariables_2_trivial_1_var(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_trivial_1_var_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_trivial_1_var_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
 
@@ -8852,8 +8852,8 @@ void RulesVariables_1_trivial_1_var_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_trivial_1_var_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_trivial_1_var_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
@@ -8900,8 +8900,8 @@ void RulesVariables_2_trivial_1_var_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_trivial_1_wildcard(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_trivial_1_wildcard(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -8928,8 +8928,8 @@ void RulesVariables_1_trivial_1_wildcard(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_trivial_1_wildcard(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_trivial_1_wildcard(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
@@ -8959,8 +8959,8 @@ void RulesVariables_2_trivial_1_wildcard(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_trivial_1_wildcard_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_trivial_1_wildcard_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
 
@@ -8993,8 +8993,8 @@ void RulesVariables_1_trivial_1_wildcard_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_trivial_1_wildcard_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_trivial_1_wildcard_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
@@ -9037,8 +9037,8 @@ void RulesVariables_2_trivial_1_wildcard_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_trivial_1_any(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_trivial_1_any(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
 
@@ -9065,8 +9065,8 @@ void RulesVariables_1_trivial_1_any(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_trivial_1_any(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_trivial_1_any(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
@@ -9096,8 +9096,8 @@ void RulesVariables_2_trivial_1_any(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_1_trivial_1_any_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_1_trivial_1_any_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
 
@@ -9130,8 +9130,8 @@ void RulesVariables_1_trivial_1_any_component(void) {
     ecs_fini(world);
 }
 
-void RulesVariables_2_trivial_1_any_component(void) {
-    ecs_world_t *world = ecs_init();
+void Variables_2_trivial_1_any_component(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);

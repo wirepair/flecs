@@ -334,6 +334,7 @@ bool flecs_iter_next_instanced(
     it->instance_count = it->count;
     bool is_instanced = ECS_BIT_IS_SET(it->flags, EcsIterIsInstanced);
     bool has_shared = ECS_BIT_IS_SET(it->flags, EcsIterHasShared);
+
     if (result && !is_instanced && it->count && has_shared) {
         it->count = 1;
     }

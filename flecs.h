@@ -392,7 +392,7 @@ extern "C" {
 #define EcsIterTrivialSearchNoData     (1u << 13u) /* Trivial iterator w/no data */
 #define EcsIterTrivialTest             (1u << 14u) /* Trivial test mode (constrained $this) */
 #define EcsIterTrivialSearchWildcard   (1u << 15u) /* Trivial search with wildcard ids */
-
+#define EcsIterCacheSearch             (1u << 16u) /* Cache search */
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Event flags (used by ecs_event_decs_t::flags)
@@ -419,8 +419,8 @@ extern "C" {
 #define EcsQueryHasNonThisOutTerms    (1u << 21u) /* Query has [out] terms with no $this source */
 #define EcsQueryHasMonitor            (1u << 22u) /* Query has monitor for change detection */
 #define EcsQueryIsTrivial             (1u << 14u) /* Query can use trivial evaluation function */
-#define EcsQueryHasCacheable          (1u << 15u) /* Query has cacheable terms */
-#define EcsQueryIsCacheable           (1u << 16u) /* All terms of query are cacheable */
+#define EcsQueryHasCacheable          (1u << 18u) /* Query has cacheable terms */
+#define EcsQueryIsCacheable           (1u << 19u) /* All terms of query are cacheable */
 
 /* Flags that may be set by the application to enable query features */
 #define EcsQueryMatchPrefab           (1u << 3u)  /* Query must match prefabs */
@@ -774,7 +774,6 @@ typedef struct ecs_allocator_t ecs_allocator_t;
 /* Magic number to identify the type of the object */
 #define ecs_world_t_magic     (0x65637377)
 #define ecs_stage_t_magic     (0x65637373)
-#define ecs_query_cache_t_magic     (0x65637371)
 #define ecs_query_impl_t_magic      (0x65637375)
 #define ecs_table_t_magic     (0x65637374)
 #define ecs_observer_t_magic  (0x65637362)

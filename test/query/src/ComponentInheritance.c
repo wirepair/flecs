@@ -1,4 +1,4 @@
-#include <addons.h>
+#include <query.h>
 
 ECS_TAG_DECLARE(Unit);
 ECS_TAG_DECLARE(MeleeUnit);
@@ -19,8 +19,8 @@ void populate_facts(ecs_world_t *world) {
     ECS_ENTITY_DEFINE(world, Warlock, (IsA, Wizard), (IsA, Warrior));
 }
 
-void RulesComponentInheritance_1_ent_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_ent_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -49,8 +49,8 @@ void RulesComponentInheritance_1_ent_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_ent_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_ent_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -79,8 +79,8 @@ void RulesComponentInheritance_1_ent_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_ent_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_ent_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -109,8 +109,8 @@ void RulesComponentInheritance_1_ent_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_ent_3_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_ent_3_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -146,8 +146,8 @@ void RulesComponentInheritance_1_ent_3_lvl(void) {
 }
 
 
-void RulesComponentInheritance_1_this_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_this_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -231,8 +231,8 @@ void RulesComponentInheritance_1_this_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_this_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_this_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -281,8 +281,8 @@ void RulesComponentInheritance_1_this_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_this_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_this_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -324,8 +324,8 @@ void RulesComponentInheritance_1_this_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_this_3_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_this_3_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -360,8 +360,8 @@ void RulesComponentInheritance_1_this_3_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_this_0_lvl_written(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_this_0_lvl_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -485,8 +485,8 @@ void RulesComponentInheritance_1_this_0_lvl_written(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_this_1_lvl_written(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_this_1_lvl_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -560,8 +560,8 @@ void RulesComponentInheritance_1_this_1_lvl_written(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_this_2_lvl_written(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_this_2_lvl_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -625,8 +625,8 @@ void RulesComponentInheritance_1_this_2_lvl_written(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_this_3_lvl_written(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_this_3_lvl_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -680,8 +680,8 @@ void RulesComponentInheritance_1_this_3_lvl_written(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_var_0_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_var_0_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -768,8 +768,8 @@ void RulesComponentInheritance_1_var_0_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_var_1_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_var_1_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -821,8 +821,8 @@ void RulesComponentInheritance_1_var_1_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_var_2_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_var_2_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -865,8 +865,8 @@ void RulesComponentInheritance_1_var_2_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_var_3_lvl(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_var_3_lvl(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -903,8 +903,8 @@ void RulesComponentInheritance_1_var_3_lvl(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_var_0_lvl_written(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_var_0_lvl_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -1031,8 +1031,8 @@ void RulesComponentInheritance_1_var_0_lvl_written(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_var_1_lvl_written(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_var_1_lvl_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -1109,8 +1109,8 @@ void RulesComponentInheritance_1_var_1_lvl_written(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_var_2_lvl_written(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_var_2_lvl_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -1177,8 +1177,8 @@ void RulesComponentInheritance_1_var_2_lvl_written(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_var_3_lvl_written(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_var_3_lvl_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -1235,8 +1235,8 @@ void RulesComponentInheritance_1_var_3_lvl_written(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_ent_1_lvl_self(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_ent_1_lvl_self(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -1265,8 +1265,8 @@ void RulesComponentInheritance_1_ent_1_lvl_self(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_this_1_lvl_self(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_this_1_lvl_self(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -1315,8 +1315,8 @@ void RulesComponentInheritance_1_this_1_lvl_self(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_this_1_lvl_written_self(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_this_1_lvl_written_self(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -1390,8 +1390,8 @@ void RulesComponentInheritance_1_this_1_lvl_written_self(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_var_1_lvl_self(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_var_1_lvl_self(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -1443,8 +1443,8 @@ void RulesComponentInheritance_1_var_1_lvl_self(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_var_1_lvl_written_self(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_var_1_lvl_written_self(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -1521,8 +1521,8 @@ void RulesComponentInheritance_1_var_1_lvl_written_self(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_ent_src_not(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_ent_src_not(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 
@@ -1636,8 +1636,8 @@ void RulesComponentInheritance_1_ent_src_not(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_this_src_not(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_this_src_not(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -2036,8 +2036,8 @@ void RulesComponentInheritance_1_this_src_not(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_var_src_not(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_var_src_not(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -2457,8 +2457,8 @@ void RulesComponentInheritance_1_var_src_not(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_this_src_not_written(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_this_src_not_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -2858,8 +2858,8 @@ void RulesComponentInheritance_1_this_src_not_written(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_1_var_src_not_written(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_1_var_src_not_written(void) {
+    ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, Tag);
 
@@ -3279,8 +3279,8 @@ void RulesComponentInheritance_1_var_src_not_written(void) {
     ecs_fini(world);
 }
 
-void RulesComponentInheritance_first_self(void) {
-    ecs_world_t *world = ecs_init();
+void ComponentInheritance_first_self(void) {
+    ecs_world_t *world = ecs_mini();
 
     populate_facts(world);
 

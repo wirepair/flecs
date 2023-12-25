@@ -745,7 +745,6 @@ void flecs_world_allocators_fini(
 
     ecs_map_params_fini(&a->ptr);
     ecs_map_params_fini(&a->query_table_list);
-
     flecs_ballocator_fini(&a->query_table);
     flecs_ballocator_fini(&a->query_table_match);
     flecs_ballocator_fini(&a->graph_edge_lo);

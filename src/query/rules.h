@@ -41,11 +41,14 @@ typedef enum {
     EcsRuleAnd,            /* And operator: find or match id against variable source */
     EcsRuleAndId,          /* And operator for fixed id (no wildcards/variables) */
     EcsRuleAndAny,         /* And operator with support for matching Any src/id */
-    EcsRuleTriv,           /* Trivial search */
+    EcsRuleSelectAny,      /* Dedicated instruction for _ queries where the src is unknown */
+    EcsRuleTriv,           /* Trivial search (batches multiple terms) */
     EcsRuleTrivData,       /* Trivial search with setting data fields */
     EcsRuleTrivWildcard,   /* Trivial search with (exclusive) wildcard ids */
-    EcsRuleSelectAny,      /* Dedicated instruction for _ queries where the src is unknown */
     EcsRuleCache,          /* Cached search */
+    EcsRuleCacheData,      /* Cached search with setting data fields */
+    EcsRuleIsCache,        /* Cached search for queries that are entirely cached */
+    EcsRuleIsCacheData,    /* Same as EcsRuleIsCache with data fields */
     EcsRuleUp,             /* Up traversal */
     EcsRuleUpId,           /* Up traversal for fixed id (like AndId) */
     EcsRuleSelfUp,         /* Self|up traversal */
@@ -478,6 +481,24 @@ int flecs_query_finalize_query(
     const ecs_query_desc_t *desc);
 
 bool flecs_query_cache_search(
+    const ecs_query_impl_t *impl,
+    const ecs_query_run_ctx_t *ctx,
+    ecs_query_impl_cache_ctx_t *op_ctx,
+    bool first);
+
+bool flecs_query_cache_data_search(
+    const ecs_query_impl_t *impl,
+    const ecs_query_run_ctx_t *ctx,
+    ecs_query_impl_cache_ctx_t *op_ctx,
+    bool first);
+
+bool flecs_query_is_cache_search(
+    const ecs_query_impl_t *impl,
+    const ecs_query_run_ctx_t *ctx,
+    ecs_query_impl_cache_ctx_t *op_ctx,
+    bool first);
+
+bool flecs_query_is_cache_data_search(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
     ecs_query_impl_cache_ctx_t *op_ctx,

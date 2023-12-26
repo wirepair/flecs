@@ -314,6 +314,8 @@ void Parser_query_nested_scope_spaces(void);
 void Parser_query_scope_unbalanced(void);
 void Parser_query_not_scope(void);
 void Parser_query_empty_scope(void);
+void Parser_query_scope_newline_after_open(void);
+void Parser_query_scope_newline_after_close(void);
 void Parser_override_tag(void);
 void Parser_override_pair(void);
 void Parser_pair_3_args(void);
@@ -325,6 +327,19 @@ void Parser_pair_3_args_this_tgt(void);
 void Parser_pair_3_args_2_terms_this_tgt(void);
 void Parser_pair_3_args_2_terms_this_tgt_implicit_this(void);
 void Parser_cascade_desc(void);
+void Parser_pair_3_or_args(void);
+void Parser_pair_3_or_args_implicit_this(void);
+void Parser_pair_4_or_args(void);
+void Parser_pair_4_or_args_implicit_this(void);
+void Parser_pair_or_before_and_oper(void);
+void Parser_pair_and_before_or_oper(void);
+void Parser_cascade_desc(void);
+void Parser_newline_after_inout(void);
+void Parser_newline_after_term_open(void);
+void Parser_newline_after_term_src(void);
+void Parser_newline_after_term_src_pair(void);
+void Parser_newline_after_term_pair_comma(void);
+void Parser_newline_after_term_pair_second(void);
 
 // Testsuite 'Basic'
 void Basic_setup(void);
@@ -459,6 +474,9 @@ void Basic_unknown_before_known_after_or(void);
 void Basic_unknown_before_known_after_not(void);
 void Basic_unknown_before_known_after_optional(void);
 void Basic_unknown_before_known_after_scope(void);
+void Basic_2_trivial_mixed_2_tables(void);
+void Basic_2_trivial_mixed_2_tables_component(void);
+void Basic_2_trivial_mixed_2_tables_wildcard(void);
 
 // Testsuite 'Plan'
 void Plan_reordered_plan_1(void);
@@ -475,6 +493,7 @@ void Plan_3_trivial_plan_w_wildcard_component(void);
 void Plan_3_trivial_plan_w_any_component(void);
 void Plan_1_trivial_component_w_none(void);
 void Plan_2_trivial_component_w_none(void);
+void Plan_2_trivial_plan_w_wildcard(void);
 
 // Testsuite 'Variables'
 void Variables_1_ent_src_w_var(void);
@@ -858,9 +877,7 @@ void BuiltinPredicates_var_eq_id_written_no_match(void);
 void BuiltinPredicates_var_eq_name_written(void);
 void BuiltinPredicates_var_eq_name_written_no_match(void);
 void BuiltinPredicates_var_eq_var_written(void);
-void BuiltinPredicates_var_eq_var_written_table(void);
-void BuiltinPredicates_var_eq_this_written(void);
-void BuiltinPredicates_var_eq_this_written_table(void);
+void BuiltinPredicates_var_eq_this(void);
 void BuiltinPredicates_this_neq_id(void);
 void BuiltinPredicates_this_neq_name(void);
 void BuiltinPredicates_this_neq_var(void);
@@ -877,7 +894,7 @@ void BuiltinPredicates_var_neq_id_written_no_match(void);
 void BuiltinPredicates_var_neq_name_written(void);
 void BuiltinPredicates_var_neq_name_written_no_match(void);
 void BuiltinPredicates_var_neq_var_written(void);
-void BuiltinPredicates_var_neq_var_written_table(void);
+void BuiltinPredicates_var_neq_this(void);
 void BuiltinPredicates_this_2_neq_id(void);
 void BuiltinPredicates_this_2_neq_name(void);
 void BuiltinPredicates_var_2_neq_id(void);
@@ -916,6 +933,9 @@ void BuiltinPredicates_var_eq_any(void);
 void BuiltinPredicates_var_eq_wildcard_after_write(void);
 void BuiltinPredicates_var_eq_any_after_write(void);
 void BuiltinPredicates_var_eq_after_var_0_src(void);
+void BuiltinPredicates_2_or_w_eq_this(void);
+void BuiltinPredicates_2_or_w_eq_lookup_var(void);
+void BuiltinPredicates_3_or_w_eq_lookup_var(void);
 
 // Testsuite 'Scopes'
 void Scopes_term_w_not_scope_1_term(void);
@@ -2241,6 +2261,14 @@ bake_test_case Parser_testcases[] = {
         Parser_query_empty_scope
     },
     {
+        "query_scope_newline_after_open",
+        Parser_query_scope_newline_after_open
+    },
+    {
+        "query_scope_newline_after_close",
+        Parser_query_scope_newline_after_close
+    },
+    {
         "override_tag",
         Parser_override_tag
     },
@@ -2283,6 +2311,58 @@ bake_test_case Parser_testcases[] = {
     {
         "cascade_desc",
         Parser_cascade_desc
+    },
+    {
+        "pair_3_or_args",
+        Parser_pair_3_or_args
+    },
+    {
+        "pair_3_or_args_implicit_this",
+        Parser_pair_3_or_args_implicit_this
+    },
+    {
+        "pair_4_or_args",
+        Parser_pair_4_or_args
+    },
+    {
+        "pair_4_or_args_implicit_this",
+        Parser_pair_4_or_args_implicit_this
+    },
+    {
+        "pair_or_before_and_oper",
+        Parser_pair_or_before_and_oper
+    },
+    {
+        "pair_and_before_or_oper",
+        Parser_pair_and_before_or_oper
+    },
+    {
+        "cascade_desc",
+        Parser_cascade_desc
+    },
+    {
+        "newline_after_inout",
+        Parser_newline_after_inout
+    },
+    {
+        "newline_after_term_open",
+        Parser_newline_after_term_open
+    },
+    {
+        "newline_after_term_src",
+        Parser_newline_after_term_src
+    },
+    {
+        "newline_after_term_src_pair",
+        Parser_newline_after_term_src_pair
+    },
+    {
+        "newline_after_term_pair_comma",
+        Parser_newline_after_term_pair_comma
+    },
+    {
+        "newline_after_term_pair_second",
+        Parser_newline_after_term_pair_second
     }
 };
 
@@ -2810,6 +2890,18 @@ bake_test_case Basic_testcases[] = {
     {
         "unknown_before_known_after_scope",
         Basic_unknown_before_known_after_scope
+    },
+    {
+        "2_trivial_mixed_2_tables",
+        Basic_2_trivial_mixed_2_tables
+    },
+    {
+        "2_trivial_mixed_2_tables_component",
+        Basic_2_trivial_mixed_2_tables_component
+    },
+    {
+        "2_trivial_mixed_2_tables_wildcard",
+        Basic_2_trivial_mixed_2_tables_wildcard
     }
 };
 
@@ -2869,6 +2961,10 @@ bake_test_case Plan_testcases[] = {
     {
         "2_trivial_component_w_none",
         Plan_2_trivial_component_w_none
+    },
+    {
+        "2_trivial_plan_w_wildcard",
+        Plan_2_trivial_plan_w_wildcard
     }
 };
 
@@ -4373,16 +4469,8 @@ bake_test_case BuiltinPredicates_testcases[] = {
         BuiltinPredicates_var_eq_var_written
     },
     {
-        "var_eq_var_written_table",
-        BuiltinPredicates_var_eq_var_written_table
-    },
-    {
-        "var_eq_this_written",
-        BuiltinPredicates_var_eq_this_written
-    },
-    {
-        "var_eq_this_written_table",
-        BuiltinPredicates_var_eq_this_written_table
+        "var_eq_this",
+        BuiltinPredicates_var_eq_this
     },
     {
         "this_neq_id",
@@ -4449,8 +4537,8 @@ bake_test_case BuiltinPredicates_testcases[] = {
         BuiltinPredicates_var_neq_var_written
     },
     {
-        "var_neq_var_written_table",
-        BuiltinPredicates_var_neq_var_written_table
+        "var_neq_this",
+        BuiltinPredicates_var_neq_this
     },
     {
         "this_2_neq_id",
@@ -4603,6 +4691,18 @@ bake_test_case BuiltinPredicates_testcases[] = {
     {
         "var_eq_after_var_0_src",
         BuiltinPredicates_var_eq_after_var_0_src
+    },
+    {
+        "2_or_w_eq_this",
+        BuiltinPredicates_2_or_w_eq_this
+    },
+    {
+        "2_or_w_eq_lookup_var",
+        BuiltinPredicates_2_or_w_eq_lookup_var
+    },
+    {
+        "3_or_w_eq_lookup_var",
+        BuiltinPredicates_3_or_w_eq_lookup_var
     }
 };
 
@@ -5040,14 +5140,14 @@ static bake_test_suite suites[] = {
         "Parser",
         NULL,
         NULL,
-        223,
+        238,
         Parser_testcases
     },
     {
         "Basic",
         Basic_setup,
         NULL,
-        131,
+        134,
         Basic_testcases,
         1,
         Basic_params
@@ -5056,7 +5156,7 @@ static bake_test_suite suites[] = {
         "Plan",
         NULL,
         NULL,
-        14,
+        15,
         Plan_testcases
     },
     {
@@ -5098,7 +5198,7 @@ static bake_test_suite suites[] = {
         "BuiltinPredicates",
         NULL,
         NULL,
-        74,
+        75,
         BuiltinPredicates_testcases
     },
     {

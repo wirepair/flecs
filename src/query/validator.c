@@ -749,6 +749,9 @@ int flecs_term_finalize(
             }
         }
     }
+    if (!ecs_term_match_this(term)) {
+        trivial_term = false;
+    }
     if (term->flags & EcsTermTransitive) {
         trivial_term = false;
         cacheable_term = false;
@@ -1158,6 +1161,7 @@ int flecs_query_query_populate_terms(
         ecs_entity_t entity = desc->entity;
         const char *filter_name = entity ? ecs_get_name(world, entity) : NULL;
         const char *ptr = desc->expr;
+        ecs_oper_kind_t extra_oper = 0;
         ecs_term_ref_t extra_args[FLECS_TERM_ARG_COUNT_MAX];
         ecs_os_memset_n(extra_args, 0, ecs_term_ref_t, 
             FLECS_TERM_ARG_COUNT_MAX);
@@ -1173,7 +1177,7 @@ int flecs_query_query_populate_terms(
             /* Parse next term */
             ecs_term_t *term = &q->terms[term_count];
             ptr = ecs_parse_term(world, stage, filter_name, expr, ptr, 
-                term, extra_args);
+                term, &extra_oper, extra_args, true);
             if (!ptr) {
                 /* Parser error */
                 goto error;
@@ -1204,8 +1208,15 @@ int flecs_query_query_populate_terms(
 
                 term = &q->terms[term_count ++];
                 *term = term[-1];
-                term->src = term[-1].second;
-                term->second = extra_args[arg - 1];
+
+                if (extra_oper == EcsAnd) {
+                    term->src = term[-1].second;
+                    term->second = extra_args[arg - 1];
+                } else if (extra_oper == EcsOr) {
+                    term->src = term[-1].src;
+                    term->second = extra_args[arg - 1];
+                    term[-1].oper = EcsOr;
+                }
 
                 if (term->first.name != NULL) {
                     term->first.name = term->first.name;

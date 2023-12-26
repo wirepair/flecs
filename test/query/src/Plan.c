@@ -408,3 +408,29 @@ void Plan_2_trivial_component_w_none(void) {
 
     ecs_fini(world);
 }
+
+void Plan_2_trivial_plan_w_wildcard(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, Foo);
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "Foo(self), ChildOf(self, *)"
+    });
+
+    ecs_log_enable_colors(false);
+
+    const char *expect = 
+    HEAD " 0. [-1,  1]  setids      " 
+    LINE " 1. [ 0,  2]  trivwc      "
+    LINE " 2. [ 1,  3]  yield       "
+    LINE "";
+    char *plan = ecs_query_plan(r);
+
+    test_str(expect, plan);
+    ecs_os_free(plan);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}

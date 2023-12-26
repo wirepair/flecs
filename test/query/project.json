@@ -321,6 +321,8 @@
                 "query_scope_unbalanced",
                 "query_not_scope",
                 "query_empty_scope",
+                "query_scope_newline_after_open",
+                "query_scope_newline_after_close",
                 "override_tag",
                 "override_pair",
                 "pair_3_args",
@@ -331,7 +333,20 @@
                 "pair_3_args_this_tgt",
                 "pair_3_args_2_terms_this_tgt",
                 "pair_3_args_2_terms_this_tgt_implicit_this",
-                "cascade_desc"
+                "cascade_desc",
+                "pair_3_or_args",
+                "pair_3_or_args_implicit_this",
+                "pair_4_or_args",
+                "pair_4_or_args_implicit_this",
+                "pair_or_before_and_oper",
+                "pair_and_before_or_oper",
+                "cascade_desc",
+                "newline_after_inout",
+                "newline_after_term_open",
+                "newline_after_term_src",
+                "newline_after_term_src_pair",
+                "newline_after_term_pair_comma",
+                "newline_after_term_pair_second"
             ]
         }, {
             "id": "Basic",
@@ -470,7 +485,10 @@
                 "unknown_before_known_after_or",
                 "unknown_before_known_after_not",
                 "unknown_before_known_after_optional",
-                "unknown_before_known_after_scope"
+                "unknown_before_known_after_scope",
+                "2_trivial_mixed_2_tables",
+                "2_trivial_mixed_2_tables_component",
+                "2_trivial_mixed_2_tables_wildcard"
             ]
         }, {
             "id": "Plan",
@@ -488,7 +506,8 @@
                 "3_trivial_plan_w_wildcard_component",
                 "3_trivial_plan_w_any_component",
                 "1_trivial_component_w_none",
-                "2_trivial_component_w_none"
+                "2_trivial_component_w_none",
+                "2_trivial_plan_w_wildcard"
             ]
         }, {
             "id": "Variables",
@@ -884,9 +903,7 @@
                 "var_eq_name_written",
                 "var_eq_name_written_no_match",
                 "var_eq_var_written",
-                "var_eq_var_written_table",
-                "var_eq_this_written",
-                "var_eq_this_written_table",
+                "var_eq_this",
                 "this_neq_id",
                 "this_neq_name",
                 "this_neq_var",
@@ -903,7 +920,7 @@
                 "var_neq_name_written",
                 "var_neq_name_written_no_match",
                 "var_neq_var_written",
-                "var_neq_var_written_table",
+                "var_neq_this",
                 "this_2_neq_id",
                 "this_2_neq_name",
                 "var_2_neq_id",
@@ -941,7 +958,10 @@
                 "var_eq_any",
                 "var_eq_wildcard_after_write",
                 "var_eq_any_after_write",
-                "var_eq_after_var_0_src"
+                "var_eq_after_var_0_src",
+                "2_or_w_eq_this",
+                "2_or_w_eq_lookup_var",
+                "3_or_w_eq_lookup_var"
             ]
         }, {
             "id": "Scopes",

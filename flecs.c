@@ -5276,7 +5276,7 @@ ecs_table_t *flecs_traverse_from_expr(
     if (ptr) {
         ecs_term_t term = {0};
         while (ptr[0] && (ptr = ecs_parse_term(
-            world, &world->stages[0], name, expr, ptr, &term, NULL)))
+            world, &world->stages[0], name, expr, ptr, &term, NULL, NULL, false)))
         {
             if (!ecs_term_is_initialized(&term)) {
                 break;
@@ -5338,7 +5338,7 @@ void flecs_defer_from_expr(
     if (ptr) {
         ecs_term_t term = {0};
         while (ptr[0] && (ptr = ecs_parse_term(
-            world, stage, name, expr, ptr, &term, NULL))) 
+            world, stage, name, expr, ptr, &term, NULL, NULL, false)))
         {
             if (!ecs_term_is_initialized(&term)) {
                 break;
@@ -20094,17 +20094,21 @@ const char* ecs_cpp_trim_module(
 
     char *path = ecs_get_path_w_sep(world, 0, scope, "::", NULL);
     if (path) {
-        const char *ptr = strrchr(type_name, ':');
-        ecs_assert(ptr != type_name, ECS_INTERNAL_ERROR, NULL);
-        if (ptr) {
-            ptr --;
-            ecs_assert(ptr[0] == ':', ECS_INTERNAL_ERROR, NULL);
-            ecs_size_t name_path_len = (ecs_size_t)(ptr - type_name);
-            if (name_path_len <= ecs_os_strlen(path)) {
-                if (!ecs_os_strncmp(type_name, path, name_path_len)) {
-                    type_name = &type_name[name_path_len + 2];
-                }
+        ecs_size_t len = ecs_os_strlen(path);
+        if (!ecs_os_strncmp(path, type_name, len)) {
+            // Type is a child of current parent, trim name of parent
+            type_name += len;
+            ecs_assert(type_name[0], ECS_INVALID_PARAMETER, NULL);
+            ecs_assert(type_name[0] == ':', ECS_INVALID_PARAMETER, NULL);
+            ecs_assert(type_name[1] == ':', ECS_INVALID_PARAMETER, NULL);
+            type_name += 2;
+        } else {
+            // Type is not a child of current parent, trim entire path
+            char *ptr = strrchr(type_name, ':');
+            if (ptr) {
+                type_name = ptr + 1;
             }
+
         }
     }
     ecs_os_free(path);
@@ -20287,7 +20291,7 @@ ecs_entity_t ecs_cpp_component_register_explicit(
             } else {
                 // If type is not yet known, derive from type name
                 name = ecs_cpp_trim_module(world, type_name);
-            }            
+            }
         }
     } else {
         // If an explicit id is provided but it has no name, inherit
@@ -25535,7 +25539,6 @@ const char* flecs_parse_annotation(
     ptr = ecs_parse_ws(ptr);
 
     if (ptr[0] != TOK_BRACKET_CLOSE) {
-        printf("errr\n");
         ecs_parser_error(name, sig, column, "expected ]");
         return NULL;
     }
@@ -25667,11 +25670,12 @@ const char* flecs_parse_arguments(
     const char *ptr,
     char **token,
     ecs_term_t *term,
+    ecs_oper_kind_t *extra_oper,
     ecs_term_ref_t *extra_args)
 {
     (void)column;
 
-    int32_t arg = 0;
+    int32_t i, arg = 0;
 
     if (extra_args) {
         ecs_os_memset_n(extra_args, 0, ecs_term_ref_t, FLECS_TERM_ARG_COUNT_MAX);
@@ -25686,15 +25690,16 @@ const char* flecs_parse_arguments(
             if ((arg == FLECS_TERM_ARG_COUNT_MAX) || (!extra_args && arg == 2)) {
                 ecs_parser_error(name, expr, (ptr - expr), 
                     "too many arguments in term");
-                return NULL;
+                goto error;
             }
 
             ptr = ecs_parse_identifier(name, expr, ptr, *token);
             if (!ptr) {
-                return NULL;
+                goto error;
             }
 
             ecs_term_ref_t *term_ref = NULL;
+            ptr = ecs_parse_ws_eol(ptr);
 
             if (arg == 0) {
                 term_ref = &term->src;
@@ -25710,14 +25715,14 @@ const char* flecs_parse_arguments(
                 if (flecs_parse_identifier(token, term_ref)) {
                     ecs_parser_error(name, expr, (ptr - expr), 
                         "invalid identifier '%s'", *token);
-                    return NULL;
+                    goto error;
                 }
 
                 ptr = ecs_parse_ws(ptr + 1);
                 ptr = flecs_parse_term_flags(world, name, expr, (ptr - expr), ptr,
                     NULL, term, term_ref, TOK_PAREN_CLOSE);
                 if (!ptr) {
-                    return NULL;
+                    goto error;
                 }
 
             /* Check for term flags */
@@ -25729,33 +25734,48 @@ const char* flecs_parse_arguments(
                 ptr = flecs_parse_term_flags(world, name, expr, (ptr - expr), ptr, 
                     *token, term, term_ref, TOK_PAREN_CLOSE);
                 if (!ptr) {
-                    return NULL;
+                    goto error;
                 }
 
             /* Regular identifier */
             } else if (flecs_parse_identifier(token, term_ref)) {
                 ecs_parser_error(name, expr, (ptr - expr), 
                     "invalid identifier '%s'", *token);
-                return NULL;
+                goto error;
             }
 
             if (ptr[0] == TOK_AND) {
-                ptr = ecs_parse_ws(ptr + 1);
+                if (extra_oper && *extra_oper != EcsAnd) {
+                    ecs_parser_error(name, expr, (ptr - expr), 
+                        "cannot mix ',' and '||' in term arguments");
+                    goto error;
+                }
+                ptr = ecs_parse_ws_eol(ptr + 1);
 
             } else if (ptr[0] == TOK_PAREN_CLOSE) {
                 ptr = ecs_parse_ws(ptr + 1);
                 break;
 
+            } else if (extra_oper && ptr[0] == TOK_OR[0] && ptr[1] == TOK_OR[1]){
+                if (arg >= 2 && *extra_oper != EcsOr) {
+                    ecs_parser_error(name, expr, (ptr - expr), 
+                        "cannot mix ',' and '||' in term arguments");
+                    goto error;
+                }
+
+                *extra_oper = EcsOr;
+                ptr = ecs_parse_ws_eol(ptr + 2);
+
             } else {
                 ecs_parser_error(name, expr, (ptr - expr), 
                     "expected ',' or ')'");
-                return NULL;
+                goto error;
             }
 
         } else {
             ecs_parser_error(name, expr, (ptr - expr), 
                 "expected identifier or set expression");
-            return NULL;
+            goto error;
         }
 
         arg ++;
@@ -25763,6 +25783,8 @@ const char* flecs_parse_arguments(
     } while (true);
 
     return ptr;
+error:
+    return NULL;
 }
 
 static
@@ -25788,6 +25810,7 @@ const char* flecs_parse_term(
     const char *name,
     const char *expr,
     ecs_term_t *term_out,
+    ecs_oper_kind_t *extra_oper,
     ecs_term_ref_t *extra_args)
 {
     const char *ptr = expr;
@@ -25802,7 +25825,7 @@ const char* flecs_parse_term(
         if (!ptr) {
             goto error;
         }
-        ptr = ecs_parse_ws(ptr);
+        ptr = ecs_parse_ws_eol(ptr);
     }
 
     if (flecs_valid_operator_char(ptr[0])) {
@@ -25926,7 +25949,7 @@ parse_predicate:
     }
 
     if (ptr[0] == TOK_PAREN_OPEN) {
-        ptr ++;
+        ptr = ecs_parse_ws_eol(ptr + 1);
         if (ptr[0] == TOK_PAREN_CLOSE) {
             term.src.id = EcsIsEntity;
             ptr ++;
@@ -25934,7 +25957,7 @@ parse_predicate:
         } else {
             ptr = flecs_parse_arguments(
                 world, name, expr, (ptr - expr), ptr, &stage->parser_token, 
-                &term, extra_args);
+                &term, extra_oper, extra_args);
         }
 
         goto parse_done;
@@ -26052,7 +26075,7 @@ parse_pair_predicate:
             }
         }
 
-        if (ptr[0] == TOK_PAREN_CLOSE || ptr[0] == TOK_AND) {
+        if (ptr[0] == TOK_PAREN_CLOSE || ptr[0] == TOK_AND || ptr[0] == TOK_OR[0]) {
             goto parse_pair_object;
         } else {
             flecs_parser_unexpected_char(name, expr, ptr, ptr[0]);
@@ -26081,8 +26104,16 @@ parse_pair_object:
 
     if (ptr[0] == TOK_AND) {
         ptr = ecs_parse_ws(ptr + 1);
-        ptr = flecs_parse_arguments(
-            world, name, expr, (ptr - expr), ptr, &stage->parser_token, NULL, extra_args);
+        ptr = flecs_parse_arguments(world, name, expr, (ptr - expr), ptr, 
+            &stage->parser_token, NULL, extra_oper, extra_args);
+        if (!ptr) {
+            goto error;
+        }
+    } else if (extra_oper && ptr[0] == TOK_OR[0] && ptr[1] == TOK_OR[1]) {
+        ptr = ecs_parse_ws_eol(ptr + 2);
+        *extra_oper = EcsOr;
+        ptr = flecs_parse_arguments(world, name, expr, (ptr - expr), ptr, 
+            &stage->parser_token, NULL, extra_oper, extra_args);
         if (!ptr) {
             goto error;
         }
@@ -26130,7 +26161,9 @@ char* ecs_parse_term(
     const char *expr,
     const char *ptr,
     ecs_term_t *term,
-    ecs_term_ref_t *extra_args)
+    ecs_oper_kind_t *extra_oper,
+    ecs_term_ref_t *extra_args,
+    bool allow_newline)
 {
     ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(ptr != NULL, ECS_INVALID_PARAMETER, NULL);
@@ -26164,12 +26197,16 @@ char* ecs_parse_term(
         return ECS_CONST_CAST(char*, ptr);
     }
 
+    if (extra_oper) {
+        *extra_oper = EcsAnd;
+    }
+
     if (ptr == expr && !strcmp(expr, "0")) {
         return ECS_CONST_CAST(char*, &ptr[1]);
     }
 
     /* Parse next element */
-    ptr = flecs_parse_term(world, stage, name, ptr, term, extra_args);
+    ptr = flecs_parse_term(world, stage, name, ptr, term, extra_oper, extra_args);
     if (!ptr) {
         goto error;
     }
@@ -26278,6 +26315,11 @@ char* ecs_parse_term(
     }
 
     ptr = ecs_parse_ws(ptr);
+    if (allow_newline) {
+        ptr = ecs_parse_ws_eol(ptr);
+    } else {
+        ptr = ecs_parse_ws(ptr);
+    }
 
     return ECS_CONST_CAST(char*, ptr);
 error:
@@ -27993,7 +28035,7 @@ const char *plecs_parse_plecs_term(
     }
 
     ecs_stage_t *stage = flecs_stage_from_readonly_world(world);
-    ptr = ecs_parse_term(world, stage, name, expr, ptr, &term, NULL);
+    ptr = ecs_parse_term(world, stage, name, expr, ptr, &term, NULL, NULL, false);
     if (!ptr) {
         return NULL;
     }
@@ -39805,14 +39847,17 @@ void flecs_query_begin_block_cond_eval(
 
     if (flecs_query_ref_flags(op->flags, EcsRuleFirst) == EcsRuleIsVar) {
         first_var = op->first.var;
+        ecs_assert(first_var != EcsVarNone, ECS_INTERNAL_ERROR, NULL);
         cond_mask |= (1ull << first_var);
     }
     if (flecs_query_ref_flags(op->flags, EcsRuleSecond) == EcsRuleIsVar) {
         second_var = op->second.var;
+        ecs_assert(second_var != EcsVarNone, ECS_INTERNAL_ERROR, NULL);
         cond_mask |= (1ull << second_var);
     }
     if (flecs_query_ref_flags(op->flags, EcsRuleSrc) == EcsRuleIsVar) {
         src_var = op->src.var;
+        ecs_assert(src_var != EcsVarNone, ECS_INTERNAL_ERROR, NULL);
         cond_mask |= (1ull << src_var);
     }
 
@@ -39880,13 +39925,33 @@ void flecs_query_end_block_cond_eval(
 static
 void flecs_query_begin_block_or(
     ecs_query_op_t *op,
+    ecs_term_t *term,
     ecs_query_compile_ctx_t *ctx)
 {
     ecs_query_op_t *or_op = flecs_query_begin_block(EcsRuleNot, ctx);
     or_op->kind = EcsRuleOr;
-    if (op->flags & (EcsRuleIsVar << EcsRuleSrc)) {
-        or_op->flags = (EcsRuleIsVar << EcsRuleSrc);
-        or_op->src = op->src;
+
+    /* Set the source of the evaluate terms as source of the Or instruction. 
+     * This lets the engine determine whether the variable has already been
+     * written. When the source is not yet written, an OR operation needs to
+     * take the union of all the terms in the OR chain. When the variable is
+     * known, it will return after the first matching term.
+     * 
+     * In case a term in the OR expression is an equality predicate which 
+     * compares the left hand side with a variable, the variable acts as an 
+     * alias, so we can always assume that it's written. */
+    bool add_src = true;
+    if (ECS_TERM_REF_ID(&term->first) == EcsPredEq && term->second.id & EcsIsVariable) {
+        if (!(flecs_query_is_written(op->src.var, ctx->written))) {
+            add_src = false;
+        }
+    }
+
+    if (add_src) {
+        if (op->flags & (EcsRuleIsVar << EcsRuleSrc)) {
+            or_op->flags = (EcsRuleIsVar << EcsRuleSrc);
+            or_op->src = op->src;
+        }
     }
 }
 
@@ -39899,7 +39964,7 @@ void flecs_query_end_block_or(
     ecs_query_lbl_t end = flecs_query_op_insert(&op, ctx);
     
     ecs_query_op_t *ops = ecs_vec_first_t(ctx->ops, ecs_query_op_t);
-    int32_t i, prev_or = -2;
+    int32_t i, j, prev_or = -2;
     for (i = ctx->cur->lbl_begin + 1; i < end; i ++) {
         if (ops[i].next == FlecsRuleOrMarker) {
             if (prev_or != -2) {
@@ -39907,6 +39972,19 @@ void flecs_query_end_block_or(
             }
             ops[i].next = flecs_itolbl(end);
             prev_or = i;
+        } else {
+            /* Combine operation with next OR marker. This supports OR chains 
+             * with terms that require multiple operations to test. */
+            for (j = i + 1; j < end; j ++) {
+                if (ops[j].next == FlecsRuleOrMarker) {
+                    if (j == (end - 1)) {
+                        ops[i].prev = ctx->cur->lbl_begin;
+                    } else {
+                        ops[i].prev = flecs_itolbl(j + 1);
+                    }
+                    break;
+                }
+            }
         }
     }
 
@@ -40151,10 +40229,6 @@ int flecs_query_compile_ensure_vars(
         }
 
         written |= flecs_query_is_written(var_id, ctx->written);
-
-        /* After evaluating a term, a used variable is always written */
-        flecs_query_write(var_id, &op->written);
-        flecs_query_write_ctx(var_id, ctx, cond_write);
     } else {
         /* If it's not a variable, it's always written */
         written = true;
@@ -40252,6 +40326,7 @@ bool flecs_query_term_fixed_id(
 
 static
 int flecs_query_compile_builtin_pred(
+    ecs_query_t *q,
     ecs_term_t *term,
     ecs_query_op_t *op,
     ecs_write_flags_t write_state)
@@ -40283,7 +40358,8 @@ int flecs_query_compile_builtin_pred(
     if (flags_2nd & EcsRuleIsVar) {
         if (!(write_state & (1ull << op->second.var))) {
             ecs_err("uninitialized variable '%s' on right-hand side of "
-                "equality operator", term->second.name);
+                "equality operator", 
+                    ecs_query_var_name(q, op->second.var));
             return -1;
         }
     }
@@ -40495,7 +40571,6 @@ int flecs_query_compile_term(
     /* Save write state at start of term so we can use it to reliably track
      * variables got written by this term. */
     ecs_write_flags_t cond_write_state = ctx->cond_written;
-    ecs_write_flags_t write_state = ctx->written;
 
     /* Resolve component inheritance if necessary */
     ecs_var_id_t first_var = EcsVarNone, second_var = EcsVarNone, 
@@ -40632,7 +40707,7 @@ int flecs_query_compile_term(
     } else if (term->oper == EcsOptional) {
         flecs_query_begin_block(EcsRuleOptional, ctx);
     } else if (first_or) {
-        flecs_query_begin_block_or(&op, ctx);
+        flecs_query_begin_block_or(&op, term, ctx);
     }
 
     /* If term has component inheritance enabled, insert instruction to walk
@@ -40643,6 +40718,7 @@ int flecs_query_compile_term(
 
     op.match_flags = term->flags;
 
+    ecs_write_flags_t write_state = ctx->written;
     if (first_is_var) {
         op.first.var = first_var;
         op.flags &= (ecs_flags8_t)~(EcsRuleIsEntity << EcsRuleFirst);
@@ -40671,7 +40747,7 @@ int flecs_query_compile_term(
     }
 
     if (builtin_pred) {
-        if (flecs_query_compile_builtin_pred(term, &op, write_state)) {
+        if (flecs_query_compile_builtin_pred(q, term, &op, write_state)) {
             goto error;
         }
     }
@@ -40698,7 +40774,21 @@ int flecs_query_compile_term(
         }
     }
 
+    /* After evaluating a term, a used variable is always written */
+    if (src_is_var) {
+        flecs_query_write(src_var, &op.written);
+        flecs_query_write_ctx(op.src.var, ctx, cond_write);
+    }
+    if (first_is_var) {
+        flecs_query_write(first_var, &op.written);
+        flecs_query_write_ctx(first_var, ctx, cond_write);
+    }
+    if (second_is_var) {
+        flecs_query_write(second_var, &op.written);
+        flecs_query_write_ctx(second_var, ctx, cond_write);
+    }
     flecs_query_op_insert(&op, ctx);
+
     ctx->cur->lbl_query = flecs_itolbl(ecs_vec_count(ctx->ops) - 1);
     if (is_or) {
         ecs_query_op_t *op_ptr = ecs_vec_get_t(ctx->ops, ecs_query_op_t, 
@@ -40731,7 +40821,7 @@ int flecs_query_compile_term(
     }
 
     /* Handle closing of conditional evaluation */
-    if (ctx->cond_written && (first_is_var || second_is_var || src_is_var)) {
+    if (ctx->cur->lbl_cond_eval && (first_is_var || second_is_var || src_is_var)) {
         if (!is_or || last_or) {
             flecs_query_end_block_cond_eval(ctx);
         }
@@ -46423,6 +46513,9 @@ int flecs_term_finalize(
             }
         }
     }
+    if (!ecs_term_match_this(term)) {
+        trivial_term = false;
+    }
     if (term->flags & EcsTermTransitive) {
         trivial_term = false;
         cacheable_term = false;
@@ -46832,6 +46925,7 @@ int flecs_query_query_populate_terms(
         ecs_entity_t entity = desc->entity;
         const char *filter_name = entity ? ecs_get_name(world, entity) : NULL;
         const char *ptr = desc->expr;
+        ecs_oper_kind_t extra_oper = 0;
         ecs_term_ref_t extra_args[FLECS_TERM_ARG_COUNT_MAX];
         ecs_os_memset_n(extra_args, 0, ecs_term_ref_t, 
             FLECS_TERM_ARG_COUNT_MAX);
@@ -46847,7 +46941,7 @@ int flecs_query_query_populate_terms(
             /* Parse next term */
             ecs_term_t *term = &q->terms[term_count];
             ptr = ecs_parse_term(world, stage, filter_name, expr, ptr, 
-                term, extra_args);
+                term, &extra_oper, extra_args, true);
             if (!ptr) {
                 /* Parser error */
                 goto error;
@@ -46878,8 +46972,15 @@ int flecs_query_query_populate_terms(
 
                 term = &q->terms[term_count ++];
                 *term = term[-1];
-                term->src = term[-1].second;
-                term->second = extra_args[arg - 1];
+
+                if (extra_oper == EcsAnd) {
+                    term->src = term[-1].second;
+                    term->second = extra_args[arg - 1];
+                } else if (extra_oper == EcsOr) {
+                    term->src = term[-1].src;
+                    term->second = extra_args[arg - 1];
+                    term[-1].oper = EcsOr;
+                }
 
                 if (term->first.name != NULL) {
                     term->first.name = term->first.name;
@@ -60860,7 +60961,9 @@ int ecs_meta_set_string(
 #ifdef FLECS_PARSER
         ecs_term_t term = {0};
         ecs_stage_t *stage = flecs_stage_from_readonly_world(cursor->world);
-        if (ecs_parse_term(cursor->world, stage, NULL, value, value, &term, NULL)) {
+        if (ecs_parse_term(
+            cursor->world, stage, NULL, value, value, &term, NULL, NULL, false)) 
+        {
             if (ecs_term_finalize(cursor->world, &term)) {
                 goto error;
             }

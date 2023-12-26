@@ -117,6 +117,16 @@
  */
 // #define FLECS_KEEP_ASSERT
 
+/** \def FLECS_CPP_NO_AUTO_REGISTRATION
+ * When set, the C++ API will require that components are registered before they
+ * are used. This is useful in multithreaded applications, where components need
+ * to be registered beforehand, and to catch issues in projects where component 
+ * registration is mandatory. Disabling automatic component registration also
+ * slightly improves performance.
+ * The C API is not affected by this feature.
+ */
+// #define FLECS_CPP_NO_AUTO_REGISTRATION
+
 /** \def FLECS_CUSTOM_BUILD
  * This macro lets you customize which addons to build flecs with.
  * Without any addons Flecs is just a minimal ECS storage, but addons add 
@@ -14841,7 +14851,9 @@ char* ecs_parse_term(
     const char *expr,
     const char *ptr,
     ecs_term_t *term_out,
-    ecs_term_ref_t *extra_args);
+    ecs_oper_kind_t *extra_oper,
+    ecs_term_ref_t *extra_args,
+    bool allow_newline);
 
 #ifdef __cplusplus
 }
@@ -19766,6 +19778,12 @@ struct world {
         delete_with(_::cpp_type<First>::id(m_world), _::cpp_type<Second>::id(m_world));
     }
 
+    /** Delete all entities with specified pair. */
+    template <typename First>
+    void delete_with(entity_t second) const {
+        delete_with(_::cpp_type<First>::id(m_world), second);
+    }
+
     /** Remove all instances of specified id. */
     void remove_all(id_t the_id) const {
         ecs_remove_all(m_world, the_id);
@@ -19786,6 +19804,12 @@ struct world {
     template <typename First, typename Second>
     void remove_all() const {
         remove_all(_::cpp_type<First>::id(m_world), _::cpp_type<Second>::id(m_world));
+    }
+
+    /** Remove all instances of specified pair. */
+    template <typename First>
+    void remove_all(entity_t second) const {
+        remove_all(_::cpp_type<First>::id(m_world), second);
     }
 
     /** Defer all operations called in function. If the world is already in
@@ -25112,6 +25136,7 @@ struct cpp_type_impl {
         bool allow_tag = true)
     {
         // If no id has been registered yet, do it now.
+#ifndef FLECS_CPP_NO_AUTO_REGISTRATION
         if (!registered(world)) {
             ecs_entity_t prev_scope = 0;
             ecs_id_t prev_with = 0;
@@ -25140,6 +25165,15 @@ struct cpp_type_impl {
                 ecs_set_scope(world, prev_scope);
             }
         }
+#else
+        (void)world;
+        (void)name;
+        (void)allow_tag;
+
+        ecs_assert(registered(world), ECS_INVALID_OPERATION, 
+            "component '%s' was not registered before use",
+            type_name<T>());
+#endif
 
         // By now we should have a valid identifier
         ecs_assert(s_id != 0, ECS_INTERNAL_ERROR, NULL);
@@ -25509,9 +25543,8 @@ struct component : untyped_component {
                     if (ptr[0] == ':') {
                         last_elem = ptr;
                     }
-                } else {
-                    last_elem = strrchr(n, ':');
                 }
+
                 if (last_elem) {
                     name = last_elem + 1;
                 }

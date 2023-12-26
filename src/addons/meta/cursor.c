@@ -1369,7 +1369,9 @@ int ecs_meta_set_string(
 #ifdef FLECS_PARSER
         ecs_term_t term = {0};
         ecs_stage_t *stage = flecs_stage_from_readonly_world(cursor->world);
-        if (ecs_parse_term(cursor->world, stage, NULL, value, value, &term, NULL)) {
+        if (ecs_parse_term(
+            cursor->world, stage, NULL, value, value, &term, NULL, NULL, false)) 
+        {
             if (ecs_term_finalize(cursor->world, &term)) {
                 goto error;
             }

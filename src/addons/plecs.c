@@ -1707,7 +1707,7 @@ const char *plecs_parse_plecs_term(
     }
 
     ecs_stage_t *stage = flecs_stage_from_readonly_world(world);
-    ptr = ecs_parse_term(world, stage, name, expr, ptr, &term, NULL);
+    ptr = ecs_parse_term(world, stage, name, expr, ptr, &term, NULL, NULL, false);
     if (!ptr) {
         return NULL;
     }

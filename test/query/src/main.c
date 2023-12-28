@@ -496,6 +496,7 @@ void Plan_2_trivial_component_w_none(void);
 void Plan_2_trivial_plan_w_wildcard(void);
 
 // Testsuite 'Variables'
+void Variables_setup(void);
 void Variables_1_ent_src_w_var(void);
 void Variables_1_ent_src_w_pair_rel_var(void);
 void Variables_1_ent_src_w_pair_tgt_var(void);
@@ -572,6 +573,7 @@ void Variables_2_set_src_this_component_w_up(void);
 void Variables_2_set_src_this_self_component_w_up(void);
 void Variables_2_set_src_this_w_exclusive_wildcard(void);
 void Variables_2_set_src_this_self_w_exclusive_wildcard(void);
+void Variables_2_set_src_this_self_w_exclusive_wildcard_w_up(void);
 void Variables_1_src_this_var_as_entity(void);
 void Variables_1_src_this_var_as_table(void);
 void Variables_1_src_this_var_as_table_range(void);
@@ -659,6 +661,7 @@ void Variables_1_trivial_1_any_component(void);
 void Variables_2_trivial_1_any_component(void);
 
 // Testsuite 'Operators'
+void Operators_setup(void);
 void Operators_2_and_not(void);
 void Operators_3_and_not_not(void);
 void Operators_2_and_not_pair_rel_wildcard(void);
@@ -3274,6 +3277,10 @@ bake_test_case Variables_testcases[] = {
         Variables_2_set_src_this_self_w_exclusive_wildcard
     },
     {
+        "2_set_src_this_self_w_exclusive_wildcard_w_up",
+        Variables_2_set_src_this_self_w_exclusive_wildcard_w_up
+    },
+    {
         "1_src_this_var_as_entity",
         Variables_1_src_this_var_as_entity
     },
@@ -5127,6 +5134,12 @@ bake_test_case Traversal_testcases[] = {
 bake_test_param Basic_params[] = {
     {"cache_kind", (char*[]){"default", "auto"}, 2}
 };
+bake_test_param Variables_params[] = {
+    {"cache_kind", (char*[]){"default", "auto"}, 2}
+};
+bake_test_param Operators_params[] = {
+    {"cache_kind", (char*[]){"default", "auto"}, 2}
+};
 
 static bake_test_suite suites[] = {
     {
@@ -5161,17 +5174,21 @@ static bake_test_suite suites[] = {
     },
     {
         "Variables",
+        Variables_setup,
         NULL,
-        NULL,
-        161,
-        Variables_testcases
+        162,
+        Variables_testcases,
+        1,
+        Variables_params
     },
     {
         "Operators",
-        NULL,
+        Operators_setup,
         NULL,
         95,
-        Operators_testcases
+        Operators_testcases,
+        1,
+        Operators_params
     },
     {
         "Transitive",

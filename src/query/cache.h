@@ -118,3 +118,7 @@ void flecs_query_cache_notify(
     ecs_world_t *world,
     ecs_query_cache_t *query,
     ecs_query_cache_event_t *event);
+
+ecs_query_cache_table_t* flecs_query_cache_get_table(
+    ecs_query_cache_t *query,
+    ecs_table_t *table);

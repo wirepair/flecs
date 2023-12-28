@@ -2052,7 +2052,7 @@ int flecs_query_compile(
             }
         }
     }
-    
+
     ecs_flags64_t compiled = 0;
     ecs_flags64_t populated = 0;
 

@@ -511,6 +511,10 @@
             ]
         }, {
             "id": "Variables",
+            "setup": true,
+            "params": {
+                "cache_kind": ["default", "auto"]
+            },
             "testcases": [
                 "1_ent_src_w_var",
                 "1_ent_src_w_pair_rel_var",
@@ -588,6 +592,7 @@
                 "2_set_src_this_self_component_w_up",
                 "2_set_src_this_w_exclusive_wildcard",
                 "2_set_src_this_self_w_exclusive_wildcard",
+                "2_set_src_this_self_w_exclusive_wildcard_w_up",
                 "1_src_this_var_as_entity",
                 "1_src_this_var_as_table",
                 "1_src_this_var_as_table_range",
@@ -676,6 +681,10 @@
             ]
         }, {
             "id": "Operators",
+            "setup": true,
+            "params": {
+                "cache_kind": ["default", "auto"]
+            },
             "testcases": [
                 "2_and_not",
                 "3_and_not_not",

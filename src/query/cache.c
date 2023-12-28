@@ -2142,6 +2142,13 @@ void ecs_query_cache_skip(
     }
 }
 
+ecs_query_cache_table_t* flecs_query_cache_get_table(
+    ecs_query_cache_t *query,
+    ecs_table_t *table)
+{
+    return ecs_table_cache_get(&query->cache, table);
+}
+
 int32_t ecs_query_cache_table_count(
     const ecs_query_cache_t *query)
 {

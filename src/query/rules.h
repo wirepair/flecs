@@ -327,6 +327,14 @@ struct ecs_query_impl_t {
 #endif
 };
 
+/* Helper type for passing around context required for error messages */
+typedef struct {
+    const ecs_world_t *world;
+    ecs_query_t *filter;
+    ecs_term_t *term;
+    int32_t term_index;
+} ecs_query_validator_ctx_t;
+
 /* Convert integer to label */
 ecs_query_lbl_t flecs_itolbl(
     int64_t val);
@@ -419,9 +427,8 @@ ecs_trav_up_t* flecs_query_get_up_cache(
 void flecs_query_up_cache_fini(
     ecs_trav_up_cache_t *cache);
 
-/* Convert instruction kind to string */
-const char* flecs_query_op_str(
-    uint16_t kind);
+
+/* -- Trivial iterators -- */
 
 /* Iterator for trivial queries. */
 bool flecs_query_trivial_search(
@@ -461,24 +468,8 @@ bool flecs_query_trivial_test_w_wildcards(
     bool first,
     int32_t term_count);
 
-/* Helper type for passing around context required for error messages */
-typedef struct {
-    const ecs_world_t *world;
-    ecs_query_t *filter;
-    ecs_term_t *term;
-    int32_t term_index;
-} ecs_query_validator_ctx_t;
 
-char* flecs_query_str(
-    const ecs_world_t *world,
-    const ecs_query_t *filter,
-    const ecs_query_validator_ctx_t *ctx,
-    int32_t *term_start_out);
-
-int flecs_query_finalize_query(
-    ecs_world_t *world,
-    ecs_query_t *q,
-    const ecs_query_desc_t *desc);
+/* -- Cache iterators -- */
 
 bool flecs_query_cache_search(
     const ecs_query_impl_t *impl,
@@ -504,6 +495,21 @@ bool flecs_query_is_cache_data_search(
     ecs_query_impl_cache_ctx_t *op_ctx,
     bool first);
 
+bool flecs_query_is_cache_test(
+    const ecs_query_impl_t *impl,
+    const ecs_query_run_ctx_t *ctx,
+    ecs_query_impl_cache_ctx_t *op_ctx,
+    bool first);
+
+bool flecs_query_is_cache_data_test(
+    const ecs_query_impl_t *impl,
+    const ecs_query_run_ctx_t *ctx,
+    ecs_query_impl_cache_ctx_t *op_ctx,
+    bool first);
+
+
+/* -- Cache internals -- */
+
 void flecs_query_cache_sort_tables(
     ecs_world_t *world,
     ecs_query_cache_t *query);
@@ -515,3 +521,25 @@ void flecs_query_cache_sync_match_monitor(
 void flecs_query_cache_mark_columns_dirty(
     ecs_query_cache_t *query,
     ecs_query_cache_table_match_t *qm);
+
+
+/* -- Validator -- */
+
+int flecs_query_finalize_query(
+    ecs_world_t *world,
+    ecs_query_t *q,
+    const ecs_query_desc_t *desc);
+
+
+/* -- Utils -- */
+
+char* flecs_query_str(
+    const ecs_world_t *world,
+    const ecs_query_t *filter,
+    const ecs_query_validator_ctx_t *ctx,
+    int32_t *term_start_out);
+
+/* Convert instruction kind to string */
+const char* flecs_query_op_str(
+    uint16_t kind);
+

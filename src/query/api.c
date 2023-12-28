@@ -316,6 +316,7 @@ ecs_query_t* ecs_query_init(
     result->binding_ctx_free = const_desc->binding_ctx_free;
     result->dtor = (ecs_poly_dtor_t)flecs_query_fini;
     result->iterable.init = flecs_query_iter_mixin_init;
+    result->cache = NULL;
 
     /* Initialize query cache if necessary */
     if (flecs_query_create_cache(result, &desc)) {

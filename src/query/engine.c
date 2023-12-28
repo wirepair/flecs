@@ -807,7 +807,7 @@ bool flecs_query_up_with(
         op_ctx->idr_trav = flecs_id_record_get(ctx->world, 
             ecs_pair(op_ctx->trav, EcsWildcard));
     }
-    if (!op_ctx->idr_trav || !flecs_table_cache_count(&op_ctx->idr_trav->cache)){
+    if (!op_ctx->idr_trav || !flecs_table_cache_all_count(&op_ctx->idr_trav->cache)){
         return false;
     }
 
@@ -1082,8 +1082,7 @@ bool flecs_query_is_cache(
     uint64_t written = ctx->written[ctx->op_index];
     ctx->written[ctx->op_index + 1] |= 1ull;
     if (written & 1ull) {
-        /* TODO */
-        return false;
+        return flecs_query_is_cache_test(ctx->rule, ctx, op_ctx, !redo);
     } else {
         return flecs_query_is_cache_search(ctx->rule, ctx, op_ctx, !redo);
     }
@@ -1099,8 +1098,7 @@ bool flecs_query_is_cache_data(
     uint64_t written = ctx->written[ctx->op_index];
     ctx->written[ctx->op_index + 1] |= 1ull;
     if (written & 1ull) {
-        /* TODO */
-        return false;
+        return flecs_query_is_cache_data_test(ctx->rule, ctx, op_ctx, !redo);
     } else {
         return flecs_query_is_cache_data_search(ctx->rule, ctx, op_ctx, !redo);
     }
@@ -2557,7 +2555,7 @@ void flecs_query_iter_init(
     ecs_query_cache_t *cache = rule->cache;
     if (flags & EcsQueryIsTrivial && !cache) {
         if ((flags & EcsQueryMatchOnlySelf) || 
-            !flecs_table_cache_count(&ctx->world->idr_isa_wildcard->cache)) 
+            !flecs_table_cache_all_count(&ctx->world->idr_isa_wildcard->cache)) 
         {
             if (it_written) {
                 it->offset = ctx->vars[0].range.offset;
@@ -2567,8 +2565,13 @@ void flecs_query_iter_init(
                     it->count = ecs_table_count(ctx->vars[0].range.table);
                 }
 
-                it->flags |= EcsIterTrivialTest;
-                flecs_query_setids(&rule->ops[0], false, ctx);
+                if (flags & EcsQueryMatchWildcards) {
+                    it->flags |= EcsIterTrivialTestWildcard;
+                    flecs_query_setids(&rule->ops[0], false, ctx);
+                } else {
+                    it->flags |= EcsIterTrivialTest;
+                    flecs_query_setids(&rule->ops[0], false, ctx);
+                }
             } else {
                 if (flags & EcsQueryMatchWildcards) {
                     it->flags |= EcsIterTrivialSearchWildcard;
@@ -2652,12 +2655,6 @@ bool ecs_query_next_instanced(
         it->count = ecs_table_count(it->table);
         it->entities = flecs_table_entities_array(it->table);
         return true;
-    } else if (it->flags & EcsIterTrivialTest) {
-        int32_t fields = ctx.rule->pub.term_count;
-        if (!flecs_query_trivial_test(ctx.rule, &ctx, !redo, fields)) {
-            goto done;
-        }
-        return true;
     } else if (it->flags & EcsIterTrivialSearchWildcard) {
         ecs_query_impl_trivial_ctx_t *op_ctx = &ctx.op_ctx[0].is.trivial;
         int32_t fields = ctx.rule->pub.term_count;
@@ -2667,6 +2664,18 @@ bool ecs_query_next_instanced(
         it->table = ctx.vars[0].range.table;
         it->count = ecs_table_count(it->table);
         it->entities = flecs_table_entities_array(it->table);
+        return true;
+    } else if (it->flags & EcsIterTrivialTest) {
+        int32_t fields = ctx.rule->pub.term_count;
+        if (!flecs_query_trivial_test(ctx.rule, &ctx, !redo, fields)) {
+            goto done;
+        }
+        return true;
+    } else if (it->flags & EcsIterTrivialTestWildcard) {
+        int32_t fields = ctx.rule->pub.term_count;
+        if (!flecs_query_trivial_test_w_wildcards(ctx.rule, &ctx, !redo, fields)) {
+            goto done;
+        }
         return true;
     }
 

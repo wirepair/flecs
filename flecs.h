@@ -401,8 +401,9 @@ extern "C" {
 #define EcsIterTrivialSearch           (1u << 12u) /* Trivial iterator mode */
 #define EcsIterTrivialSearchNoData     (1u << 13u) /* Trivial iterator w/no data */
 #define EcsIterTrivialTest             (1u << 14u) /* Trivial test mode (constrained $this) */
-#define EcsIterTrivialSearchWildcard   (1u << 15u) /* Trivial search with wildcard ids */
-#define EcsIterCacheSearch             (1u << 16u) /* Cache search */
+#define EcsIterTrivialTestWildcard     (1u << 15u) /* Trivial test w/wildcards */
+#define EcsIterTrivialSearchWildcard   (1u << 16u) /* Trivial search with wildcard ids */
+#define EcsIterCacheSearch             (1u << 17u) /* Cache search */
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Event flags (used by ecs_event_decs_t::flags)

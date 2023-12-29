@@ -495,7 +495,7 @@ const char* flecs_parse_arguments(
 {
     (void)column;
 
-    int32_t i, arg = 0;
+    int32_t arg = 0;
 
     if (extra_args) {
         ecs_os_memset_n(extra_args, 0, ecs_term_ref_t, FLECS_TERM_ARG_COUNT_MAX);

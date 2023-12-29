@@ -1015,6 +1015,11 @@ int flecs_query_query_finalize_terms(
             q->flags |= EcsQueryHasScopes;
             scope_nesting ++;
         }
+
+        if (scope_nesting) {
+            term->flags |= EcsTermIsScope;
+        }
+
         if (first_id == EcsScopeClose) {
             if (i && ECS_TERM_REF_ID(&terms[i - 1].first) == EcsScopeOpen) {
                 flecs_query_validator_error(&ctx, "invalid empty scope");

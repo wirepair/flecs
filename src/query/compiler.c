@@ -1799,10 +1799,9 @@ int32_t flecs_query_term_next_known(
             continue;
         }
 
-        /* Don't reorder terms before/after scopes */
-        ecs_entity_t first_id = ECS_TERM_REF_ID(&term->first);
-        if (first_id == EcsScopeOpen || first_id == EcsScopeClose) {
-            return -1;
+        /* Don't reorder terms in scopes */
+        if (term->flags & EcsTermIsScope) {
+            continue;
         }
 
         if (flecs_query_term_is_unknown(rule, term, ctx)) {
@@ -1939,6 +1938,73 @@ void flecs_query_insert_cache_search(
     }
 }
 
+static
+bool flecs_term_ref_match_multiple(
+    ecs_term_ref_t *ref)
+{
+    return (ref->id & EcsIsVariable) && (ECS_TERM_REF_ID(ref) != EcsAny);
+}
+
+static
+bool flecs_term_match_multiple(
+    ecs_term_t *term)
+{
+    return flecs_term_ref_match_multiple(&term->first) ||
+        flecs_term_ref_match_multiple(&term->second);
+}
+
+static
+int flecs_query_insert_fixed_src_terms(
+    ecs_world_t *world,
+    ecs_query_impl_t *rule,
+    ecs_flags64_t *compiled,
+    ecs_query_compile_ctx_t *ctx)
+{
+    ecs_query_t *q = &rule->pub;
+    int32_t i, term_count = q->term_count;
+    ecs_term_t *terms = q->terms;
+
+    for (i = 0; i < term_count; i ++) {
+        ecs_term_t *term = &terms[i];
+
+        if (term->oper ==  EcsNot) {
+            /* If term has not operator and variables for first/second, we can't
+             * put the term first as this could prevent us from getting back
+             * valid results. For example:
+             *   !$var(e), Tag($var)
+             * 
+             * Here, the first term would evaluate to false (and cause the 
+             * entire query not to match) if 'e' has any components.
+             * 
+             * However, when reordering we get results:
+             *   Tag($var), !$var(e)
+             * 
+             * Now the query returns all entities with Tag, that 'e' does not
+             * have as component. For this reason, queries should never use
+             * unwritten variables in not terms- and we should also not reorder
+             * terms in a way that results in doing this. */
+            if (flecs_term_match_multiple(term)) {
+                continue;
+            }
+        }
+
+        /* Don't reorder terms in scopes */
+        if (term->flags & EcsTermIsScope) {
+            continue;
+        }
+
+        if (term->src.id & EcsIsEntity && ECS_TERM_REF_ID(&term->src)) {
+            if (flecs_query_compile_term(world, rule, term, ctx)) {
+                return -1;
+            }
+
+            *compiled |= (1u << i);
+        }
+    }
+
+    return 0;
+}
+
 /* Insert instruction to populate data fields. */
 static
 void flecs_query_insert_populate(
@@ -2056,7 +2122,11 @@ int flecs_query_compile(
     ecs_flags64_t compiled = 0;
     ecs_flags64_t populated = 0;
 
-    /* Compile cacheable terms. Should always be the first compilation step */
+    /* Always evaluate terms with fixed source before other terms */
+    flecs_query_insert_fixed_src_terms(
+        world, rule, &compiled, &ctx);
+
+    /* Compile cacheable terms */
     flecs_query_insert_cache_search(
         rule, &compiled, &populated, &ctx, desc);
 

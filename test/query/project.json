@@ -488,7 +488,13 @@
                 "unknown_before_known_after_scope",
                 "2_trivial_mixed_2_tables",
                 "2_trivial_mixed_2_tables_component",
-                "2_trivial_mixed_2_tables_wildcard"
+                "2_trivial_mixed_2_tables_wildcard",
+                "2_this_w_fixed_src",
+                "2_fixed_src_w_this",
+                "2_this_w_fixed_src_no_match_fixed",
+                "2_fixed_src_w_this_no_match_fixed",
+                "2_this_w_fixed_src_no_match_this",
+                "2_fixed_src_w_this_no_match_this"
             ]
         }, {
             "id": "Plan",
@@ -507,7 +513,16 @@
                 "3_trivial_plan_w_any_component",
                 "1_trivial_component_w_none",
                 "2_trivial_component_w_none",
-                "2_trivial_plan_w_wildcard"
+                "2_trivial_plan_w_wildcard",
+                "this_before_fixed_src",
+                "fixed_src_before_this",
+                "var_before_fixed_src",
+                "fixed_src_before_var",
+                "this_before_fixed_src_w_not",
+                "this_before_fixed_src_w_first_var",
+                "this_before_fixed_src_w_first_var_w_not",
+                "this_before_fixed_src_w_second_var",
+                "this_before_fixed_src_w_second_var_w_not"
             ]
         }, {
             "id": "Variables",

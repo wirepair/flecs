@@ -477,6 +477,12 @@ void Basic_unknown_before_known_after_scope(void);
 void Basic_2_trivial_mixed_2_tables(void);
 void Basic_2_trivial_mixed_2_tables_component(void);
 void Basic_2_trivial_mixed_2_tables_wildcard(void);
+void Basic_2_this_w_fixed_src(void);
+void Basic_2_fixed_src_w_this(void);
+void Basic_2_this_w_fixed_src_no_match_fixed(void);
+void Basic_2_fixed_src_w_this_no_match_fixed(void);
+void Basic_2_this_w_fixed_src_no_match_this(void);
+void Basic_2_fixed_src_w_this_no_match_this(void);
 
 // Testsuite 'Plan'
 void Plan_reordered_plan_1(void);
@@ -494,6 +500,15 @@ void Plan_3_trivial_plan_w_any_component(void);
 void Plan_1_trivial_component_w_none(void);
 void Plan_2_trivial_component_w_none(void);
 void Plan_2_trivial_plan_w_wildcard(void);
+void Plan_this_before_fixed_src(void);
+void Plan_fixed_src_before_this(void);
+void Plan_var_before_fixed_src(void);
+void Plan_fixed_src_before_var(void);
+void Plan_this_before_fixed_src_w_not(void);
+void Plan_this_before_fixed_src_w_first_var(void);
+void Plan_this_before_fixed_src_w_first_var_w_not(void);
+void Plan_this_before_fixed_src_w_second_var(void);
+void Plan_this_before_fixed_src_w_second_var_w_not(void);
 
 // Testsuite 'Variables'
 void Variables_setup(void);
@@ -2905,6 +2920,30 @@ bake_test_case Basic_testcases[] = {
     {
         "2_trivial_mixed_2_tables_wildcard",
         Basic_2_trivial_mixed_2_tables_wildcard
+    },
+    {
+        "2_this_w_fixed_src",
+        Basic_2_this_w_fixed_src
+    },
+    {
+        "2_fixed_src_w_this",
+        Basic_2_fixed_src_w_this
+    },
+    {
+        "2_this_w_fixed_src_no_match_fixed",
+        Basic_2_this_w_fixed_src_no_match_fixed
+    },
+    {
+        "2_fixed_src_w_this_no_match_fixed",
+        Basic_2_fixed_src_w_this_no_match_fixed
+    },
+    {
+        "2_this_w_fixed_src_no_match_this",
+        Basic_2_this_w_fixed_src_no_match_this
+    },
+    {
+        "2_fixed_src_w_this_no_match_this",
+        Basic_2_fixed_src_w_this_no_match_this
     }
 };
 
@@ -2968,6 +3007,42 @@ bake_test_case Plan_testcases[] = {
     {
         "2_trivial_plan_w_wildcard",
         Plan_2_trivial_plan_w_wildcard
+    },
+    {
+        "this_before_fixed_src",
+        Plan_this_before_fixed_src
+    },
+    {
+        "fixed_src_before_this",
+        Plan_fixed_src_before_this
+    },
+    {
+        "var_before_fixed_src",
+        Plan_var_before_fixed_src
+    },
+    {
+        "fixed_src_before_var",
+        Plan_fixed_src_before_var
+    },
+    {
+        "this_before_fixed_src_w_not",
+        Plan_this_before_fixed_src_w_not
+    },
+    {
+        "this_before_fixed_src_w_first_var",
+        Plan_this_before_fixed_src_w_first_var
+    },
+    {
+        "this_before_fixed_src_w_first_var_w_not",
+        Plan_this_before_fixed_src_w_first_var_w_not
+    },
+    {
+        "this_before_fixed_src_w_second_var",
+        Plan_this_before_fixed_src_w_second_var
+    },
+    {
+        "this_before_fixed_src_w_second_var_w_not",
+        Plan_this_before_fixed_src_w_second_var_w_not
     }
 };
 
@@ -5160,7 +5235,7 @@ static bake_test_suite suites[] = {
         "Basic",
         Basic_setup,
         NULL,
-        134,
+        140,
         Basic_testcases,
         1,
         Basic_params
@@ -5169,7 +5244,7 @@ static bake_test_suite suites[] = {
         "Plan",
         NULL,
         NULL,
-        15,
+        24,
         Plan_testcases
     },
     {

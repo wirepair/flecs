@@ -704,6 +704,7 @@ typedef enum ecs_query_cache_kind_t {
 #define EcsTermIsTrivial              (1u << 5)
 #define EcsTermNoData                 (1u << 6)
 #define EcsTermIsCacheable            (1u << 7)
+#define EcsTermIsScope                (1u << 8)
 
 /** Type that describes a reference to an entity or variable in a term. */
 typedef struct ecs_term_ref_t {

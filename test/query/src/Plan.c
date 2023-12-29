@@ -10,6 +10,8 @@ void Plan_reordered_plan_1(void) {
         .expr = "Foo, ChildOf($this, $p, $gp, $ggp), Bar($ggp)"
     });
 
+    test_assert(r != NULL);
+
     ecs_log_enable_colors(false);
 
     const char *expect = 
@@ -41,6 +43,8 @@ void Plan_reordered_plan_2(void) {
     ecs_query_t *r = ecs_query(world, {
         .expr = "Foo($ggp), ChildOf($this, $p, $gp, $ggp), Bar($this)"
     });
+
+    test_assert(r != NULL);
 
     ecs_log_enable_colors(false);
 
@@ -77,6 +81,8 @@ void Plan_1_trivial_plan(void) {
         .expr = "Foo(self)"
     });
 
+    test_assert(r != NULL);
+
     ecs_log_enable_colors(false);
 
     const char *expect = 
@@ -104,6 +110,8 @@ void Plan_2_trivial_plan(void) {
         .expr = "Foo(self), Bar(self)"
     });
 
+    test_assert(r != NULL);
+
     ecs_log_enable_colors(false);
 
     const char *expect = 
@@ -129,6 +137,8 @@ void Plan_1_trivial_plan_component(void) {
     ecs_query_t *r = ecs_query(world, {
         .expr = "Position(self)"
     });
+
+    test_assert(r != NULL);
 
     ecs_log_enable_colors(false);
 
@@ -157,6 +167,8 @@ void Plan_2_trivial_plan_component(void) {
     ecs_query_t *r = ecs_query(world, {
         .expr = "Position(self), Velocity(self)"
     });
+
+    test_assert(r != NULL);
 
     ecs_log_enable_colors(false);
 
@@ -187,6 +199,8 @@ void Plan_3_trivial_plan_w_pair(void) {
         .expr = "Foo(self), Bar(self), ChildOf(self, p)"
     });
 
+    test_assert(r != NULL);
+
     ecs_log_enable_colors(false);
 
     const char *expect = 
@@ -215,6 +229,8 @@ void Plan_3_trivial_plan_w_wildcard(void) {
     ecs_query_t *r = ecs_query(world, {
         .expr = "Foo(self), Bar(self), ChildOf(self, *)"
     });
+
+    test_assert(r != NULL);
 
     ecs_log_enable_colors(false);
 
@@ -245,6 +261,8 @@ void Plan_3_trivial_plan_w_any(void) {
         .expr = "Foo(self), Bar(self), ChildOf(self, _)"
     });
 
+    test_assert(r != NULL);
+
     ecs_log_enable_colors(false);
 
     const char *expect = 
@@ -274,6 +292,8 @@ void Plan_3_trivial_plan_w_pair_component(void) {
     ecs_query_t *r = ecs_query(world, {
         .expr = "Position(self), Velocity(self), ChildOf(self, p)"
     });
+    
+    test_assert(r != NULL);
 
     ecs_log_enable_colors(false);
 
@@ -304,6 +324,8 @@ void Plan_3_trivial_plan_w_wildcard_component(void) {
         .expr = "Position(self), Velocity(self), ChildOf(self, *)"
     });
 
+    test_assert(r != NULL);
+
     ecs_log_enable_colors(false);
 
     const char *expect = 
@@ -332,6 +354,8 @@ void Plan_3_trivial_plan_w_any_component(void) {
     ecs_query_t *r = ecs_query(world, {
         .expr = "Position(self), Velocity(self), ChildOf(self, _)"
     });
+
+    test_assert(r != NULL);
 
     ecs_log_enable_colors(false);
 
@@ -363,6 +387,8 @@ void Plan_1_trivial_component_w_none(void) {
         .expr = "[none] Position(self)"
     });
 
+    test_assert(r != NULL);
+
     ecs_log_enable_colors(false);
 
     const char *expect = 
@@ -392,6 +418,8 @@ void Plan_2_trivial_component_w_none(void) {
         .expr = "[none] Position(self), [none] Velocity(self)"
     });
 
+    test_assert(r != NULL);
+
     ecs_log_enable_colors(false);
 
     const char *expect = 
@@ -418,12 +446,327 @@ void Plan_2_trivial_plan_w_wildcard(void) {
         .expr = "Foo(self), ChildOf(self, *)"
     });
 
+    test_assert(r != NULL);
+
     ecs_log_enable_colors(false);
 
     const char *expect = 
     HEAD " 0. [-1,  1]  setids      " 
     LINE " 1. [ 0,  2]  trivwc      "
     LINE " 2. [ 1,  3]  yield       "
+    LINE "";
+    char *plan = ecs_query_plan(r);
+
+    test_str(expect, plan);
+    ecs_os_free(plan);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void Plan_this_before_fixed_src(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, Foo);
+    ECS_TAG(world, Bar);
+
+    ecs_new_entity(world, "e");
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "Foo, Bar(e)"
+    });
+
+    test_assert(r != NULL);
+
+    ecs_log_enable_colors(false);
+
+    const char *expect = 
+    HEAD " 0. [-1,  1]  setfix      "
+    LINE " 1. [ 0,  2]  setids      "
+    LINE " 2. [ 1,  3]  selfupid    e                 (Bar)"
+    LINE " 3. [ 2,  4]  selfupid    $[this]           (Foo)"
+    LINE " 4. [ 3,  5]  yield       "
+    LINE "";
+    char *plan = ecs_query_plan(r);
+
+    test_str(expect, plan);
+    ecs_os_free(plan);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void Plan_fixed_src_before_this(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, Foo);
+    ECS_TAG(world, Bar);
+
+    ecs_new_entity(world, "e");
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "Bar(e), Foo"
+    });
+
+    test_assert(r != NULL);
+
+    ecs_log_enable_colors(false);
+
+    const char *expect = 
+    HEAD " 0. [-1,  1]  setfix      "
+    LINE " 1. [ 0,  2]  setids      "
+    LINE " 2. [ 1,  3]  selfupid    e                 (Bar)"
+    LINE " 3. [ 2,  4]  selfupid    $[this]           (Foo)"
+    LINE " 4. [ 3,  5]  yield       "
+    LINE "";
+    char *plan = ecs_query_plan(r);
+
+    test_str(expect, plan);
+    ecs_os_free(plan);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void Plan_var_before_fixed_src(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, Foo);
+    ECS_TAG(world, Bar);
+
+    ecs_new_entity(world, "e");
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "Foo($var), Bar(e)"
+    });
+
+    test_assert(r != NULL);
+
+    ecs_log_enable_colors(false);
+
+    const char *expect = 
+    HEAD " 0. [-1,  1]  setfix      "
+    LINE " 1. [ 0,  2]  setids      "
+    LINE " 2. [ 1,  3]  selfupid    e                 (Bar)"
+    LINE " 3. [ 2,  4]  selfupid    $[var]            (Foo)"
+    LINE " 4. [ 3,  5]  each        $var              ($[var])"
+    LINE " 5. [ 4,  6]  setvars     "
+    LINE " 6. [ 5,  7]  yield       "
+    LINE "";
+    char *plan = ecs_query_plan(r);
+
+    test_str(expect, plan);
+    ecs_os_free(plan);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void Plan_fixed_src_before_var(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, Foo);
+    ECS_TAG(world, Bar);
+
+    ecs_new_entity(world, "e");
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "Bar(e), Foo($var)"
+    });
+
+    test_assert(r != NULL);
+
+    ecs_log_enable_colors(false);
+
+    const char *expect = 
+    HEAD " 0. [-1,  1]  setfix      "
+    LINE " 1. [ 0,  2]  setids      "
+    LINE " 2. [ 1,  3]  selfupid    e                 (Bar)"
+    LINE " 3. [ 2,  4]  selfupid    $[var]            (Foo)"
+    LINE " 4. [ 3,  5]  each        $var              ($[var])"
+    LINE " 5. [ 4,  6]  setvars     "
+    LINE " 6. [ 5,  7]  yield       "
+    LINE "";
+    char *plan = ecs_query_plan(r);
+
+    test_str(expect, plan);
+    ecs_os_free(plan);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void Plan_this_before_fixed_src_w_not(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, Foo);
+    ECS_TAG(world, Bar);
+
+    ecs_new_entity(world, "e");
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "Foo, !Bar(e)"
+    });
+
+    test_assert(r != NULL);
+
+    ecs_log_enable_colors(false);
+
+    const char *expect = 
+    HEAD " 0. [-1,  1]  setfix      "
+    LINE " 1. [ 0,  2]  setids      "
+    LINE " 2. [ 1,  4]  not         "
+    LINE " 3. [ 2,  4]   selfupid   e                 (Bar)"
+    LINE " 4. [ 2,  5]  end         e                 (Bar)"
+    LINE " 5. [ 4,  6]  selfupid    $[this]           (Foo)"
+    LINE " 6. [ 5,  7]  yield       "
+    LINE "";
+    char *plan = ecs_query_plan(r);
+
+    test_str(expect, plan);
+    ecs_os_free(plan);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void Plan_this_before_fixed_src_w_first_var(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, Foo);
+    ECS_TAG(world, Bar);
+
+    ecs_new_entity(world, "e");
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "Foo, $this(e)"
+    });
+
+    test_assert(r != NULL);
+
+    ecs_log_enable_colors(false);
+
+    const char *expect = 
+    HEAD " 0. [-1,  1]  setfix      "
+    LINE " 1. [ 0,  2]  setids      "
+    LINE " 2. [ 1,  3]  selfup      e                 ($this)"
+    LINE " 3. [ 2,  4]  selfupid    $this             (Foo)"
+    LINE " 4. [ 3,  5]  setthis                       ($this)"
+    LINE " 5. [ 4,  6]  yield       "
+    LINE "";
+    char *plan = ecs_query_plan(r);
+
+    test_str(expect, plan);
+    ecs_os_free(plan);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void Plan_this_before_fixed_src_w_first_var_w_not(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, Foo);
+    ECS_TAG(world, Bar);
+
+    ecs_new_entity(world, "e");
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "Foo, !$this(e)"
+    });
+
+    test_assert(r != NULL);
+
+    ecs_log_enable_colors(false);
+
+    const char *expect = 
+    HEAD " 0. [-1,  1]  setfix      "
+    LINE " 1. [ 0,  2]  setids      "
+    LINE " 2. [ 1,  3]  selfupid    $[this]           (Foo)"
+    LINE " 3. [ 2,  4]  each        $this             ($[this])"
+    LINE " 4. [ 3,  6]  not         "
+    LINE " 5. [ 4,  6]   selfup     e                 ($this)"
+    LINE " 6. [ 4,  7]  end         e                 ($this)"
+    LINE " 7. [ 6,  8]  setthis                       ($this)"
+    LINE " 8. [ 7,  9]  yield       "
+    LINE "";
+    char *plan = ecs_query_plan(r);
+
+    test_str(expect, plan);
+    ecs_os_free(plan);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void Plan_this_before_fixed_src_w_second_var(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, Foo);
+    ECS_TAG(world, Bar);
+
+    ecs_new_entity(world, "e");
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "Foo, Bar(e, $this)"
+    });
+
+    test_assert(r != NULL);
+
+    ecs_log_enable_colors(false);
+
+    const char *expect = 
+    HEAD " 0. [-1,  1]  setfix      "
+    LINE " 1. [ 0,  2]  setids      "
+    LINE " 2. [ 1,  3]  selfup      e                 (Bar, $this)"
+    LINE " 3. [ 2,  4]  selfupid    $this             (Foo)"
+    LINE " 4. [ 3,  5]  setthis                       ($this)"
+    LINE " 5. [ 4,  6]  yield       "
+    LINE "";
+    char *plan = ecs_query_plan(r);
+
+    test_str(expect, plan);
+    ecs_os_free(plan);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void Plan_this_before_fixed_src_w_second_var_w_not(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, Foo);
+    ECS_TAG(world, Bar);
+
+    ecs_new_entity(world, "e");
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "Foo, !Bar(e, $this)"
+    });
+
+    test_assert(r != NULL);
+
+    ecs_log_enable_colors(false);
+
+    const char *expect = 
+    HEAD " 0. [-1,  1]  setfix      "
+    LINE " 1. [ 0,  2]  setids      "
+    LINE " 2. [ 1,  3]  selfupid    $[this]           (Foo)"
+    LINE " 3. [ 2,  4]  each        $this             ($[this])"
+    LINE " 4. [ 3,  6]  not         "
+    LINE " 5. [ 4,  6]   selfup     e                 (Bar, $this)"
+    LINE " 6. [ 4,  7]  end         e                 (Bar, $this)"
+    LINE " 7. [ 6,  8]  setthis                       ($this)"
+    LINE " 8. [ 7,  9]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
 

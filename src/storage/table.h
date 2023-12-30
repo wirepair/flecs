@@ -262,4 +262,9 @@ ecs_vec_t* flecs_table_entities(
 ecs_entity_t* flecs_table_entities_array(
     ecs_table_t *table);
 
+void flecs_table_emit(
+    ecs_world_t *world,
+    ecs_table_t *table,
+    ecs_entity_t event);
+
 #endif

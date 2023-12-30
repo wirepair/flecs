@@ -310,6 +310,7 @@ struct ecs_query_impl_t {
     int32_t op_count;             /* Number of operations */
 
     ecs_query_cache_t *cache;     /* Cache, if query contains cached terms */
+    int8_t *field_map;            /* Map field indices from cache to query */
 
     int16_t tokens_len;           /* Length of tokens buffer */
     char *tokens;                 /* Buffer with string tokens used by terms */

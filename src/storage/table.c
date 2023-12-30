@@ -318,6 +318,20 @@ void flecs_table_append_to_records(
     ecs_assert(tr->hdr.cache != NULL, ECS_INTERNAL_ERROR, NULL);
 }
 
+void flecs_table_emit(
+    ecs_world_t *world,
+    ecs_table_t *table,
+    ecs_entity_t event)
+{
+    flecs_emit(world, world, &(ecs_event_desc_t) {
+        .ids = &table->type,
+        .event = event,
+        .table = table,
+        .flags = EcsEventTableOnly,
+        .observable = world
+    });
+}
+
 /* Main table initialization function */
 void flecs_table_init(
     ecs_world_t *world,
@@ -584,13 +598,7 @@ void flecs_table_init(
     }
 
     if (table->flags & EcsTableHasOnTableCreate) {
-        flecs_emit(world, world, &(ecs_event_desc_t) {
-            .ids = &table->type,
-            .event = EcsOnTableCreate,
-            .table = table,
-            .flags = EcsEventTableOnly,
-            .observable = world
-        });
+        flecs_table_emit(world, table, EcsOnTableCreate);
     }
 }
 
@@ -995,13 +1003,7 @@ void flecs_table_free(
 
     if (!is_root && !(world->flags & EcsWorldQuit)) {
         if (table->flags & EcsTableHasOnTableDelete) {
-            flecs_emit(world, world, &(ecs_event_desc_t) {
-                .ids = &table->type,
-                .event = EcsOnTableDelete,
-                .table = table,
-                .flags = EcsEventTableOnly,
-                .observable = world
-            });
+            flecs_table_emit(world, table, EcsOnTableDelete);
         }
     }
 

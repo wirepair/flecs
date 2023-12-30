@@ -760,6 +760,9 @@ int flecs_term_finalize(
         trivial_term = false;
         cacheable_term = false;
     }
+    if (term->flags & EcsTermIsScope) {
+        cacheable_term = false;
+    }
     if (term->trav && term->trav != EcsIsA) {
         trivial_term = false;
     }
@@ -767,6 +770,9 @@ int flecs_term_finalize(
         trivial_term = false;
     }
     if (ECS_TERM_REF_ID(src) != EcsThis) {
+        cacheable_term = false;
+    }
+    if (term->id == ecs_childof(0)) {
         cacheable_term = false;
     }
 
@@ -876,18 +882,35 @@ int flecs_query_query_finalize_terms(
     q->flags |= EcsQueryMatchOnlyThis;
 
     for (i = 0; i < term_count; i ++) {
-        bool filter_term = false;
         ecs_term_t *term = &terms[i];
+        bool prev_is_or = i && term[-1].oper == EcsOr;
+        bool filter_term = false;
         ctx.term_index = i;
         if (flecs_term_finalize(world, term, &ctx)) {
             return -1;
         }
 
         if (term->flags & EcsTermIsCacheable) {
-            cacheable_terms ++;
+            if ((term->oper != EcsOr && !prev_is_or) || term[-1].flags & EcsTermIsCacheable) {
+                cacheable_terms ++;
+            } else {
+                term->flags &= ~EcsTermIsCacheable;
+            }
+        } else if (prev_is_or) {
+            /* If one of the terms in an OR chain isn't cacheable, none are */
+            int32_t j;
+            for (j = i - 1; j >= 0; j --) {
+                if (terms[j].oper != EcsOr) {
+                    break;
+                }
+                if (terms[j].flags & EcsTermIsCacheable) {
+                    cacheable_terms --;
+                    terms[j].flags &= ~EcsTermIsCacheable;
+                }
+            }
         }
 
-        if (i && term[-1].oper == EcsOr) {
+        if (prev_is_or) {
             if (ECS_TERM_REF_ID(&term[-1].src) != ECS_TERM_REF_ID(&term->src)) {
                 flecs_query_validator_error(&ctx, "mismatching src.id for OR terms");
                 return -1;

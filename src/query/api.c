@@ -167,6 +167,35 @@ int flecs_query_create_cache(
     if (q->cache_kind == EcsQueryCacheAll) {
         /* Create query cache for all terms */
         impl->cache = flecs_query_cache_init(impl->pub.world, desc);
+    } else if (q->cache_kind == EcsQueryCacheAuto) {
+        /* Query is partially cached */
+        ecs_query_desc_t cache_desc = *desc;
+        ecs_os_memset_n(&cache_desc.terms, 0, ecs_term_t, FLECS_TERM_COUNT_MAX);
+        cache_desc.expr = NULL;
+
+        /* Maps field indices from cache to query */
+        int8_t field_map[FLECS_TERM_COUNT_MAX];
+
+        int32_t i, count = q->term_count, dst_count = 0, dst_field = 0;
+        ecs_term_t *terms = q->terms;
+        for (i = 0; i < count; i ++) {
+            ecs_term_t *term = &terms[i];
+            if (term->flags & EcsTermIsCacheable) {
+                cache_desc.terms[dst_count] = *term;
+                field_map[dst_field] = term->field_index;
+                dst_count ++;
+                if (i) {
+                    dst_field += term->field_index != term[-1].field_index;
+                } else {
+                    dst_field ++;
+                }
+            }
+        }
+
+        if (dst_count) {
+            impl->cache = flecs_query_cache_init(impl->pub.world, &cache_desc);
+            impl->field_map = ecs_os_memdup_n(field_map, int8_t, dst_count);
+        }
     }
 
     return 0;

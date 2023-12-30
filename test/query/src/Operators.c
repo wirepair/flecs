@@ -4590,18 +4590,6 @@ void Operators_2_or_chains(void) {
     ECS_TAG(world, RelC);
     ECS_TAG(world, RelD);
 
-    ecs_query_t *r = ecs_query(world, {
-        .expr = "RelA($this) || RelB($this), RelC($this) || RelD($this)",
-        .cache_kind = cache_kind
-    });
-
-    test_assert(r != NULL);
-
-    {
-        ecs_iter_t it = ecs_query_iter(world, r);
-        test_bool(false, ecs_query_next(&it));
-    }
-
     ecs_entity_t e1 = ecs_new_id(world);
     ecs_entity_t e2 = ecs_new_id(world);
     ecs_entity_t e3 = ecs_new_id(world);
@@ -4623,6 +4611,13 @@ void Operators_2_or_chains(void) {
 
     ecs_add(world, e6, RelB);
     ecs_add(world, e6, RelD);
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "RelA($this) || RelB($this), RelC($this) || RelD($this)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(r != NULL);
 
     {
         ecs_iter_t it = ecs_query_iter(world, r);

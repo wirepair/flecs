@@ -1917,25 +1917,44 @@ void flecs_query_insert_cache_search(
         /* If all terms are cacheable, make sure no other terms are compiled */
         *compiled = 0xFFFFFFFFFFFFFFFF;
         *populated = 0xFFFFFFFFFFFFFFFF;
+    } else if (q->cache_kind == EcsQueryCacheAuto) {
+        /* The query is partially cacheable */
+        ecs_term_t *terms = q->terms;
+        int32_t i, count = q->term_count;
+        for (i = 0; i < count; i ++) {
+            ecs_term_t *term = &terms[i];
+            if ((*compiled) & (1ull << i)) {
+                continue;
+            }
 
-        /* Insert the operation for cache traversal */
-        ecs_query_op_t op = {0};
-        if (q->flags & EcsQueryNoData) {
-            if (q->flags & EcsQueryIsCacheable) {
-                op.kind = EcsRuleIsCache;
-            } else {
-                op.kind = EcsRuleCache;
+            if (!(term->flags & EcsTermIsCacheable)) {
+                continue;
             }
-        } else {
-            if (q->flags & EcsQueryIsCacheable) {
-                op.kind = EcsRuleIsCacheData;
-            } else {
-                op.kind = EcsRuleCacheData;
-            }
+
+            *compiled |= (1ull << i);
+            *populated |= (1ull << i);    
         }
-
-        flecs_query_op_insert(&op, ctx);
     }
+
+    /* Insert the operation for cache traversal */
+    ecs_query_op_t op = {0};
+    if (q->flags & EcsQueryNoData) {
+        if (q->flags & EcsQueryIsCacheable) {
+            op.kind = EcsRuleIsCache;
+        } else {
+            op.kind = EcsRuleCache;
+        }
+    } else {
+        if (q->flags & EcsQueryIsCacheable) {
+            op.kind = EcsRuleIsCacheData;
+        } else {
+            op.kind = EcsRuleCacheData;
+        }
+    }
+
+    flecs_query_write(0, &op.written);
+    flecs_query_write_ctx(0, ctx, false);
+    flecs_query_op_insert(&op, ctx);
 }
 
 static

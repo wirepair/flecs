@@ -2024,13 +2024,7 @@ void flecs_process_pending_tables(
 
                     ecs_log_push_3();
 
-                    flecs_emit(world, world, &(ecs_event_desc_t){
-                        .event = evt,
-                        .table = table,
-                        .ids = &table->type,
-                        .observable = world,
-                        .flags = EcsEventTableOnly
-                    });
+                    flecs_table_emit(world, table, evt);
 
                     ecs_log_pop_3();   
                 }

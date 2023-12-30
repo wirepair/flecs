@@ -6060,8 +6060,14 @@ void Variables_2_cycle_w_this_var(void) {
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_add_id(world, e1, e2);
-    ecs_add_id(world, e2, e1);
+    if (cache_kind == EcsQueryCacheDefault) {
+        ecs_add_id(world, e1, e2);
+        ecs_add_id(world, e2, e1);
+    } else {
+        /* Cached query reverses the result */
+        ecs_add_id(world, e2, e1);
+        ecs_add_id(world, e1, e2);
+    }
 
     {
         ecs_iter_t it = ecs_query_iter(world, r);

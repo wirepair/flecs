@@ -3867,6 +3867,120 @@ void Operators_3_or(void) {
     ecs_fini(world);
 }
 
+void Operators_2_or_w_and(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_TAG(world, TagC);
+    ECS_TAG(world, Foo);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "TagA || TagB, Foo",
+        .cache_kind = cache_kind
+    });
+    test_assert(q != NULL);
+
+    ecs_entity_t e1 = ecs_new(world, TagA);
+    ecs_entity_t e2 = ecs_new(world, TagA);
+    ecs_add(world, e2, TagB);
+    ecs_entity_t e3 = ecs_new(world, TagB);
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+
+    ecs_new(world, TagB);
+    ecs_new(world, TagC);
+    ecs_new(world, Foo);
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_uint(e1, it.entities[0]);
+    test_uint(TagA, ecs_field_id(&it, 1));
+    test_uint(Foo, ecs_field_id(&it, 2));
+
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_uint(e2, it.entities[0]);
+    test_uint(TagA, ecs_field_id(&it, 1));
+    test_uint(Foo, ecs_field_id(&it, 2));
+
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_uint(e3, it.entities[0]);
+    test_uint(TagB, ecs_field_id(&it, 1));
+    test_uint(Foo, ecs_field_id(&it, 2));
+    test_bool(false, ecs_query_next(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void Operators_3_or_w_and(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_TAG(world, TagC);
+    ECS_TAG(world, Foo);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr =  "TagA || TagB || TagC, Foo",
+        .cache_kind = cache_kind
+    });
+    test_assert(q != NULL);
+
+    ecs_entity_t e1 = ecs_new(world, TagA);
+    ecs_entity_t e2 = ecs_new(world, TagA);
+    ecs_add(world, e2, TagB);
+    ecs_entity_t e3 = ecs_new(world, TagB);
+    ecs_add(world, e3, TagC);
+    ecs_entity_t e4 = ecs_new(world, TagC);
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+    ecs_add(world, e4, Foo);
+
+    ecs_new(world, TagB);
+    ecs_new(world, TagC);
+    ecs_new(world, Foo);
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_uint(e1, it.entities[0]);
+    test_uint(TagA, ecs_field_id(&it, 1));
+    test_uint(Foo, ecs_field_id(&it, 2));
+
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_uint(e2, it.entities[0]);
+    test_uint(TagA, ecs_field_id(&it, 1));
+    test_uint(Foo, ecs_field_id(&it, 2));
+
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_uint(e3, it.entities[0]);
+    test_uint(TagB, ecs_field_id(&it, 1));
+    test_uint(Foo, ecs_field_id(&it, 2));
+
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_uint(e4, it.entities[0]);
+    test_uint(TagC, ecs_field_id(&it, 1));
+    test_uint(Foo, ecs_field_id(&it, 2));
+
+    test_bool(false, ecs_query_next(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
 void Operators_2_or_written(void) {
     ecs_world_t *world = ecs_mini();
 
@@ -5382,6 +5496,169 @@ void Operators_2_optional_first(void) {
     ecs_fini(world);
 }
 
+void Operators_only_not(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+
+    ecs_entity_t e1 = ecs_new(world, TagA);
+    ecs_entity_t e2 = ecs_new(world, TagA);
+    ecs_add(world, e2, TagB);
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "!TagA($this)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(r != NULL);
+
+    ecs_iter_t it = ecs_query_iter(world, r);
+    int32_t count = 0;
+    while (ecs_query_next(&it)) {
+        for (int32_t i = 0; i < it.count; i ++) {
+            test_assert(it.entities[i] != e1);
+            test_assert(it.entities[i] != e2);
+            count ++;
+        }
+    }
+
+    test_assert(count != 0);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void Operators_only_optional(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+
+    ecs_entity_t e1 = ecs_new(world, TagA);
+    ecs_entity_t e2 = ecs_new(world, TagA);
+    ecs_add(world, e2, TagB);
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "?TagA($this)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(r != NULL);
+
+    ecs_iter_t it = ecs_query_iter(world, r);
+    int32_t count = 0;
+    bool e1_found = false;
+    bool e2_found = false;
+    while (ecs_query_next(&it)) {
+        for (int32_t i = 0; i < it.count; i ++) {
+            e1_found |= it.entities[i] == e1;
+            e2_found |= it.entities[i] == e2;
+            count ++;
+        }
+    }
+
+    test_assert(count > 2);
+    test_bool(e1_found, true);
+    test_bool(e2_found, true);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void Operators_not_after_fixed_src(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_TAG(world, TagC);
+
+    ecs_entity_t ent = ecs_new_entity(world, "ent");
+    ecs_entity_t e1 = ecs_new(world, TagA);
+    ecs_entity_t e2 = ecs_new(world, TagA);
+    ecs_add(world, e2, TagB);
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "TagC(ent), !TagA($this)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(r != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, r);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, ent, TagC);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, r);
+        int32_t count = 0;
+        while (ecs_query_next(&it)) {
+            for (int32_t i = 0; i < it.count; i ++) {
+                test_assert(it.entities[i] != e1);
+                test_assert(it.entities[i] != e2);
+                count ++;
+            }
+        }
+        test_assert(count != 0);
+    }
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
+void Operators_optional_after_fixed_src(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_TAG(world, TagC);
+
+    ecs_entity_t ent = ecs_new_entity(world, "ent");
+    ecs_entity_t e1 = ecs_new(world, TagA);
+    ecs_entity_t e2 = ecs_new(world, TagA);
+    ecs_add(world, e2, TagB);
+
+    ecs_query_t *r = ecs_query(world, {
+        .expr = "TagC(ent), ?TagA($this)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(r != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, r);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, ent, TagC);
+
+    ecs_iter_t it = ecs_query_iter(world, r);
+    int32_t count = 0;
+    bool e1_found = false;
+    bool e2_found = false;
+    while (ecs_query_next(&it)) {
+        for (int32_t i = 0; i < it.count; i ++) {
+            e1_found |= it.entities[i] == e1;
+            e2_found |= it.entities[i] == e2;
+            count ++;
+        }
+    }
+
+    test_assert(count > 2);
+    test_bool(e1_found, true);
+    test_bool(e2_found, true);
+
+    ecs_query_fini(r);
+
+    ecs_fini(world);
+}
+
 void Operators_root_entities_empty(void) {
     ecs_world_t *world = ecs_mini();
 
@@ -6669,4 +6946,40 @@ void Operators_1_ent_src_not_pair_rel_tgt_same_var_written(void) {
     ecs_query_fini(r);
 
     ecs_fini(world);
+}
+
+void Operators_and_from_fixed_src(void) {
+    // Implement testcase
+}
+
+void Operators_not_from_fixed_src(void) {
+    // Implement testcase
+}
+
+void Operators_or_from_fixed_src(void) {
+    // Implement testcase
+}
+
+void Operators_and_from_this(void) {
+    // Implement testcase
+}
+
+void Operators_not_from_this(void) {
+    // Implement testcase
+}
+
+void Operators_or_from_this(void) {
+    // Implement testcase
+}
+
+void Operators_and_from_this_written(void) {
+    // Implement testcase
+}
+
+void Operators_not_from_this_written(void) {
+    // Implement testcase
+}
+
+void Operators_or_from_this_written(void) {
+    // Implement testcase
 }

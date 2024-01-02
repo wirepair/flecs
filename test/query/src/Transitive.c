@@ -269,6 +269,61 @@ void Transitive_1_fact_reflexive(void) {
     ecs_fini(world);
 }
 
+void Transitive_1_isa(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_ENTITY(world, BaseA, 0);
+    ECS_ENTITY(world, BaseB, 0);
+    ECS_ENTITY(world, e1, (IsA, BaseB));
+    ECS_ENTITY(world, e2, (IsA, BaseA));
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "(IsA, BaseA)"
+    });
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_uint(BaseA, it.entities[0]);
+    test_uint(ecs_isa(BaseA), ecs_field_id(&it, 1));
+    test_uint(0, ecs_field_src(&it, 1));
+
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_uint(e2, it.entities[0]);
+    test_uint(ecs_isa(BaseA), ecs_field_id(&it, 1));
+    test_uint(0, ecs_field_src(&it, 1));
+    test_bool(false, ecs_query_next(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void Transitive_1_childof(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_ENTITY(world, BaseA, 0);
+    ECS_ENTITY(world, BaseB, 0);
+    ECS_ENTITY(world, e1, (ChildOf, BaseB));
+    ECS_ENTITY(world, e2, (ChildOf, BaseA));
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "(ChildOf, BaseA)"
+    });
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_uint(e2, it.entities[0]);
+    test_uint(ecs_childof(BaseA), ecs_field_id(&it, 1));
+    test_bool(false, ecs_query_next(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
 void Transitive_1_this_src_written_0_lvl(void) {
     ecs_world_t *world = ecs_mini();
 

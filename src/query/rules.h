@@ -544,3 +544,16 @@ char* flecs_query_str(
 const char* flecs_query_op_str(
     uint16_t kind);
 
+int32_t flecs_query_cache_table_count(
+    ecs_query_cache_t *cache);
+
+int32_t flecs_query_cache_empty_table_count(
+    ecs_query_cache_t *cache);
+
+int32_t flecs_query_cache_entity_count(
+    const ecs_query_cache_t *query);
+
+/* Internal function for creating iterator, doesn't run aperiodic tasks */
+ecs_iter_t flecs_query_iter(
+    const ecs_world_t *world,
+    const ecs_query_t *q);

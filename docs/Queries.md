@@ -2459,7 +2459,7 @@ ecs_query_cache_t *q_write = ecs_query(world, {
 
 // Test if changes have occurred for anything matching the query. If this is the
 // first call to the function, it will enable change detection for the query.
-bool changed = ecs_query_cache_changed(q_read, NULL);
+bool changed = ecs_query_changed(q_read, NULL);
 
 // Setting a component will update the changed state
 ecs_entity_t e = ecs_new_id(world);
@@ -2482,7 +2482,7 @@ while (ecs_query_cache_next(&it)) {
 // Iterating tables with q_read will reset the changed state
 it = ecs_query_cache_iter(world, q_read);
 while (ecs_query_cache_next(&it)) {
-  if (ecs_query_cache_changed(q_read, &it)) {
+  if (ecs_query_changed(q_read, &it)) {
     // Check if the current table has changed. The change state will be reset 
     // after the table is iterated, so code can respond to changes in individual
     // tables.

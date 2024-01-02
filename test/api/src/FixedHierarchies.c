@@ -2395,7 +2395,7 @@ void FixedHierarchies_query_w_parent_change_detection_1st(void) {
         {
             test_bool(ecs_query_cache_next_table(&it), true);
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2409,7 +2409,7 @@ void FixedHierarchies_query_w_parent_change_detection_1st(void) {
         }
         {
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2431,7 +2431,7 @@ void FixedHierarchies_query_w_parent_change_detection_1st(void) {
         {
             test_bool(ecs_query_cache_next_table(&it), true);
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2445,7 +2445,7 @@ void FixedHierarchies_query_w_parent_change_detection_1st(void) {
         }
         {
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), false);
+            test_bool(ecs_query_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2507,7 +2507,7 @@ void FixedHierarchies_query_w_parent_change_detection_2nd(void) {
         {
             test_bool(ecs_query_cache_next_table(&it), true);
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2521,7 +2521,7 @@ void FixedHierarchies_query_w_parent_change_detection_2nd(void) {
         }
         {
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2543,7 +2543,7 @@ void FixedHierarchies_query_w_parent_change_detection_2nd(void) {
         {
             test_bool(ecs_query_cache_next_table(&it), true);
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), false);
+            test_bool(ecs_query_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2557,7 +2557,7 @@ void FixedHierarchies_query_w_parent_change_detection_2nd(void) {
         }
         {
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2619,7 +2619,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
         {
             test_bool(ecs_query_cache_next_table(&it), true);
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2633,7 +2633,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
         }
         {
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2655,7 +2655,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
         {
             test_bool(ecs_query_cache_next_table(&it), true);
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2669,7 +2669,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
         }
         {
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), false);
+            test_bool(ecs_query_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2689,7 +2689,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
         {
             test_bool(ecs_query_cache_next_table(&it), true);
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), false);
+            test_bool(ecs_query_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2703,7 +2703,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice(void) {
         }
         {
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), false);
+            test_bool(ecs_query_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2765,7 +2765,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
         {
             test_bool(ecs_query_cache_next_table(&it), true);
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2779,7 +2779,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
         }
         {
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2801,7 +2801,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
         {
             test_bool(ecs_query_cache_next_table(&it), true);
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2815,7 +2815,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
         }
         {
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), false);
+            test_bool(ecs_query_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2837,7 +2837,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
         {
             test_bool(ecs_query_cache_next_table(&it), true);
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), false);
+            test_bool(ecs_query_changed(NULL, &it), false);
             test_uint(1, it.count);
             test_uint(p_1_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -2851,7 +2851,7 @@ void FixedHierarchies_query_w_parent_change_detection_iter_twice_each_parent(voi
         }
         {
             test_assert(ecs_query_cache_populate(&it, false) == EcsIterNextYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);
@@ -3045,7 +3045,7 @@ void FixedHierarchies_query_w_parent_change_detection_2nd_populate_when_changed(
         {
             test_bool(ecs_query_cache_next_table(&it), true);
             test_assert(ecs_query_cache_populate(&it, true) == EcsIterNextYield);
-            test_bool(ecs_query_cache_changed(NULL, &it), true);
+            test_bool(ecs_query_changed(NULL, &it), true);
             test_uint(1, it.count);
             test_uint(p_2_1, it.entities[0]);
             test_uint(0, it.sources[0]);

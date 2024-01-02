@@ -421,9 +421,11 @@ void Basic_invalid_rule(void);
 void Basic_not_instanced_table_src(void);
 void Basic_not_instanced_entity_src(void);
 void Basic_not_instanced_mixed_src(void);
+void Basic_not_instanced_inherited(void);
 void Basic_instanced_table_src(void);
 void Basic_instanced_entity_src(void);
 void Basic_instanced_mixed_src(void);
+void Basic_instanced_inherited(void);
 void Basic_in_term(void);
 void Basic_out_term(void);
 void Basic_inout_term(void);
@@ -483,6 +485,9 @@ void Basic_2_this_w_fixed_src_no_match_fixed(void);
 void Basic_2_fixed_src_w_this_no_match_fixed(void);
 void Basic_2_this_w_fixed_src_no_match_this(void);
 void Basic_2_fixed_src_w_this_no_match_this(void);
+void Basic_query_count_results(void);
+void Basic_query_count_entities(void);
+void Basic_query_is_true(void);
 
 // Testsuite 'Plan'
 void Plan_reordered_plan_1(void);
@@ -725,6 +730,8 @@ void Operators_3_and_optional_dependent_not_pair_tgt(void);
 void Operators_3_and_optional_dependent_not_pair_src(void);
 void Operators_2_or(void);
 void Operators_3_or(void);
+void Operators_2_or_w_and(void);
+void Operators_3_or_w_and(void);
 void Operators_2_or_written(void);
 void Operators_3_or_written(void);
 void Operators_2_or_written_w_rel_var(void);
@@ -745,6 +752,10 @@ void Operators_2_or_w_both(void);
 void Operators_3_or_w_both(void);
 void Operators_2_not_first(void);
 void Operators_2_optional_first(void);
+void Operators_only_not(void);
+void Operators_only_optional(void);
+void Operators_not_after_fixed_src(void);
+void Operators_optional_after_fixed_src(void);
 void Operators_root_entities_empty(void);
 void Operators_root_entities(void);
 void Operators_root_entities_w_children(void);
@@ -772,6 +783,15 @@ void Operators_1_ent_src_not_pair_rel_var_written(void);
 void Operators_1_ent_src_not_pair_tgt_var_written(void);
 void Operators_1_ent_src_not_pair_rel_tgt_var_written(void);
 void Operators_1_ent_src_not_pair_rel_tgt_same_var_written(void);
+void Operators_and_from_fixed_src(void);
+void Operators_not_from_fixed_src(void);
+void Operators_or_from_fixed_src(void);
+void Operators_and_from_this(void);
+void Operators_not_from_this(void);
+void Operators_or_from_this(void);
+void Operators_and_from_this_written(void);
+void Operators_not_from_this_written(void);
+void Operators_or_from_this_written(void);
 
 // Testsuite 'Transitive'
 void Transitive_1_fact_0_lvl_true(void);
@@ -781,6 +801,8 @@ void Transitive_1_fact_0_lvl_false(void);
 void Transitive_1_fact_1_lvl_false(void);
 void Transitive_1_fact_2_lvl_false(void);
 void Transitive_1_fact_reflexive(void);
+void Transitive_1_isa(void);
+void Transitive_1_childof(void);
 void Transitive_1_this_src_written_0_lvl(void);
 void Transitive_1_this_src_written_1_lvl(void);
 void Transitive_1_this_src_written_2_lvl(void);
@@ -968,6 +990,7 @@ void Scopes_term_w_not_scope_2_terms_w_or(void);
 void Scopes_term_w_not_scope_3_terms_w_or(void);
 
 // Testsuite 'Traversal'
+void Traversal_setup(void);
 void Traversal_this_self_up_childof(void);
 void Traversal_this_up_childof(void);
 void Traversal_this_written_self_up_childof(void);
@@ -1052,15 +1075,229 @@ void Traversal_not_up_disabled(void);
 void Traversal_up_2_rel_instances(void);
 void Traversal_up_2_rel_instances_match_2nd(void);
 void Traversal_up_only_w_owned(void);
-void Traversal_this_self_cascade_childof(void);
-void Traversal_this_cascade_childof(void);
-void Traversal_this_written_self_cascade_childof(void);
-void Traversal_this_written_cascade_childof(void);
-void Traversal_this_self_cascade_childof_w_parent_flag(void);
-void Traversal_this_cascade_childof_w_parent_flag(void);
-void Traversal_this_written_self_cascade_childof_w_parent_flag(void);
-void Traversal_this_written_cascade_childof_w_parent_flag(void);
 void Traversal_this_up_trav_unused_rel(void);
+void Traversal_this_optional_self(void);
+void Traversal_this_optional_up(void);
+void Traversal_this_optional_self_up(void);
+void Traversal_this_written_optional_self(void);
+void Traversal_this_written_optional_up(void);
+void Traversal_this_written_optional_self_up(void);
+
+// Testsuite 'Cascade'
+void Cascade_this_self_cascade_childof_uncached(void);
+void Cascade_this_cascade_childof_uncached(void);
+void Cascade_this_written_self_cascade_childof_uncached(void);
+void Cascade_this_written_cascade_childof_uncached(void);
+void Cascade_this_self_cascade_childof_w_parent_flag_uncached(void);
+void Cascade_this_cascade_childof_w_parent_flag_uncached(void);
+void Cascade_this_written_self_cascade_childof_w_parent_flag_uncached(void);
+void Cascade_this_written_cascade_childof_w_parent_flag_uncached(void);
+
+// Testsuite 'Cached'
+void Cached_simple_query_existing_table(void);
+void Cached_simple_query_2_existing_tables(void);
+void Cached_simple_query_new_table(void);
+void Cached_simple_query_2_new_tables(void);
+void Cached_simple_query_existing_and_new_table(void);
+void Cached_wildcard_query_existing_table(void);
+void Cached_wildcard_query_new_table(void);
+void Cached_wildcard_query_existing_table_2_results_p_table(void);
+void Cached_wildcard_query_new_table_2_results_p_table(void);
+void Cached_wildcard_query_2nd_term(void);
+void Cached_wildcard_query_2nd_term_self(void);
+void Cached_simple_query_existing_empty_table(void);
+void Cached_simple_query_existing_empty_type(void);
+void Cached_simple_query_new_empty_table(void);
+void Cached_component_query_existing_table(void);
+void Cached_component_query_new_table(void);
+void Cached_component_query_existing_empty_table(void);
+void Cached_2_component_query_existing_empty_table(void);
+void Cached_2_component_query_existing_empty_type(void);
+void Cached_only_optional(void);
+void Cached_only_optional_new_empty_table(void);
+void Cached_only_optional_new_empty_non_empty_table(void);
+void Cached_only_optional_new_unset_tables(void);
+void Cached_singleton_w_optional_new_empty_table(void);
+void Cached_singleton_w_optional_new_empty_non_empty_table(void);
+void Cached_singleton_w_optional_new_unset_tables(void);
+void Cached_query_from_entity_or_change(void);
+void Cached_query_from_entity_w_superset(void);
+void Cached_query_w_from_entity_match_after(void);
+void Cached_query_w_from_singleton_match_after(void);
+void Cached_query_w_from_nothing(void);
+void Cached_query_only_2_or(void);
+void Cached_query_only_3_or(void);
+void Cached_query_2_or(void);
+void Cached_query_3_or(void);
+void Cached_query_single_pairs(void);
+void Cached_query_optional_owned(void);
+void Cached_query_optional_shared(void);
+void Cached_query_optional_shared_nested(void);
+void Cached_query_optional_any(void);
+void Cached_query_rematch_optional_after_add(void);
+void Cached_get_owned_tag(void);
+void Cached_get_shared_tag(void);
+void Cached_explicit_delete(void);
+void Cached_get_column_size(void);
+void Cached_stresstest_query_free(void);
+void Cached_only_from_entity(void);
+void Cached_only_not_from_entity(void);
+void Cached_only_from_singleton(void);
+void Cached_only_not_from_singleton(void);
+void Cached_iter_valid(void);
+void Cached_query_optional_tag(void);
+void Cached_query_optional_shared_tag(void);
+void Cached_query_iter_10_tags(void);
+void Cached_query_iter_10_components(void);
+void Cached_iter_type_set(void);
+void Cached_filter_term(void);
+void Cached_2_terms_1_filter(void);
+void Cached_3_terms_2_filter(void);
+void Cached_no_instancing_w_singleton(void);
+void Cached_no_instancing_w_shared(void);
+void Cached_query_iter_frame_offset(void);
+void Cached_add_singleton_after_query(void);
+void Cached_query_w_component_from_parent_from_non_this(void);
+void Cached_create_query_while_pending(void);
+void Cached_empty_query(void);
+void Cached_parent_cascade(void);
+void Cached_existing_custom_rel_cascade(void);
+void Cached_new_custom_rel_cascade(void);
+void Cached_cascade_w_2_depths(void);
+void Cached_cascade_w_3_depths(void);
+void Cached_cascade_w_2_depths_desc(void);
+void Cached_cascade_w_3_depths_desc(void);
+void Cached_not_pair_relation_wildcard(void);
+void Cached_not_pair_object_wildcard(void);
+void Cached_two_pair_wildcards_one_not(void);
+void Cached_two_pair_wildcards_one_not_any(void);
+void Cached_implicit_existing_isa_superset(void);
+void Cached_implicit_new_isa_superset(void);
+void Cached_isa_superset(void);
+void Cached_isa_superset_2_lvls(void);
+void Cached_isa_superset_3_lvls(void);
+void Cached_isa_superset_2_lvls_owned(void);
+void Cached_isa_superset_3_lvls_owned(void);
+void Cached_isa_superset_owned_empty_table_after_match(void);
+void Cached_isa_self_superset(void);
+void Cached_childof_superset(void);
+void Cached_superset_2_targets(void);
+void Cached_superset_2_relations(void);
+void Cached_superset_2_relations_instanced(void);
+void Cached_superset_2_relations_w_component(void);
+void Cached_superset_2_relations_instanced_w_component(void);
+void Cached_parent(void);
+void Cached_existing_isa_cascade(void);
+void Cached_new_isa_cascade(void);
+void Cached_childof_cascade(void);
+void Cached_isa_rematch(void);
+void Cached_childof_rematch(void);
+void Cached_isa_unmatch(void);
+void Cached_childof_unmatch(void);
+void Cached_isa_rematch_2_lvls(void);
+void Cached_childof_rematch_2_lvls(void);
+void Cached_cascade_rematch_2_lvls(void);
+void Cached_cascade_rematch_2_lvls_2_relations(void);
+void Cached_cascade_topological(void);
+void Cached_cascade_desc_rematch_2_lvls(void);
+void Cached_cascade_desc_rematch_2_lvls_2_relations(void);
+void Cached_cascade_desc_topological(void);
+void Cached_childof_rematch_from_isa(void);
+void Cached_rematch_optional_ref(void);
+void Cached_rematch_optional_ref_w_2_refs(void);
+void Cached_rematch_optional_ref_tag_w_ref_component(void);
+void Cached_match_query_expr_from_scope(void);
+void Cached_query_long_or_w_ref(void);
+void Cached_0_query(void);
+void Cached_query_w_pair_id_and_subj(void);
+void Cached_rematch_after_delete_inherited_tag(void);
+void Cached_rematch_after_delete_rel_of_inherited_pair(void);
+void Cached_rematch_after_delete_obj_of_inherited_pair(void);
+void Cached_rematch_empty_table_w_superset(void);
+void Cached_query_w_short_notation(void);
+void Cached_query_w_invalid_filter_flag(void);
+void Cached_create_query_existing_query_entity(void);
+void Cached_query_for_recycled_pair(void);
+void Cached_query_w_singleton_w_rule_iter(void);
+void Cached_query_w_singleton_nested_iter(void);
+void Cached_query_w_singleton_interleaved_iter(void);
+void Cached_recycled_component_id(void);
+void Cached_set_get_context(void);
+void Cached_set_get_binding_context(void);
+void Cached_set_get_context_w_free(void);
+void Cached_set_get_binding_context_w_free(void);
+void Cached_set_this(void);
+void Cached_set_this_no_match(void);
+void Cached_set_this_is_true(void);
+void Cached_set_this_w_wildcard(void);
+void Cached_singleton_w_inout_none(void);
+void Cached_singleton_w_inout_none_or(void);
+void Cached_component_w_inout_none_or(void);
+void Cached_2_self_up_terms_new_tables(void);
+void Cached_this_self_up_childof_pair_new_tables(void);
+
+// Testsuite 'ChangeDetection'
+void ChangeDetection_query_changed_after_new(void);
+void ChangeDetection_query_changed_after_delete(void);
+void ChangeDetection_query_changed_after_add(void);
+void ChangeDetection_query_changed_after_remove(void);
+void ChangeDetection_query_changed_after_set(void);
+void ChangeDetection_query_change_after_modified(void);
+void ChangeDetection_query_change_after_out_system(void);
+void ChangeDetection_query_change_after_in_system(void);
+void ChangeDetection_query_change_after_modified_out_term(void);
+void ChangeDetection_query_change_check_iter(void);
+void ChangeDetection_query_change_check_iter_after_skip_read(void);
+void ChangeDetection_query_change_check_iter_after_skip_write(void);
+void ChangeDetection_query_change_parent_term(void);
+void ChangeDetection_query_change_prefab_term(void);
+void ChangeDetection_query_change_parent_term_w_tag(void);
+void ChangeDetection_query_change_prefab_term_w_tag(void);
+void ChangeDetection_query_change_skip_non_instanced(void);
+void ChangeDetection_query_changed_w_or(void);
+void ChangeDetection_query_changed_or(void);
+void ChangeDetection_query_changed_w_singleton(void);
+void ChangeDetection_query_changed_w_only_singleton(void);
+void ChangeDetection_query_changed_w_only_singleton_after_set(void);
+void ChangeDetection_query_changed_w_only_singleton_after_out_term(void);
+void ChangeDetection_query_changed_w_only_singleton_after_singleton_out_term(void);
+void ChangeDetection_query_changed_w_only_parent(void);
+void ChangeDetection_query_changed_w_only_parent_after_set(void);
+void ChangeDetection_query_changed_w_only_parent_after_out_term(void);
+void ChangeDetection_query_changed_w_only_parent_after_parent_out_term(void);
+void ChangeDetection_query_changed_tag(void);
+void ChangeDetection_query_changed_no_source(void);
+void ChangeDetection_query_changed_no_source_component(void);
+void ChangeDetection_query_changed_w_not_out(void);
+
+// Testsuite 'GroupBy'
+void GroupBy_group_by(void);
+void GroupBy_group_by_w_ctx(void);
+void GroupBy_group_by_w_sort_reverse_group_creation(void);
+void GroupBy_group_by_iter_one(void);
+void GroupBy_group_by_iter_one_all_groups(void);
+void GroupBy_group_by_iter_one_empty(void);
+void GroupBy_group_by_iter_one_empty_query(void);
+void GroupBy_group_by_iter_one_empty_table(void);
+void GroupBy_group_by_w_deleted_group_id(void);
+void GroupBy_group_by_callbacks(void);
+void GroupBy_group_by_default_action(void);
+void GroupBy_group_table_count(void);
+
+// Testsuite 'Union'
+void Union_query_w_existing_switch_and_case(void);
+void Union_query_w_new_switch_and_case(void);
+void Union_query_for_case_existing(void);
+void Union_query_for_case_new(void);
+void Union_query_for_switch_filter_term(void);
+void Union_query_switch_from_nothing(void);
+void Union_query_case_from_nothing(void);
+void Union_query_case_inherited(void);
+void Union_query_case_w_generation(void);
+void Union_query_case_w_not_alive(void);
+
+// Testsuite 'Toggle'
+void Toggle_query_disabled_from_nothing(void);
 
 bake_test_case Validator_testcases[] = {
     {
@@ -2698,6 +2935,10 @@ bake_test_case Basic_testcases[] = {
         Basic_not_instanced_mixed_src
     },
     {
+        "not_instanced_inherited",
+        Basic_not_instanced_inherited
+    },
+    {
         "instanced_table_src",
         Basic_instanced_table_src
     },
@@ -2708,6 +2949,10 @@ bake_test_case Basic_testcases[] = {
     {
         "instanced_mixed_src",
         Basic_instanced_mixed_src
+    },
+    {
+        "instanced_inherited",
+        Basic_instanced_inherited
     },
     {
         "in_term",
@@ -2944,6 +3189,18 @@ bake_test_case Basic_testcases[] = {
     {
         "2_fixed_src_w_this_no_match_this",
         Basic_2_fixed_src_w_this_no_match_this
+    },
+    {
+        "query_count_results",
+        Basic_query_count_results
+    },
+    {
+        "query_count_entities",
+        Basic_query_count_entities
+    },
+    {
+        "query_is_true",
+        Basic_query_is_true
     }
 };
 
@@ -3891,6 +4148,14 @@ bake_test_case Operators_testcases[] = {
         Operators_3_or
     },
     {
+        "2_or_w_and",
+        Operators_2_or_w_and
+    },
+    {
+        "3_or_w_and",
+        Operators_3_or_w_and
+    },
+    {
         "2_or_written",
         Operators_2_or_written
     },
@@ -3969,6 +4234,22 @@ bake_test_case Operators_testcases[] = {
     {
         "2_optional_first",
         Operators_2_optional_first
+    },
+    {
+        "only_not",
+        Operators_only_not
+    },
+    {
+        "only_optional",
+        Operators_only_optional
+    },
+    {
+        "not_after_fixed_src",
+        Operators_not_after_fixed_src
+    },
+    {
+        "optional_after_fixed_src",
+        Operators_optional_after_fixed_src
     },
     {
         "root_entities_empty",
@@ -4077,6 +4358,42 @@ bake_test_case Operators_testcases[] = {
     {
         "1_ent_src_not_pair_rel_tgt_same_var_written",
         Operators_1_ent_src_not_pair_rel_tgt_same_var_written
+    },
+    {
+        "and_from_fixed_src",
+        Operators_and_from_fixed_src
+    },
+    {
+        "not_from_fixed_src",
+        Operators_not_from_fixed_src
+    },
+    {
+        "or_from_fixed_src",
+        Operators_or_from_fixed_src
+    },
+    {
+        "and_from_this",
+        Operators_and_from_this
+    },
+    {
+        "not_from_this",
+        Operators_not_from_this
+    },
+    {
+        "or_from_this",
+        Operators_or_from_this
+    },
+    {
+        "and_from_this_written",
+        Operators_and_from_this_written
+    },
+    {
+        "not_from_this_written",
+        Operators_not_from_this_written
+    },
+    {
+        "or_from_this_written",
+        Operators_or_from_this_written
     }
 };
 
@@ -4108,6 +4425,14 @@ bake_test_case Transitive_testcases[] = {
     {
         "1_fact_reflexive",
         Transitive_1_fact_reflexive
+    },
+    {
+        "1_isa",
+        Transitive_1_isa
+    },
+    {
+        "1_childof",
+        Transitive_1_childof
     },
     {
         "1_this_src_written_0_lvl",
@@ -5169,40 +5494,866 @@ bake_test_case Traversal_testcases[] = {
         Traversal_up_only_w_owned
     },
     {
-        "this_self_cascade_childof",
-        Traversal_this_self_cascade_childof
-    },
-    {
-        "this_cascade_childof",
-        Traversal_this_cascade_childof
-    },
-    {
-        "this_written_self_cascade_childof",
-        Traversal_this_written_self_cascade_childof
-    },
-    {
-        "this_written_cascade_childof",
-        Traversal_this_written_cascade_childof
-    },
-    {
-        "this_self_cascade_childof_w_parent_flag",
-        Traversal_this_self_cascade_childof_w_parent_flag
-    },
-    {
-        "this_cascade_childof_w_parent_flag",
-        Traversal_this_cascade_childof_w_parent_flag
-    },
-    {
-        "this_written_self_cascade_childof_w_parent_flag",
-        Traversal_this_written_self_cascade_childof_w_parent_flag
-    },
-    {
-        "this_written_cascade_childof_w_parent_flag",
-        Traversal_this_written_cascade_childof_w_parent_flag
-    },
-    {
         "this_up_trav_unused_rel",
         Traversal_this_up_trav_unused_rel
+    },
+    {
+        "this_optional_self",
+        Traversal_this_optional_self
+    },
+    {
+        "this_optional_up",
+        Traversal_this_optional_up
+    },
+    {
+        "this_optional_self_up",
+        Traversal_this_optional_self_up
+    },
+    {
+        "this_written_optional_self",
+        Traversal_this_written_optional_self
+    },
+    {
+        "this_written_optional_up",
+        Traversal_this_written_optional_up
+    },
+    {
+        "this_written_optional_self_up",
+        Traversal_this_written_optional_self_up
+    }
+};
+
+bake_test_case Cascade_testcases[] = {
+    {
+        "this_self_cascade_childof_uncached",
+        Cascade_this_self_cascade_childof_uncached
+    },
+    {
+        "this_cascade_childof_uncached",
+        Cascade_this_cascade_childof_uncached
+    },
+    {
+        "this_written_self_cascade_childof_uncached",
+        Cascade_this_written_self_cascade_childof_uncached
+    },
+    {
+        "this_written_cascade_childof_uncached",
+        Cascade_this_written_cascade_childof_uncached
+    },
+    {
+        "this_self_cascade_childof_w_parent_flag_uncached",
+        Cascade_this_self_cascade_childof_w_parent_flag_uncached
+    },
+    {
+        "this_cascade_childof_w_parent_flag_uncached",
+        Cascade_this_cascade_childof_w_parent_flag_uncached
+    },
+    {
+        "this_written_self_cascade_childof_w_parent_flag_uncached",
+        Cascade_this_written_self_cascade_childof_w_parent_flag_uncached
+    },
+    {
+        "this_written_cascade_childof_w_parent_flag_uncached",
+        Cascade_this_written_cascade_childof_w_parent_flag_uncached
+    }
+};
+
+bake_test_case Cached_testcases[] = {
+    {
+        "simple_query_existing_table",
+        Cached_simple_query_existing_table
+    },
+    {
+        "simple_query_2_existing_tables",
+        Cached_simple_query_2_existing_tables
+    },
+    {
+        "simple_query_new_table",
+        Cached_simple_query_new_table
+    },
+    {
+        "simple_query_2_new_tables",
+        Cached_simple_query_2_new_tables
+    },
+    {
+        "simple_query_existing_and_new_table",
+        Cached_simple_query_existing_and_new_table
+    },
+    {
+        "wildcard_query_existing_table",
+        Cached_wildcard_query_existing_table
+    },
+    {
+        "wildcard_query_new_table",
+        Cached_wildcard_query_new_table
+    },
+    {
+        "wildcard_query_existing_table_2_results_p_table",
+        Cached_wildcard_query_existing_table_2_results_p_table
+    },
+    {
+        "wildcard_query_new_table_2_results_p_table",
+        Cached_wildcard_query_new_table_2_results_p_table
+    },
+    {
+        "wildcard_query_2nd_term",
+        Cached_wildcard_query_2nd_term
+    },
+    {
+        "wildcard_query_2nd_term_self",
+        Cached_wildcard_query_2nd_term_self
+    },
+    {
+        "simple_query_existing_empty_table",
+        Cached_simple_query_existing_empty_table
+    },
+    {
+        "simple_query_existing_empty_type",
+        Cached_simple_query_existing_empty_type
+    },
+    {
+        "simple_query_new_empty_table",
+        Cached_simple_query_new_empty_table
+    },
+    {
+        "component_query_existing_table",
+        Cached_component_query_existing_table
+    },
+    {
+        "component_query_new_table",
+        Cached_component_query_new_table
+    },
+    {
+        "component_query_existing_empty_table",
+        Cached_component_query_existing_empty_table
+    },
+    {
+        "2_component_query_existing_empty_table",
+        Cached_2_component_query_existing_empty_table
+    },
+    {
+        "2_component_query_existing_empty_type",
+        Cached_2_component_query_existing_empty_type
+    },
+    {
+        "only_optional",
+        Cached_only_optional
+    },
+    {
+        "only_optional_new_empty_table",
+        Cached_only_optional_new_empty_table
+    },
+    {
+        "only_optional_new_empty_non_empty_table",
+        Cached_only_optional_new_empty_non_empty_table
+    },
+    {
+        "only_optional_new_unset_tables",
+        Cached_only_optional_new_unset_tables
+    },
+    {
+        "singleton_w_optional_new_empty_table",
+        Cached_singleton_w_optional_new_empty_table
+    },
+    {
+        "singleton_w_optional_new_empty_non_empty_table",
+        Cached_singleton_w_optional_new_empty_non_empty_table
+    },
+    {
+        "singleton_w_optional_new_unset_tables",
+        Cached_singleton_w_optional_new_unset_tables
+    },
+    {
+        "query_from_entity_or_change",
+        Cached_query_from_entity_or_change
+    },
+    {
+        "query_from_entity_w_superset",
+        Cached_query_from_entity_w_superset
+    },
+    {
+        "query_w_from_entity_match_after",
+        Cached_query_w_from_entity_match_after
+    },
+    {
+        "query_w_from_singleton_match_after",
+        Cached_query_w_from_singleton_match_after
+    },
+    {
+        "query_w_from_nothing",
+        Cached_query_w_from_nothing
+    },
+    {
+        "query_only_2_or",
+        Cached_query_only_2_or
+    },
+    {
+        "query_only_3_or",
+        Cached_query_only_3_or
+    },
+    {
+        "query_2_or",
+        Cached_query_2_or
+    },
+    {
+        "query_3_or",
+        Cached_query_3_or
+    },
+    {
+        "query_single_pairs",
+        Cached_query_single_pairs
+    },
+    {
+        "query_optional_owned",
+        Cached_query_optional_owned
+    },
+    {
+        "query_optional_shared",
+        Cached_query_optional_shared
+    },
+    {
+        "query_optional_shared_nested",
+        Cached_query_optional_shared_nested
+    },
+    {
+        "query_optional_any",
+        Cached_query_optional_any
+    },
+    {
+        "query_rematch_optional_after_add",
+        Cached_query_rematch_optional_after_add
+    },
+    {
+        "get_owned_tag",
+        Cached_get_owned_tag
+    },
+    {
+        "get_shared_tag",
+        Cached_get_shared_tag
+    },
+    {
+        "explicit_delete",
+        Cached_explicit_delete
+    },
+    {
+        "get_column_size",
+        Cached_get_column_size
+    },
+    {
+        "stresstest_query_free",
+        Cached_stresstest_query_free
+    },
+    {
+        "only_from_entity",
+        Cached_only_from_entity
+    },
+    {
+        "only_not_from_entity",
+        Cached_only_not_from_entity
+    },
+    {
+        "only_from_singleton",
+        Cached_only_from_singleton
+    },
+    {
+        "only_not_from_singleton",
+        Cached_only_not_from_singleton
+    },
+    {
+        "iter_valid",
+        Cached_iter_valid
+    },
+    {
+        "query_optional_tag",
+        Cached_query_optional_tag
+    },
+    {
+        "query_optional_shared_tag",
+        Cached_query_optional_shared_tag
+    },
+    {
+        "query_iter_10_tags",
+        Cached_query_iter_10_tags
+    },
+    {
+        "query_iter_10_components",
+        Cached_query_iter_10_components
+    },
+    {
+        "iter_type_set",
+        Cached_iter_type_set
+    },
+    {
+        "filter_term",
+        Cached_filter_term
+    },
+    {
+        "2_terms_1_filter",
+        Cached_2_terms_1_filter
+    },
+    {
+        "3_terms_2_filter",
+        Cached_3_terms_2_filter
+    },
+    {
+        "no_instancing_w_singleton",
+        Cached_no_instancing_w_singleton
+    },
+    {
+        "no_instancing_w_shared",
+        Cached_no_instancing_w_shared
+    },
+    {
+        "query_iter_frame_offset",
+        Cached_query_iter_frame_offset
+    },
+    {
+        "add_singleton_after_query",
+        Cached_add_singleton_after_query
+    },
+    {
+        "query_w_component_from_parent_from_non_this",
+        Cached_query_w_component_from_parent_from_non_this
+    },
+    {
+        "create_query_while_pending",
+        Cached_create_query_while_pending
+    },
+    {
+        "empty_query",
+        Cached_empty_query
+    },
+    {
+        "parent_cascade",
+        Cached_parent_cascade
+    },
+    {
+        "existing_custom_rel_cascade",
+        Cached_existing_custom_rel_cascade
+    },
+    {
+        "new_custom_rel_cascade",
+        Cached_new_custom_rel_cascade
+    },
+    {
+        "cascade_w_2_depths",
+        Cached_cascade_w_2_depths
+    },
+    {
+        "cascade_w_3_depths",
+        Cached_cascade_w_3_depths
+    },
+    {
+        "cascade_w_2_depths_desc",
+        Cached_cascade_w_2_depths_desc
+    },
+    {
+        "cascade_w_3_depths_desc",
+        Cached_cascade_w_3_depths_desc
+    },
+    {
+        "not_pair_relation_wildcard",
+        Cached_not_pair_relation_wildcard
+    },
+    {
+        "not_pair_object_wildcard",
+        Cached_not_pair_object_wildcard
+    },
+    {
+        "two_pair_wildcards_one_not",
+        Cached_two_pair_wildcards_one_not
+    },
+    {
+        "two_pair_wildcards_one_not_any",
+        Cached_two_pair_wildcards_one_not_any
+    },
+    {
+        "implicit_existing_isa_superset",
+        Cached_implicit_existing_isa_superset
+    },
+    {
+        "implicit_new_isa_superset",
+        Cached_implicit_new_isa_superset
+    },
+    {
+        "isa_superset",
+        Cached_isa_superset
+    },
+    {
+        "isa_superset_2_lvls",
+        Cached_isa_superset_2_lvls
+    },
+    {
+        "isa_superset_3_lvls",
+        Cached_isa_superset_3_lvls
+    },
+    {
+        "isa_superset_2_lvls_owned",
+        Cached_isa_superset_2_lvls_owned
+    },
+    {
+        "isa_superset_3_lvls_owned",
+        Cached_isa_superset_3_lvls_owned
+    },
+    {
+        "isa_superset_owned_empty_table_after_match",
+        Cached_isa_superset_owned_empty_table_after_match
+    },
+    {
+        "isa_self_superset",
+        Cached_isa_self_superset
+    },
+    {
+        "childof_superset",
+        Cached_childof_superset
+    },
+    {
+        "superset_2_targets",
+        Cached_superset_2_targets
+    },
+    {
+        "superset_2_relations",
+        Cached_superset_2_relations
+    },
+    {
+        "superset_2_relations_instanced",
+        Cached_superset_2_relations_instanced
+    },
+    {
+        "superset_2_relations_w_component",
+        Cached_superset_2_relations_w_component
+    },
+    {
+        "superset_2_relations_instanced_w_component",
+        Cached_superset_2_relations_instanced_w_component
+    },
+    {
+        "parent",
+        Cached_parent
+    },
+    {
+        "existing_isa_cascade",
+        Cached_existing_isa_cascade
+    },
+    {
+        "new_isa_cascade",
+        Cached_new_isa_cascade
+    },
+    {
+        "childof_cascade",
+        Cached_childof_cascade
+    },
+    {
+        "isa_rematch",
+        Cached_isa_rematch
+    },
+    {
+        "childof_rematch",
+        Cached_childof_rematch
+    },
+    {
+        "isa_unmatch",
+        Cached_isa_unmatch
+    },
+    {
+        "childof_unmatch",
+        Cached_childof_unmatch
+    },
+    {
+        "isa_rematch_2_lvls",
+        Cached_isa_rematch_2_lvls
+    },
+    {
+        "childof_rematch_2_lvls",
+        Cached_childof_rematch_2_lvls
+    },
+    {
+        "cascade_rematch_2_lvls",
+        Cached_cascade_rematch_2_lvls
+    },
+    {
+        "cascade_rematch_2_lvls_2_relations",
+        Cached_cascade_rematch_2_lvls_2_relations
+    },
+    {
+        "cascade_topological",
+        Cached_cascade_topological
+    },
+    {
+        "cascade_desc_rematch_2_lvls",
+        Cached_cascade_desc_rematch_2_lvls
+    },
+    {
+        "cascade_desc_rematch_2_lvls_2_relations",
+        Cached_cascade_desc_rematch_2_lvls_2_relations
+    },
+    {
+        "cascade_desc_topological",
+        Cached_cascade_desc_topological
+    },
+    {
+        "childof_rematch_from_isa",
+        Cached_childof_rematch_from_isa
+    },
+    {
+        "rematch_optional_ref",
+        Cached_rematch_optional_ref
+    },
+    {
+        "rematch_optional_ref_w_2_refs",
+        Cached_rematch_optional_ref_w_2_refs
+    },
+    {
+        "rematch_optional_ref_tag_w_ref_component",
+        Cached_rematch_optional_ref_tag_w_ref_component
+    },
+    {
+        "match_query_expr_from_scope",
+        Cached_match_query_expr_from_scope
+    },
+    {
+        "query_long_or_w_ref",
+        Cached_query_long_or_w_ref
+    },
+    {
+        "0_query",
+        Cached_0_query
+    },
+    {
+        "query_w_pair_id_and_subj",
+        Cached_query_w_pair_id_and_subj
+    },
+    {
+        "rematch_after_delete_inherited_tag",
+        Cached_rematch_after_delete_inherited_tag
+    },
+    {
+        "rematch_after_delete_rel_of_inherited_pair",
+        Cached_rematch_after_delete_rel_of_inherited_pair
+    },
+    {
+        "rematch_after_delete_obj_of_inherited_pair",
+        Cached_rematch_after_delete_obj_of_inherited_pair
+    },
+    {
+        "rematch_empty_table_w_superset",
+        Cached_rematch_empty_table_w_superset
+    },
+    {
+        "query_w_short_notation",
+        Cached_query_w_short_notation
+    },
+    {
+        "query_w_invalid_filter_flag",
+        Cached_query_w_invalid_filter_flag
+    },
+    {
+        "create_query_existing_query_entity",
+        Cached_create_query_existing_query_entity
+    },
+    {
+        "query_for_recycled_pair",
+        Cached_query_for_recycled_pair
+    },
+    {
+        "query_w_singleton_w_rule_iter",
+        Cached_query_w_singleton_w_rule_iter
+    },
+    {
+        "query_w_singleton_nested_iter",
+        Cached_query_w_singleton_nested_iter
+    },
+    {
+        "query_w_singleton_interleaved_iter",
+        Cached_query_w_singleton_interleaved_iter
+    },
+    {
+        "recycled_component_id",
+        Cached_recycled_component_id
+    },
+    {
+        "set_get_context",
+        Cached_set_get_context
+    },
+    {
+        "set_get_binding_context",
+        Cached_set_get_binding_context
+    },
+    {
+        "set_get_context_w_free",
+        Cached_set_get_context_w_free
+    },
+    {
+        "set_get_binding_context_w_free",
+        Cached_set_get_binding_context_w_free
+    },
+    {
+        "set_this",
+        Cached_set_this
+    },
+    {
+        "set_this_no_match",
+        Cached_set_this_no_match
+    },
+    {
+        "set_this_is_true",
+        Cached_set_this_is_true
+    },
+    {
+        "set_this_w_wildcard",
+        Cached_set_this_w_wildcard
+    },
+    {
+        "singleton_w_inout_none",
+        Cached_singleton_w_inout_none
+    },
+    {
+        "singleton_w_inout_none_or",
+        Cached_singleton_w_inout_none_or
+    },
+    {
+        "component_w_inout_none_or",
+        Cached_component_w_inout_none_or
+    },
+    {
+        "2_self_up_terms_new_tables",
+        Cached_2_self_up_terms_new_tables
+    },
+    {
+        "this_self_up_childof_pair_new_tables",
+        Cached_this_self_up_childof_pair_new_tables
+    }
+};
+
+bake_test_case ChangeDetection_testcases[] = {
+    {
+        "query_changed_after_new",
+        ChangeDetection_query_changed_after_new
+    },
+    {
+        "query_changed_after_delete",
+        ChangeDetection_query_changed_after_delete
+    },
+    {
+        "query_changed_after_add",
+        ChangeDetection_query_changed_after_add
+    },
+    {
+        "query_changed_after_remove",
+        ChangeDetection_query_changed_after_remove
+    },
+    {
+        "query_changed_after_set",
+        ChangeDetection_query_changed_after_set
+    },
+    {
+        "query_change_after_modified",
+        ChangeDetection_query_change_after_modified
+    },
+    {
+        "query_change_after_out_system",
+        ChangeDetection_query_change_after_out_system
+    },
+    {
+        "query_change_after_in_system",
+        ChangeDetection_query_change_after_in_system
+    },
+    {
+        "query_change_after_modified_out_term",
+        ChangeDetection_query_change_after_modified_out_term
+    },
+    {
+        "query_change_check_iter",
+        ChangeDetection_query_change_check_iter
+    },
+    {
+        "query_change_check_iter_after_skip_read",
+        ChangeDetection_query_change_check_iter_after_skip_read
+    },
+    {
+        "query_change_check_iter_after_skip_write",
+        ChangeDetection_query_change_check_iter_after_skip_write
+    },
+    {
+        "query_change_parent_term",
+        ChangeDetection_query_change_parent_term
+    },
+    {
+        "query_change_prefab_term",
+        ChangeDetection_query_change_prefab_term
+    },
+    {
+        "query_change_parent_term_w_tag",
+        ChangeDetection_query_change_parent_term_w_tag
+    },
+    {
+        "query_change_prefab_term_w_tag",
+        ChangeDetection_query_change_prefab_term_w_tag
+    },
+    {
+        "query_change_skip_non_instanced",
+        ChangeDetection_query_change_skip_non_instanced
+    },
+    {
+        "query_changed_w_or",
+        ChangeDetection_query_changed_w_or
+    },
+    {
+        "query_changed_or",
+        ChangeDetection_query_changed_or
+    },
+    {
+        "query_changed_w_singleton",
+        ChangeDetection_query_changed_w_singleton
+    },
+    {
+        "query_changed_w_only_singleton",
+        ChangeDetection_query_changed_w_only_singleton
+    },
+    {
+        "query_changed_w_only_singleton_after_set",
+        ChangeDetection_query_changed_w_only_singleton_after_set
+    },
+    {
+        "query_changed_w_only_singleton_after_out_term",
+        ChangeDetection_query_changed_w_only_singleton_after_out_term
+    },
+    {
+        "query_changed_w_only_singleton_after_singleton_out_term",
+        ChangeDetection_query_changed_w_only_singleton_after_singleton_out_term
+    },
+    {
+        "query_changed_w_only_parent",
+        ChangeDetection_query_changed_w_only_parent
+    },
+    {
+        "query_changed_w_only_parent_after_set",
+        ChangeDetection_query_changed_w_only_parent_after_set
+    },
+    {
+        "query_changed_w_only_parent_after_out_term",
+        ChangeDetection_query_changed_w_only_parent_after_out_term
+    },
+    {
+        "query_changed_w_only_parent_after_parent_out_term",
+        ChangeDetection_query_changed_w_only_parent_after_parent_out_term
+    },
+    {
+        "query_changed_tag",
+        ChangeDetection_query_changed_tag
+    },
+    {
+        "query_changed_no_source",
+        ChangeDetection_query_changed_no_source
+    },
+    {
+        "query_changed_no_source_component",
+        ChangeDetection_query_changed_no_source_component
+    },
+    {
+        "query_changed_w_not_out",
+        ChangeDetection_query_changed_w_not_out
+    }
+};
+
+bake_test_case GroupBy_testcases[] = {
+    {
+        "group_by",
+        GroupBy_group_by
+    },
+    {
+        "group_by_w_ctx",
+        GroupBy_group_by_w_ctx
+    },
+    {
+        "group_by_w_sort_reverse_group_creation",
+        GroupBy_group_by_w_sort_reverse_group_creation
+    },
+    {
+        "group_by_iter_one",
+        GroupBy_group_by_iter_one
+    },
+    {
+        "group_by_iter_one_all_groups",
+        GroupBy_group_by_iter_one_all_groups
+    },
+    {
+        "group_by_iter_one_empty",
+        GroupBy_group_by_iter_one_empty
+    },
+    {
+        "group_by_iter_one_empty_query",
+        GroupBy_group_by_iter_one_empty_query
+    },
+    {
+        "group_by_iter_one_empty_table",
+        GroupBy_group_by_iter_one_empty_table
+    },
+    {
+        "group_by_w_deleted_group_id",
+        GroupBy_group_by_w_deleted_group_id
+    },
+    {
+        "group_by_callbacks",
+        GroupBy_group_by_callbacks
+    },
+    {
+        "group_by_default_action",
+        GroupBy_group_by_default_action
+    },
+    {
+        "group_table_count",
+        GroupBy_group_table_count
+    }
+};
+
+bake_test_case Union_testcases[] = {
+    {
+        "query_w_existing_switch_and_case",
+        Union_query_w_existing_switch_and_case
+    },
+    {
+        "query_w_new_switch_and_case",
+        Union_query_w_new_switch_and_case
+    },
+    {
+        "query_for_case_existing",
+        Union_query_for_case_existing
+    },
+    {
+        "query_for_case_new",
+        Union_query_for_case_new
+    },
+    {
+        "query_for_switch_filter_term",
+        Union_query_for_switch_filter_term
+    },
+    {
+        "query_switch_from_nothing",
+        Union_query_switch_from_nothing
+    },
+    {
+        "query_case_from_nothing",
+        Union_query_case_from_nothing
+    },
+    {
+        "query_case_inherited",
+        Union_query_case_inherited
+    },
+    {
+        "query_case_w_generation",
+        Union_query_case_w_generation
+    },
+    {
+        "query_case_w_not_alive",
+        Union_query_case_w_not_alive
+    }
+};
+
+bake_test_case Toggle_testcases[] = {
+    {
+        "query_disabled_from_nothing",
+        Toggle_query_disabled_from_nothing
     }
 };
 
@@ -5213,6 +6364,9 @@ bake_test_param Variables_params[] = {
     {"cache_kind", (char*[]){"default", "auto"}, 2}
 };
 bake_test_param Operators_params[] = {
+    {"cache_kind", (char*[]){"default", "auto"}, 2}
+};
+bake_test_param Traversal_params[] = {
     {"cache_kind", (char*[]){"default", "auto"}, 2}
 };
 
@@ -5235,7 +6389,7 @@ static bake_test_suite suites[] = {
         "Basic",
         Basic_setup,
         NULL,
-        140,
+        145,
         Basic_testcases,
         1,
         Basic_params
@@ -5260,7 +6414,7 @@ static bake_test_suite suites[] = {
         "Operators",
         Operators_setup,
         NULL,
-        95,
+        110,
         Operators_testcases,
         1,
         Operators_params
@@ -5269,7 +6423,7 @@ static bake_test_suite suites[] = {
         "Transitive",
         NULL,
         NULL,
-        64,
+        66,
         Transitive_testcases
     },
     {
@@ -5302,13 +6456,57 @@ static bake_test_suite suites[] = {
     },
     {
         "Traversal",
+        Traversal_setup,
+        NULL,
+        91,
+        Traversal_testcases,
+        1,
+        Traversal_params
+    },
+    {
+        "Cascade",
         NULL,
         NULL,
-        93,
-        Traversal_testcases
+        8,
+        Cascade_testcases
+    },
+    {
+        "Cached",
+        NULL,
+        NULL,
+        141,
+        Cached_testcases
+    },
+    {
+        "ChangeDetection",
+        NULL,
+        NULL,
+        32,
+        ChangeDetection_testcases
+    },
+    {
+        "GroupBy",
+        NULL,
+        NULL,
+        12,
+        GroupBy_testcases
+    },
+    {
+        "Union",
+        NULL,
+        NULL,
+        10,
+        Union_testcases
+    },
+    {
+        "Toggle",
+        NULL,
+        NULL,
+        1,
+        Toggle_testcases
     }
 };
 
 int main(int argc, char *argv[]) {
-    return bake_test_run("query", argc, argv, suites, 12);
+    return bake_test_run("query", argc, argv, suites, 18);
 }

@@ -374,9 +374,9 @@ void ecs_world_stats_copy_last(
         ECS_METRIC_FIRST(src), dst->t, t_next(src->t));
 }
 
-void ecs_query_cache_stats_get(
+void ecs_query_stats_get(
     const ecs_world_t *world,
-    const ecs_query_cache_t *query,
+    const ecs_query_t *query,
     ecs_query_cache_stats_t *s)
 {
     ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
@@ -386,13 +386,14 @@ void ecs_query_cache_stats_get(
 
     int32_t t = s->t = t_next(s->t);
 
-    if (query->query->flags & EcsQueryMatchThis) {
+    if (query->flags & EcsQueryMatchThis) {
+        ecs_query_count_t count = ecs_query_count(query);
         ECS_GAUGE_RECORD(&s->matched_entity_count, t, 
-            ecs_query_cache_entity_count(query));
+            count.entities);
         ECS_GAUGE_RECORD(&s->matched_table_count, t, 
-            ecs_query_cache_table_count(query));
+            count.tables);
         ECS_GAUGE_RECORD(&s->matched_empty_table_count, t, 
-            ecs_query_cache_empty_table_count(query));
+            count.empty_tables);
     } else {
         ECS_GAUGE_RECORD(&s->matched_entity_count, t, 0);
         ECS_GAUGE_RECORD(&s->matched_table_count, t, 0);

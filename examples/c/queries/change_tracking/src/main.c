@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     // tables it is matched with has changed. Since this is the first time that
     // we check this and the query is matched with the tables we just created,
     // the function will return true.
-    printf("q_read changed: %d\n", ecs_query_cache_changed(q_read, NULL));
+    printf("q_read changed: %d\n", ecs_query_changed(q_read, NULL));
 
     // The changed state will remain true until we have iterated each table.
     ecs_iter_t it = ecs_query_cache_iter(world, q_read);
@@ -89,12 +89,12 @@ int main(int argc, char *argv[]) {
         // will show up as changed.
         char *table_str = ecs_table_str(world, it.table);
         printf("it.changed for table [%s]: %d\n", table_str,
-            ecs_query_cache_changed(q_read, &it));
+            ecs_query_changed(q_read, &it));
         ecs_os_free(table_str);
     }
 
     // Now that we have iterated all tables, the dirty state is reset.
-    printf("q_read changed: %d\n\n", ecs_query_cache_changed(q_read, NULL));
+    printf("q_read changed: %d\n\n", ecs_query_changed(q_read, NULL));
 
     // Iterate the write query. Because the Position term is InOut (default)
     // iterating the query will write to the dirty state of iterated tables.
@@ -126,14 +126,14 @@ int main(int argc, char *argv[]) {
     }
 
     // One of the tables has changed, so q_read.changed() will return true
-    printf("\nq_read changed: %d\n", ecs_query_cache_changed(q_read, NULL));
+    printf("\nq_read changed: %d\n", ecs_query_changed(q_read, NULL));
 
     // When we iterate the read query, we'll see that one table has changed.
     it = ecs_query_cache_iter(world, q_read);
     while (ecs_query_cache_next(&it)) {
         char *table_str = ecs_table_str(world, it.table);
         printf("it.changed for table [%s]: %d\n", table_str,
-            ecs_query_cache_changed(q_read, &it));
+            ecs_query_changed(q_read, &it));
         ecs_os_free(table_str);
     }
 

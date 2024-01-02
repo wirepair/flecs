@@ -405,3 +405,51 @@ bool ecs_query_has_table(
 error:
     return false;
 }
+
+ecs_query_count_t ecs_query_count(
+    const ecs_query_t *q)
+{
+    ecs_poly_assert(q, ecs_query_impl_t);
+    ecs_query_count_t result = {0};
+
+    if (!(q->flags & EcsQueryMatchThis)) {
+        return result;
+    }
+
+    ecs_run_aperiodic(q->world, EcsAperiodicEmptyTables);
+
+    ecs_query_impl_t *impl = flecs_query_impl(q);
+    if (impl->cache && q->flags & EcsQueryIsCacheable) {
+        result.results = flecs_query_cache_table_count(impl->cache);
+        result.entities = flecs_query_cache_entity_count(impl->cache);
+        result.tables = flecs_query_cache_table_count(impl->cache);
+        result.empty_tables = flecs_query_cache_empty_table_count(impl->cache);
+    } else {
+        ecs_iter_t it = flecs_query_iter(q->world, q);
+        it.flags |= EcsIterIsInstanced;
+        it.flags |= EcsIterNoData;
+
+        while (ecs_query_next_instanced(&it)) {
+            result.results ++;
+            result.entities += it.count;
+        }
+    }
+
+    return result;
+}
+
+bool ecs_query_is_true(
+    const ecs_query_t *q)
+{
+    ecs_poly_assert(q, ecs_query_impl_t);
+
+    ecs_run_aperiodic(q->world, EcsAperiodicEmptyTables);
+
+    ecs_query_impl_t *impl = flecs_query_impl(q);
+    if (impl->cache && q->flags & EcsQueryIsCacheable) {
+        return flecs_query_cache_table_count(impl->cache) != 0;
+    } else {
+        ecs_iter_t it = flecs_query_iter(q->world, q);
+        return ecs_iter_is_true(&it);
+    }
+}

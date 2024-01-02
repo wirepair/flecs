@@ -17,9 +17,6 @@ typedef enum ecs_table_eventkind_t {
 typedef struct ecs_table_event_t {
     ecs_table_eventkind_t kind;
 
-    /* Query event */
-    ecs_query_cache_t *query;
-
     /* Component info event */
     ecs_entity_t component;
 

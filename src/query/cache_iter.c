@@ -113,7 +113,6 @@ void flecs_query_populate_ptrs_w_shared(
     int32_t i;
 
     for (i = 0; i < field_count; i ++) {
-        int32_t storage_column = node->storage_columns[i];
         int32_t column = node->columns[i];
         int8_t field_index = i;
         if (field_map) {
@@ -121,13 +120,14 @@ void flecs_query_populate_ptrs_w_shared(
         }
 
         ecs_size_t size = it->sizes[field_index];
-        if (storage_column < 0 || !column || !size) {
+        if (!column || !size) {
             /* Tag / no data */
             it->ptrs[field_index] = NULL;
             continue;
         }
 
-        if (column < 0) {
+        ecs_entity_t src = it->sources[i];
+        if (src != 0) {
             ecs_ref_t *ref = &it->references[-column - 1];
             if (ref->id) {
                 it->ptrs[field_index] = (void*)ecs_ref_get_id(
@@ -137,6 +137,11 @@ void flecs_query_populate_ptrs_w_shared(
                 it->ptrs[field_index] = NULL;
             }
         } else {
+            int32_t storage_column = node->storage_columns[i];
+            if (storage_column < 0) {
+                it->ptrs[field_index] = NULL;
+                continue;
+            }
             ecs_assert(table != NULL, ECS_INTERNAL_ERROR, NULL);
             it->ptrs[field_index] = ecs_vec_get(
                 &table->data.columns[storage_column].data, size, offset);

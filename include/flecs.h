@@ -364,31 +364,8 @@ typedef struct ecs_table_t ecs_table_t;
 /** A term is a single element in a query. */
 typedef struct ecs_term_t ecs_term_t;
 
-/** A filter is an iterable data structure that describes a query.
- * Querys are used by the various query implementations in Flecs, like queries,
- * observers and rules, to describe a query. Querys themselves can also be 
- * iterated. */
+/** A query returns entities matching a list of constraints. */
 typedef struct ecs_query_t ecs_query_t;
-
-/** A query that caches its results. 
- * Queries are the fastest mechanism for finding and iterating over entities.
- * Queries cache results as a list of matching tables (vs. individual entities).
- * 
- * This has several advantages:
- * - Matching is only performed when new tables are created, which is infrequent
- * - Iterating a query just walks over the cache, no actual searching is needed
- * - Iteration is table-based, which allows for direct iteration of underlying
- *   component arrays, providing good cache locality.
- * 
- * While queries are the fastest mechanism to iterate entiites, they are slower
- * to create than other mechanisms, as a result of having to build the cache 
- * first. For this reason queries are best suited for use cases where a single
- * query can be reused many times (like is the case for systems).
- * 
- * For ad-hoc queries it is recommended to use filters or rules instead, which 
- * are slower to iterate, but much faster to create. Applications should at all
- * times avoid frequent creation/deletion of queries. */
-typedef struct ecs_query_cache_t ecs_query_cache_t;
 
 /** An observer is a system that is invoked when an event matches its query.
  * Observers allow applications to respond to specific events, such as adding or
@@ -456,7 +433,7 @@ typedef struct ecs_table_record_t ecs_table_record_t;
  * 
  * - ecs_world_t
  * - ecs_stage_t
- * - ecs_query_cache_t
+ * - ecs_query_t
  * - ecs_query_t
  * - ecs_query_impl_t
  * - (more to come)
@@ -745,7 +722,7 @@ struct ecs_term_t {
     ecs_id_record_t *idr;       /**< Cached pointer to internal index */
 };
 
-/** Querys alllow for ad-hoc quick filtering of entity tables. */
+/** Queries are lists of constraints (terms) that match entities. */
 struct ecs_query_t {
     ecs_header_t hdr;
 
@@ -1209,11 +1186,11 @@ typedef struct ecs_world_info_t {
 } ecs_world_info_t;
 
 /** Type that contains information about a query group. */
-typedef struct ecs_query_cache_group_info_t {
+typedef struct ecs_query_group_info_t {
     int32_t match_count;  /**< How often tables have been matched/unmatched */
     int32_t table_count;  /**< Number of tables in group */
     void *ctx;            /**< Group context, returned by on_group_create */
-} ecs_query_cache_group_info_t;
+} ecs_query_group_info_t;
 
 /** @} */
 
@@ -3962,7 +3939,7 @@ bool ecs_children_next(
 
 /**
  * @defgroup queries Queries
- * @brief Functions for working with `ecs_query_cache_t`.
+ * @brief Functions for working with `ecs_query_t`.
  * @{
  */
 
@@ -3987,8 +3964,8 @@ bool ecs_children_next(
  * the currently returned iterator result. The following preconditions must be
  * met before using an iterator with change detection:
  * 
- * - The iterator is a query iterator (created with ecs_query_cache_iter)
- * - The iterator must be valid (ecs_query_cache_next must have returned true)
+ * - The iterator is a query iterator (created with ecs_query_iter)
+ * - The iterator must be valid (ecs_query_next must have returned true)
  * - The iterator must be instanced
  * 
  * @param query The query (optional if 'it' is provided).
@@ -3996,8 +3973,8 @@ bool ecs_children_next(
  * @return true if entities changed, otherwise false.
  */
 FLECS_API
-bool ecs_query_cache_changed(
-    ecs_query_cache_t *query,
+bool ecs_query_changed(
+    ecs_query_t *query,
     const ecs_iter_t *it);
 
 /** Skip a table while iterating.
@@ -4011,7 +3988,7 @@ bool ecs_query_cache_changed(
  * @param it The iterator result to skip.
  */
 FLECS_API
-void ecs_query_cache_skip(
+void ecs_query_skip(
     ecs_iter_t *it);
 
 /** Set group to iterate for query iterator.
@@ -4029,15 +4006,15 @@ void ecs_query_cache_skip(
  * across many tables. This makes it a good fit for things like dividing up
  * a world into cells, and only iterating cells close to a player.
  * 
- * The group to iterate must be set before the first call to ecs_query_cache_next. No
+ * The group to iterate must be set before the first call to ecs_query_next. No
  * operations that can add/remove components should be invoked between calling 
- * ecs_query_cache_set_group and ecs_query_cache_next.
+ * ecs_query_set_group and ecs_query_next.
  * 
  * @param it The query iterator.
  * @param group_id The group to iterate.
  */
 FLECS_API
-void ecs_query_cache_set_group(
+void ecs_query_set_group(
     ecs_iter_t *it,
     uint64_t group_id);
 
@@ -4050,8 +4027,8 @@ void ecs_query_cache_set_group(
  * @return The group context, NULL if the group doesn't exist.
  */
 FLECS_API
-void* ecs_query_cache_get_group_ctx(
-    const ecs_query_cache_t *query,
+void* ecs_query_get_group_ctx(
+    const ecs_query_t *query,
     uint64_t group_id);
 
 /** Get information about query group.
@@ -4063,38 +4040,36 @@ void* ecs_query_cache_get_group_ctx(
  * @return The group info, NULL if the group doesn't exist.
  */
 FLECS_API
-const ecs_query_cache_group_info_t* ecs_query_cache_get_group_info(
-    const ecs_query_cache_t *query,
+const ecs_query_group_info_t* ecs_query_get_group_info(
+    const ecs_query_t *query,
     uint64_t group_id);
 
-/** Returns number of tables query matched with.
- *
- * @param query The query.
- * @return The number of matched tables.
- */
-FLECS_API
-int32_t ecs_query_cache_table_count(
-    const ecs_query_cache_t *query);
+/** Struct returned by ecs_query_count. */
+typedef struct ecs_query_count_t {
+    int32_t results;
+    int32_t entities;
+    int32_t tables;
+    int32_t empty_tables;
+} ecs_query_count_t;
 
-/** Returns number of empty tables query matched with.
- *
- * @param query The query.
- * @return The number of matched empty tables.
- */
-FLECS_API
-int32_t ecs_query_cache_empty_table_count(
-    const ecs_query_cache_t *query);
-
-/** Returns number of entities query matched with.
- * This operation iterates all non-empty tables in the query cache to find the
- * total number of entities.
+/** Returns number of entities and results the query matches with.
+ * Only entities matching the $this variable as source are counted.
  *
  * @param query The query.
  * @return The number of matched entities.
  */
 FLECS_API
-int32_t ecs_query_cache_entity_count(
-    const ecs_query_cache_t *query);
+ecs_query_count_t ecs_query_count(
+    const ecs_query_t *query);
+
+/** Does query return one or more results. 
+ * 
+ * @param query The query.
+ * @return True if query matches anything, false if not.
+ */
+FLECS_API
+bool ecs_query_is_true(
+    const ecs_query_t *query);
 
 /** @} */
 
@@ -4225,7 +4200,7 @@ void ecs_iter_poly(
  * objects.
  * 
  * This operation is slightly slower than using a type-specific iterator (e.g.
- * ecs_query_next, ecs_query_cache_next) as it has to call a function pointer which
+ * ecs_query_next, ecs_query_next) as it has to call a function pointer which
  * introduces a level of indirection.
  * 
  * @param it The iterator.

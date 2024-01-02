@@ -132,7 +132,7 @@ typedef struct ecs_each_iter_t {
 
 /** Query-iterator specific data */
 typedef struct ecs_query_cache_iter_t {
-    ecs_query_cache_t *query;
+    struct ecs_query_cache_t *query;
     ecs_query_cache_table_match_t *node, *prev, *last;
     int32_t sparse_smallest;
     int32_t sparse_first;

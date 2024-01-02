@@ -39,7 +39,7 @@ typedef struct ecs_query_cache_table_t {
 typedef struct ecs_query_cache_table_list_t {
     ecs_query_cache_table_match_t *first;
     ecs_query_cache_table_match_t *last;
-    ecs_query_cache_group_info_t info;
+    ecs_query_group_info_t info;
 } ecs_query_cache_table_list_t;
 
 /* Query event type for notifying queries of world events */
@@ -63,7 +63,7 @@ typedef struct ecs_query_cache_allocators_t {
 } ecs_query_cache_allocators_t;
 
 /** Query that is automatically matched against tables */
-struct ecs_query_cache_t {
+typedef struct ecs_query_cache_t {
     /* Query filter */
     ecs_query_t *query;
 
@@ -105,7 +105,7 @@ struct ecs_query_cache_t {
 
     /* Query-level allocators */
     ecs_query_cache_allocators_t allocators;
-};
+} ecs_query_cache_t;
 
 ecs_query_cache_t* flecs_query_cache_init(
     ecs_world_t *world,

@@ -385,7 +385,7 @@ public:
     /** Check if the current table has changed since the last iteration.
      * Can only be used when iterating queries and/or systems. */
     bool changed() {
-        return ecs_query_cache_changed(nullptr, m_iter);
+        return ecs_query_changed(nullptr, m_iter);
     }
 
     /** Skip current table.

@@ -1543,60 +1543,6 @@ bool flecs_query_reset(
 }
 
 static
-void flecs_query_reset_after_block(
-    const ecs_query_op_t *start_op,
-    ecs_query_run_ctx_t *ctx,
-    ecs_query_ctrl_ctx_t *op_ctx)
-{
-    ecs_query_lbl_t op_index = start_op->next;
-    const ecs_query_op_t *op = &ctx->rit->ops[op_index];
-    ctx->written[op_index] = ctx->written[ctx->op_index];
-    ctx->op_index = op_index;
-
-    int32_t field = op->field_index;
-    if (field == -1) {
-        goto done;
-    }
-
-    ecs_iter_t *it = ctx->it;
-
-    /* Not terms return no data */
-    it->columns[field] = 0;
-
-    /* Ignore variables written by Not operation */
-    uint64_t *written = ctx->written;
-    uint64_t written_cur = written[op->prev + 1];
-    ecs_flags16_t flags_1st = flecs_query_ref_flags(op->flags, EcsRuleFirst);
-    ecs_flags16_t flags_2nd = flecs_query_ref_flags(op->flags, EcsRuleSecond);
-
-    /* Overwrite id with cleared out variables */
-    ecs_id_t id = flecs_query_op_get_id(op, ctx);
-    if (id) {
-        it->ids[field] = id;
-    }
-
-    /* Reset variables */
-    if (flags_1st & EcsRuleIsVar) {
-        if (!flecs_ref_is_written(op, &op->first, EcsRuleFirst, written_cur)){
-            flecs_query_var_reset(op->first.var, ctx);
-        }
-    }
-    if (flags_2nd & EcsRuleIsVar) {
-        if (!flecs_ref_is_written(op, &op->second, EcsRuleSecond, written_cur)){
-            flecs_query_var_reset(op->second.var, ctx);
-        }
-    }
-
-    /* If term has entity src, set it because no other instruction might */
-    if (op->flags & (EcsRuleIsEntity << EcsRuleSrc)) {
-        it->sources[field] = op->src.entity;
-    }
-
-done:
-    op_ctx->op_index = op_index;
-}
-
-static
 const char* flecs_query_name_arg(
     const ecs_query_op_t *op,
     ecs_query_run_ctx_t *ctx)
@@ -2097,6 +2043,82 @@ bool flecs_query_pair_eq(
 }
 
 static
+void flecs_query_reset_after_block(
+    const ecs_query_op_t *start_op,
+    ecs_query_run_ctx_t *ctx,
+    ecs_query_ctrl_ctx_t *op_ctx)
+{
+    ecs_query_lbl_t op_index = start_op->next;
+    const ecs_query_op_t *op = &ctx->rit->ops[op_index];
+    ctx->written[op_index] = ctx->written[ctx->op_index];
+    ctx->op_index = op_index;
+
+    int32_t field = op->field_index;
+    if (field == -1) {
+        goto done;
+    }
+
+    ecs_iter_t *it = ctx->it;
+
+    /* Not terms return no data */
+    it->columns[field] = 0;
+    it->ptrs[field] = NULL;
+
+    /* Ignore variables written by Not operation */
+    uint64_t *written = ctx->written;
+    uint64_t written_cur = written[op->prev + 1];
+    ecs_flags16_t flags_1st = flecs_query_ref_flags(op->flags, EcsRuleFirst);
+    ecs_flags16_t flags_2nd = flecs_query_ref_flags(op->flags, EcsRuleSecond);
+
+    /* Overwrite id with cleared out variables */
+    ecs_id_t id = flecs_query_op_get_id(op, ctx);
+    if (id) {
+        it->ids[field] = id;
+    }
+
+    /* Reset variables */
+    if (flags_1st & EcsRuleIsVar) {
+        if (!flecs_ref_is_written(op, &op->first, EcsRuleFirst, written_cur)){
+            flecs_query_var_reset(op->first.var, ctx);
+        }
+    }
+    if (flags_2nd & EcsRuleIsVar) {
+        if (!flecs_ref_is_written(op, &op->second, EcsRuleSecond, written_cur)){
+            flecs_query_var_reset(op->second.var, ctx);
+        }
+    }
+
+    /* If term has entity src, set it because no other instruction might */
+    if (op->flags & (EcsRuleIsEntity << EcsRuleSrc)) {
+        it->sources[field] = op->src.entity;
+    }
+
+done:
+    op_ctx->op_index = op_index;
+}
+
+static
+bool flecs_query_run_block(
+    bool redo,
+    ecs_query_run_ctx_t *ctx,
+    ecs_query_ctrl_ctx_t *op_ctx)
+{
+    ecs_iter_t *it = ctx->it;
+    ecs_query_iter_t *rit = &it->priv.iter.rule;
+
+    if (!redo) {
+        op_ctx->op_index = flecs_itolbl(ctx->op_index + 1);
+    } else if (ctx->rit->ops[op_ctx->op_index].kind == EcsRuleEnd) {
+        return false;
+    }
+
+    ctx->written[ctx->op_index + 1] = ctx->written[ctx->op_index];
+
+    return flecs_query_run_until(
+        redo, ctx, rit->ops, ctx->op_index, op_ctx->op_index, EcsRuleEnd);
+}
+
+static
 bool flecs_query_select_or(
     const ecs_query_op_t *op,
     bool redo,
@@ -2154,27 +2176,6 @@ bool flecs_query_select_or(
     } while (cur->kind != EcsRuleEnd);
 
     return result;
-}
-
-static
-bool flecs_query_run_block(
-    bool redo,
-    ecs_query_run_ctx_t *ctx,
-    ecs_query_ctrl_ctx_t *op_ctx)
-{
-    ecs_iter_t *it = ctx->it;
-    ecs_query_iter_t *rit = &it->priv.iter.rule;
-
-    if (!redo) {
-        op_ctx->op_index = flecs_itolbl(ctx->op_index + 1);
-    } else if (ctx->rit->ops[op_ctx->op_index].kind == EcsRuleEnd) {
-        return false;
-    }
-
-    ctx->written[ctx->op_index + 1] = ctx->written[ctx->op_index];
-
-    return flecs_query_run_until(
-        redo, ctx, rit->ops, ctx->op_index, op_ctx->op_index, EcsRuleEnd);
 }
 
 static
@@ -2789,7 +2790,7 @@ void flecs_query_iter_fini(
     rit->rule = NULL;
 }
 
-ecs_iter_t ecs_query_iter(
+ecs_iter_t flecs_query_iter(
     const ecs_world_t *world,
     const ecs_query_t *q)
 {
@@ -2799,8 +2800,6 @@ ecs_iter_t ecs_query_iter(
     
     ecs_poly_assert(q, ecs_query_impl_t);
     ecs_query_impl_t *impl = flecs_query_impl(q);
-
-    ecs_run_aperiodic(q->world, EcsAperiodicEmptyTables);
 
     int32_t i, var_count = impl->var_count, op_count = impl->op_count;
     it.world = ECS_CONST_CAST(ecs_world_t*, world);
@@ -2844,4 +2843,12 @@ ecs_iter_t ecs_query_iter(
 
 error:
     return it;
+}
+
+ecs_iter_t ecs_query_iter(
+    const ecs_world_t *world,
+    const ecs_query_t *q)
+{
+    ecs_run_aperiodic(q->world, EcsAperiodicEmptyTables);
+    return flecs_query_iter(world, q);
 }

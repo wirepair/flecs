@@ -259,9 +259,9 @@ void ecs_world_stats_log(
  * @param stats Out parameter for statistics.
  */
 FLECS_API 
-void ecs_query_cache_stats_get(
+void ecs_query_stats_get(
     const ecs_world_t *world,
-    const ecs_query_cache_t *query,
+    const ecs_query_t *query,
     ecs_query_cache_stats_t *stats);
 
 /** Reduce source measurement window into single destination measurement. */

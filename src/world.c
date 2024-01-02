@@ -1936,9 +1936,9 @@ void flecs_process_empty_queries(
             int32_t i, count = ecs_table_count(table);
 
             for (i = 0; i < count; i ++) {
-                ecs_query_cache_t *query = queries[i].poly;
+                ecs_query_t *query = queries[i].poly;
                 ecs_entity_t *entities = table->data.entities.array;
-                if (!ecs_query_cache_table_count(query)) {
+                if (!ecs_query_is_true(query)) {
                     ecs_add_id(world, entities[i], EcsEmpty);
                 }
             }

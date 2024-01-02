@@ -1343,6 +1343,10 @@ int flecs_query_compile_term(
     bool first_is_var = term->first.id & EcsIsVariable;
     bool second_is_var = term->second.id & EcsIsVariable;
     bool src_is_var = term->src.id & EcsIsVariable;
+    bool src_is_wildcard = src_is_var && 
+        (ECS_TERM_REF_ID(&term->src) == EcsWildcard ||
+            ECS_TERM_REF_ID(&term->src) == EcsAny);
+    bool src_is_lookup = false;
     bool builtin_pred = flecs_query_is_builtin_pred(term);
     bool is_not = (term->oper == EcsNot) && !builtin_pred;
     bool is_or = flecs_query_term_is_or(q, term);
@@ -1454,7 +1458,10 @@ int flecs_query_compile_term(
 
     flecs_query_compile_term_ref(world, rule, &op, &term->src, 
         &op.src, EcsRuleSrc, EcsVarAny, ctx, true);
-    if (src_is_var) src_var = op.src.var;
+    if (src_is_var) {
+        src_var = op.src.var;
+        src_is_lookup = rule->vars[src_var].lookup != NULL;
+    }
     bool src_written = flecs_query_is_written(src_var, ctx->written);
 
     /* Insert each instructions for table -> entity variable if needed */
@@ -1470,9 +1477,10 @@ int flecs_query_compile_term(
         goto error;
     }
 
-    /* If the query starts with a Not or Optional term, insert an operation that
-     * matches all entities. */
-    if (first_term && src_is_var && !src_written) {
+    /* If an optional or not term is inserted for a source that's not been 
+     * written to yet, insert instruction that selects all entities so we have
+     * something to match the optional/not against. */
+    if (src_is_var && !src_written && !src_is_wildcard && !src_is_lookup) {
         bool pred_match = builtin_pred && ECS_TERM_REF_ID(&term->first) == EcsPredMatch;
         if (term->oper == EcsNot || term->oper == EcsOptional || pred_match) {
             ecs_query_op_t match_any = {0};
@@ -1544,7 +1552,7 @@ int flecs_query_compile_term(
      * records, which is what the AndAny instruction does. */
     } else if (!src_written && term->id == EcsAny && op.kind == EcsRuleAndAny) {
         /* Lookup variables ($var.child_name) are always written */
-        if (!rule->vars[src_var].lookup) {
+        if (!src_is_lookup) {
             op.kind = EcsRuleSelectAny; /* Uses Any (_) id record */
         }
     }

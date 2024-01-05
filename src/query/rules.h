@@ -232,7 +232,7 @@ typedef struct {
 
 /* Cache iterator context */
 typedef struct {
-    ecs_query_cache_table_match_t *node, *prev, *last;
+    int _dummy;
 } ecs_query_impl_cache_ctx_t;
 
 typedef struct ecs_query_op_ctx_t {
@@ -304,14 +304,20 @@ struct ecs_query_impl_t {
     ecs_hashmap_t evar_index;     /* Name index for entity variables */
     ecs_query_var_cache_t vars_cache; /* For trivial rules with only This variables */
     char **var_names;             /* Array with variable names for iterator */
-    
     ecs_var_id_t *src_vars;       /* Array with ids to source variables for fields */
+
+    /* Query plan */
     ecs_query_op_t *ops;          /* Operations */
     int32_t op_count;             /* Number of operations */
 
+    /* Query cache */
     ecs_query_cache_t *cache;     /* Cache, if query contains cached terms */
     int8_t *field_map;            /* Map field indices from cache to query */
 
+    /* Change detection */
+    int32_t *monitor;             /* Change monitor for fields with fixed src */
+
+    /* Misc */
     int16_t tokens_len;           /* Length of tokens buffer */
     char *tokens;                 /* Buffer with string tokens used by terms */
 
@@ -511,18 +517,60 @@ bool flecs_query_is_cache_data_test(
 
 /* -- Cache internals -- */
 
+ecs_query_cache_t* flecs_query_cache_init(
+    ecs_query_impl_t *impl,
+    const ecs_query_desc_t *desc);
+
+void flecs_query_cache_fini(
+    ecs_query_impl_t *impl);
+
+void flecs_query_cache_notify(
+    ecs_world_t *world,
+    ecs_query_cache_t *cache,
+    ecs_query_cache_event_t *event);
+
+ecs_query_cache_table_t* flecs_query_cache_get_table(
+    ecs_query_cache_t *query,
+    ecs_table_t *table);
+
 void flecs_query_cache_sort_tables(
     ecs_world_t *world,
-    ecs_query_cache_t *query);
+    ecs_query_impl_t *impl);
 
-void flecs_query_cache_sync_match_monitor(
-    ecs_query_cache_t *query,
+int32_t flecs_query_cache_table_count(
+    ecs_query_cache_t *cache);
+
+int32_t flecs_query_cache_empty_table_count(
+    ecs_query_cache_t *cache);
+
+int32_t flecs_query_cache_entity_count(
+    const ecs_query_cache_t *cache);
+
+
+/* -- Change detection -- */
+
+void flecs_query_sync_match_monitor(
+    ecs_query_impl_t *impl,
     ecs_query_cache_table_match_t *match);
 
-void flecs_query_cache_mark_columns_dirty(
-    ecs_query_cache_t *query,
-    ecs_query_cache_table_match_t *qm);
+void flecs_query_mark_fields_dirty(
+    ecs_query_impl_t *impl,
+    ecs_iter_t *it);
 
+void flecs_query_mark_fixed_fields_dirty(
+    ecs_query_impl_t *impl,
+    ecs_iter_t *it);
+
+bool flecs_query_check_table_monitor(
+    ecs_query_impl_t *impl,
+    ecs_query_cache_table_t *table,
+    int32_t term);
+
+bool flecs_query_update_fixed_monitor(
+    ecs_query_impl_t *impl);
+
+bool flecs_query_check_fixed_monitor(
+    ecs_query_impl_t *impl);
 
 /* -- Validator -- */
 
@@ -543,15 +591,6 @@ char* flecs_query_str(
 /* Convert instruction kind to string */
 const char* flecs_query_op_str(
     uint16_t kind);
-
-int32_t flecs_query_cache_table_count(
-    ecs_query_cache_t *cache);
-
-int32_t flecs_query_cache_empty_table_count(
-    ecs_query_cache_t *cache);
-
-int32_t flecs_query_cache_entity_count(
-    const ecs_query_cache_t *query);
 
 /* Internal function for creating iterator, doesn't run aperiodic tasks */
 ecs_iter_t flecs_query_iter(

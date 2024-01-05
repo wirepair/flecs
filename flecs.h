@@ -254,7 +254,7 @@
 /** \def FLECS_TERM_COUNT_MAX 
  * Maximum number of terms in queries. Should not be set higher than 64. */
 #ifndef FLECS_TERM_COUNT_MAX
-#define FLECS_TERM_COUNT_MAX (16)
+#define FLECS_TERM_COUNT_MAX 16
 #endif
 
 /** \def FLECS_TERM_ARG_COUNT_MAX 
@@ -404,6 +404,9 @@ extern "C" {
 #define EcsIterTrivialTestWildcard     (1u << 15u) /* Trivial test w/wildcards */
 #define EcsIterTrivialSearchWildcard   (1u << 16u) /* Trivial search with wildcard ids */
 #define EcsIterCacheSearch             (1u << 17u) /* Cache search */
+#define EcsIterFixedInChangeComputed   (1u << 18u) /* Change detection for fixed in terms is done */
+#define EcsIterFixedInChanged          (1u << 19u) /* Fixed in terms changed */
+#define EcsIterSkip                    (1u << 20u) /* Result was skipped for change detection */
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Event flags (used by ecs_event_decs_t::flags)
@@ -710,6 +713,13 @@ typedef uint8_t ecs_flags8_t;
 typedef uint16_t ecs_flags16_t;
 typedef uint32_t ecs_flags32_t;
 typedef uint64_t ecs_flags64_t;
+
+/* Bitmask type with compile-time defined size */
+#define ecs_flagsn_t_(bits) ecs_flags##bits##_t
+#define ecs_flagsn_t(bits) ecs_flagsn_t_(bits)
+
+/* Bitset type that can store exactly as many bits as there are terms */
+#define ecs_termset_t ecs_flagsn_t(FLECS_TERM_COUNT_MAX)
 
 /* Keep unsigned integers out of the codebase as they do more harm than good */
 typedef int32_t ecs_size_t;
@@ -2975,20 +2985,25 @@ struct ecs_query_t {
 
     ecs_term_t terms[FLECS_TERM_COUNT_MAX]; /**< Query terms */
     int32_t sizes[FLECS_TERM_COUNT_MAX]; /**< Component sizes. Indexed by field */
-    
-    int8_t term_count;         /**< Number of elements in terms array */
-    int8_t field_count;        /**< Number of fields in iterator for filter */
 
-    ecs_flags32_t flags;       /**< Query flags */
-    ecs_flags64_t data_fields; /**< Bitset with fields that have data */
+    ecs_flags32_t flags;        /**< Query flags */
+    int8_t term_count;          /**< Number of elements in terms array */
+    int8_t field_count;         /**< Number of fields in iterator for filter */
 
-    ecs_query_cache_kind_t cache_kind;  /**< Actual caching policy of query */
+    /* Bitmasks for quick field information lookups */
+    ecs_termset_t fixed_fields; /**< Fields with a fixed source */
+    ecs_termset_t data_fields;  /**< Fields that have data */
+    ecs_termset_t write_fields; /**< Fields that write data */
+    ecs_termset_t read_fields;  /**< Fields that read data */
+    ecs_termset_t shared_readonly_fields; /**< Fields that don't write shared data */
 
-    void *ctx;                 /**< User context to pass to callback */
-    void *binding_ctx;         /**< Context to be used for language bindings */
+    ecs_query_cache_kind_t cache_kind;  /**< Caching policy of query */
 
-    ecs_entity_t entity;       /**< Entity associated with filter (optional) */
-    ecs_world_t *world;        /**< World mixin */
+    void *ctx;                  /**< User context to pass to callback */
+    void *binding_ctx;          /**< Context to be used for language bindings */
+
+    ecs_entity_t entity;        /**< Entity associated with query (optional) */
+    ecs_world_t *world;         /**< World mixin */
     ecs_stage_t *stage;
 };
 
@@ -3253,8 +3268,10 @@ typedef struct ecs_query_iter_t {
     const struct ecs_query_var_t *rule_vars;
     const struct ecs_query_op_t *ops;
     struct ecs_query_op_ctx_t *op_ctx;    /* Operation-specific state */
+    ecs_query_cache_table_match_t *node, *prev, *last; /* For cached iteration */
     uint64_t *written;
     ecs_flags32_t source_set;
+    int32_t skip_count;
 
 #ifdef FLECS_DEBUG
     ecs_query_op_profile_t *profile;
@@ -6761,8 +6778,7 @@ bool ecs_children_next(
  */
 FLECS_API
 bool ecs_query_changed(
-    ecs_query_t *query,
-    const ecs_iter_t *it);
+    ecs_query_t *query);
 
 /** Skip a table while iterating.
  * This operation lets the query iterator know that a table was skipped while
@@ -6775,7 +6791,7 @@ bool ecs_query_changed(
  * @param it The iterator result to skip.
  */
 FLECS_API
-void ecs_query_skip(
+void ecs_iter_skip(
     ecs_iter_t *it);
 
 /** Set group to iterate for query iterator.
@@ -7185,6 +7201,10 @@ FLECS_API
 bool ecs_iter_var_is_constrained(
     ecs_iter_t *it,
     int32_t var_id);
+
+FLECS_API
+bool ecs_iter_changed(
+    ecs_iter_t *it);
 
 /** Convert iterator to string.
  * Prints the contents of an iterator to a string. Useful for debugging and/or

@@ -2592,7 +2592,8 @@ void flecs_query_iter_init(
         ecs_world_t *world = rule->pub.world;
 
         /* If query has order_by, apply sort */
-        flecs_query_cache_sort_tables(world, cache);
+        flecs_query_cache_sort_tables(world, 
+            ECS_CONST_CAST(ecs_query_impl_t*, rule));
 
         /* If monitors changed, do query rematching */
         if (!(world->flags & EcsWorldReadonly) && flags & EcsQueryHasRefs) {
@@ -2602,6 +2603,8 @@ void flecs_query_iter_init(
         // if (flags & EcsQueryIsCacheable) {
         //     it->flags |= EcsIterCacheSearch;
         // }
+
+        cache->prev_match_count = cache->match_count;
     }
 
     flecs_iter_validate(it);
@@ -2614,9 +2617,10 @@ bool ecs_query_next_instanced(
     ecs_assert(it->next == ecs_query_next, ECS_INVALID_PARAMETER, NULL);
 
     ecs_query_iter_t *rit = &it->priv.iter.rule;
+    ecs_query_impl_t *impl = ECS_CONST_CAST(ecs_query_impl_t*, rit->rule);
     ecs_query_run_ctx_t ctx;
     ctx.world = it->real_world;
-    ctx.rule = flecs_query_impl(rit->rule);
+    ctx.rule = impl;
     ctx.it = it;
     ctx.vars = rit->vars;
     ctx.rule_vars = rit->rule_vars;
@@ -2628,11 +2632,22 @@ bool ecs_query_next_instanced(
 
     bool redo = true;
     if (!(it->flags & EcsIterIsValid)) {
-        ecs_assert(ctx.rule != NULL, ECS_INVALID_PARAMETER, NULL);
+        ecs_assert(impl != NULL, ECS_INVALID_PARAMETER, NULL);
         flecs_query_iter_init(&ctx);
         redo = false;
     } else {
         it->frame_offset += it->count;
+
+        if (!(it->flags & EcsIterSkip)) {
+            flecs_query_mark_fields_dirty(impl, it);
+            if (rit->prev) {
+                if (ctx.rule->pub.flags & EcsQueryHasMonitor) {
+                    flecs_query_sync_match_monitor(impl, rit->prev);
+                }
+            }
+        }
+
+        it->flags &= ~EcsIterSkip;
     }
 
     /* Specialized iterator modes for trivial queries */
@@ -2706,6 +2721,12 @@ bool ecs_query_next_instanced(
     }
 
 done:
+    flecs_query_mark_fixed_fields_dirty(impl, it);
+    if (ctx.rule->monitor) {
+        flecs_query_update_fixed_monitor(
+            ECS_CONST_CAST(ecs_query_impl_t*, ctx.rule));
+    }
+
     ecs_iter_fini(it);
     return false;
 }

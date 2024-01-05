@@ -488,6 +488,12 @@ void Basic_2_fixed_src_w_this_no_match_this(void);
 void Basic_query_count_results(void);
 void Basic_query_count_entities(void);
 void Basic_query_is_true(void);
+void Basic_implicit_cleanup_1_term(void);
+void Basic_implicit_cleanup_2_terms(void);
+void Basic_implicit_cleanup_1_term_w_up(void);
+void Basic_implicit_cleanup_2_terms_w_up(void);
+void Basic_implicit_cleanup_2_queries(void);
+void Basic_implicit_cleanup_2_queries_1_cleanup(void);
 
 // Testsuite 'Plan'
 void Plan_reordered_plan_1(void);
@@ -3201,6 +3207,30 @@ bake_test_case Basic_testcases[] = {
     {
         "query_is_true",
         Basic_query_is_true
+    },
+    {
+        "implicit_cleanup_1_term",
+        Basic_implicit_cleanup_1_term
+    },
+    {
+        "implicit_cleanup_2_terms",
+        Basic_implicit_cleanup_2_terms
+    },
+    {
+        "implicit_cleanup_1_term_w_up",
+        Basic_implicit_cleanup_1_term_w_up
+    },
+    {
+        "implicit_cleanup_2_terms_w_up",
+        Basic_implicit_cleanup_2_terms_w_up
+    },
+    {
+        "implicit_cleanup_2_queries",
+        Basic_implicit_cleanup_2_queries
+    },
+    {
+        "implicit_cleanup_2_queries_1_cleanup",
+        Basic_implicit_cleanup_2_queries_1_cleanup
     }
 };
 
@@ -6389,7 +6419,7 @@ static bake_test_suite suites[] = {
         "Basic",
         Basic_setup,
         NULL,
-        145,
+        151,
         Basic_testcases,
         1,
         Basic_params

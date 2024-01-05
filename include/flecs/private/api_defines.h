@@ -186,6 +186,13 @@ typedef uint16_t ecs_flags16_t;
 typedef uint32_t ecs_flags32_t;
 typedef uint64_t ecs_flags64_t;
 
+/* Bitmask type with compile-time defined size */
+#define ecs_flagsn_t_(bits) ecs_flags##bits##_t
+#define ecs_flagsn_t(bits) ecs_flagsn_t_(bits)
+
+/* Bitset type that can store exactly as many bits as there are terms */
+#define ecs_termset_t ecs_flagsn_t(FLECS_TERM_COUNT_MAX)
+
 /* Keep unsigned integers out of the codebase as they do more harm than good */
 typedef int32_t ecs_size_t;
 

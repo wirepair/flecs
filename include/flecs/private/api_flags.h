@@ -113,6 +113,9 @@ extern "C" {
 #define EcsIterTrivialTestWildcard     (1u << 15u) /* Trivial test w/wildcards */
 #define EcsIterTrivialSearchWildcard   (1u << 16u) /* Trivial search with wildcard ids */
 #define EcsIterCacheSearch             (1u << 17u) /* Cache search */
+#define EcsIterFixedInChangeComputed   (1u << 18u) /* Change detection for fixed in terms is done */
+#define EcsIterFixedInChanged          (1u << 19u) /* Fixed in terms changed */
+#define EcsIterSkip                    (1u << 20u) /* Result was skipped for change detection */
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Event flags (used by ecs_event_decs_t::flags)

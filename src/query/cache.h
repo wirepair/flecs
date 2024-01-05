@@ -107,18 +107,3 @@ typedef struct ecs_query_cache_t {
     ecs_query_cache_allocators_t allocators;
 } ecs_query_cache_t;
 
-ecs_query_cache_t* flecs_query_cache_init(
-    ecs_world_t *world,
-    const ecs_query_desc_t *desc);
-
-void flecs_query_cache_fini(
-    ecs_query_cache_t *query);
-
-void flecs_query_cache_notify(
-    ecs_world_t *world,
-    ecs_query_cache_t *query,
-    ecs_query_cache_event_t *event);
-
-ecs_query_cache_table_t* flecs_query_cache_get_table(
-    ecs_query_cache_t *query,
-    ecs_table_t *table);

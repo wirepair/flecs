@@ -65,7 +65,11 @@ bool flecs_query_trivial_test(
         }
 
         it->table = table;
-        it->entities = &flecs_table_entities_array(table)[it->offset];
+        it->entities = flecs_table_entities_array(table);
+        if (it->entities) {
+            it->entities = &it->entities[it->offset];
+        }
+
         return true;
     } else {
         return false;

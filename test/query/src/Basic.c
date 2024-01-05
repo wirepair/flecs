@@ -7523,3 +7523,130 @@ void Basic_query_is_true(void) {
 
     ecs_fini(world);
 }
+
+void Basic_implicit_cleanup_1_term(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+
+    ecs_new(world, TagA);
+
+    ecs_query_t *q = ecs_query(world, {
+        .entity = ecs_new_id(world),
+        .expr = "TagA",
+        .cache_kind = cache_kind
+    });
+    test_assert(q != NULL);
+
+    ecs_fini(world);
+}
+
+void Basic_implicit_cleanup_2_terms(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    
+    ecs_add(world, ecs_new(world, TagA), TagB);
+
+    ecs_query_t *q = ecs_query(world, {
+        .entity = ecs_new_id(world),
+        .expr = "TagA, TagB",
+        .cache_kind = cache_kind
+    });
+    test_assert(q != NULL);
+
+    ecs_fini(world);
+}
+
+void Basic_implicit_cleanup_1_term_w_up(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+
+    ecs_new_w_pair(world, EcsChildOf, ecs_new(world, TagA));
+
+    ecs_query_t *q = ecs_query(world, {
+        .entity = ecs_new_id(world),
+        .expr = "TagA(up)",
+        .cache_kind = cache_kind
+    });
+    test_assert(q != NULL);
+
+    ecs_fini(world);
+}
+
+void Basic_implicit_cleanup_2_terms_w_up(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+
+    ecs_add(world, 
+        ecs_new_w_pair(world, EcsChildOf, 
+            ecs_new(world, TagB)), TagA);
+
+    ecs_query_t *q = ecs_query(world, {
+        .entity = ecs_new_id(world),
+        .expr = "TagA, TagB(up)",
+        .cache_kind = cache_kind
+    });
+    test_assert(q != NULL);
+
+    ecs_fini(world);
+}
+
+void Basic_implicit_cleanup_2_queries(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_COMPONENT(world, Position);
+    ECS_COMPONENT(world, Velocity);
+    ECS_TAG(world, Tag);
+
+    ecs_new_w_pair(world, EcsIsA, ecs_new(world, Position));
+
+    ecs_query_t *q_1 = ecs_query(world, {
+        .expr = "Position",
+        .cache_kind = cache_kind
+    });
+    test_assert(q_1 != NULL);
+
+    ecs_query_t *q_2 = ecs_query(world, {
+        .expr = "Position",
+        .cache_kind = cache_kind
+    });
+    test_assert(q_2 != NULL);
+
+    ecs_query_fini(q_1);
+    ecs_query_fini(q_2);
+
+    ecs_fini(world);
+}
+
+void Basic_implicit_cleanup_2_queries_1_cleanup(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_COMPONENT(world, Position);
+    ECS_COMPONENT(world, Velocity);
+    ECS_TAG(world, Tag);
+    
+    ecs_new_w_pair(world, EcsIsA, ecs_new(world, Position));
+
+    ecs_query_t *q_1 = ecs_query(world, {
+        .expr = "Position",
+        .cache_kind = cache_kind
+    });
+    test_assert(q_1 != NULL);
+
+    ecs_query_t *q_2 = ecs_query(world, {
+        .expr = "Position",
+        .cache_kind = cache_kind
+    });
+    test_assert(q_2 != NULL);
+
+    ecs_query_fini(q_1);
+
+    ecs_fini(world);
+}

@@ -499,7 +499,13 @@
                 "2_fixed_src_w_this_no_match_this",
                 "query_count_results",
                 "query_count_entities",
-                "query_is_true"
+                "query_is_true",
+                "implicit_cleanup_1_term",
+                "implicit_cleanup_2_terms",
+                "implicit_cleanup_1_term_w_up",
+                "implicit_cleanup_2_terms_w_up",
+                "implicit_cleanup_2_queries",
+                "implicit_cleanup_2_queries_1_cleanup"
             ]
         }, {
             "id": "Plan",

@@ -166,7 +166,7 @@ int flecs_query_create_cache(
 
     if (q->cache_kind == EcsQueryCacheAll) {
         /* Create query cache for all terms */
-        impl->cache = flecs_query_cache_init(impl->pub.world, desc);
+        impl->cache = flecs_query_cache_init(impl, desc);
     } else if (q->cache_kind == EcsQueryCacheAuto) {
         /* Query is partially cached */
         ecs_query_desc_t cache_desc = *desc;
@@ -193,7 +193,7 @@ int flecs_query_create_cache(
         }
 
         if (dst_count) {
-            impl->cache = flecs_query_cache_init(impl->pub.world, &cache_desc);
+            impl->cache = flecs_query_cache_init(impl, &cache_desc);
             impl->field_map = ecs_os_memdup_n(field_map, int8_t, dst_count);
         }
     }
@@ -219,6 +219,7 @@ void flecs_query_fini(
 
     ecs_os_free(impl->ops);
     ecs_os_free(impl->src_vars);
+    ecs_os_free(impl->monitor);
     flecs_name_index_fini(&impl->tvar_index);
     flecs_name_index_fini(&impl->evar_index);
 
@@ -242,7 +243,7 @@ void flecs_query_fini(
     }
 
     if (impl->cache) {
-        flecs_query_cache_fini(impl->cache);
+        flecs_query_cache_fini(impl);
     }
 
     ecs_poly_free(impl, ecs_query_impl_t);

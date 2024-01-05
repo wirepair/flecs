@@ -1013,6 +1013,20 @@ int flecs_query_query_finalize_terms(
             term->flags |= EcsTermNoData;
         } else {
             q->data_fields |= (1llu << term->field_index);
+
+            if (term->inout != EcsIn) {
+                q->write_fields |= (1llu << term->field_index);
+            }
+            if (term->inout != EcsOut) {
+                q->read_fields |= (1llu << term->field_index);
+            }
+            if (term->inout == EcsInOutDefault) {
+                q->shared_readonly_fields |= (1llu << term->field_index);
+            }
+        }
+
+        if (ECS_TERM_REF_ID(&term->src) && (term->src.id & EcsIsEntity)) {
+            q->fixed_fields |= (1llu << term->field_index);
         }
 
         if (term->idr) {

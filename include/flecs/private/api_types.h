@@ -158,8 +158,10 @@ typedef struct ecs_query_iter_t {
     const struct ecs_query_var_t *rule_vars;
     const struct ecs_query_op_t *ops;
     struct ecs_query_op_ctx_t *op_ctx;    /* Operation-specific state */
+    ecs_query_cache_table_match_t *node, *prev, *last; /* For cached iteration */
     uint64_t *written;
     ecs_flags32_t source_set;
+    int32_t skip_count;
 
 #ifdef FLECS_DEBUG
     ecs_query_op_profile_t *profile;

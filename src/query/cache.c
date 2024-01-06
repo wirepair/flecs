@@ -1519,6 +1519,10 @@ ecs_query_cache_t* flecs_query_cache_init(
      * populate the query cache. */
     ecs_query_desc_t desc = *const_desc;
     desc.cache_kind = EcsQueryCacheNone; /* Don't create caches recursively */
+    desc.group_by = NULL;
+    desc.group_by_id = 0;
+    desc.order_by = NULL;
+    desc.order_by_component = 0;
 
     ecs_query_cache_t *result = ecs_os_calloc_t(ecs_query_cache_t);
     ecs_observer_desc_t observer_desc = { .filter = desc };
@@ -1578,15 +1582,16 @@ ecs_query_cache_t* flecs_query_cache_init(
         result->group_by_ctx = &result->query->terms[cascade_by - 1];
     }
 
-    if (desc.group_by || desc.group_by_id) {
+    if (const_desc->group_by || const_desc->group_by_id) {
         /* Can't have a cascade term and group by at the same time, as cascade
          * uses the group_by mechanism */
         ecs_check(!result->cascade_by, ECS_INVALID_PARAMETER, NULL);
-        flecs_query_cache_group_by(result, desc.group_by_id, desc.group_by);
-        result->group_by_ctx = desc.group_by_ctx;
-        result->on_group_create = desc.on_group_create;
-        result->on_group_delete = desc.on_group_delete;
-        result->group_by_ctx_free = desc.group_by_ctx_free;
+        flecs_query_cache_group_by(result, 
+            const_desc->group_by_id, const_desc->group_by);
+        result->group_by_ctx = const_desc->group_by_ctx;
+        result->on_group_create = const_desc->on_group_create;
+        result->on_group_delete = const_desc->on_group_delete;
+        result->group_by_ctx_free = const_desc->group_by_ctx_free;
     }
 
     /* If the query refers to itself, add the components that were queried for
@@ -1611,10 +1616,10 @@ ecs_query_cache_t* flecs_query_cache_init(
     ecs_table_cache_init(world, &result->cache);
     flecs_query_cache_match_tables(world, result);
 
-    if (desc.order_by) {
+    if (const_desc->order_by) {
         flecs_query_cache_order_by(
-            world, impl, desc.order_by_component, desc.order_by,
-            desc.sort_table);
+            world, impl, const_desc->order_by_component, const_desc->order_by,
+            const_desc->sort_table);
     }
 
     if (entity) {
@@ -1667,20 +1672,25 @@ void ecs_query_set_group(
     ecs_check(it->next == ecs_query_next, ECS_INVALID_PARAMETER, NULL);
     ecs_check(!(it->flags & EcsIterIsValid), ECS_INVALID_PARAMETER, NULL);
 
-    ecs_query_cache_iter_t *qit = &it->priv.iter.query;
-    ecs_query_cache_t *q = qit->query;
+    ecs_query_iter_t *qit = &it->priv.iter.rule;
+    ecs_query_impl_t *q = flecs_query_impl(qit->rule);
     ecs_check(q != NULL, ECS_INVALID_PARAMETER, NULL);
+    ecs_poly_assert(q, ecs_query_impl_t);
+    ecs_query_cache_t *cache = q->cache;
+    ecs_check(cache != NULL, ECS_INVALID_PARAMETER, NULL);
 
-    ecs_query_cache_table_list_t *node = flecs_query_cache_get_group(q, group_id);
+    ecs_query_cache_table_list_t *node = flecs_query_cache_get_group(
+        cache, group_id);
     if (!node) {
         qit->node = NULL;
+        qit->last = NULL;
         return;
     }
 
     ecs_query_cache_table_match_t *first = node->first;
     if (first) {
         qit->node = node->first;
-        qit->last = node->last->next;
+        qit->last = node->last;
     } else {
         qit->node = NULL;
         qit->last = NULL;

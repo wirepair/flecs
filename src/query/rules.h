@@ -284,7 +284,7 @@ typedef struct {
     const ecs_query_impl_t *rule;       /* Reference to rule */
     const ecs_query_var_t *rule_vars; /* Reference to rule variable array */
     ecs_flags32_t *source_set;    /* Whether ecs_iter_t::sources is written by instruction */
-    ecs_query_iter_t *rit;
+    ecs_query_iter_t *qit;
 } ecs_query_run_ctx_t;
 
 typedef struct {

@@ -2049,7 +2049,7 @@ void flecs_query_reset_after_block(
     ecs_query_ctrl_ctx_t *op_ctx)
 {
     ecs_query_lbl_t op_index = start_op->next;
-    const ecs_query_op_t *op = &ctx->rit->ops[op_index];
+    const ecs_query_op_t *op = &ctx->qit->ops[op_index];
     ctx->written[op_index] = ctx->written[ctx->op_index];
     ctx->op_index = op_index;
 
@@ -2104,18 +2104,18 @@ bool flecs_query_run_block(
     ecs_query_ctrl_ctx_t *op_ctx)
 {
     ecs_iter_t *it = ctx->it;
-    ecs_query_iter_t *rit = &it->priv.iter.rule;
+    ecs_query_iter_t *qit = &it->priv.iter.rule;
 
     if (!redo) {
         op_ctx->op_index = flecs_itolbl(ctx->op_index + 1);
-    } else if (ctx->rit->ops[op_ctx->op_index].kind == EcsRuleEnd) {
+    } else if (ctx->qit->ops[op_ctx->op_index].kind == EcsRuleEnd) {
         return false;
     }
 
     ctx->written[ctx->op_index + 1] = ctx->written[ctx->op_index];
 
     return flecs_query_run_until(
-        redo, ctx, rit->ops, ctx->op_index, op_ctx->op_index, EcsRuleEnd);
+        redo, ctx, qit->ops, ctx->op_index, op_ctx->op_index, EcsRuleEnd);
 }
 
 static
@@ -2125,7 +2125,7 @@ bool flecs_query_select_or(
     ecs_query_run_ctx_t *ctx)
 {
     ecs_iter_t *it = ctx->it;
-    ecs_query_iter_t *rit = &it->priv.iter.rule;
+    ecs_query_iter_t *qit = &it->priv.iter.rule;
     ecs_query_ctrl_ctx_t *op_ctx = flecs_op_ctx(ctx, ctrl);
 
     ecs_query_lbl_t first = flecs_itolbl(ctx->op_index + 1);
@@ -2133,7 +2133,7 @@ bool flecs_query_select_or(
         op_ctx->op_index = first;
     }
 
-    const ecs_query_op_t *cur = &rit->ops[op_ctx->op_index];
+    const ecs_query_op_t *cur = &qit->ops[op_ctx->op_index];
     bool result = false;
     
     /* Evaluate operations in OR chain one by one. */
@@ -2153,7 +2153,7 @@ bool flecs_query_select_or(
             for (prev_index = first; prev_index < op_ctx->op_index; 
                 prev_index ++) 
             {
-                const ecs_query_op_t *prev = &rit->ops[prev_index];
+                const ecs_query_op_t *prev = &qit->ops[prev_index];
                 ctx->op_index = prev_index;
                 ctx->written[prev_index] = ctx->written[op_ctx->op_index];
                 if (flecs_query_dispatch(prev, false, ctx)) {
@@ -2171,7 +2171,7 @@ bool flecs_query_select_or(
 
         /* No result was found, go to next operation in chain */
         op_ctx->op_index ++;
-        cur = &rit->ops[op_ctx->op_index];
+        cur = &qit->ops[op_ctx->op_index];
         redo = false;
     } while (cur->kind != EcsRuleEnd);
 
@@ -2494,7 +2494,7 @@ bool flecs_query_run_until(
 
     do {
         #ifdef FLECS_DEBUG
-        ctx->rit->profile[ctx->op_index].count[redo] ++;
+        ctx->qit->profile[ctx->op_index].count[redo] ++;
         #endif
 
         bool result = flecs_query_dispatch(op, redo, ctx);
@@ -2616,19 +2616,19 @@ bool ecs_query_next_instanced(
     ecs_assert(it != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_assert(it->next == ecs_query_next, ECS_INVALID_PARAMETER, NULL);
 
-    ecs_query_iter_t *rit = &it->priv.iter.rule;
-    ecs_query_impl_t *impl = ECS_CONST_CAST(ecs_query_impl_t*, rit->rule);
+    ecs_query_iter_t *qit = &it->priv.iter.rule;
+    ecs_query_impl_t *impl = ECS_CONST_CAST(ecs_query_impl_t*, qit->rule);
     ecs_query_run_ctx_t ctx;
     ctx.world = it->real_world;
     ctx.rule = impl;
     ctx.it = it;
-    ctx.vars = rit->vars;
-    ctx.rule_vars = rit->rule_vars;
-    ctx.written = rit->written;
-    ctx.op_ctx = rit->op_ctx;
-    ctx.source_set = &rit->source_set;
-    ctx.rit = rit;
-    const ecs_query_op_t *ops = rit->ops;
+    ctx.vars = qit->vars;
+    ctx.rule_vars = qit->rule_vars;
+    ctx.written = qit->written;
+    ctx.op_ctx = qit->op_ctx;
+    ctx.source_set = &qit->source_set;
+    ctx.qit = qit;
+    const ecs_query_op_t *ops = qit->ops;
 
     bool redo = true;
     if (!(it->flags & EcsIterIsValid)) {
@@ -2640,9 +2640,9 @@ bool ecs_query_next_instanced(
 
         if (!(it->flags & EcsIterSkip)) {
             flecs_query_mark_fields_dirty(impl, it);
-            if (rit->prev) {
+            if (qit->prev) {
                 if (ctx.rule->pub.flags & EcsQueryHasMonitor) {
-                    flecs_query_sync_match_monitor(impl, rit->prev);
+                    flecs_query_sync_match_monitor(impl, qit->prev);
                 }
             }
         }
@@ -2696,7 +2696,7 @@ bool ecs_query_next_instanced(
     }
 
     /* Default iterator mode */
-    if (flecs_query_run_until(redo, &ctx, ops, -1, rit->op, EcsRuleYield)) {
+    if (flecs_query_run_until(redo, &ctx, ops, -1, qit->op, EcsRuleYield)) {
         ecs_assert(ops[ctx.op_index].kind == EcsRuleYield, 
             ECS_INTERNAL_ERROR, NULL);
         ecs_table_range_t *range = &ctx.vars[0].range;
@@ -2716,7 +2716,7 @@ bool ecs_query_next_instanced(
             it->entities = &ctx.vars[0].entity;
         }
 
-        rit->op = flecs_itolbl(ctx.op_index - 1);
+        qit->op = flecs_itolbl(ctx.op_index - 1);
         return true;
     }
 
@@ -2749,12 +2749,12 @@ error:
 static
 void flecs_query_iter_fini_ctx(
     ecs_iter_t *it,
-    ecs_query_iter_t *rit)
+    ecs_query_iter_t *qit)
 {
-    const ecs_query_impl_t *rule = flecs_query_impl(rit->rule);
+    const ecs_query_impl_t *rule = flecs_query_impl(qit->rule);
     int32_t i, count = rule->op_count;
     ecs_query_op_t *ops = rule->ops;
-    ecs_query_op_ctx_t *ctx = rit->op_ctx;
+    ecs_query_op_ctx_t *ctx = qit->op_ctx;
     ecs_allocator_t *a = flecs_query_get_allocator(it);
 
     for (i = 0; i < count; i ++) {
@@ -2785,30 +2785,30 @@ static
 void flecs_query_iter_fini(
     ecs_iter_t *it)
 {
-    ecs_query_iter_t *rit = &it->priv.iter.rule;
-    ecs_assert(rit->rule != NULL, ECS_INVALID_OPERATION, NULL);
-    ecs_poly_assert(rit->rule, ecs_query_impl_t);
-    int32_t op_count = flecs_query_impl(rit->rule)->op_count;
-    int32_t var_count = flecs_query_impl(rit->rule)->var_count;
+    ecs_query_iter_t *qit = &it->priv.iter.rule;
+    ecs_assert(qit->rule != NULL, ECS_INVALID_OPERATION, NULL);
+    ecs_poly_assert(qit->rule, ecs_query_impl_t);
+    int32_t op_count = flecs_query_impl(qit->rule)->op_count;
+    int32_t var_count = flecs_query_impl(qit->rule)->var_count;
 
 #ifdef FLECS_DEBUG
     if (it->flags & EcsIterProfile) {
-        char *str = ecs_query_str_w_profile(rit->rule, it);
+        char *str = ecs_query_str_w_profile(qit->rule, it);
         printf("%s\n", str);
         ecs_os_free(str);
     }
 
-    flecs_iter_free_n(rit->profile, ecs_query_op_profile_t, op_count);
+    flecs_iter_free_n(qit->profile, ecs_query_op_profile_t, op_count);
 #endif
 
-    flecs_query_iter_fini_ctx(it, rit);
-    flecs_iter_free_n(rit->vars, ecs_var_t, var_count);
-    flecs_iter_free_n(rit->written, ecs_write_flags_t, op_count);
-    flecs_iter_free_n(rit->op_ctx, ecs_query_op_ctx_t, op_count);
-    rit->vars = NULL;
-    rit->written = NULL;
-    rit->op_ctx = NULL;
-    rit->rule = NULL;
+    flecs_query_iter_fini_ctx(it, qit);
+    flecs_iter_free_n(qit->vars, ecs_var_t, var_count);
+    flecs_iter_free_n(qit->written, ecs_write_flags_t, op_count);
+    flecs_iter_free_n(qit->op_ctx, ecs_query_op_ctx_t, op_count);
+    qit->vars = NULL;
+    qit->written = NULL;
+    qit->op_ctx = NULL;
+    qit->rule = NULL;
 }
 
 ecs_iter_t flecs_query_iter(
@@ -2816,7 +2816,7 @@ ecs_iter_t flecs_query_iter(
     const ecs_query_t *q)
 {
     ecs_iter_t it = {0};
-    ecs_query_iter_t *rit = &it.priv.iter.rule;
+    ecs_query_iter_t *qit = &it.priv.iter.rule;
     ecs_check(q != NULL, ECS_INVALID_PARAMETER, NULL);
     
     ecs_poly_assert(q, ecs_query_impl_t);
@@ -2838,27 +2838,39 @@ ecs_iter_t flecs_query_iter(
         flecs_iter_cache_sources |
         flecs_iter_cache_ptrs);
 
-    rit->rule = q;
-    rit->rule_vars = impl->vars;
-    rit->ops = impl->ops;
-    rit->source_set = 0;
-    if (var_count) {
-        rit->vars = flecs_iter_calloc_n(&it, ecs_var_t, var_count);
+    qit->rule = q;
+    qit->rule_vars = impl->vars;
+    qit->ops = impl->ops;
+    qit->source_set = 0;
+
+    ecs_query_cache_t *cache = impl->cache;
+    if (cache) {
+        qit->node = cache->list.first;
+        qit->last = cache->list.last;
+
+        if (cache->order_by && cache->list.info.table_count) {
+            qit->node = ecs_vec_first(&cache->table_slices);
+        }
     }
+
+    if (var_count) {
+        qit->vars = flecs_iter_calloc_n(&it, ecs_var_t, var_count);
+    }
+
     if (op_count) {
-        rit->written = flecs_iter_calloc_n(&it, ecs_write_flags_t, op_count);
-        rit->op_ctx = flecs_iter_calloc_n(&it, ecs_query_op_ctx_t, op_count);
+        qit->written = flecs_iter_calloc_n(&it, ecs_write_flags_t, op_count);
+        qit->op_ctx = flecs_iter_calloc_n(&it, ecs_query_op_ctx_t, op_count);
     }
 
 #ifdef FLECS_DEBUG
-    rit->profile = flecs_iter_calloc_n(&it, ecs_query_op_profile_t, op_count);
+    qit->profile = flecs_iter_calloc_n(&it, ecs_query_op_profile_t, op_count);
 #endif
 
     for (i = 1; i < var_count; i ++) {
-        rit->vars[i].entity = EcsWildcard;
+        qit->vars[i].entity = EcsWildcard;
     }
 
-    it.variables = rit->vars;
+    it.variables = qit->vars;
     it.variable_count = impl->var_pub_count;
     it.variable_names = impl->var_names;
 

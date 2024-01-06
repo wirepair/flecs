@@ -7,19 +7,8 @@ ecs_query_cache_table_match_t* flecs_query_cache_next(
     ecs_query_impl_cache_ctx_t *op_ctx,
     bool first)
 {
-    ecs_query_cache_t *cache = impl->cache;
     ecs_iter_t *it = ctx->it;
     ecs_query_iter_t *qit = &it->priv.iter.rule;
-
-    if (first) {
-        qit->node = cache->list.first;
-        qit->last = cache->list.last;
-
-        if (cache->order_by && cache->list.info.table_count) {
-            qit->node = ecs_vec_first(&cache->table_slices);
-        }
-    }
-
     ecs_query_cache_table_match_t *node = qit->node;
     ecs_query_cache_table_match_t *prev = qit->prev;
 

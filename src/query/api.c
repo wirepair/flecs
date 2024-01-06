@@ -98,12 +98,16 @@ int flecs_query_set_caching_policy(
     /* If caching policy is default, try to pick a policy that does the right
      * thing in most cases. */
     if (kind == EcsQueryCacheDefault) {
-        if (desc->entity) {
+        if (desc->entity || desc->group_by_id || desc->group_by || 
+            desc->order_by_component || desc->order_by)
+        {
             /* If the query is created with an entity handle (typically 
              * indicating that the query is named or belongs to a system) the
              * chance is very high that the query will be reused, so enable
-             * caching. */
-            kind =  EcsQueryCacheAuto;
+             * caching. 
+             * Additionally, if the query uses features that require a cache
+             * such as group_by/order_by, also enable caching. */
+            kind = EcsQueryCacheAuto;
         } else {
             /* Be conservative in other scenario's, as caching adds significant
              * overhead to the cost of query creation which doesn't offset the
@@ -115,6 +119,10 @@ int flecs_query_set_caching_policy(
     /* Don't cache query, even if it has cacheable terms */
     if (kind == EcsQueryCacheNone) {
         impl->pub.cache_kind = EcsQueryCacheNone;
+        if (desc->group_by_id || desc->order_by_component) {
+            ecs_err("cannot create uncached query with group_by/order_by");
+            return -1;
+        }
         return 0;
     }
 

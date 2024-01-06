@@ -446,9 +446,10 @@ void flecs_eval_component_monitor(
         m->is_dirty = false;
 
         int32_t i, count = ecs_vec_count(&m->queries);
-        ecs_query_cache_t **elems = ecs_vec_first(&m->queries);
+        ecs_query_t **elems = ecs_vec_first(&m->queries);
         for (i = 0; i < count; i ++) {
-            ecs_query_cache_t *q = elems[i];
+            ecs_query_t *q = elems[i];
+            ecs_poly_assert(q, ecs_query_impl_t);
             flecs_query_cache_notify(world, q, &(ecs_query_cache_event_t) {
                 .kind = EcsQueryTableRematch
             });
@@ -479,29 +480,31 @@ void flecs_monitor_mark_dirty(
 void flecs_monitor_register(
     ecs_world_t *world,
     ecs_entity_t id,
-    ecs_query_cache_t *query)
+    ecs_query_t *query)
 {
     ecs_assert(world != NULL, ECS_INTERNAL_ERROR, NULL);
     ecs_assert(id != 0, ECS_INTERNAL_ERROR, NULL);
     ecs_assert(query != NULL, ECS_INTERNAL_ERROR, NULL);
+    ecs_poly_assert(query, ecs_query_impl_t);
 
     ecs_map_t *monitors = &world->monitors.monitors;
     ecs_map_init_if(monitors, &world->allocator);
     ecs_monitor_t *m = ecs_map_ensure_alloc_t(monitors, ecs_monitor_t, id);
-    ecs_vec_init_if_t(&m->queries, ecs_query_cache_t*);
-    ecs_query_cache_t **q = ecs_vec_append_t(
-        &world->allocator, &m->queries, ecs_query_cache_t*);
+    ecs_vec_init_if_t(&m->queries, ecs_query_t*);
+    ecs_query_t **q = ecs_vec_append_t(
+        &world->allocator, &m->queries, ecs_query_t*);
     *q = query;
 }
 
 void flecs_monitor_unregister(
     ecs_world_t *world,
     ecs_entity_t id,
-    ecs_query_cache_t *query)
+    ecs_query_t *query)
 {
     ecs_assert(world != NULL, ECS_INTERNAL_ERROR, NULL);
     ecs_assert(id != 0, ECS_INTERNAL_ERROR, NULL);
     ecs_assert(query != NULL, ECS_INTERNAL_ERROR, NULL);
+    ecs_poly_assert(query, ecs_query_impl_t);
 
     ecs_map_t *monitors = &world->monitors.monitors;
     if (!ecs_map_is_init(monitors)) {
@@ -514,17 +517,17 @@ void flecs_monitor_unregister(
     }
 
     int32_t i, count = ecs_vec_count(&m->queries);
-    ecs_query_cache_t **queries = ecs_vec_first(&m->queries);
+    ecs_query_t **queries = ecs_vec_first(&m->queries);
     for (i = 0; i < count; i ++) {
         if (queries[i] == query) {
-            ecs_vec_remove_t(&m->queries, ecs_query_cache_t*, i);
+            ecs_vec_remove_t(&m->queries, ecs_query_t*, i);
             count --;
             break;
         }
     }
 
     if (!count) {
-        ecs_vec_fini_t(&world->allocator, &m->queries, ecs_query_cache_t*);
+        ecs_vec_fini_t(&world->allocator, &m->queries, ecs_query_t*);
         ecs_map_remove_free(monitors, id);
     }
 
@@ -1467,7 +1470,7 @@ void ecs_dim(
 void flecs_eval_component_monitors(
     ecs_world_t *world)
 {
-    ecs_poly_assert(world, ecs_world_t);  
+    ecs_poly_assert(world, ecs_world_t); 
     flecs_process_pending_tables(world);  
     flecs_eval_component_monitor(world);
 }
@@ -2078,9 +2081,11 @@ void ecs_run_aperiodic(
     if (!flags || (flags & EcsAperiodicEmptyTables)) {
         flecs_process_pending_tables(world);
     }
+
     if ((flags & EcsAperiodicEmptyQueries)) {
         flecs_process_empty_queries(world);
     }
+
     if (!flags || (flags & EcsAperiodicComponentMonitors)) {
         flecs_eval_component_monitors(world);
     }

@@ -5513,6 +5513,96 @@ void Variables_2_set_src_this_self_w_exclusive_wildcard_w_up(void) {
     ecs_fini(world);
 }
 
+void Variables_1_set_src_this_is_true(void) {
+    ecs_world_t* ecs = ecs_mini();
+
+    ECS_COMPONENT(ecs, Position);
+    ECS_COMPONENT(ecs, Velocity);
+
+    ecs_query_t *q = ecs_query(ecs, {
+        .terms = {
+            { .id = ecs_id(Position) }
+        },
+        .cache_kind = cache_kind
+    });
+    test_assert(q != NULL);
+
+    /* ecs_entity_t e1 = */ ecs_set(ecs, 0, Position, {10, 20});
+    ecs_entity_t e2 = ecs_set(ecs, 0, Position, {20, 30});
+    /* ecs_entity_t e3 = */ ecs_set(ecs, 0, Position, {30, 40});
+    ecs_entity_t e4 = ecs_set(ecs, 0, Velocity, {20, 30});
+
+    ecs_iter_t it = ecs_query_iter(ecs, q);
+    ecs_iter_set_var(&it, 0, e2);
+    test_bool(true, ecs_iter_is_true(&it));
+
+    it = ecs_query_iter(ecs, q);
+    ecs_iter_set_var(&it, 0, e4);
+    test_bool(false, ecs_iter_is_true(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(ecs);
+}
+
+void Variables_2_set_src_this_w_wildcard(void) {
+    ecs_world_t* ecs = ecs_mini();
+
+    ECS_COMPONENT(ecs, Position);
+    ECS_TAG(ecs, Likes);
+    ECS_TAG(ecs, Apples);
+    ECS_TAG(ecs, Pears);
+
+    ecs_query_t *q = ecs_query(ecs, {
+        .terms = {
+            { .id = ecs_id(Position) },
+            { .id = ecs_pair(Likes, EcsWildcard) }
+        },
+        .cache_kind = cache_kind
+    });
+    test_assert(q != NULL);
+
+    ecs_entity_t e1 = ecs_set(ecs, 0, Position, {10, 20});
+    ecs_entity_t e2 = ecs_set(ecs, 0, Position, {20, 30});
+    ecs_entity_t e3 = ecs_set(ecs, 0, Position, {30, 40});
+
+    ecs_add_pair(ecs, e1, Likes, Apples);
+    ecs_add_pair(ecs, e2, Likes, Apples);
+    ecs_add_pair(ecs, e3, Likes, Apples);
+
+    ecs_add_pair(ecs, e1, Likes, Pears);
+    ecs_add_pair(ecs, e2, Likes, Pears);
+    ecs_add_pair(ecs, e3, Likes, Pears);
+
+    ecs_iter_t it = ecs_query_iter(ecs, q);
+    ecs_iter_set_var(&it, 0, e2);
+
+    {
+        test_bool(true, ecs_query_next(&it));
+        test_int(it.count, 1);
+        test_uint(it.entities[0], e2);
+        Position *p = ecs_field(&it, Position, 1);
+        test_int(p[0].x, 20);
+        test_int(p[0].y, 30);
+        test_uint(ecs_pair(Likes, Apples), ecs_field_id(&it, 2));
+    }
+    {
+        test_bool(true, ecs_query_next(&it));
+        test_int(it.count, 1);
+        test_uint(it.entities[0], e2);
+        Position *p = ecs_field(&it, Position, 1);
+        test_int(p[0].x, 20);
+        test_int(p[0].y, 30);
+        test_uint(ecs_pair(Likes, Pears), ecs_field_id(&it, 2));
+    }
+
+    test_bool(false, ecs_query_next(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(ecs);
+}
+
 void Variables_1_src_this_var_as_entity(void) {
     ecs_world_t *world = ecs_mini();
 

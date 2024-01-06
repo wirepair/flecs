@@ -1417,7 +1417,7 @@ int flecs_query_compile_term(
         op.kind = EcsRuleTrav;
     } else {
         /* Ignore cascade flag */
-        ecs_entity_t trav_flags = EcsTraverseFlags & ~EcsCascade;
+        ecs_entity_t trav_flags = EcsTraverseFlags & ~(EcsCascade|EcsDesc);
         if (term->flags & (EcsTermMatchAny|EcsTermMatchAnySrc)) {
             op.kind = EcsRuleAndAny;
         } else if ((term->src.id & trav_flags) == EcsUp) {

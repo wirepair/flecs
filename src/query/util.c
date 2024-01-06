@@ -267,9 +267,17 @@ void flecs_query_str_add_id(
             if (flags & EcsSelf) {
                 ecs_strbuf_list_appendstr(buf, "self");
             }
-            if (flags & EcsUp) {
+
+            if (flags & EcsCascade) {
+                ecs_strbuf_list_appendstr(buf, "cascade");
+            } else if (flags & EcsUp) {
                 ecs_strbuf_list_appendstr(buf, "up");
             }
+
+            if (flags & EcsDesc) {
+                ecs_strbuf_list_appendstr(buf, "desc");
+            }
+
             if (term->trav && (term->trav != EcsIsA)) {
                 ecs_strbuf_list_push(buf, "(", "");
 

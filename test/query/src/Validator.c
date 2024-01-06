@@ -2118,3 +2118,17 @@ void Validator_validate_childof_this_by_id(void) {
 
     ecs_fini(world);
 }
+
+void Validator_validate_filter_flag(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_COMPONENT(world, Position);
+
+    test_assert(NULL != ecs_query(world, {
+        .terms = {
+            { .inout = EcsInOutFilter, .id = ecs_id(Position) }
+        }
+    }));
+
+    ecs_fini(world);
+}

@@ -9656,3 +9656,1135 @@ void Query_component_w_inout_none_or(void) {
 
     ecs_fini(ecs);
 }
+
+void Query_filter_1_term(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_component(void) {
+    // Implement testcase
+}
+
+void Query_filter_2_terms(void) {
+    // Implement testcase
+}
+
+void Query_filter_3_terms(void) {
+    // Implement testcase
+}
+
+void Query_filter_3_terms_w_or(void) {
+    // Implement testcase
+}
+
+void Query_filter_4_terms_w_or_at_1(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_wildcard(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_any(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_same_subj_obj(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_acyclic_same_subj_obj(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_acyclic_reflexive_same_subj_obj(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_same_subj_obj_var(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_acyclic_same_subj_obj_var(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_acyclic_reflexive_same_subj_obj_var(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_non_acyclic_superset(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_dont_inherit_default_set(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_dont_inherit_pair_default_set(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_cascade_implicit_trav(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_cascade_isa(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_cascade_childof(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_cascade_down(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_optional_only(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_term_transitive_pair(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_variable_as_pred_only(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_variable_as_pred_w_subj(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_variable_as_pred_w_pair(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_variable_as_subj(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_variable_as_obj(void) {
+    // Implement testcase
+}
+
+void Query_filter_2_terms_or_w_dontinherit(void) {
+    // Implement testcase
+}
+
+void Query_filter_2_terms_or_w_both_dontinherit(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_pair_id(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_pred_obj(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_pair_id_and_subj(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_w_pred_name(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_w_final_pred_name(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_w_subj_name(void) {
+    // Implement testcase
+}
+
+void Query_filter_1_w_obj_name(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_this_implicit_variable(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_this_explicit_entity(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_first_this_implicit_variable(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_first_this_explicit_entity(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_second_this_implicit_variable(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_second_this_explicit_entity(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_this_variable_name(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_src_var(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_first_var(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_second_var(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_0_source(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_0_target(void) {
+    // Implement testcase
+}
+
+void Query_filter_2_terms_w_or(void) {
+    // Implement testcase
+}
+
+void Query_filter_2_terms_w_or_mixed_src_flags(void) {
+    // Implement testcase
+}
+
+void Query_filter_2_terms_w_or_mixed_src_id(void) {
+    // Implement testcase
+}
+
+void Query_filter_2_terms_w_or_mixed_src_name(void) {
+    // Implement testcase
+}
+
+void Query_filter_2_terms_w_or_same_src_w_id_and_name(void) {
+    // Implement testcase
+}
+
+void Query_filter_move(void) {
+    // Implement testcase
+}
+
+void Query_filter_copy(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_resources_copy(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_and_flag(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_or_flag(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_not_flag(void) {
+    // Implement testcase
+}
+
+void Query_filter_filter(void) {
+    // Implement testcase
+}
+
+void Query_filter_double_init(void) {
+    // Implement testcase
+}
+
+void Query_filter_double_init_w_expr(void) {
+    // Implement testcase
+}
+
+void Query_filter_double_init_w_expr_optional(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_tag_term_is_no_data(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_inout_none_term_is_no_data(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_tag_and_inout_none_term_is_no_data(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_not_term_is_no_data(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_no_transitive_pair(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_transitive_pair_any_src(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_transitive_pair(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_transitive_tag_no_pair(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_transitive_tag_self_tgt(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_transitive_tag_any_tgt(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_pair_same_vars(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_pair_not_same_vars(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_pair_no_vars_not_same_vars(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_pair_wildcard_not_same_vars(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_pair_any_not_same_vars(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_no_pair_not_same_vars(void) {
+    // Implement testcase
+}
+
+void Query_filter_not_childof_any(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_inherited_id(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_inherited_pair(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_non_inherited_id(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_non_inherited_pair(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_first_wildcard_inout_none(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_first_var_inout_none(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_pair_wildcard_inout_none(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_pair_var_inout_none(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_unresolved_by_name(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_unresolved_by_name_eq(void) {
+    // Implement testcase
+}
+
+void Query_filter_childof_this(void) {
+    // Implement testcase
+}
+
+void Query_filter_childof_this_entity(void) {
+    // Implement testcase
+}
+
+void Query_filter_childof_this_by_id(void) {
+    // Implement testcase
+}
+
+void Query_term_w_id(void) {
+    // Implement testcase
+}
+
+void Query_term_w_pair_id(void) {
+    // Implement testcase
+}
+
+void Query_term_w_pred_obj(void) {
+    // Implement testcase
+}
+
+void Query_term_w_pair_finalize_twice(void) {
+    // Implement testcase
+}
+
+void Query_term_w_role(void) {
+    // Implement testcase
+}
+
+void Query_term_w_self(void) {
+    // Implement testcase
+}
+
+void Query_term_w_superset(void) {
+    // Implement testcase
+}
+
+void Query_term_w_self_superset(void) {
+    // Implement testcase
+}
+
+void Query_term_w_superset_custom_trav(void) {
+    // Implement testcase
+}
+
+void Query_term_w_self_superset_custom_trav(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_component(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_w_pred(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_tag(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_pair(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_pair_w_rel_wildcard(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_pair_w_obj_wildcard(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_pair_w_rel_wildcard_n_matches(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_pair_w_rel_wildcard_n_matches_w_data(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_pair_w_obj_wildcard_n_matches(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_pair_w_obj_wildcard_n_matches_w_data(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_w_superset(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_w_superset_base_w_2_components(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_w_superset_childof(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_w_superset_self(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_w_superset_self_childof(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_w_superset_tag(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_w_superset_pair(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_w_superset_pair_obj_wildcard(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_in_stage(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_w_readonly_term(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_type_set(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_any_match_wildcard(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_any_match_tag_and_wildcard(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_any_obj(void) {
+    // Implement testcase
+}
+
+void Query_children_iter(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_1_tag(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_tags(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_tags_1_not(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_3_tags_2_or(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_only_optional(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_only_2_or(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_only_3_or(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_or(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_3_or(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_or_other_type(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_or_same_type(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_1_component(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_components(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_pair_id(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_pair_ids(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_childof_pair_0_parent(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_pair_pred_obj(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_pair_2_pred_obj(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_null(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_1_not_tag(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_tags_1_optional(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_components_1_optional(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_in_stage(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_10_tags(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_10_components(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_childof(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_type_set(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_w_readonly_term(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_w_from_nothing_term(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_pair_w_rel_wildcard_n_matches(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_pair_w_obj_wildcard_n_matches(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_pair_w_2_wildcards_1_match(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_pair_w_2_wildcards_2x1_matches(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_pair_w_2_wildcards_2x2_matches(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_pair_w_3_wildcards_2x2x2_matches(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_pair_w_wildcard_and_nothing(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_any(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_any_match_wildcard(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_any_match_tag_and_wildcard(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_wildcard_in_2nd_term(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_wildcard_in_2nd_term_self(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2nd_term_self_create_id_after_filter(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_any_obj(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_not_any(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_not_any_obj(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_cascade_isa(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_cascade_childof(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_2_rel_instances(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_2_rel_instances_match_2nd(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_2_levels(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_only_w_owned(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_after_add(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_after_remove(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_after_clear(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_after_delete(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_terms_superset_2_rel_instances(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_terms_superset_2_rel_instances_match_2nd(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_isa_after_remove_parent(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_isa_create_table_after_iter(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_2_relations(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_2_relations_instanced(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_2_relations_w_component(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_superset_2_relations_instanced_w_component(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_not_up_disabled(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_pair_wildcard_component(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_10_terms(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_10_terms_move(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_10_terms_copy(void) {
+    // Implement testcase
+}
+
+void Query_match_disabled(void) {
+    // Implement testcase
+}
+
+void Query_match_prefab(void) {
+    // Implement testcase
+}
+
+void Query_chain_term_iter(void) {
+    // Implement testcase
+}
+
+void Query_chain_filter_iter(void) {
+    // Implement testcase
+}
+
+void Query_chain_query_iter(void) {
+    // Implement testcase
+}
+
+void Query_chain_rule_iter(void) {
+    // Implement testcase
+}
+
+void Query_chain_iter_2_levels(void) {
+    // Implement testcase
+}
+
+void Query_filter_from_expr_2_terms_err(void) {
+    // Implement testcase
+}
+
+void Query_chain_term_iter_w_term_iter(void) {
+    // Implement testcase
+}
+
+void Query_chain_filter_iter_w_term_iter(void) {
+    // Implement testcase
+}
+
+void Query_chain_w_term_iter_component(void) {
+    // Implement testcase
+}
+
+void Query_chain_iter_w_or(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_recycled_first(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_recycled_second(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_recycled_first_and_id(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_recycled_second_and_id(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_recycled_first_by_name_and_id(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_recycled_second_by_name_and_id(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_recycled_first_by_expr(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_recycled_second_by_expr(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_recycled_first_only_by_expr(void) {
+    // Implement testcase
+}
+
+void Query_term_iter_w_filter_term(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_w_filter_term(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_w_2_terms_1_filter(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_w_3_terms_2_filter(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_terms_filter_all(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_terms_filter_all_w_out(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_switch_term_filter(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_2_terms_switch_term_filter(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_switch_superset(void) {
+    // Implement testcase
+}
+
+void Query_filter_instanced_w_singleton(void) {
+    // Implement testcase
+}
+
+void Query_filter_instanced_w_base(void) {
+    // Implement testcase
+}
+
+void Query_filter_no_instancing_w_singleton(void) {
+    // Implement testcase
+}
+
+void Query_filter_no_instancing_w_base(void) {
+    // Implement testcase
+}
+
+void Query_filter_no_this_tag(void) {
+    // Implement testcase
+}
+
+void Query_filter_no_this_component(void) {
+    // Implement testcase
+}
+
+void Query_filter_no_this_tag_2_ents(void) {
+    // Implement testcase
+}
+
+void Query_filter_no_this_component_2_ents(void) {
+    // Implement testcase
+}
+
+void Query_filter_no_this_tag_2_ents_1_not(void) {
+    // Implement testcase
+}
+
+void Query_filter_no_this_component_2_ents_1_not(void) {
+    // Implement testcase
+}
+
+void Query_filter_no_this_component_1_not(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_entities_optional_flag(void) {
+    // Implement testcase
+}
+
+void Query_filter_iter_frame_offset(void) {
+    // Implement testcase
+}
+
+void Query_move_self(void) {
+    // Implement testcase
+}
+
+void Query_match_empty_tables(void) {
+    // Implement testcase
+}
+
+void Query_match_empty_tables_w_no_empty_tables(void) {
+    // Implement testcase
+}
+
+void Query_match_switch_w_switch(void) {
+    // Implement testcase
+}
+
+void Query_match_switch_w_case(void) {
+    // Implement testcase
+}
+
+void Query_match_switch_w_case_2_terms(void) {
+    // Implement testcase
+}
+
+void Query_match_case_no_case(void) {
+    // Implement testcase
+}
+
+void Query_and_term(void) {
+    // Implement testcase
+}
+
+void Query_or_term(void) {
+    // Implement testcase
+}
+
+void Query_iter_while_creating_components(void) {
+    // Implement testcase
+}
+
+void Query_iter_w_this_var_as_entity(void) {
+    // Implement testcase
+}
+
+void Query_iter_w_this_var_as_table(void) {
+    // Implement testcase
+}
+
+void Query_iter_w_this_var_as_table_range(void) {
+    // Implement testcase
+}
+
+void Query_filter_wo_this_var(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_table_1_term(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_table_2_terms(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_table_1_wildcard(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_table_no_match_no_data(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_table_no_match(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_table_2_terms_no_match(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_empty_table(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_empty_table_w_component(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_implicit_isa_superset_match(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_self_isa_superset_match(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_isa_superset_match(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_childof_superset_match(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_superset_w_self_filter_no_match(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_isa_cascade(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_childof_cascade(void) {
+    // Implement testcase
+}
+
+void Query_set_this_w_wildcard_2_matches(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_entity_superset_self_has_component(void) {
+    // Implement testcase
+}
+
+void Query_set_this_to_1_entity_in_table(void) {
+    // Implement testcase
+}
+
+void Query_oneof(void) {
+    // Implement testcase
+}
+
+void Query_oneof_expr(void) {
+    // Implement testcase
+}
+
+void Query_oneof_w_mismatching_obj(void) {
+    // Implement testcase
+}
+
+void Query_oneof_w_mismatching_obj_expr(void) {
+    // Implement testcase
+}
+
+void Query_oneof_wildcard(void) {
+    // Implement testcase
+}
+
+void Query_oneof_any(void) {
+    // Implement testcase
+}
+
+void Query_flag_match_only_this(void) {
+    // Implement testcase
+}
+
+void Query_flag_match_only_this_w_ref(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_alloc(void) {
+    // Implement testcase
+}
+
+void Query_filter_w_short_notation(void) {
+    // Implement testcase
+}

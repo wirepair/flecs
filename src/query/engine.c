@@ -2595,11 +2595,6 @@ void flecs_query_iter_init(
         flecs_query_cache_sort_tables(world, 
             ECS_CONST_CAST(ecs_query_impl_t*, rule));
 
-        /* If monitors changed, do query rematching */
-        if (!(world->flags & EcsWorldReadonly) && flags & EcsQueryHasRefs) {
-            flecs_eval_component_monitors(world);
-        }
-
         // if (flags & EcsQueryIsCacheable) {
         //     it->flags |= EcsIterCacheSearch;
         // }
@@ -2883,5 +2878,16 @@ ecs_iter_t ecs_query_iter(
     const ecs_query_t *q)
 {
     ecs_run_aperiodic(q->world, EcsAperiodicEmptyTables);
+
+    ecs_query_impl_t *impl = flecs_query_impl(q);
+    ecs_query_cache_t *cache = impl->cache;
+    if (cache) {
+        /* If monitors changed, do query rematching */
+        ecs_flags32_t flags = q->flags;
+        if (!(world->flags & EcsWorldReadonly) && flags & EcsQueryHasRefs) {
+            flecs_eval_component_monitors(q->world);
+        }
+    }
+
     return flecs_query_iter(world, q);
 }

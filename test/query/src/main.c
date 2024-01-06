@@ -100,6 +100,7 @@ void Validator_validate_w_unresolved_by_name_eq(void);
 void Validator_validate_childof_this(void);
 void Validator_validate_childof_this_entity(void);
 void Validator_validate_childof_this_by_id(void);
+void Validator_validate_filter_flag(void);
 
 // Testsuite 'Parser'
 void Parser_resolve_this(void);
@@ -343,6 +344,7 @@ void Parser_newline_after_term_pair_second(void);
 
 // Testsuite 'Basic'
 void Basic_setup(void);
+void Basic_0_query(void);
 void Basic_1_fact_w_tag(void);
 void Basic_1_fact_w_component(void);
 void Basic_1_fact_w_tag_pair(void);
@@ -456,6 +458,9 @@ void Basic_match_self_prefab(void);
 void Basic_match_self_disabled_prefab(void);
 void Basic_inout_none_first_term(void);
 void Basic_inout_none_second_term(void);
+void Basic_inout_none_singleton(void);
+void Basic_inout_none_singleton_w_or(void);
+void Basic_inout_none_component_w_or(void);
 void Basic_no_data_rule(void);
 void Basic_frame_offset(void);
 void Basic_frame_offset_no_data(void);
@@ -494,6 +499,16 @@ void Basic_implicit_cleanup_1_term_w_up(void);
 void Basic_implicit_cleanup_2_terms_w_up(void);
 void Basic_implicit_cleanup_2_queries(void);
 void Basic_implicit_cleanup_2_queries_1_cleanup(void);
+void Basic_iter_valid(void);
+void Basic_iter_frame_offset(void);
+void Basic_iter_nested_1(void);
+void Basic_iter_nested_2(void);
+void Basic_iter_interleaved(void);
+void Basic_set_get_context(void);
+void Basic_set_get_binding_context(void);
+void Basic_set_get_context_w_free(void);
+void Basic_set_get_binding_context_w_free(void);
+void Basic_create_query_w_existing_entity(void);
 
 // Testsuite 'Plan'
 void Plan_reordered_plan_1(void);
@@ -600,6 +615,8 @@ void Variables_2_set_src_this_self_component_w_up(void);
 void Variables_2_set_src_this_w_exclusive_wildcard(void);
 void Variables_2_set_src_this_self_w_exclusive_wildcard(void);
 void Variables_2_set_src_this_self_w_exclusive_wildcard_w_up(void);
+void Variables_1_set_src_this_is_true(void);
+void Variables_2_set_src_this_w_wildcard(void);
 void Variables_1_src_this_var_as_entity(void);
 void Variables_1_src_this_var_as_table(void);
 void Variables_1_src_this_var_as_table_range(void);
@@ -901,10 +918,13 @@ void ComponentInheritance_1_var_src_not_written(void);
 void ComponentInheritance_first_self(void);
 
 // Testsuite 'Recycled'
+void Recycled_setup(void);
 void Recycled_recycled_vars(void);
 void Recycled_recycled_pair_vars(void);
 void Recycled_recycled_this_ent_var(void);
 void Recycled_has_recycled_id_from_pair(void);
+void Recycled_recycled_pair(void);
+void Recycled_recycled_component_id(void);
 
 // Testsuite 'BuiltinPredicates'
 void BuiltinPredicates_this_eq_id(void);
@@ -1098,6 +1118,22 @@ void Cascade_this_self_cascade_childof_w_parent_flag_uncached(void);
 void Cascade_this_cascade_childof_w_parent_flag_uncached(void);
 void Cascade_this_written_self_cascade_childof_w_parent_flag_uncached(void);
 void Cascade_this_written_cascade_childof_w_parent_flag_uncached(void);
+void Cascade_parent_cascade(void);
+void Cascade_existing_custom_rel_cascade(void);
+void Cascade_new_custom_rel_cascade(void);
+void Cascade_cascade_w_2_depths(void);
+void Cascade_cascade_w_3_depths(void);
+void Cascade_cascade_w_2_depths_desc(void);
+void Cascade_cascade_w_3_depths_desc(void);
+void Cascade_existing_isa_cascade(void);
+void Cascade_new_isa_cascade(void);
+void Cascade_childof_cascade(void);
+void Cascade_cascade_rematch_2_lvls(void);
+void Cascade_cascade_rematch_2_lvls_2_relations(void);
+void Cascade_cascade_topological(void);
+void Cascade_cascade_desc_rematch_2_lvls(void);
+void Cascade_cascade_desc_rematch_2_lvls_2_relations(void);
+void Cascade_cascade_desc_topological(void);
 
 // Testsuite 'Cached'
 void Cached_simple_query_existing_table(void);
@@ -1126,31 +1162,15 @@ void Cached_only_optional_new_unset_tables(void);
 void Cached_singleton_w_optional_new_empty_table(void);
 void Cached_singleton_w_optional_new_empty_non_empty_table(void);
 void Cached_singleton_w_optional_new_unset_tables(void);
-void Cached_query_from_entity_or_change(void);
 void Cached_query_from_entity_w_superset(void);
 void Cached_query_w_from_entity_match_after(void);
 void Cached_query_w_from_singleton_match_after(void);
-void Cached_query_w_from_nothing(void);
-void Cached_query_only_2_or(void);
-void Cached_query_only_3_or(void);
-void Cached_query_2_or(void);
-void Cached_query_3_or(void);
-void Cached_query_single_pairs(void);
-void Cached_query_optional_owned(void);
-void Cached_query_optional_shared(void);
-void Cached_query_optional_shared_nested(void);
-void Cached_query_optional_any(void);
 void Cached_query_rematch_optional_after_add(void);
 void Cached_get_owned_tag(void);
 void Cached_get_shared_tag(void);
 void Cached_explicit_delete(void);
 void Cached_get_column_size(void);
 void Cached_stresstest_query_free(void);
-void Cached_only_from_entity(void);
-void Cached_only_not_from_entity(void);
-void Cached_only_from_singleton(void);
-void Cached_only_not_from_singleton(void);
-void Cached_iter_valid(void);
 void Cached_query_optional_tag(void);
 void Cached_query_optional_shared_tag(void);
 void Cached_query_iter_10_tags(void);
@@ -1160,19 +1180,10 @@ void Cached_filter_term(void);
 void Cached_2_terms_1_filter(void);
 void Cached_3_terms_2_filter(void);
 void Cached_no_instancing_w_singleton(void);
-void Cached_no_instancing_w_shared(void);
-void Cached_query_iter_frame_offset(void);
 void Cached_add_singleton_after_query(void);
 void Cached_query_w_component_from_parent_from_non_this(void);
 void Cached_create_query_while_pending(void);
 void Cached_empty_query(void);
-void Cached_parent_cascade(void);
-void Cached_existing_custom_rel_cascade(void);
-void Cached_new_custom_rel_cascade(void);
-void Cached_cascade_w_2_depths(void);
-void Cached_cascade_w_3_depths(void);
-void Cached_cascade_w_2_depths_desc(void);
-void Cached_cascade_w_3_depths_desc(void);
 void Cached_not_pair_relation_wildcard(void);
 void Cached_not_pair_object_wildcard(void);
 void Cached_two_pair_wildcards_one_not(void);
@@ -1193,52 +1204,23 @@ void Cached_superset_2_relations_instanced(void);
 void Cached_superset_2_relations_w_component(void);
 void Cached_superset_2_relations_instanced_w_component(void);
 void Cached_parent(void);
-void Cached_existing_isa_cascade(void);
-void Cached_new_isa_cascade(void);
-void Cached_childof_cascade(void);
 void Cached_isa_rematch(void);
 void Cached_childof_rematch(void);
 void Cached_isa_unmatch(void);
 void Cached_childof_unmatch(void);
 void Cached_isa_rematch_2_lvls(void);
 void Cached_childof_rematch_2_lvls(void);
-void Cached_cascade_rematch_2_lvls(void);
-void Cached_cascade_rematch_2_lvls_2_relations(void);
-void Cached_cascade_topological(void);
-void Cached_cascade_desc_rematch_2_lvls(void);
-void Cached_cascade_desc_rematch_2_lvls_2_relations(void);
-void Cached_cascade_desc_topological(void);
 void Cached_childof_rematch_from_isa(void);
 void Cached_rematch_optional_ref(void);
 void Cached_rematch_optional_ref_w_2_refs(void);
 void Cached_rematch_optional_ref_tag_w_ref_component(void);
 void Cached_match_query_expr_from_scope(void);
 void Cached_query_long_or_w_ref(void);
-void Cached_0_query(void);
 void Cached_query_w_pair_id_and_subj(void);
 void Cached_rematch_after_delete_inherited_tag(void);
 void Cached_rematch_after_delete_rel_of_inherited_pair(void);
 void Cached_rematch_after_delete_obj_of_inherited_pair(void);
 void Cached_rematch_empty_table_w_superset(void);
-void Cached_query_w_short_notation(void);
-void Cached_query_w_invalid_filter_flag(void);
-void Cached_create_query_existing_query_entity(void);
-void Cached_query_for_recycled_pair(void);
-void Cached_query_w_singleton_w_rule_iter(void);
-void Cached_query_w_singleton_nested_iter(void);
-void Cached_query_w_singleton_interleaved_iter(void);
-void Cached_recycled_component_id(void);
-void Cached_set_get_context(void);
-void Cached_set_get_binding_context(void);
-void Cached_set_get_context_w_free(void);
-void Cached_set_get_binding_context_w_free(void);
-void Cached_set_this(void);
-void Cached_set_this_no_match(void);
-void Cached_set_this_is_true(void);
-void Cached_set_this_w_wildcard(void);
-void Cached_singleton_w_inout_none(void);
-void Cached_singleton_w_inout_none_or(void);
-void Cached_component_w_inout_none_or(void);
 void Cached_2_self_up_terms_new_tables(void);
 void Cached_this_self_up_childof_pair_new_tables(void);
 
@@ -1669,6 +1651,10 @@ bake_test_case Validator_testcases[] = {
     {
         "validate_childof_this_by_id",
         Validator_validate_childof_this_by_id
+    },
+    {
+        "validate_filter_flag",
+        Validator_validate_filter_flag
     }
 };
 
@@ -2629,6 +2615,10 @@ bake_test_case Parser_testcases[] = {
 
 bake_test_case Basic_testcases[] = {
     {
+        "0_query",
+        Basic_0_query
+    },
+    {
         "1_fact_w_tag",
         Basic_1_fact_w_tag
     },
@@ -3081,6 +3071,18 @@ bake_test_case Basic_testcases[] = {
         Basic_inout_none_second_term
     },
     {
+        "inout_none_singleton",
+        Basic_inout_none_singleton
+    },
+    {
+        "inout_none_singleton_w_or",
+        Basic_inout_none_singleton_w_or
+    },
+    {
+        "inout_none_component_w_or",
+        Basic_inout_none_component_w_or
+    },
+    {
         "no_data_rule",
         Basic_no_data_rule
     },
@@ -3231,6 +3233,46 @@ bake_test_case Basic_testcases[] = {
     {
         "implicit_cleanup_2_queries_1_cleanup",
         Basic_implicit_cleanup_2_queries_1_cleanup
+    },
+    {
+        "iter_valid",
+        Basic_iter_valid
+    },
+    {
+        "iter_frame_offset",
+        Basic_iter_frame_offset
+    },
+    {
+        "iter_nested_1",
+        Basic_iter_nested_1
+    },
+    {
+        "iter_nested_2",
+        Basic_iter_nested_2
+    },
+    {
+        "iter_interleaved",
+        Basic_iter_interleaved
+    },
+    {
+        "set_get_context",
+        Basic_set_get_context
+    },
+    {
+        "set_get_binding_context",
+        Basic_set_get_binding_context
+    },
+    {
+        "set_get_context_w_free",
+        Basic_set_get_context_w_free
+    },
+    {
+        "set_get_binding_context_w_free",
+        Basic_set_get_binding_context_w_free
+    },
+    {
+        "create_query_w_existing_entity",
+        Basic_create_query_w_existing_entity
     }
 };
 
@@ -3641,6 +3683,14 @@ bake_test_case Variables_testcases[] = {
     {
         "2_set_src_this_self_w_exclusive_wildcard_w_up",
         Variables_2_set_src_this_self_w_exclusive_wildcard_w_up
+    },
+    {
+        "1_set_src_this_is_true",
+        Variables_1_set_src_this_is_true
+    },
+    {
+        "2_set_src_this_w_wildcard",
+        Variables_2_set_src_this_w_wildcard
     },
     {
         "1_src_this_var_as_entity",
@@ -4837,6 +4887,14 @@ bake_test_case Recycled_testcases[] = {
     {
         "has_recycled_id_from_pair",
         Recycled_has_recycled_id_from_pair
+    },
+    {
+        "recycled_pair",
+        Recycled_recycled_pair
+    },
+    {
+        "recycled_component_id",
+        Recycled_recycled_component_id
     }
 };
 
@@ -5585,6 +5643,70 @@ bake_test_case Cascade_testcases[] = {
     {
         "this_written_cascade_childof_w_parent_flag_uncached",
         Cascade_this_written_cascade_childof_w_parent_flag_uncached
+    },
+    {
+        "parent_cascade",
+        Cascade_parent_cascade
+    },
+    {
+        "existing_custom_rel_cascade",
+        Cascade_existing_custom_rel_cascade
+    },
+    {
+        "new_custom_rel_cascade",
+        Cascade_new_custom_rel_cascade
+    },
+    {
+        "cascade_w_2_depths",
+        Cascade_cascade_w_2_depths
+    },
+    {
+        "cascade_w_3_depths",
+        Cascade_cascade_w_3_depths
+    },
+    {
+        "cascade_w_2_depths_desc",
+        Cascade_cascade_w_2_depths_desc
+    },
+    {
+        "cascade_w_3_depths_desc",
+        Cascade_cascade_w_3_depths_desc
+    },
+    {
+        "existing_isa_cascade",
+        Cascade_existing_isa_cascade
+    },
+    {
+        "new_isa_cascade",
+        Cascade_new_isa_cascade
+    },
+    {
+        "childof_cascade",
+        Cascade_childof_cascade
+    },
+    {
+        "cascade_rematch_2_lvls",
+        Cascade_cascade_rematch_2_lvls
+    },
+    {
+        "cascade_rematch_2_lvls_2_relations",
+        Cascade_cascade_rematch_2_lvls_2_relations
+    },
+    {
+        "cascade_topological",
+        Cascade_cascade_topological
+    },
+    {
+        "cascade_desc_rematch_2_lvls",
+        Cascade_cascade_desc_rematch_2_lvls
+    },
+    {
+        "cascade_desc_rematch_2_lvls_2_relations",
+        Cascade_cascade_desc_rematch_2_lvls_2_relations
+    },
+    {
+        "cascade_desc_topological",
+        Cascade_cascade_desc_topological
     }
 };
 
@@ -5694,10 +5816,6 @@ bake_test_case Cached_testcases[] = {
         Cached_singleton_w_optional_new_unset_tables
     },
     {
-        "query_from_entity_or_change",
-        Cached_query_from_entity_or_change
-    },
-    {
         "query_from_entity_w_superset",
         Cached_query_from_entity_w_superset
     },
@@ -5708,46 +5826,6 @@ bake_test_case Cached_testcases[] = {
     {
         "query_w_from_singleton_match_after",
         Cached_query_w_from_singleton_match_after
-    },
-    {
-        "query_w_from_nothing",
-        Cached_query_w_from_nothing
-    },
-    {
-        "query_only_2_or",
-        Cached_query_only_2_or
-    },
-    {
-        "query_only_3_or",
-        Cached_query_only_3_or
-    },
-    {
-        "query_2_or",
-        Cached_query_2_or
-    },
-    {
-        "query_3_or",
-        Cached_query_3_or
-    },
-    {
-        "query_single_pairs",
-        Cached_query_single_pairs
-    },
-    {
-        "query_optional_owned",
-        Cached_query_optional_owned
-    },
-    {
-        "query_optional_shared",
-        Cached_query_optional_shared
-    },
-    {
-        "query_optional_shared_nested",
-        Cached_query_optional_shared_nested
-    },
-    {
-        "query_optional_any",
-        Cached_query_optional_any
     },
     {
         "query_rematch_optional_after_add",
@@ -5772,26 +5850,6 @@ bake_test_case Cached_testcases[] = {
     {
         "stresstest_query_free",
         Cached_stresstest_query_free
-    },
-    {
-        "only_from_entity",
-        Cached_only_from_entity
-    },
-    {
-        "only_not_from_entity",
-        Cached_only_not_from_entity
-    },
-    {
-        "only_from_singleton",
-        Cached_only_from_singleton
-    },
-    {
-        "only_not_from_singleton",
-        Cached_only_not_from_singleton
-    },
-    {
-        "iter_valid",
-        Cached_iter_valid
     },
     {
         "query_optional_tag",
@@ -5830,14 +5888,6 @@ bake_test_case Cached_testcases[] = {
         Cached_no_instancing_w_singleton
     },
     {
-        "no_instancing_w_shared",
-        Cached_no_instancing_w_shared
-    },
-    {
-        "query_iter_frame_offset",
-        Cached_query_iter_frame_offset
-    },
-    {
         "add_singleton_after_query",
         Cached_add_singleton_after_query
     },
@@ -5852,34 +5902,6 @@ bake_test_case Cached_testcases[] = {
     {
         "empty_query",
         Cached_empty_query
-    },
-    {
-        "parent_cascade",
-        Cached_parent_cascade
-    },
-    {
-        "existing_custom_rel_cascade",
-        Cached_existing_custom_rel_cascade
-    },
-    {
-        "new_custom_rel_cascade",
-        Cached_new_custom_rel_cascade
-    },
-    {
-        "cascade_w_2_depths",
-        Cached_cascade_w_2_depths
-    },
-    {
-        "cascade_w_3_depths",
-        Cached_cascade_w_3_depths
-    },
-    {
-        "cascade_w_2_depths_desc",
-        Cached_cascade_w_2_depths_desc
-    },
-    {
-        "cascade_w_3_depths_desc",
-        Cached_cascade_w_3_depths_desc
     },
     {
         "not_pair_relation_wildcard",
@@ -5962,18 +5984,6 @@ bake_test_case Cached_testcases[] = {
         Cached_parent
     },
     {
-        "existing_isa_cascade",
-        Cached_existing_isa_cascade
-    },
-    {
-        "new_isa_cascade",
-        Cached_new_isa_cascade
-    },
-    {
-        "childof_cascade",
-        Cached_childof_cascade
-    },
-    {
         "isa_rematch",
         Cached_isa_rematch
     },
@@ -5996,30 +6006,6 @@ bake_test_case Cached_testcases[] = {
     {
         "childof_rematch_2_lvls",
         Cached_childof_rematch_2_lvls
-    },
-    {
-        "cascade_rematch_2_lvls",
-        Cached_cascade_rematch_2_lvls
-    },
-    {
-        "cascade_rematch_2_lvls_2_relations",
-        Cached_cascade_rematch_2_lvls_2_relations
-    },
-    {
-        "cascade_topological",
-        Cached_cascade_topological
-    },
-    {
-        "cascade_desc_rematch_2_lvls",
-        Cached_cascade_desc_rematch_2_lvls
-    },
-    {
-        "cascade_desc_rematch_2_lvls_2_relations",
-        Cached_cascade_desc_rematch_2_lvls_2_relations
-    },
-    {
-        "cascade_desc_topological",
-        Cached_cascade_desc_topological
     },
     {
         "childof_rematch_from_isa",
@@ -6046,10 +6032,6 @@ bake_test_case Cached_testcases[] = {
         Cached_query_long_or_w_ref
     },
     {
-        "0_query",
-        Cached_0_query
-    },
-    {
         "query_w_pair_id_and_subj",
         Cached_query_w_pair_id_and_subj
     },
@@ -6068,82 +6050,6 @@ bake_test_case Cached_testcases[] = {
     {
         "rematch_empty_table_w_superset",
         Cached_rematch_empty_table_w_superset
-    },
-    {
-        "query_w_short_notation",
-        Cached_query_w_short_notation
-    },
-    {
-        "query_w_invalid_filter_flag",
-        Cached_query_w_invalid_filter_flag
-    },
-    {
-        "create_query_existing_query_entity",
-        Cached_create_query_existing_query_entity
-    },
-    {
-        "query_for_recycled_pair",
-        Cached_query_for_recycled_pair
-    },
-    {
-        "query_w_singleton_w_rule_iter",
-        Cached_query_w_singleton_w_rule_iter
-    },
-    {
-        "query_w_singleton_nested_iter",
-        Cached_query_w_singleton_nested_iter
-    },
-    {
-        "query_w_singleton_interleaved_iter",
-        Cached_query_w_singleton_interleaved_iter
-    },
-    {
-        "recycled_component_id",
-        Cached_recycled_component_id
-    },
-    {
-        "set_get_context",
-        Cached_set_get_context
-    },
-    {
-        "set_get_binding_context",
-        Cached_set_get_binding_context
-    },
-    {
-        "set_get_context_w_free",
-        Cached_set_get_context_w_free
-    },
-    {
-        "set_get_binding_context_w_free",
-        Cached_set_get_binding_context_w_free
-    },
-    {
-        "set_this",
-        Cached_set_this
-    },
-    {
-        "set_this_no_match",
-        Cached_set_this_no_match
-    },
-    {
-        "set_this_is_true",
-        Cached_set_this_is_true
-    },
-    {
-        "set_this_w_wildcard",
-        Cached_set_this_w_wildcard
-    },
-    {
-        "singleton_w_inout_none",
-        Cached_singleton_w_inout_none
-    },
-    {
-        "singleton_w_inout_none_or",
-        Cached_singleton_w_inout_none_or
-    },
-    {
-        "component_w_inout_none_or",
-        Cached_component_w_inout_none_or
     },
     {
         "2_self_up_terms_new_tables",
@@ -6396,6 +6302,9 @@ bake_test_param Variables_params[] = {
 bake_test_param Operators_params[] = {
     {"cache_kind", (char*[]){"default", "auto"}, 2}
 };
+bake_test_param Recycled_params[] = {
+    {"cache_kind", (char*[]){"default", "auto"}, 2}
+};
 bake_test_param Traversal_params[] = {
     {"cache_kind", (char*[]){"default", "auto"}, 2}
 };
@@ -6405,7 +6314,7 @@ static bake_test_suite suites[] = {
         "Validator",
         NULL,
         NULL,
-        91,
+        92,
         Validator_testcases
     },
     {
@@ -6419,7 +6328,7 @@ static bake_test_suite suites[] = {
         "Basic",
         Basic_setup,
         NULL,
-        151,
+        165,
         Basic_testcases,
         1,
         Basic_params
@@ -6435,7 +6344,7 @@ static bake_test_suite suites[] = {
         "Variables",
         Variables_setup,
         NULL,
-        162,
+        164,
         Variables_testcases,
         1,
         Variables_params
@@ -6465,10 +6374,12 @@ static bake_test_suite suites[] = {
     },
     {
         "Recycled",
+        Recycled_setup,
         NULL,
-        NULL,
-        4,
-        Recycled_testcases
+        6,
+        Recycled_testcases,
+        1,
+        Recycled_params
     },
     {
         "BuiltinPredicates",
@@ -6497,14 +6408,14 @@ static bake_test_suite suites[] = {
         "Cascade",
         NULL,
         NULL,
-        8,
+        24,
         Cascade_testcases
     },
     {
         "Cached",
         NULL,
         NULL,
-        141,
+        87,
         Cached_testcases
     },
     {

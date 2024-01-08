@@ -7524,25 +7524,591 @@ void Operators_or_from_fixed_src(void) {
 }
 
 void Operators_and_from_this(void) {
-    // Implement testcase
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_TAG(world, TagC);
+    ECS_PREFAB(world, Type, TagA, TagB);
+
+    ecs_entity_t e1 = ecs_new_entity(world, "e1");
+    ecs_entity_t e2 = ecs_new_entity(world, "e2");
+    ecs_add(world, e2, TagC);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "AND | Type",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e1, TagA);
+    ecs_add(world, e2, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e1, TagB);
+    ecs_add(world, e2, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_remove(world, e1, TagA);
+    ecs_remove(world, e2, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
 void Operators_not_from_this(void) {
-    // Implement testcase
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_TAG(world, TagC);
+    ECS_PREFAB(world, Type, TagA, TagB);
+
+    ecs_entity_t e1 = ecs_new_entity(world, "e1");
+    ecs_entity_t e2 = ecs_new_entity(world, "e2");
+    ecs_add(world, e2, TagC);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "NOT | Type",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        bool e1_found = false;
+        bool e2_found = false;
+        while (ecs_query_next(&it)) {
+            for (int i = 0; i < it.count; i ++) {
+                e1_found |= it.entities[i] == e1;
+                e2_found |= it.entities[i] == e2;
+            }
+            test_uint(0, ecs_field_src(&it, 1));
+        }
+        test_assert(e1_found == true);
+        test_assert(e2_found == true);
+    }
+
+    ecs_add(world, e1, TagA);
+    ecs_add(world, e2, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        bool e1_found = false;
+        bool e2_found = false;
+        while (ecs_query_next(&it)) {
+            for (int i = 0; i < it.count; i ++) {
+                e1_found |= it.entities[i] == e1;
+                e2_found |= it.entities[i] == e2;
+            }
+            test_uint(0, ecs_field_src(&it, 1));
+        }
+        test_assert(e1_found == false);
+        test_assert(e2_found == false);
+    }
+
+
+    ecs_add(world, e1, TagB);
+    ecs_add(world, e2, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        bool e1_found = false;
+        bool e2_found = false;
+        while (ecs_query_next(&it)) {
+            for (int i = 0; i < it.count; i ++) {
+                e1_found |= it.entities[i] == e1;
+                e2_found |= it.entities[i] == e2;
+            }
+            test_uint(0, ecs_field_src(&it, 1));
+        }
+        test_assert(e1_found == false);
+        test_assert(e2_found == false);
+    }
+
+    ecs_remove(world, e1, TagA);
+    ecs_remove(world, e2, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        bool e1_found = false;
+        bool e2_found = false;
+        while (ecs_query_next(&it)) {
+            for (int i = 0; i < it.count; i ++) {
+                e1_found |= it.entities[i] == e1;
+                e2_found |= it.entities[i] == e2;
+            }
+            test_uint(0, ecs_field_src(&it, 1));
+        }
+        test_assert(e1_found == false);
+        test_assert(e2_found == false);
+    }
+
+    ecs_remove(world, e1, TagB);
+    ecs_remove(world, e2, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        bool e1_found = false;
+        bool e2_found = false;
+        while (ecs_query_next(&it)) {
+            for (int i = 0; i < it.count; i ++) {
+                e1_found |= it.entities[i] == e1;
+                e2_found |= it.entities[i] == e2;
+            }
+            test_uint(0, ecs_field_src(&it, 1));
+        }
+        test_assert(e1_found == true);
+        test_assert(e2_found == true);
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
 void Operators_or_from_this(void) {
-    // Implement testcase
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_TAG(world, TagC);
+    ECS_PREFAB(world, Type, TagA, TagB);
+
+    ecs_entity_t e1 = ecs_new_entity(world, "e1");
+    ecs_entity_t e2 = ecs_new_entity(world, "e2");
+    ecs_add(world, e2, TagC);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "OR | Type",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e1, TagA);
+    ecs_add(world, e2, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e1, TagB);
+    ecs_add(world, e2, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_remove(world, e2, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_remove(world, e1, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_remove(world, e1, TagB);
+    ecs_remove(world, e2, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
 void Operators_and_from_this_written(void) {
-    // Implement testcase
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_TAG(world, TagC);
+    ECS_TAG(world, TagD);
+    ECS_PREFAB(world, Type, TagA, TagB);
+
+    ecs_entity_t e1 = ecs_new_entity(world, "e1");
+    ecs_add(world, e1, TagD);
+    ecs_entity_t e2 = ecs_new_entity(world, "e2");
+    ecs_add(world, e2, TagC);
+    ecs_add(world, e2, TagD);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "TagD, AND | Type",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e1, TagA);
+    ecs_add(world, e2, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e1, TagB);
+    ecs_add(world, e2, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_uint(0, ecs_field_src(&it, 2));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_uint(0, ecs_field_src(&it, 2));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_remove(world, e1, TagA);
+    ecs_remove(world, e2, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
 void Operators_not_from_this_written(void) {
-    // Implement testcase
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_TAG(world, TagC);
+    ECS_TAG(world, TagD);
+    ECS_PREFAB(world, Type, TagA, TagB);
+
+    ecs_entity_t e1 = ecs_new_entity(world, "e1");
+    ecs_add(world, e1, TagD);
+    ecs_entity_t e2 = ecs_new_entity(world, "e2");
+    ecs_add(world, e2, TagC);
+    ecs_add(world, e2, TagD);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "TagD, NOT | Type",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        bool e1_found = false;
+        bool e2_found = false;
+        while (ecs_query_next(&it)) {
+            for (int i = 0; i < it.count; i ++) {
+                e1_found |= it.entities[i] == e1;
+                e2_found |= it.entities[i] == e2;
+            }
+            test_uint(0, ecs_field_src(&it, 1));
+            test_uint(0, ecs_field_src(&it, 1));
+            test_bool(true, ecs_field_is_set(&it, 1));
+            test_bool(false, ecs_field_is_set(&it, 2));
+        }
+        test_assert(e1_found == true);
+        test_assert(e2_found == true);
+    }
+
+    ecs_add(world, e1, TagA);
+    ecs_add(world, e2, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        bool e1_found = false;
+        bool e2_found = false;
+        while (ecs_query_next(&it)) {
+            for (int i = 0; i < it.count; i ++) {
+                e1_found |= it.entities[i] == e1;
+                e2_found |= it.entities[i] == e2;
+            }
+            test_uint(0, ecs_field_src(&it, 1));
+            test_uint(0, ecs_field_src(&it, 1));
+            test_bool(true, ecs_field_is_set(&it, 1));
+            test_bool(false, ecs_field_is_set(&it, 2));
+        }
+        test_assert(e1_found == false);
+        test_assert(e2_found == false);
+    }
+
+
+    ecs_add(world, e1, TagB);
+    ecs_add(world, e2, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        bool e1_found = false;
+        bool e2_found = false;
+        while (ecs_query_next(&it)) {
+            for (int i = 0; i < it.count; i ++) {
+                e1_found |= it.entities[i] == e1;
+                e2_found |= it.entities[i] == e2;
+            }
+            test_uint(0, ecs_field_src(&it, 1));
+            test_uint(0, ecs_field_src(&it, 1));
+            test_bool(true, ecs_field_is_set(&it, 1));
+            test_bool(false, ecs_field_is_set(&it, 2));
+        }
+        test_assert(e1_found == false);
+        test_assert(e2_found == false);
+    }
+
+    ecs_remove(world, e1, TagA);
+    ecs_remove(world, e2, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        bool e1_found = false;
+        bool e2_found = false;
+        while (ecs_query_next(&it)) {
+            for (int i = 0; i < it.count; i ++) {
+                e1_found |= it.entities[i] == e1;
+                e2_found |= it.entities[i] == e2;
+            }
+            test_uint(0, ecs_field_src(&it, 1));
+            test_uint(0, ecs_field_src(&it, 1));
+            test_bool(true, ecs_field_is_set(&it, 1));
+            test_bool(false, ecs_field_is_set(&it, 2));
+        }
+        test_assert(e1_found == false);
+        test_assert(e2_found == false);
+    }
+
+    ecs_remove(world, e1, TagB);
+    ecs_remove(world, e2, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        bool e1_found = false;
+        bool e2_found = false;
+        while (ecs_query_next(&it)) {
+            for (int i = 0; i < it.count; i ++) {
+                e1_found |= it.entities[i] == e1;
+                e2_found |= it.entities[i] == e2;
+            }
+            test_uint(0, ecs_field_src(&it, 1));
+            test_uint(0, ecs_field_src(&it, 1));
+            test_bool(true, ecs_field_is_set(&it, 1));
+            test_bool(false, ecs_field_is_set(&it, 2));
+        }
+        test_assert(e1_found == true);
+        test_assert(e2_found == true);
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
 void Operators_or_from_this_written(void) {
-    // Implement testcase
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_TAG(world, TagC);
+    ECS_TAG(world, TagD);
+    ECS_PREFAB(world, Type, TagA, TagB);
+
+    ecs_entity_t e1 = ecs_new_entity(world, "e1");
+    ecs_add(world, e1, TagD);
+    ecs_entity_t e2 = ecs_new_entity(world, "e2");
+    ecs_add(world, e2, TagC);
+    ecs_add(world, e2, TagD);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "TagD, OR | Type",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e1, TagA);
+    ecs_add(world, e2, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_uint(0, ecs_field_src(&it, 2));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_uint(0, ecs_field_src(&it, 2));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e1, TagB);
+    ecs_add(world, e2, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_uint(0, ecs_field_src(&it, 2));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_uint(0, ecs_field_src(&it, 2));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_remove(world, e2, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_uint(0, ecs_field_src(&it, 2));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_uint(0, ecs_field_src(&it, 2));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_remove(world, e1, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_uint(0, ecs_field_src(&it, 2));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(0, ecs_field_src(&it, 1));
+        test_uint(0, ecs_field_src(&it, 2));
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_remove(world, e1, TagB);
+    ecs_remove(world, e2, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }

@@ -238,6 +238,7 @@ typedef struct {
     ecs_query_and_ctx_t and;
     ecs_type_t *type;
     int32_t first_id_index;
+    int32_t cur_id_index;
 } ecs_query_xfrom_ctx_t;
 
 typedef struct ecs_query_op_ctx_t {

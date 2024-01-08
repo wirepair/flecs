@@ -1479,6 +1479,7 @@ int flecs_query_compile_term(
     {
         goto error;    
     }
+
     if (flecs_query_compile_ensure_vars(
         rule, &op, &op.second, EcsRuleSecond, ctx, cond_write, &second_written))
     {
@@ -1490,7 +1491,7 @@ int flecs_query_compile_term(
      * something to match the optional/not against. */
     if (src_is_var && !src_written && !src_is_wildcard && !src_is_lookup) {
         bool pred_match = builtin_pred && ECS_TERM_REF_ID(&term->first) == EcsPredMatch;
-        if (term->oper == EcsNot || term->oper == EcsOptional || pred_match) {
+        if (term->oper == EcsNot || term->oper == EcsOptional || term->oper == EcsNotFrom || pred_match) {
             ecs_query_op_t match_any = {0};
             match_any.kind = EcsAnd;
             match_any.flags = EcsRuleIsSelf | (EcsRuleIsEntity << EcsRuleFirst);

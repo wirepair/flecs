@@ -1402,6 +1402,22 @@ bool flecs_query_trav(
 }
 
 static
+int32_t flecs_query_next_inheritable_id(
+    ecs_world_t *world,
+    ecs_type_t *type,
+    int32_t index)
+{
+    int32_t i;
+    for (i = index; i < type->count; i ++) {
+        ecs_id_record_t *idr = flecs_id_record_get(world, type->array[i]);
+        if (!(idr->flags & EcsIdDontInherit)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+static
 bool flecs_query_x_from(
     const ecs_query_op_t *op,
     bool redo,
@@ -1424,19 +1440,13 @@ bool flecs_query_x_from(
             return false;
         }
 
-        type = op_ctx->type = &table->type;
-        ecs_id_t *ids = type->array;
-
         /* Find first id to test against. Skip ids with DontInherit flag. */
-        for (i = 0; i < type->count; i ++) {
-            ecs_id_record_t *idr = flecs_id_record_get(world, ids[i]);
-            if (!(idr->flags & EcsIdDontInherit)) {
-                op_ctx->first_id_index = i;
-                break;
-            }
-        }
+        type = op_ctx->type = &table->type;
+        op_ctx->first_id_index = flecs_query_next_inheritable_id(
+            world, type, 0);
+        op_ctx->cur_id_index = op_ctx->first_id_index;
 
-        if (i == type->count) {
+        if (op_ctx->cur_id_index == -1) {
             return false; /* No ids to filter on */
         }
     } else {
@@ -1444,7 +1454,6 @@ bool flecs_query_x_from(
     }
 
     ecs_id_t *ids = type->array;
-    int32_t first_id_index = op_ctx->first_id_index;
 
     /* Check if source is variable, and if it's already written */
     bool src_written = true;
@@ -1454,58 +1463,99 @@ bool flecs_query_x_from(
     }
 
     do {
+        int32_t id_index = op_ctx->cur_id_index;
+
         /* If source is not yet written, find tables with first id */
         if (!src_written) {
-            ecs_entity_t first_id = ids[first_id_index];
+            ecs_entity_t first_id = ids[id_index];
+
             if (!flecs_query_select_w_id(op, redo, ctx, 
                 first_id, (EcsTableIsPrefab|EcsTableIsDisabled)))
             {
+                if (oper == EcsOrFrom) {
+                    id_index = flecs_query_next_inheritable_id(
+                        world, type, id_index + 1);
+                    if (id_index != -1) {
+                        op_ctx->cur_id_index = id_index;
+                        redo = false;
+                        continue;
+                    }
+                }
+
                 return false;
             }
 
-            first_id_index ++; /* First id got matched */
+            id_index ++; /* First id got matched */
         } else if (redo && src_written) {
             return false;
         }
-
-        redo = true;
 
         ecs_table_t *src_table = flecs_query_get_table(
             op, &op->src, EcsRuleSrc, ctx);
         if (!src_table) {
             continue;
         }
+        
+        redo = true;
 
-        for (i = first_id_index; i < type->count; i ++) {
-            ecs_id_record_t *idr = flecs_id_record_get(world, ids[i]);
-            if (!idr) {
-                if (oper == EcsAndFrom) {
-                    return false;
-                } else {
+        if (!src_written && oper == EcsOrFrom) {
+            /* Eliminate duplicate matches from tables that have multiple 
+             * components from the type list */
+            if (op_ctx->cur_id_index != op_ctx->first_id_index) {
+                for (i = op_ctx->first_id_index; i < op_ctx->cur_id_index; i ++) {
+                    ecs_id_record_t *idr = flecs_id_record_get(world, ids[i]);
+                    if (!idr) {
+                        continue;
+                    }
+
+                    if (idr->flags & EcsIdDontInherit) {
+                        continue;
+                    }
+                    
+                    if (flecs_id_record_get_table(idr, src_table) != NULL) {
+                        /* Already matched */
+                        break;
+                    }
+                }
+                if (i != op_ctx->cur_id_index) {
                     continue;
                 }
             }
-
-            if (idr->flags & EcsIdDontInherit) {
-                continue;
-            }
-
-            if (flecs_id_record_get_table(idr, src_table) == NULL) {
-                if (oper == EcsAndFrom) {
-                    break; /* Must have all ids */
-                }
-            } else {
-                if (oper == EcsNotFrom) {
-                    break; /* Must have none of the ids */
-                } else if (oper == EcsOrFrom) {
-                    return true; /* One match is enough */
-                }
-            }
+            return true;
         }
 
-        if (i == type->count) {
-            if (oper == EcsAndFrom || oper == EcsNotFrom) {
-                break; /* All ids matched */
+        if (oper == EcsAndFrom || oper == EcsNotFrom || src_written) {
+            for (i = id_index; i < type->count; i ++) {
+                ecs_id_record_t *idr = flecs_id_record_get(world, ids[i]);
+                if (!idr) {
+                    if (oper == EcsAndFrom) {
+                        return false;
+                    } else {
+                        continue;
+                    }
+                }
+
+                if (idr->flags & EcsIdDontInherit) {
+                    continue;
+                }
+
+                if (flecs_id_record_get_table(idr, src_table) == NULL) {
+                    if (oper == EcsAndFrom) {
+                        break; /* Must have all ids */
+                    }
+                } else {
+                    if (oper == EcsNotFrom) {
+                        break; /* Must have none of the ids */
+                    } else if (oper == EcsOrFrom) {
+                        return true; /* Single match is enough */
+                    }
+                }
+            }
+
+            if (i == type->count) {
+                if (oper == EcsAndFrom || oper == EcsNotFrom) {
+                    break; /* All ids matched */
+                }
             }
         }
     } while (true);

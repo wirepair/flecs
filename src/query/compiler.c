@@ -1411,8 +1411,16 @@ int flecs_query_compile_term(
     op.field_index = flecs_ito(int8_t, term->field_index);
     op.term_index = flecs_ito(int8_t, term - q->terms);
 
+    /* Handle *From operators */
+    if (term->oper == EcsAndFrom) {
+        op.kind = EcsRuleAndFrom;
+    } else if (term->oper == EcsOrFrom) {
+        op.kind = EcsRuleOrFrom;
+    } else if (term->oper == EcsNotFrom) {
+        op.kind = EcsRuleNotFrom;
+
     /* If rule is transitive, use Trav(ersal) instruction */
-    if (term->flags & EcsTermTransitive) {
+    } else if (term->flags & EcsTermTransitive) {
         ecs_assert(ecs_term_ref_is_set(&term->second), ECS_INTERNAL_ERROR, NULL);
         op.kind = EcsRuleTrav;
     } else {

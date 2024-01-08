@@ -26,6 +26,9 @@ const char* flecs_query_op_str(
     case EcsRuleSelfUpId:      return "selfupid  ";
     case EcsRuleWith:          return "with      ";
     case EcsRuleTrav:          return "trav      ";
+    case EcsRuleAndFrom:       return "andfrom   ";
+    case EcsRuleOrFrom:        return "orfrom    ";
+    case EcsRuleNotFrom:       return "notfrom   ";
     case EcsRuleIdsRight:      return "idsr      ";
     case EcsRuleIdsLeft:       return "idsl      ";
     case EcsRuleEach:          return "each      ";

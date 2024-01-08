@@ -347,7 +347,19 @@
                 "newline_after_term_src",
                 "newline_after_term_src_pair",
                 "newline_after_term_pair_comma",
-                "newline_after_term_pair_second"
+                "newline_after_term_pair_second",
+                "src_w_self_or_oper",
+                "src_w_up_or_oper",
+                "src_w_self_up_or_oper",
+                "pair_explicit_src_w_self_or_oper",
+                "pair_explicit_src_w_up_or_oper",
+                "pair_explicit_src_w_self_up_or_oper",
+                "rel_w_self_or_oper",
+                "rel_w_up_or_oper",
+                "rel_w_self_up_or_oper",
+                "tgt_w_self_or_oper",
+                "tgt_w_up_or_oper",
+                "tgt_w_self_up_or_oper"
             ]
         }, {
             "id": "Basic",

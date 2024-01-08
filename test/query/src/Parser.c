@@ -5529,3 +5529,51 @@ void Parser_newline_after_term_pair_second(void) {
 
     ecs_fini(world);
 }
+
+void Parser_src_w_self_or_oper(void) {
+    // Implement testcase
+}
+
+void Parser_src_w_up_or_oper(void) {
+    // Implement testcase
+}
+
+void Parser_src_w_self_up_or_oper(void) {
+    // Implement testcase
+}
+
+void Parser_pair_explicit_src_w_self_or_oper(void) {
+    // Implement testcase
+}
+
+void Parser_pair_explicit_src_w_up_or_oper(void) {
+    // Implement testcase
+}
+
+void Parser_pair_explicit_src_w_self_up_or_oper(void) {
+    // Implement testcase
+}
+
+void Parser_rel_w_self_or_oper(void) {
+    // Implement testcase
+}
+
+void Parser_rel_w_up_or_oper(void) {
+    // Implement testcase
+}
+
+void Parser_rel_w_self_up_or_oper(void) {
+    // Implement testcase
+}
+
+void Parser_tgt_w_self_or_oper(void) {
+    // Implement testcase
+}
+
+void Parser_tgt_w_up_or_oper(void) {
+    // Implement testcase
+}
+
+void Parser_tgt_w_self_up_or_oper(void) {
+    // Implement testcase
+}

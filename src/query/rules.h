@@ -55,6 +55,9 @@ typedef enum {
     EcsRuleSelfUpId,       /* Self|up traversal for fixed id (like AndId) */
     EcsRuleWith,           /* Match id against fixed or variable source */
     EcsRuleTrav,           /* Support for transitive/reflexive queries */
+    EcsRuleAndFrom,        /* AndFrom operator */
+    EcsRuleOrFrom,         /* OrFrom operator */
+    EcsRuleNotFrom,        /* NotFrom operator */
     EcsRuleIdsRight,       /* Find ids in use that match (R, *) wildcard */
     EcsRuleIdsLeft,        /* Find ids in use that match (*, T) wildcard */
     EcsRuleEach,           /* Iterate entities in table, populate entity variable */
@@ -193,7 +196,7 @@ typedef struct {
     int32_t count;
     ecs_trav_cache_t cache;
     bool yield_reflexive;
-} ecs_query_impl_trav_ctx_t;
+} ecs_query_trav_ctx_t;
 
  /* Eq context */
 typedef struct {
@@ -230,23 +233,25 @@ typedef struct {
     const ecs_table_record_t *tr;
 } ecs_query_impl_trivial_ctx_t;
 
-/* Cache iterator context */
+/* *From operator iterator context */
 typedef struct {
-    int _dummy;
-} ecs_query_impl_cache_ctx_t;
+    ecs_query_and_ctx_t and;
+    ecs_type_t *type;
+    int32_t first_id_index;
+} ecs_query_xfrom_ctx_t;
 
 typedef struct ecs_query_op_ctx_t {
     union {
         ecs_query_and_ctx_t and;
+        ecs_query_xfrom_ctx_t xfrom;
         ecs_query_up_ctx_t up;
-        ecs_query_impl_trav_ctx_t trav;
+        ecs_query_trav_ctx_t trav;
         ecs_query_ids_ctx_t ids;
         ecs_query_eq_ctx_t eq;
         ecs_query_each_ctx_t each;
         ecs_query_setthis_ctx_t setthis;
         ecs_query_ctrl_ctx_t ctrl;
         ecs_query_impl_trivial_ctx_t trivial;
-        ecs_query_impl_cache_ctx_t cache;
     } is;
 } ecs_query_op_ctx_t;
 
@@ -482,39 +487,32 @@ bool flecs_query_trivial_test_w_wildcards(
 bool flecs_query_cache_search(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first);
 
 bool flecs_query_cache_data_search(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first);
 
 bool flecs_query_is_cache_search(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first);
 
 bool flecs_query_is_cache_data_search(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first);
 
 bool flecs_query_is_cache_test(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first);
 
 bool flecs_query_is_cache_data_test(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first);
-
 
 /* -- Cache internals -- */
 

@@ -4,7 +4,6 @@ static
 ecs_query_cache_table_match_t* flecs_query_cache_next(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first)
 {
     ecs_iter_t *it = ctx->it;
@@ -129,11 +128,10 @@ void flecs_query_populate_ptrs_w_shared(
 bool flecs_query_cache_search(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first)
 {
     ecs_query_cache_table_match_t *node = flecs_query_cache_next(
-        impl, ctx, op_ctx, first);
+        impl, ctx, first);
     if (!node) {
         return false;
     }
@@ -158,11 +156,10 @@ bool flecs_query_cache_search(
 bool flecs_query_is_cache_search(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first)
 {
     ecs_query_cache_table_match_t *node = flecs_query_cache_next(
-        impl, ctx, op_ctx, first);
+        impl, ctx, first);
     if (!node) {
         return false;
     }
@@ -241,10 +238,9 @@ void flecs_query_is_cache_data_populate(
 bool flecs_query_cache_data_search(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first)
 {
-    if (!flecs_query_cache_search(impl, ctx, op_ctx, first)) {
+    if (!flecs_query_cache_search(impl, ctx, first)) {
         return false;
     }
 
@@ -254,13 +250,13 @@ bool flecs_query_cache_data_search(
     return true;
 }
 
+
 bool flecs_query_is_cache_data_search(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first)
 {
-    if (!flecs_query_is_cache_search(impl, ctx, op_ctx, first)) {
+    if (!flecs_query_is_cache_search(impl, ctx, first)) {
         return false;
     }
 
@@ -273,7 +269,6 @@ bool flecs_query_is_cache_data_search(
 bool flecs_query_is_cache_test(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first)
 {
     ecs_iter_t *it = ctx->it;
@@ -295,7 +290,7 @@ bool flecs_query_is_cache_test(
     }
 
     ecs_query_cache_table_match_t *node = flecs_query_cache_next(
-        impl, ctx, op_ctx, false);
+        impl, ctx, false);
     if (!node) {
         return false;
     }
@@ -310,10 +305,9 @@ bool flecs_query_is_cache_test(
 bool flecs_query_is_cache_data_test(
     const ecs_query_impl_t *impl,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_cache_ctx_t *op_ctx,
     bool first)
 {
-    if (!flecs_query_is_cache_test(impl, ctx, op_ctx, first)) {
+    if (!flecs_query_is_cache_test(impl, ctx, first)) {
         return false;
     }
 

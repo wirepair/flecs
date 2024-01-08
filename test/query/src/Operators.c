@@ -7358,15 +7358,169 @@ void Operators_1_ent_src_not_pair_rel_tgt_same_var_written(void) {
 }
 
 void Operators_and_from_fixed_src(void) {
-    // Implement testcase
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_PREFAB(world, Type, TagA, TagB);
+
+    ecs_entity_t e = ecs_new_entity(world, "e");
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "AND | Type(e)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e, ecs_field_src(&it, 1));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
 void Operators_not_from_fixed_src(void) {
-    // Implement testcase
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_PREFAB(world, Type, TagA, TagB);
+
+    ecs_entity_t e = ecs_new_entity(world, "e");
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "NOT | Type(e)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e, ecs_field_src(&it, 1));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_remove(world, e, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_remove(world, e, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e, ecs_field_src(&it, 1));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
 void Operators_or_from_fixed_src(void) {
-    // Implement testcase
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+    ECS_PREFAB(world, Type, TagA, TagB);
+
+    ecs_entity_t e = ecs_new_entity(world, "e");
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "OR | Type(e)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e, ecs_field_src(&it, 1));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_add(world, e, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e, ecs_field_src(&it, 1));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_remove(world, e, TagA);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e, ecs_field_src(&it, 1));
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_remove(world, e, TagB);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
 void Operators_and_from_this(void) {

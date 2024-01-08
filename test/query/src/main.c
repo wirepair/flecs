@@ -341,6 +341,18 @@ void Parser_newline_after_term_src(void);
 void Parser_newline_after_term_src_pair(void);
 void Parser_newline_after_term_pair_comma(void);
 void Parser_newline_after_term_pair_second(void);
+void Parser_src_w_self_or_oper(void);
+void Parser_src_w_up_or_oper(void);
+void Parser_src_w_self_up_or_oper(void);
+void Parser_pair_explicit_src_w_self_or_oper(void);
+void Parser_pair_explicit_src_w_up_or_oper(void);
+void Parser_pair_explicit_src_w_self_up_or_oper(void);
+void Parser_rel_w_self_or_oper(void);
+void Parser_rel_w_up_or_oper(void);
+void Parser_rel_w_self_up_or_oper(void);
+void Parser_tgt_w_self_or_oper(void);
+void Parser_tgt_w_up_or_oper(void);
+void Parser_tgt_w_self_up_or_oper(void);
 
 // Testsuite 'Basic'
 void Basic_setup(void);
@@ -2654,6 +2666,54 @@ bake_test_case Parser_testcases[] = {
     {
         "newline_after_term_pair_second",
         Parser_newline_after_term_pair_second
+    },
+    {
+        "src_w_self_or_oper",
+        Parser_src_w_self_or_oper
+    },
+    {
+        "src_w_up_or_oper",
+        Parser_src_w_up_or_oper
+    },
+    {
+        "src_w_self_up_or_oper",
+        Parser_src_w_self_up_or_oper
+    },
+    {
+        "pair_explicit_src_w_self_or_oper",
+        Parser_pair_explicit_src_w_self_or_oper
+    },
+    {
+        "pair_explicit_src_w_up_or_oper",
+        Parser_pair_explicit_src_w_up_or_oper
+    },
+    {
+        "pair_explicit_src_w_self_up_or_oper",
+        Parser_pair_explicit_src_w_self_up_or_oper
+    },
+    {
+        "rel_w_self_or_oper",
+        Parser_rel_w_self_or_oper
+    },
+    {
+        "rel_w_up_or_oper",
+        Parser_rel_w_up_or_oper
+    },
+    {
+        "rel_w_self_up_or_oper",
+        Parser_rel_w_self_up_or_oper
+    },
+    {
+        "tgt_w_self_or_oper",
+        Parser_tgt_w_self_or_oper
+    },
+    {
+        "tgt_w_up_or_oper",
+        Parser_tgt_w_up_or_oper
+    },
+    {
+        "tgt_w_self_up_or_oper",
+        Parser_tgt_w_self_up_or_oper
     }
 };
 
@@ -6541,7 +6601,7 @@ static bake_test_suite suites[] = {
         "Parser",
         NULL,
         NULL,
-        238,
+        250,
         Parser_testcases
     },
     {

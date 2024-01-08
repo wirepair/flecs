@@ -7862,34 +7862,342 @@ void Traversal_this_written_optional_self_up(void) {
     ecs_fini(world);
 }
 
-void Traversal_this_self_cascade_childof(void) {
-    // Implement testcase
+void Traversal_fixed_src_w_up(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_COMPONENT(world, Position);
+    ECS_COMPONENT(world, Velocity);
+    ECS_COMPONENT(world, Mass);
+
+    ecs_entity_t Game = ecs_new_entity(world, "Game");
+    ecs_set(world, Game, Position, {10, 20});
+    ecs_set(world, Game, Velocity, {1, 2});
+
+    ecs_entity_t p = ecs_new_w_id(world, EcsPrefab);
+    ecs_set(world, p, Mass, {30});
+    ecs_entity_t e = ecs_new_w_pair(world, EcsIsA, p);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Velocity(Game), Mass(up(IsA))",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_uint(e, it.entities[0]);
+    test_uint(ecs_id(Velocity), ecs_field_id(&it, 1));
+    test_uint(ecs_id(Mass), ecs_field_id(&it, 2));
+    test_uint(Game, ecs_field_src(&it, 1));
+    test_uint(p, ecs_field_src(&it, 2));
+
+    test_bool(false, ecs_query_next(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
-void Traversal_this_cascade_childof(void) {
-    // Implement testcase
+void Traversal_match_empty_table_up(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_COMPONENT(world, Position);
+    ECS_TAG(world, TagA);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Position(up)",
+        .cache_kind = cache_kind,
+        .flags =  EcsQueryMatchEmptyTables
+    });
+
+    test_assert(q != NULL);
+
+    ecs_entity_t p = ecs_set(world, 0, Position, {10, 20});
+    ecs_entity_t e1 = ecs_new_w_pair(world, EcsChildOf, p);
+    ecs_table_t *t1 = ecs_get_table(world, e1);
+
+    ecs_add(world, e1, TagA); // (ChildOf, p) is empty
+    ecs_table_t *t2 = ecs_get_table(world, e1);
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    test_bool(true, ecs_query_next(&it));
+    test_int(0, it.count);
+    test_assert(it.table == t1);
+    test_uint(ecs_id(Position), ecs_field_id(&it, 1));
+    test_uint(p, ecs_field_src(&it, 1));
+
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_assert(it.table == t2);
+    test_uint(e1, it.entities[0]);
+    test_uint(ecs_id(Position), ecs_field_id(&it, 1));
+    test_uint(p, ecs_field_src(&it, 1));
+    {
+        Position *p = ecs_field(&it, Position, 1);
+        test_assert(p != NULL);
+        test_int(p->x, 10);
+        test_int(p->y, 20);
+    }
+    test_bool(false, ecs_query_next(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
-void Traversal_this_written_self_cascade_childof(void) {
-    // Implement testcase
+void Traversal_match_empty_table_up_written(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_COMPONENT(world, Position);
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "TagB, Position(up)",
+        .cache_kind = cache_kind,
+        .flags =  EcsQueryMatchEmptyTables
+    });
+
+    test_assert(q != NULL);
+
+    ecs_entity_t p = ecs_set(world, 0, Position, {10, 20});
+    ecs_entity_t e1 = ecs_new_w_pair(world, EcsChildOf, p);
+    ecs_add(world, e1, TagB);
+    ecs_table_t *t1 = ecs_get_table(world, e1);
+
+    ecs_add(world, e1, TagA); // TagB, (ChildOf, p) is empty
+    ecs_table_t *t2 = ecs_get_table(world, e1);
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    test_bool(true, ecs_query_next(&it));
+    test_int(0, it.count);
+    test_assert(it.table == t1);
+    test_uint(TagB, ecs_field_id(&it, 1));
+    test_uint(ecs_id(Position), ecs_field_id(&it, 2));
+    test_uint(0, ecs_field_src(&it, 1));
+    test_uint(p, ecs_field_src(&it, 2));
+
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_assert(it.table == t2);
+    test_uint(e1, it.entities[0]);
+    test_uint(TagB, ecs_field_id(&it, 1));
+    test_uint(ecs_id(Position), ecs_field_id(&it, 2));
+    test_uint(0, ecs_field_src(&it, 1));
+    test_uint(p, ecs_field_src(&it, 2));
+    {
+        Position *p = ecs_field(&it, Position, 2);
+        test_assert(p != NULL);
+        test_int(p->x, 10);
+        test_int(p->y, 20);
+    }
+    test_bool(false, ecs_query_next(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
-void Traversal_this_written_cascade_childof(void) {
-    // Implement testcase
+void Traversal_match_empty_table_up_implicit_isa(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_COMPONENT(world, Position);
+    ECS_TAG(world, TagA);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Position(up)",
+        .cache_kind = cache_kind,
+        .flags =  EcsQueryMatchEmptyTables
+    });
+
+    test_assert(q != NULL);
+
+    ecs_entity_t b = ecs_set(world, 0, Position, {10, 20});
+    ecs_entity_t p = ecs_new_w_pair(world, EcsIsA, b);
+    ecs_entity_t e1 = ecs_new_w_pair(world, EcsChildOf, p);
+    ecs_table_t *t1 = ecs_get_table(world, e1);
+
+    ecs_add(world, e1, TagA); // (ChildOf, p) is empty
+    ecs_table_t *t2 = ecs_get_table(world, e1);
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    test_bool(true, ecs_query_next(&it));
+    test_int(0, it.count);
+    test_assert(it.table == t1);
+    test_uint(ecs_id(Position), ecs_field_id(&it, 1));
+    test_uint(b, ecs_field_src(&it, 1));
+
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_assert(it.table == t2);
+    test_uint(e1, it.entities[0]);
+    test_uint(ecs_id(Position), ecs_field_id(&it, 1));
+    test_uint(b, ecs_field_src(&it, 1));
+    {
+        Position *p = ecs_field(&it, Position, 1);
+        test_assert(p != NULL);
+        test_int(p->x, 10);
+        test_int(p->y, 20);
+    }
+    test_bool(false, ecs_query_next(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
-void Traversal_this_self_cascade_childof_w_parent_flag(void) {
-    // Implement testcase
+void Traversal_match_empty_table_up_written_implicit_isa(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_COMPONENT(world, Position);
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "TagB, Position(up)",
+        .cache_kind = cache_kind,
+        .flags =  EcsQueryMatchEmptyTables
+    });
+
+    test_assert(q != NULL);
+
+    ecs_entity_t b = ecs_set(world, 0, Position, {10, 20});
+    ecs_entity_t p = ecs_new_w_pair(world, EcsIsA, b);
+    ecs_entity_t e1 = ecs_new_w_pair(world, EcsChildOf, p);
+    ecs_add(world, e1, TagB);
+    ecs_table_t *t1 = ecs_get_table(world, e1);
+
+    ecs_add(world, e1, TagA); // TagB, (ChildOf, p) is empty
+    ecs_table_t *t2 = ecs_get_table(world, e1);
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    test_bool(true, ecs_query_next(&it));
+    test_int(0, it.count);
+    test_assert(it.table == t1);
+    test_uint(TagB, ecs_field_id(&it, 1));
+    test_uint(ecs_id(Position), ecs_field_id(&it, 2));
+    test_uint(0, ecs_field_src(&it, 1));
+    test_uint(b, ecs_field_src(&it, 2));
+
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_assert(it.table == t2);
+    test_uint(e1, it.entities[0]);
+    test_uint(TagB, ecs_field_id(&it, 1));
+    test_uint(ecs_id(Position), ecs_field_id(&it, 2));
+    test_uint(0, ecs_field_src(&it, 1));
+    test_uint(b, ecs_field_src(&it, 2));
+    {
+        Position *p = ecs_field(&it, Position, 2);
+        test_assert(p != NULL);
+        test_int(p->x, 10);
+        test_int(p->y, 20);
+    }
+    test_bool(false, ecs_query_next(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
-void Traversal_this_cascade_childof_w_parent_flag(void) {
-    // Implement testcase
+void Traversal_match_empty_table_up_isa(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_COMPONENT(world, Position);
+    ECS_TAG(world, TagA);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Position(up(IsA))",
+        .cache_kind = cache_kind,
+        .flags =  EcsQueryMatchEmptyTables
+    });
+
+    test_assert(q != NULL);
+
+    ecs_entity_t p = ecs_set(world, 0, Position, {10, 20});
+    ecs_entity_t e1 = ecs_new_w_pair(world, EcsIsA, p);
+    ecs_table_t *t1 = ecs_get_table(world, e1);
+
+    ecs_add(world, e1, TagA); // (ChildOf, p) is empty
+    ecs_table_t *t2 = ecs_get_table(world, e1);
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    test_bool(true, ecs_query_next(&it));
+    test_int(0, it.count);
+    test_assert(it.table == t1);
+    test_uint(ecs_id(Position), ecs_field_id(&it, 1));
+    test_uint(p, ecs_field_src(&it, 1));
+
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_assert(it.table == t2);
+    test_uint(e1, it.entities[0]);
+    test_uint(ecs_id(Position), ecs_field_id(&it, 1));
+    test_uint(p, ecs_field_src(&it, 1));
+    {
+        Position *p = ecs_field(&it, Position, 1);
+        test_assert(p != NULL);
+        test_int(p->x, 10);
+        test_int(p->y, 20);
+    }
+    test_bool(false, ecs_query_next(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
-void Traversal_this_written_self_cascade_childof_w_parent_flag(void) {
-    // Implement testcase
-}
+void Traversal_match_empty_table_up_written_isa(void) {
+    ecs_world_t *world = ecs_mini();
 
-void Traversal_this_written_cascade_childof_w_parent_flag(void) {
-    // Implement testcase
+    ECS_COMPONENT(world, Position);
+    ECS_TAG(world, TagA);
+    ECS_TAG(world, TagB);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "TagB, Position(up(IsA))",
+        .cache_kind = cache_kind,
+        .flags =  EcsQueryMatchEmptyTables
+    });
+
+    test_assert(q != NULL);
+
+    ecs_entity_t p = ecs_set(world, 0, Position, {10, 20});
+    ecs_entity_t e1 = ecs_new_w_pair(world, EcsIsA, p);
+    ecs_add(world, e1, TagB);
+    ecs_table_t *t1 = ecs_get_table(world, e1);
+
+    ecs_add(world, e1, TagA); // TagB, (ChildOf, p) is empty
+    ecs_table_t *t2 = ecs_get_table(world, e1);
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    test_bool(true, ecs_query_next(&it));
+    test_int(0, it.count);
+    test_assert(it.table == t1);
+    test_uint(TagB, ecs_field_id(&it, 1));
+    test_uint(ecs_id(Position), ecs_field_id(&it, 2));
+    test_uint(0, ecs_field_src(&it, 1));
+    test_uint(p, ecs_field_src(&it, 2));
+
+    test_bool(true, ecs_query_next(&it));
+    test_int(1, it.count);
+    test_assert(it.table == t2);
+    test_uint(e1, it.entities[0]);
+    test_uint(TagB, ecs_field_id(&it, 1));
+    test_uint(ecs_id(Position), ecs_field_id(&it, 2));
+    test_uint(0, ecs_field_src(&it, 1));
+    test_uint(p, ecs_field_src(&it, 2));
+    {
+        Position *p = ecs_field(&it, Position, 2);
+        test_assert(p != NULL);
+        test_int(p->x, 10);
+        test_int(p->y, 20);
+    }
+    test_bool(false, ecs_query_next(&it));
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }

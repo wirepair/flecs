@@ -159,6 +159,24 @@ char* ecs_query_str_w_profile(
             indent ++;
         }
 
+        if (op->kind == EcsRulePopulate || 
+            op->kind == EcsRulePopulateSelf ||
+            op->kind == EcsRuleTriv ||
+            op->kind == EcsRuleTrivData ||
+            op->kind == EcsRuleTrivWildcard) 
+        {
+            ecs_flags64_t fieldset = op->src.entity;
+            int32_t f;
+
+            ecs_strbuf_list_push(&buf, "[", ",");
+            for (f = 0; f < q->field_count; f ++) {
+                if (fieldset & (1llu << f)) {
+                    ecs_strbuf_list_append(&buf, "%d", f);
+                }
+            }
+            ecs_strbuf_list_pop(&buf, "]");
+        }
+
         if (!first_flags && !second_flags) {
             ecs_strbuf_appendstr(&buf, "\n");
             continue;
@@ -609,7 +627,6 @@ int32_t flecs_query_pivot_term(
 error:
     return -2;
 }
-
 
 void flecs_query_apply_iter_flags(
     ecs_iter_t *it,

@@ -535,6 +535,34 @@ void Plan_this_before_fixed_src_w_first_var(void);
 void Plan_this_before_fixed_src_w_first_var_w_not(void);
 void Plan_this_before_fixed_src_w_second_var(void);
 void Plan_this_before_fixed_src_w_second_var_w_not(void);
+void Plan_populate_1_fixed(void);
+void Plan_populate_2_fixed(void);
+void Plan_populate_1_fixed_1_this_self(void);
+void Plan_populate_2_fixed_2_this_self(void);
+void Plan_populate_2_fixed_2_this_self_interleaved(void);
+void Plan_populate_2_this_self_2_fixed(void);
+void Plan_populate_1_fixed_1_this_up(void);
+void Plan_populate_2_fixed_2_this_up(void);
+void Plan_populate_2_fixed_2_this_up_interleaved(void);
+void Plan_populate_2_this_up_2_fixed(void);
+void Plan_populate_1_fixed_1_this_self_cached(void);
+void Plan_populate_2_fixed_2_this_self_cached(void);
+void Plan_populate_2_fixed_2_this_self_interleaved_cached(void);
+void Plan_populate_2_this_self_2_fixed_cached(void);
+void Plan_populate_1_fixed_1_this_up_cached(void);
+void Plan_populate_2_fixed_2_this_up_cached(void);
+void Plan_populate_2_fixed_2_this_up_interleaved_cached(void);
+void Plan_populate_2_this_up_2_fixed_cached(void);
+void Plan_populate_1_fixed_1_var_self(void);
+void Plan_populate_2_fixed_2_var_self(void);
+void Plan_populate_2_fixed_2_var_self_interleaved(void);
+void Plan_populate_2_var_self_2_fixed(void);
+void Plan_populate_1_fixed_1_var_up(void);
+void Plan_populate_2_fixed_2_var_up(void);
+void Plan_populate_2_fixed_2_var_up_interleaved(void);
+void Plan_populate_2_var_up_2_fixed(void);
+void Plan_cache_2_or(void);
+void Plan_cache_2_or_w_not(void);
 
 // Testsuite 'Variables'
 void Variables_setup(void);
@@ -706,6 +734,9 @@ void Variables_2_trivial_1_any_component(void);
 // Testsuite 'Operators'
 void Operators_setup(void);
 void Operators_2_and_not(void);
+void Operators_2_and_not_component(void);
+void Operators_2_and_out_not(void);
+void Operators_2_and_out_not_component(void);
 void Operators_3_and_not_not(void);
 void Operators_2_and_not_pair_rel_wildcard(void);
 void Operators_2_and_not_pair_tgt_wildcard(void);
@@ -773,10 +804,17 @@ void Operators_2_or_written_dependent_2_vars(void);
 void Operators_2_or_w_dependent(void);
 void Operators_2_or_w_both(void);
 void Operators_3_or_w_both(void);
+void Operators_2_or_w_not(void);
+void Operators_2_or_w_not_component(void);
+void Operators_2_or_w_not_out_component(void);
+void Operators_2_or_w_not_out_all_components(void);
 void Operators_2_not_first(void);
 void Operators_2_optional_first(void);
 void Operators_only_not(void);
+void Operators_only_not_component(void);
+void Operators_only_not_out_component(void);
 void Operators_only_optional(void);
+void Operators_only_optional_component(void);
 void Operators_not_after_fixed_src(void);
 void Operators_optional_after_fixed_src(void);
 void Operators_root_entities_empty(void);
@@ -1108,6 +1146,13 @@ void Traversal_this_optional_self_up(void);
 void Traversal_this_written_optional_self(void);
 void Traversal_this_written_optional_up(void);
 void Traversal_this_written_optional_self_up(void);
+void Traversal_fixed_src_w_up(void);
+void Traversal_match_empty_table_up(void);
+void Traversal_match_empty_table_up_written(void);
+void Traversal_match_empty_table_up_implicit_isa(void);
+void Traversal_match_empty_table_up_written_implicit_isa(void);
+void Traversal_match_empty_table_up_isa(void);
+void Traversal_match_empty_table_up_written_isa(void);
 
 // Testsuite 'Cascade'
 void Cascade_this_self_cascade_childof_uncached(void);
@@ -1162,7 +1207,6 @@ void Cached_only_optional_new_unset_tables(void);
 void Cached_singleton_w_optional_new_empty_table(void);
 void Cached_singleton_w_optional_new_empty_non_empty_table(void);
 void Cached_singleton_w_optional_new_unset_tables(void);
-void Cached_query_from_entity_w_superset(void);
 void Cached_query_w_from_entity_match_after(void);
 void Cached_query_w_from_singleton_match_after(void);
 void Cached_query_rematch_optional_after_add(void);
@@ -3372,6 +3416,118 @@ bake_test_case Plan_testcases[] = {
     {
         "this_before_fixed_src_w_second_var_w_not",
         Plan_this_before_fixed_src_w_second_var_w_not
+    },
+    {
+        "populate_1_fixed",
+        Plan_populate_1_fixed
+    },
+    {
+        "populate_2_fixed",
+        Plan_populate_2_fixed
+    },
+    {
+        "populate_1_fixed_1_this_self",
+        Plan_populate_1_fixed_1_this_self
+    },
+    {
+        "populate_2_fixed_2_this_self",
+        Plan_populate_2_fixed_2_this_self
+    },
+    {
+        "populate_2_fixed_2_this_self_interleaved",
+        Plan_populate_2_fixed_2_this_self_interleaved
+    },
+    {
+        "populate_2_this_self_2_fixed",
+        Plan_populate_2_this_self_2_fixed
+    },
+    {
+        "populate_1_fixed_1_this_up",
+        Plan_populate_1_fixed_1_this_up
+    },
+    {
+        "populate_2_fixed_2_this_up",
+        Plan_populate_2_fixed_2_this_up
+    },
+    {
+        "populate_2_fixed_2_this_up_interleaved",
+        Plan_populate_2_fixed_2_this_up_interleaved
+    },
+    {
+        "populate_2_this_up_2_fixed",
+        Plan_populate_2_this_up_2_fixed
+    },
+    {
+        "populate_1_fixed_1_this_self_cached",
+        Plan_populate_1_fixed_1_this_self_cached
+    },
+    {
+        "populate_2_fixed_2_this_self_cached",
+        Plan_populate_2_fixed_2_this_self_cached
+    },
+    {
+        "populate_2_fixed_2_this_self_interleaved_cached",
+        Plan_populate_2_fixed_2_this_self_interleaved_cached
+    },
+    {
+        "populate_2_this_self_2_fixed_cached",
+        Plan_populate_2_this_self_2_fixed_cached
+    },
+    {
+        "populate_1_fixed_1_this_up_cached",
+        Plan_populate_1_fixed_1_this_up_cached
+    },
+    {
+        "populate_2_fixed_2_this_up_cached",
+        Plan_populate_2_fixed_2_this_up_cached
+    },
+    {
+        "populate_2_fixed_2_this_up_interleaved_cached",
+        Plan_populate_2_fixed_2_this_up_interleaved_cached
+    },
+    {
+        "populate_2_this_up_2_fixed_cached",
+        Plan_populate_2_this_up_2_fixed_cached
+    },
+    {
+        "populate_1_fixed_1_var_self",
+        Plan_populate_1_fixed_1_var_self
+    },
+    {
+        "populate_2_fixed_2_var_self",
+        Plan_populate_2_fixed_2_var_self
+    },
+    {
+        "populate_2_fixed_2_var_self_interleaved",
+        Plan_populate_2_fixed_2_var_self_interleaved
+    },
+    {
+        "populate_2_var_self_2_fixed",
+        Plan_populate_2_var_self_2_fixed
+    },
+    {
+        "populate_1_fixed_1_var_up",
+        Plan_populate_1_fixed_1_var_up
+    },
+    {
+        "populate_2_fixed_2_var_up",
+        Plan_populate_2_fixed_2_var_up
+    },
+    {
+        "populate_2_fixed_2_var_up_interleaved",
+        Plan_populate_2_fixed_2_var_up_interleaved
+    },
+    {
+        "populate_2_var_up_2_fixed",
+        Plan_populate_2_var_up_2_fixed
+    },
+    {
+        "cache_2_or",
+        Plan_cache_2_or
+    },
+    {
+        "cache_2_or_w_not",
+        Plan_cache_2_or_w_not
     }
 };
 
@@ -4040,6 +4196,18 @@ bake_test_case Operators_testcases[] = {
         Operators_2_and_not
     },
     {
+        "2_and_not_component",
+        Operators_2_and_not_component
+    },
+    {
+        "2_and_out_not",
+        Operators_2_and_out_not
+    },
+    {
+        "2_and_out_not_component",
+        Operators_2_and_out_not_component
+    },
+    {
         "3_and_not_not",
         Operators_3_and_not_not
     },
@@ -4308,6 +4476,22 @@ bake_test_case Operators_testcases[] = {
         Operators_3_or_w_both
     },
     {
+        "2_or_w_not",
+        Operators_2_or_w_not
+    },
+    {
+        "2_or_w_not_component",
+        Operators_2_or_w_not_component
+    },
+    {
+        "2_or_w_not_out_component",
+        Operators_2_or_w_not_out_component
+    },
+    {
+        "2_or_w_not_out_all_components",
+        Operators_2_or_w_not_out_all_components
+    },
+    {
         "2_not_first",
         Operators_2_not_first
     },
@@ -4320,8 +4504,20 @@ bake_test_case Operators_testcases[] = {
         Operators_only_not
     },
     {
+        "only_not_component",
+        Operators_only_not_component
+    },
+    {
+        "only_not_out_component",
+        Operators_only_not_out_component
+    },
+    {
         "only_optional",
         Operators_only_optional
+    },
+    {
+        "only_optional_component",
+        Operators_only_optional_component
     },
     {
         "not_after_fixed_src",
@@ -5608,6 +5804,34 @@ bake_test_case Traversal_testcases[] = {
     {
         "this_written_optional_self_up",
         Traversal_this_written_optional_self_up
+    },
+    {
+        "fixed_src_w_up",
+        Traversal_fixed_src_w_up
+    },
+    {
+        "match_empty_table_up",
+        Traversal_match_empty_table_up
+    },
+    {
+        "match_empty_table_up_written",
+        Traversal_match_empty_table_up_written
+    },
+    {
+        "match_empty_table_up_implicit_isa",
+        Traversal_match_empty_table_up_implicit_isa
+    },
+    {
+        "match_empty_table_up_written_implicit_isa",
+        Traversal_match_empty_table_up_written_implicit_isa
+    },
+    {
+        "match_empty_table_up_isa",
+        Traversal_match_empty_table_up_isa
+    },
+    {
+        "match_empty_table_up_written_isa",
+        Traversal_match_empty_table_up_written_isa
     }
 };
 
@@ -5814,10 +6038,6 @@ bake_test_case Cached_testcases[] = {
     {
         "singleton_w_optional_new_unset_tables",
         Cached_singleton_w_optional_new_unset_tables
-    },
-    {
-        "query_from_entity_w_superset",
-        Cached_query_from_entity_w_superset
     },
     {
         "query_w_from_entity_match_after",
@@ -6337,7 +6557,7 @@ static bake_test_suite suites[] = {
         "Plan",
         NULL,
         NULL,
-        24,
+        52,
         Plan_testcases
     },
     {
@@ -6353,7 +6573,7 @@ static bake_test_suite suites[] = {
         "Operators",
         Operators_setup,
         NULL,
-        110,
+        120,
         Operators_testcases,
         1,
         Operators_params
@@ -6399,7 +6619,7 @@ static bake_test_suite suites[] = {
         "Traversal",
         Traversal_setup,
         NULL,
-        91,
+        98,
         Traversal_testcases,
         1,
         Traversal_params
@@ -6415,7 +6635,7 @@ static bake_test_suite suites[] = {
         "Cached",
         NULL,
         NULL,
-        87,
+        86,
         Cached_testcases
     },
     {

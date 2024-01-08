@@ -1825,7 +1825,7 @@ int32_t flecs_query_term_next_known(
 /* If the first part of a query contains more than one trivial term, insert a
  * special instruction which batch-evaluates multiple terms. */
 static
-int32_t flecs_query_insert_trivial_search(
+void flecs_query_insert_trivial_search(
     ecs_query_impl_t *rule,
     ecs_flags64_t *compiled,
     ecs_flags64_t *populated,
@@ -1834,41 +1834,48 @@ int32_t flecs_query_insert_trivial_search(
     ecs_query_t *q = &rule->pub;
     ecs_term_t *terms = q->terms;
     int32_t i, term_count = q->term_count;
+    ecs_flags64_t trivial_set = 0;
 
     /* Find trivial terms, which can be handled in single instruction */
     int32_t trivial_wildcard_terms = 0;
     int32_t trivial_data_terms = 0;
+    int32_t trivial_terms = 0;
     for (i = 0; i < term_count; i ++) {
         /* Term is already compiled */
         if (*compiled & (1ull << i)) {
-            break;
+            continue;
         }
 
         ecs_term_t *term = &terms[i];
         if (!(term->flags & EcsTermIsTrivial)) {
-            break;
+            continue;
         }
 
         /* We can only add trivial terms to plan if they no up traversal */
         if ((term->src.id & EcsTraverseFlags) != EcsSelf) {
-            break;
+            continue;
         }
+
+        trivial_set |= (1llu << i);
 
         if (ecs_id_is_wildcard(term->id)) {
             trivial_wildcard_terms ++;
         }
 
-        if (!(term->flags & EcsTermNoData)) {
+        if (q->data_fields & (1llu << term->field_index)) {
             trivial_data_terms ++;
         }
+
+        trivial_terms ++;
     }
 
-    int32_t trivial_terms = i;
     if (trivial_terms >= 2) {
-        /* Mark terms as compiled */
-        for (i = 0; i < trivial_terms; i ++) {
-            *compiled |= (1ull << i);
-            *populated |= (1ull << i);
+        /* Mark terms as compiled & populated */
+        for (i = 0; i < q->term_count; i ++) {
+            if (trivial_set & (1llu << i)) {
+                *compiled |= (1ull << i);
+                *populated |= (1ull << terms[i].field_index);
+            }
         }
 
         /* If there's more than 1 trivial term, batch them in trivial search */
@@ -1877,35 +1884,17 @@ int32_t flecs_query_insert_trivial_search(
             trivial.kind = EcsRuleTrivWildcard;
         } else {
             if (trivial_data_terms) {
-                /* Check to see if there are remaining data terms. If there are,
-                 * we'll have to insert an instruction later that populates all
-                 * fields, so don't do double work here. */
-                for (i = trivial_terms; i < term_count; i ++) {
-                    ecs_term_t *term = &terms[i];
-                    if (!(term->flags & EcsTermIsTrivial)) {
-                        break;
-                    }
-                }
-                if (trivial_terms == term_count || i != term_count) {
-                    /* Nobody else is going to set the data fields, so we should
-                     * do it here. */
-                    trivial.kind = EcsRuleTrivData;
-                }
+                trivial.kind = EcsRuleTrivData;
             }
             if (!trivial.kind) {
                 trivial.kind = EcsRuleTriv;
             }
         }
 
-        /* Store on the operation how many trivial terms should be evaluated */
-        trivial.other = (ecs_query_lbl_t)trivial_terms;
+        /* Store the bitset with trivial terms on the instruction */
+        trivial.src.entity = trivial_set;
         flecs_query_op_insert(&trivial, ctx);
-    } else {
-        /* If fewer than 1 trivial term, there's no point in batching them */
-        trivial_terms = 0;
     }
-
-    return trivial_terms;
 }
 
 static
@@ -1931,6 +1920,7 @@ void flecs_query_insert_cache_search(
         int32_t i, count = q->term_count;
         for (i = 0; i < count; i ++) {
             ecs_term_t *term = &terms[i];
+            int16_t field = term->field_index;
             if ((*compiled) & (1ull << i)) {
                 continue;
             }
@@ -1940,7 +1930,7 @@ void flecs_query_insert_cache_search(
             }
 
             *compiled |= (1ull << i);
-            *populated |= (1ull << i);    
+            *populated |= (1ull << field);
         }
     }
 
@@ -1980,16 +1970,69 @@ bool flecs_term_match_multiple(
         flecs_term_ref_match_multiple(&term->second);
 }
 
+/* Insert instruction to populate data fields. */
+static
+void flecs_query_insert_populate(
+    ecs_query_impl_t *rule,
+    ecs_query_compile_ctx_t *ctx,
+    ecs_flags64_t populated)
+{
+    ecs_query_t *q = &rule->pub;
+    int32_t i, term_count = q->term_count;
+
+    if (populated && !(q->flags & EcsQueryNoData)) {
+        int32_t populate_count = 0;
+        int32_t self_count = 0;
+
+        /* Figure out which populate instruction to use */
+        for (i = 0; i < term_count; i ++) {
+            ecs_term_t *term = &q->terms[i];
+            int16_t field = term->field_index;
+
+            if (!(populated & (1ull << field))) {
+                /* Only check fields that need to be populated */
+                continue;
+            }
+
+            populate_count ++;
+
+            /* Callee is asking us to populate a term without data */
+            ecs_assert(!(term->flags & EcsTermNoData), 
+                ECS_INTERNAL_ERROR, NULL);
+            ecs_assert(q->data_fields & (1llu << field), 
+                ECS_INTERNAL_ERROR, NULL);
+
+            if (ecs_term_match_this(term) && !(term->src.id & EcsUp)) {
+                self_count ++;
+            }
+        }
+
+        ecs_assert(populate_count != 0, ECS_INTERNAL_ERROR, NULL);
+
+        ecs_query_op_kind_t kind = EcsRulePopulate;
+        if (populate_count == self_count) {
+            kind = EcsRulePopulateSelf;
+        }
+
+        ecs_query_op_t op = {0};
+        op.kind = kind;
+        op.src.entity = populated; /* Abuse for bitset w/fields to populate */
+        flecs_query_op_insert(&op, ctx);
+    }
+}
+
 static
 int flecs_query_insert_fixed_src_terms(
     ecs_world_t *world,
     ecs_query_impl_t *rule,
     ecs_flags64_t *compiled,
+    ecs_flags64_t *populated_out,
     ecs_query_compile_ctx_t *ctx)
 {
     ecs_query_t *q = &rule->pub;
     int32_t i, term_count = q->term_count;
     ecs_term_t *terms = q->terms;
+    ecs_flags64_t populated = 0;
 
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
@@ -2025,74 +2068,29 @@ int flecs_query_insert_fixed_src_terms(
                 return -1;
             }
 
-            *compiled |= (1u << i);
+            *compiled |= (1llu << i);
+
+            /* If this is a data field, track it. This will let us insert an
+             * instruction specifically for populating data fields of terms with
+             * fixed source (see below). */
+            if (q->data_fields & (1llu << term->field_index)) {
+                populated |= (1llu << term->field_index);
+            }
         }
     }
+
+    if (populated) {
+        /* If data fields with a fixed source were evaluated, insert a populate
+         * instruction that just populates those fields. The advantage of doing
+         * this before the rest of the query is evaluated, is that we only 
+         * populate data for static fields once vs. for each returned result of
+         * the query, which would be wasteful since this data doesn't change. */
+        flecs_query_insert_populate(rule, ctx, populated);
+    }
+
+    *populated_out = populated;
 
     return 0;
-}
-
-/* Insert instruction to populate data fields. */
-static
-void flecs_query_insert_populate(
-    ecs_query_impl_t *rule,
-    ecs_query_compile_ctx_t *ctx,
-    ecs_flags64_t populated)
-{
-    ecs_query_t *q = &rule->pub;
-    int32_t i, term_count = q->term_count;
-
-    /* Insert instruction that populates data. This instruction does not
-     * have to be inserted if the filter provides no data, or if all terms
-     * of the filter are trivial, in which case the trivial search operation
-     * also sets the data. */
-    if (!(q->flags & EcsQueryNoData)) {
-        int32_t data_fields = 0;
-        bool only_self = true;
-
-        /* There are two instructions for setting data fields, a fast one 
-         * that only supports owned fields, and one that supports any kind
-         * of field. Loop through (remaining) terms to check which one we
-         * need to use. */
-        for (i = 0; i < term_count; i ++) {
-            ecs_term_t *term = &q->terms[i];
-
-            if (populated & (1ull << i)) {
-                continue; /* Already populated */
-            }
-
-            if (term->flags & EcsTermNoData) {
-                /* Don't care about terms that have no data */
-                continue;
-            }
-
-            data_fields ++;
-
-            if (!ecs_term_match_this(term)) {
-                break;
-            }
-
-            if (term->src.id & EcsUp) {
-                break;
-            }
-        }
-
-        if (i != q->term_count) {
-            only_self = false; /* Needs the more complex operation */
-        }
-
-        if (data_fields) {
-            if (only_self) {
-                ecs_query_op_t nothing = {0};
-                nothing.kind = EcsRulePopulateSelf;
-                flecs_query_op_insert(&nothing, ctx);
-            } else {
-                ecs_query_op_t nothing = {0};
-                nothing.kind = EcsRulePopulate;
-                flecs_query_op_insert(&nothing, ctx);
-            }
-        }
-    }
 }
 
 int flecs_query_compile(
@@ -2151,18 +2149,18 @@ int flecs_query_compile(
 
     /* Always evaluate terms with fixed source before other terms */
     flecs_query_insert_fixed_src_terms(
-        world, rule, &compiled, &ctx);
+        world, rule, &compiled, &populated, &ctx);
 
     /* Compile cacheable terms */
     flecs_query_insert_cache_search(
         rule, &compiled, &populated, &ctx, desc);
 
     /* Insert trivial term search if query allows for it */
-    int32_t trivial_terms = flecs_query_insert_trivial_search(
+    flecs_query_insert_trivial_search(
         rule, &compiled, &populated, &ctx);
 
     /* Compile remaining query terms to instructions */
-    for (i = trivial_terms; i < term_count; i ++) {
+    for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
         int32_t compile = i;
 
@@ -2289,8 +2287,9 @@ int flecs_query_compile(
         nothing.kind = EcsRuleNothing;
         flecs_query_op_insert(&nothing, &ctx);
     } else {
-        /* Insert instruction to populate data fields */
-        flecs_query_insert_populate(rule, &ctx, populated);
+        /* Insert instruction to populate remaining data fields */
+        ecs_flags64_t remaining = q->data_fields & ~populated;
+        flecs_query_insert_populate(rule, &ctx, remaining);
 
         /* Insert yield. If program reaches this operation, a result was found */
         ecs_query_op_t yield = {0};

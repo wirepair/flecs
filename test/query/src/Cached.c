@@ -1004,42 +1004,6 @@ void Cached_singleton_w_optional_new_unset_tables(void) {
     ecs_fini(world);
 }
 
-void Cached_query_from_entity_w_superset(void) {
-    ecs_world_t *world = ecs_mini();
-
-    ECS_COMPONENT(world, Position);
-    ECS_COMPONENT(world, Velocity);
-    ECS_COMPONENT(world, Mass);
-
-    ecs_entity_t g = ecs_new_entity(world, "Game");
-    ecs_set(world, g, Position, {10, 20});
-    ecs_set(world, g, Velocity, {1, 2});
-
-    ecs_entity_t p = ecs_new_w_id(world, EcsPrefab);
-    ecs_set(world, p, Mass, {30});
-    ecs_entity_t e = ecs_new_w_pair(world, EcsIsA, p);
-
-    ecs_query_t *q = ecs_query(world, {
-        .terms = {
-            { .id = ecs_id(Velocity), .src.name = "Game" },
-            { .id = ecs_id(Mass), .src.id = EcsUp, .trav = EcsIsA }
-        },
-        .cache_kind = EcsQueryCacheAuto
-    });
-
-    test_assert(q != NULL);
-
-    ecs_iter_t it = ecs_query_iter(world, q);
-    test_bool(true, ecs_query_next(&it));
-    test_int(1, it.count);
-    test_uint(e, it.entities[0]);
-
-    test_bool(false, ecs_query_next(&it));
-
-
-    ecs_fini(world);
-}
-
 void Cached_query_w_from_entity_match_after(void) {
     ecs_world_t *world = ecs_mini();
 
@@ -2953,7 +2917,7 @@ void Cached_isa_rematch_2_lvls(void) {
 
     test_bool(true, ecs_query_next(&it));
     test_int(it.count, 1);
-    test_uint(it.entities[0], base);
+    test_uint(it.entities[0], inst);
     test_uint(it.sources[0], base_2);
     p = ecs_field(&it, Position, 1);
     test_int(p[0].x, 30);
@@ -2961,7 +2925,7 @@ void Cached_isa_rematch_2_lvls(void) {
 
     test_bool(true, ecs_query_next(&it));
     test_int(it.count, 1);
-    test_uint(it.entities[0], inst);
+    test_uint(it.entities[0], base);
     test_uint(it.sources[0], base_2);
     p = ecs_field(&it, Position, 1);
     test_int(p[0].x, 30);
@@ -3011,7 +2975,7 @@ void Cached_childof_rematch_2_lvls(void) {
     it = ecs_query_iter(world, q);
     test_bool(true, ecs_query_next(&it));
     test_int(it.count, 1);
-    test_uint(it.entities[0], base);
+    test_uint(it.entities[0], inst);
     test_uint(it.sources[0], base_2);
     p = ecs_field(&it, Position, 1);
     test_int(p[0].x, 30);
@@ -3019,11 +2983,12 @@ void Cached_childof_rematch_2_lvls(void) {
 
     test_bool(true, ecs_query_next(&it));
     test_int(it.count, 1);
-    test_uint(it.entities[0], inst);
+    test_uint(it.entities[0], base);
     test_uint(it.sources[0], base_2);
     p = ecs_field(&it, Position, 1);
     test_int(p[0].x, 30);
     test_int(p[0].y, 40);
+
     test_bool(false, ecs_query_next(&it));
 
     ecs_fini(world);

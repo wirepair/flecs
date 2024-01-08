@@ -4469,14 +4469,14 @@ void Variables_1_set_src_this_to_empty_table(void) {
     ecs_table_t *t1 = ecs_get_table(world, e1);
     ecs_remove(world, e1, TagB);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms = {{ TagA }}
     });
 
-    int this_var_id = ecs_query_find_var(f, "this");
+    int this_var_id = ecs_query_find_var(q, "this");
     test_assert(this_var_id != -1);
 
-    ecs_iter_t it = ecs_query_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, q);
     ecs_iter_set_var_as_table(&it, this_var_id, t1);
 
     test_assert(ecs_query_next(&it));
@@ -4490,7 +4490,7 @@ void Variables_1_set_src_this_to_empty_table(void) {
 
     test_assert(!ecs_query_next(&it));
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -4506,14 +4506,14 @@ void Variables_1_set_src_this_to_empty_table_w_component(void) {
     ecs_table_t *t1 = ecs_get_table(world, e1);
     ecs_remove(world, e1, TagA);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms = {{ ecs_id(Position) }}
     });
 
-    int this_var_id = ecs_query_find_var(f, "this");
+    int this_var_id = ecs_query_find_var(q, "this");
     test_assert(this_var_id != -1);
 
-    ecs_iter_t it = ecs_query_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, q);
     ecs_iter_set_var_as_table(&it, this_var_id, t1);
 
     test_assert(ecs_query_next(&it));
@@ -4528,7 +4528,7 @@ void Variables_1_set_src_this_to_empty_table_w_component(void) {
 
     test_assert(!ecs_query_next(&it));
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -4544,15 +4544,15 @@ void Variables_1_set_src_this_to_empty_table_w_component_self(void) {
     ecs_table_t *t1 = ecs_get_table(world, e1);
     ecs_remove(world, e1, TagA);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms = {{ ecs_id(Position), .src.id = EcsSelf }},
         .cache_kind = cache_kind
     });
 
-    int this_var_id = ecs_query_find_var(f, "this");
+    int this_var_id = ecs_query_find_var(q, "this");
     test_assert(this_var_id != -1);
 
-    ecs_iter_t it = ecs_query_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, q);
     ecs_iter_set_var_as_table(&it, this_var_id, t1);
 
     test_assert(ecs_query_next(&it));
@@ -4567,7 +4567,7 @@ void Variables_1_set_src_this_to_empty_table_w_component_self(void) {
 
     test_assert(!ecs_query_next(&it));
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -4577,7 +4577,7 @@ void Variables_1_set_src_this_to_entiy_in_table(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0].id = ecs_id(Position),
         .cache_kind = cache_kind
     });
@@ -4586,7 +4586,7 @@ void Variables_1_set_src_this_to_entiy_in_table(void) {
     ecs_entity_t e2 = ecs_set(world, 0, Position, {20, 30});
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4599,7 +4599,7 @@ void Variables_1_set_src_this_to_entiy_in_table(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4611,7 +4611,7 @@ void Variables_1_set_src_this_to_entiy_in_table(void) {
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -4621,7 +4621,7 @@ void Variables_1_set_src_this_to_entiy_in_table_self(void) {
 
     ECS_COMPONENT(world, Position);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0] = { .id = ecs_id(Position), .src.id = EcsSelf },
         .cache_kind = cache_kind
     });
@@ -4630,7 +4630,7 @@ void Variables_1_set_src_this_to_entiy_in_table_self(void) {
     ecs_entity_t e2 = ecs_set(world, 0, Position, {20, 30});
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4643,7 +4643,7 @@ void Variables_1_set_src_this_to_entiy_in_table_self(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4655,7 +4655,7 @@ void Variables_1_set_src_this_to_entiy_in_table_self(void) {
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -4666,7 +4666,7 @@ void Variables_2_set_src_this(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0] = { .id = Foo },
         .terms[1] = { .id = Bar },
         .cache_kind = cache_kind
@@ -4684,7 +4684,7 @@ void Variables_2_set_src_this(void) {
     ecs_add_pair(world, e3, EcsIsA, prefab);
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4697,7 +4697,7 @@ void Variables_2_set_src_this(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4710,7 +4710,7 @@ void Variables_2_set_src_this(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e3);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4722,7 +4722,7 @@ void Variables_2_set_src_this(void) {
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -4733,7 +4733,7 @@ void Variables_2_set_src_this_self(void) {
     ECS_TAG(world, Foo);
     ECS_TAG(world, Bar);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0] = { .id = Foo, .src.id = EcsSelf },
         .terms[1] = { .id = Bar, .src.id = EcsSelf },
         .cache_kind = cache_kind
@@ -4751,7 +4751,7 @@ void Variables_2_set_src_this_self(void) {
     ecs_add_pair(world, e3, EcsIsA, prefab);
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4764,7 +4764,7 @@ void Variables_2_set_src_this_self(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4777,12 +4777,12 @@ void Variables_2_set_src_this_self(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e3);
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -4793,7 +4793,7 @@ void Variables_2_set_src_this_component(void) {
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0] = { .id = ecs_id(Position) },
         .terms[1] = { .id = ecs_id(Velocity) },
         .cache_kind = cache_kind
@@ -4811,7 +4811,7 @@ void Variables_2_set_src_this_component(void) {
     ecs_add_pair(world, e3, EcsIsA, prefab);
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4832,7 +4832,7 @@ void Variables_2_set_src_this_component(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4853,7 +4853,7 @@ void Variables_2_set_src_this_component(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e3);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4873,7 +4873,7 @@ void Variables_2_set_src_this_component(void) {
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -4884,7 +4884,7 @@ void Variables_2_set_src_this_self_component(void) {
     ECS_COMPONENT(world, Position);
     ECS_COMPONENT(world, Velocity);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0] = { .id = ecs_id(Position), .src.id = EcsSelf },
         .terms[1] = { .id = ecs_id(Velocity), .src.id = EcsSelf },
         .cache_kind = cache_kind
@@ -4902,7 +4902,7 @@ void Variables_2_set_src_this_self_component(void) {
     ecs_add_pair(world, e3, EcsIsA, prefab);
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4921,7 +4921,7 @@ void Variables_2_set_src_this_self_component(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4940,12 +4940,12 @@ void Variables_2_set_src_this_self_component(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e3);
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -4957,7 +4957,7 @@ void Variables_2_set_src_this_w_up(void) {
     ECS_TAG(world, Bar);
     ECS_TAG(world, Hello);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0] = { .id = Foo },
         .terms[1] = { .id = Bar },
         .terms[2] = { .id = Hello, .src.id = EcsUp, .trav = EcsChildOf },
@@ -4980,7 +4980,7 @@ void Variables_2_set_src_this_w_up(void) {
     ecs_add_pair(world, e3, EcsChildOf, parent);
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -4995,7 +4995,7 @@ void Variables_2_set_src_this_w_up(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5010,7 +5010,7 @@ void Variables_2_set_src_this_w_up(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e3);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5024,7 +5024,7 @@ void Variables_2_set_src_this_w_up(void) {
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -5036,7 +5036,7 @@ void Variables_2_set_src_this_self_w_up(void) {
     ECS_TAG(world, Bar);
     ECS_TAG(world, Hello);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0] = { .id = Foo, .src.id = EcsSelf },
         .terms[1] = { .id = Bar, .src.id = EcsSelf },
         .terms[2] = { .id = Hello, .src.id = EcsUp, .trav = EcsChildOf },
@@ -5059,7 +5059,7 @@ void Variables_2_set_src_this_self_w_up(void) {
     ecs_add_pair(world, e3, EcsChildOf, parent);
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5074,7 +5074,7 @@ void Variables_2_set_src_this_self_w_up(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5089,12 +5089,12 @@ void Variables_2_set_src_this_self_w_up(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e3);
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -5106,7 +5106,7 @@ void Variables_2_set_src_this_component_w_up(void) {
     ECS_COMPONENT(world, Velocity);
     ECS_COMPONENT(world, Mass);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0] = { .id = ecs_id(Position) },
         .terms[1] = { .id = ecs_id(Velocity) },
         .terms[2] = { .id = ecs_id(Mass), .src.id = EcsUp, .trav = EcsChildOf },
@@ -5129,7 +5129,7 @@ void Variables_2_set_src_this_component_w_up(void) {
     ecs_add_pair(world, e3, EcsChildOf, parent);
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5155,7 +5155,7 @@ void Variables_2_set_src_this_component_w_up(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5181,7 +5181,7 @@ void Variables_2_set_src_this_component_w_up(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e3);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5206,7 +5206,7 @@ void Variables_2_set_src_this_component_w_up(void) {
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -5218,7 +5218,7 @@ void Variables_2_set_src_this_self_component_w_up(void) {
     ECS_COMPONENT(world, Velocity);
     ECS_COMPONENT(world, Mass);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0] = { .id = ecs_id(Position), .src.id = EcsSelf },
         .terms[1] = { .id = ecs_id(Velocity), .src.id = EcsSelf },
         .terms[2] = { .id = ecs_id(Mass), .src.id = EcsUp, .trav = EcsChildOf },
@@ -5241,7 +5241,7 @@ void Variables_2_set_src_this_self_component_w_up(void) {
     ecs_add_pair(world, e3, EcsChildOf, parent);
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5267,7 +5267,7 @@ void Variables_2_set_src_this_self_component_w_up(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5293,12 +5293,12 @@ void Variables_2_set_src_this_self_component_w_up(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e3);
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -5310,7 +5310,7 @@ void Variables_2_set_src_this_w_exclusive_wildcard(void) {
     ECS_TAG(world, Bar);
     ECS_TAG(world, Hello);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0] = { .id = Foo },
         .terms[1] = { .id = Bar },
         .terms[2] = { .id = ecs_pair(EcsChildOf, EcsWildcard) },
@@ -5333,7 +5333,7 @@ void Variables_2_set_src_this_w_exclusive_wildcard(void) {
     ecs_add_pair(world, e3, EcsChildOf, parent);
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5348,7 +5348,7 @@ void Variables_2_set_src_this_w_exclusive_wildcard(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5363,7 +5363,7 @@ void Variables_2_set_src_this_w_exclusive_wildcard(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e3);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5377,7 +5377,7 @@ void Variables_2_set_src_this_w_exclusive_wildcard(void) {
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -5389,7 +5389,7 @@ void Variables_2_set_src_this_self_w_exclusive_wildcard(void) {
     ECS_TAG(world, Bar);
     ECS_TAG(world, Hello);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0] = { .id = Foo, .src.id = EcsSelf },
         .terms[1] = { .id = ecs_pair(EcsChildOf, EcsWildcard) },
         .cache_kind = cache_kind
@@ -5407,7 +5407,7 @@ void Variables_2_set_src_this_self_w_exclusive_wildcard(void) {
     ecs_entity_t e3 = ecs_new(world, Foo);
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5420,7 +5420,7 @@ void Variables_2_set_src_this_self_w_exclusive_wildcard(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5433,12 +5433,12 @@ void Variables_2_set_src_this_self_w_exclusive_wildcard(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e3);
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -5450,7 +5450,7 @@ void Variables_2_set_src_this_self_w_exclusive_wildcard_w_up(void) {
     ECS_TAG(world, Bar);
     ECS_TAG(world, Hello);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms[0] = { .id = Foo, .src.id = EcsSelf },
         .terms[1] = { .id = ecs_pair(EcsChildOf, EcsWildcard), .src.id = EcsSelf },
         .terms[2] = { .id = Bar, .src.id = EcsUp, .trav = EcsIsA },
@@ -5473,7 +5473,7 @@ void Variables_2_set_src_this_self_w_exclusive_wildcard_w_up(void) {
     ecs_add_pair(world, e3, EcsChildOf, parent);
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e1);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5488,7 +5488,7 @@ void Variables_2_set_src_this_self_w_exclusive_wildcard_w_up(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e2);
         test_bool(true, ecs_query_next(&it));
         test_int(it.count, 1);
@@ -5503,12 +5503,12 @@ void Variables_2_set_src_this_self_w_exclusive_wildcard_w_up(void) {
     }
 
     {
-        ecs_iter_t it = ecs_query_iter(world, f);
+        ecs_iter_t it = ecs_query_iter(world, q);
         ecs_iter_set_var(&it, 0, e3);
         test_bool(false, ecs_query_next(&it));
     }
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -5618,15 +5618,15 @@ void Variables_1_src_this_var_as_entity(void) {
     ecs_add(world, e3, TagC);
     ecs_add(world, e4, TagC);
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms = {{ TagA }},
         .cache_kind = cache_kind
     });
 
-    int this_var_id = ecs_query_find_var(f, "this");
+    int this_var_id = ecs_query_find_var(q, "this");
     test_assert(this_var_id != -1);
 
-    ecs_iter_t it = ecs_query_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, q);
 
     test_assert(ecs_query_next(&it));
     test_int(it.count, 1);
@@ -5651,7 +5651,7 @@ void Variables_1_src_this_var_as_entity(void) {
 
     test_assert(!ecs_query_next(&it));
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -5684,15 +5684,15 @@ void Variables_1_src_this_var_as_table(void) {
     test_assert(t3 != t2);
     test_assert(t3 == ecs_get_table(world, e4));
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms = {{ TagA }},
         .cache_kind = cache_kind
     });
 
-    int this_var_id = ecs_query_find_var(f, "this");
+    int this_var_id = ecs_query_find_var(q, "this");
     test_assert(this_var_id != -1);
 
-    ecs_iter_t it = ecs_query_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, q);
 
     test_assert(ecs_query_next(&it));
     test_int(it.count, 1);
@@ -5718,7 +5718,7 @@ void Variables_1_src_this_var_as_table(void) {
 
     test_assert(!ecs_query_next(&it));
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }
@@ -5751,15 +5751,15 @@ void Variables_1_src_this_var_as_table_range(void) {
     test_assert(t3 != t2);
     test_assert(t3 == ecs_get_table(world, e4));
 
-    ecs_query_t *f = ecs_query(world, {
+    ecs_query_t *q = ecs_query(world, {
         .terms = {{ TagA }},
         .cache_kind = cache_kind
     });
 
-    int this_var_id = ecs_query_find_var(f, "this");
+    int this_var_id = ecs_query_find_var(q, "this");
     test_assert(this_var_id != -1);
 
-    ecs_iter_t it = ecs_query_iter(world, f);
+    ecs_iter_t it = ecs_query_iter(world, q);
     test_assert(ecs_query_next(&it));
     test_int(it.count, 1);
     test_uint(it.entities[0], e1);
@@ -5790,7 +5790,7 @@ void Variables_1_src_this_var_as_table_range(void) {
 
     test_assert(!ecs_query_next(&it));
 
-    ecs_query_fini(f);
+    ecs_query_fini(q);
 
     ecs_fini(world);
 }

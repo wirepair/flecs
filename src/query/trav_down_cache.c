@@ -9,7 +9,8 @@ void flecs_trav_entity_down_isa(
     ecs_entity_t trav,
     ecs_entity_t entity,
     ecs_id_record_t *idr_with,
-    bool self);
+    bool self,
+    bool empty);
 
 static
 ecs_trav_down_t* flecs_trav_entity_down(
@@ -21,7 +22,8 @@ ecs_trav_down_t* flecs_trav_entity_down(
     ecs_entity_t entity,
     ecs_id_record_t *idr_trav,
     ecs_id_record_t *idr_with,
-    bool self);
+    bool self,
+    bool empty);
 
 static
 ecs_trav_down_t* flecs_trav_down_ensure(
@@ -48,7 +50,8 @@ ecs_trav_down_t* flecs_trav_table_down(
     ecs_entity_t trav,
     const ecs_table_t *table,
     ecs_id_record_t *idr_with,
-    bool self)
+    bool self,
+    bool empty)
 {
     ecs_assert(table->id != 0, ECS_INTERNAL_ERROR, NULL);
 
@@ -76,7 +79,7 @@ ecs_trav_down_t* flecs_trav_table_down(
             }
 
             flecs_trav_entity_down(world, a, cache, dst, 
-                trav, entity, idr_trav, idr_with, self);
+                trav, entity, idr_trav, idr_with, self, empty);
         }
     }
 
@@ -92,7 +95,8 @@ void flecs_trav_entity_down_isa(
     ecs_entity_t trav,
     ecs_entity_t entity,
     ecs_id_record_t *idr_with,
-    bool self)
+    bool self,
+    bool empty)
 {
     if (trav == EcsIsA || !world->idr_isa_wildcard) {
         return;
@@ -105,7 +109,7 @@ void flecs_trav_entity_down_isa(
     }
 
     ecs_table_cache_iter_t it;
-    if (flecs_table_cache_all_iter(&idr_isa->cache, &it)) {
+    if (flecs_table_cache_iter(&idr_isa->cache, &it)) {
         ecs_table_record_t *tr;
         while ((tr = flecs_table_cache_next(&it, ecs_table_record_t))) {
             ecs_table_t *table = tr->hdr.table;
@@ -127,7 +131,7 @@ void flecs_trav_entity_down_isa(
                     ecs_id_record_t *idr_trav = flecs_id_record_get(world, 
                         ecs_pair(trav, e));
                     flecs_trav_entity_down(world, a, cache, dst, trav, e,
-                        idr_trav, idr_with, self);
+                        idr_trav, idr_with, self, empty);
                 }
             }
         }
@@ -144,18 +148,25 @@ ecs_trav_down_t* flecs_trav_entity_down(
     ecs_entity_t entity,
     ecs_id_record_t *idr_trav,
     ecs_id_record_t *idr_with,
-    bool self)
+    bool self,
+    bool empty)
 {
     ecs_assert(dst != NULL, ECS_INTERNAL_ERROR, NULL);
     ecs_assert(idr_with != NULL, ECS_INTERNAL_ERROR, NULL);
 
     flecs_trav_entity_down_isa(
-        world, a, cache, dst, trav, entity, idr_with, self);
+        world, a, cache, dst, trav, entity, idr_with, self, empty);
 
     int32_t first = ecs_vec_count(&dst->elems);
 
     ecs_table_cache_iter_t it;
-    if (flecs_table_cache_iter(&idr_trav->cache, &it)) {
+    bool result;
+    if (empty) {
+        result = flecs_table_cache_all_iter(&idr_trav->cache, &it);
+    } else {
+        result = flecs_table_cache_iter(&idr_trav->cache, &it);
+    }
+    if (result) {
         ecs_table_record_t *tr; 
         while ((tr = flecs_table_cache_next(&it, ecs_table_record_t))) {
             ecs_assert(tr->count == 1, ECS_INTERNAL_ERROR, NULL);
@@ -201,7 +212,7 @@ ecs_trav_down_t* flecs_trav_entity_down(
             &dst->elems, ecs_trav_down_elem_t, t);
         if (!elem->leaf) {
             flecs_trav_table_down(world, a, cache, dst, trav,
-                elem->table, idr_with, self);
+                elem->table, idr_with, self, empty);
         }
     }
 
@@ -214,7 +225,8 @@ ecs_trav_down_t* flecs_query_get_down_cache(
     ecs_entity_t trav,
     ecs_entity_t e,
     ecs_id_record_t *idr_with,
-    bool self)
+    bool self,
+    bool empty)
 {
     ecs_world_t *world = ctx->it->real_world;
     ecs_assert(cache->dir != EcsTravUp, ECS_INTERNAL_ERROR, NULL);
@@ -232,7 +244,7 @@ ecs_trav_down_t* flecs_query_get_down_cache(
     if (!idr_trav) {
         if (trav != EcsIsA) {
             flecs_trav_entity_down_isa(
-                world, a, cache, result, trav, e, idr_with, self);
+                world, a, cache, result, trav, e, idr_with, self, empty);
         }
         result->ready = true;
         return result;
@@ -240,7 +252,7 @@ ecs_trav_down_t* flecs_query_get_down_cache(
 
     ecs_vec_init_t(a, &result->elems, ecs_trav_down_elem_t, 0);
     flecs_trav_entity_down(
-        world, a, cache, result, trav, e, idr_trav, idr_with, self);
+        world, a, cache, result, trav, e, idr_trav, idr_with, self, empty);
     result->ready = true;
 
     return result;

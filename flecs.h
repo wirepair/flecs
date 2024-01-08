@@ -391,7 +391,6 @@ extern "C" {
 #define EcsIterIsValid                 (1u << 0u)  /* Does iterator contain valid result */
 #define EcsIterNoData                  (1u << 1u)  /* Does iterator provide (component) data */
 #define EcsIterIsInstanced             (1u << 2u)  /* Is iterator instanced */
-#define EcsIterHasShared               (1u << 3u)  /* Does result have shared terms */
 #define EcsIterTableOnly               (1u << 4u)  /* Result only populates table */
 #define EcsIterNoResults               (1u << 6u)  /* Iterator has no results */
 #define EcsIterIgnoreThis              (1u << 7u)  /* Only evaluate non-this terms */
@@ -3334,6 +3333,7 @@ struct ecs_iter_t {
     ecs_flags64_t constrained_vars; /* Bitset that marks constrained variables */
     uint64_t group_id;            /* Group id for table, if group_by is used */
     int32_t field_count;          /* Number of fields in iterator */
+    ecs_termset_t shared_fields;  /* Bitset with shared fields */
 
     /* Input information */
     ecs_entity_t system;          /* The system (if applicable) */
@@ -3479,6 +3479,9 @@ void flecs_dump_backtrace(
     ? (ECS_BIT_SET(flags, bit)) \
     : (ECS_BIT_CLEAR(flags, bit)))
 #define ECS_BIT_IS_SET(flags, bit) ((flags) & (bit))
+
+#define ECS_BIT_SETN(flags, n) ECS_BIT_SET(flags, 1llu << n)
+#define ECS_BIT_CLEARN(flags, n) ECS_BIT_CLEAR(flags, 1llu << n)
 
 #ifdef __cplusplus
 }
@@ -3733,7 +3736,10 @@ typedef struct ecs_query_desc_t {
     /** Query DSL expression (optional) */
     const char *expr;
 
-    /** Flags for enabling filter features */
+    /** Caching policy of query */
+    ecs_query_cache_kind_t cache_kind;
+
+    /** Flags for enabling query features */
     ecs_flags32_t flags;
 
     /** Callback used for ordering query results. If order_by_id is 0, the 
@@ -3773,9 +3779,6 @@ typedef struct ecs_query_desc_t {
 
     /** Function to free group_by_ctx */
     ecs_ctx_free_t group_by_ctx_free;
-
-    /** Caching policy of query */
-    ecs_query_cache_kind_t cache_kind;
 
     /** User context to pass to callback */
     void *ctx;

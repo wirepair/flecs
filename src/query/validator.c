@@ -872,7 +872,7 @@ int flecs_query_query_finalize_terms(
 {
     int32_t i, term_count = q->term_count, field_count = 0;
     ecs_term_t *terms = q->terms;
-    int32_t filter_terms = 0, scope_nesting = 0, cacheable_terms = 0;
+    int32_t nodata_terms = 0, scope_nesting = 0, cacheable_terms = 0;
     bool cond_set = false;
 
     ecs_query_validator_ctx_t ctx = {0};
@@ -884,20 +884,28 @@ int flecs_query_query_finalize_terms(
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
         bool prev_is_or = i && term[-1].oper == EcsOr;
-        bool filter_term = false;
+        bool nodata_term = false;
         ctx.term_index = i;
         if (flecs_term_finalize(world, term, &ctx)) {
             return -1;
         }
 
+        /* If one of the terms in an OR chain isn't cacheable, none are */
         if (term->flags & EcsTermIsCacheable) {
-            if ((term->oper != EcsOr && !prev_is_or) || term[-1].flags & EcsTermIsCacheable) {
-                cacheable_terms ++;
+            /* Current term is marked as cacheable. Check if it is part of an OR
+             * chain, and if so, the previous term was also cacheable. */
+            if (prev_is_or) {
+                if (term[-1].flags & EcsTermIsCacheable) {
+                    cacheable_terms ++;
+                } else {
+                    term->flags &= ~EcsTermIsCacheable;
+                }
             } else {
-                term->flags &= ~EcsTermIsCacheable;
+                cacheable_terms ++;
             }
         } else if (prev_is_or) {
-            /* If one of the terms in an OR chain isn't cacheable, none are */
+            /* Current term is not cacheable. If it is part of an OR chain, mark
+             * previous terms in the chain as also not cacheable. */
             int32_t j;
             for (j = i - 1; j >= 0; j --) {
                 if (terms[j].oper != EcsOr) {
@@ -963,22 +971,22 @@ int flecs_query_query_finalize_terms(
         }
 
         if (term->inout == EcsInOutNone) {
-            filter_term = true;
+            nodata_term = true;
         } else if (term->idr) {
             if (!term->idr->type_info && !(term->idr->flags & EcsIdUnion)) {
-                filter_term = true;
+                nodata_term = true;
             }
         } else if (!ecs_id_is_union(world, term->id)) {
             /* Union ids aren't filters because they return their target
              * as component value with type ecs_entity_t */
             if (ecs_id_is_tag(world, term->id)) {
-                filter_term = true;
+                nodata_term = true;
             } else if (ECS_PAIR_SECOND(term->id) == EcsWildcard) {
                 /* If the second element of a pair is a wildcard and the first
                  * element is not a type, we can't know in advance what the
                  * type of the term is, so it can't provide data. */
                 if (!ecs_get_type_info(world, ecs_pair_first(world, term->id))) {
-                    filter_term = true;
+                    nodata_term = true;
                 }
             }
         }
@@ -996,22 +1004,25 @@ int flecs_query_query_finalize_terms(
             }
         }
 
-        if (!filter_term) {
+        if (!nodata_term) {
+            /* If terms in an OR chain do not all return the same type, the 
+             * field will not provide any data */
             if (term->oper == EcsOr || (i && term[-1].oper == EcsOr)) {
                 ecs_term_t *first = flecs_query_or_other_type(q, i);
                 if (first) {
                     if (first == &term[-1]) {
-                        filter_terms ++;
+                        nodata_terms ++;
                     }
-                    filter_term = true;
+                    nodata_term = true;
                 }
+                q->data_fields &= ~(1llu << term->field_index);
             }
         }
 
-        if (filter_term) {
-            filter_terms ++;
+        if (nodata_term) {
+            nodata_terms ++;
             term->flags |= EcsTermNoData;
-        } else {
+        } else if (term->oper != EcsNot) {
             q->data_fields |= (1llu << term->field_index);
 
             if (term->inout != EcsIn) {
@@ -1126,8 +1137,8 @@ int flecs_query_query_finalize_terms(
         }
     }
 
-    ecs_assert(filter_terms <= term_count, ECS_INTERNAL_ERROR, NULL);
-    if (filter_terms == term_count) {
+    ecs_assert(nodata_terms <= term_count, ECS_INTERNAL_ERROR, NULL);
+    if (nodata_terms == term_count) {
         ECS_BIT_SET(q->flags, EcsQueryNoData);
     }
 

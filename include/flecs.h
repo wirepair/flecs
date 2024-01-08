@@ -955,7 +955,10 @@ typedef struct ecs_query_desc_t {
     /** Query DSL expression (optional) */
     const char *expr;
 
-    /** Flags for enabling filter features */
+    /** Caching policy of query */
+    ecs_query_cache_kind_t cache_kind;
+
+    /** Flags for enabling query features */
     ecs_flags32_t flags;
 
     /** Callback used for ordering query results. If order_by_id is 0, the 
@@ -995,9 +998,6 @@ typedef struct ecs_query_desc_t {
 
     /** Function to free group_by_ctx */
     ecs_ctx_free_t group_by_ctx_free;
-
-    /** Caching policy of query */
-    ecs_query_cache_kind_t cache_kind;
 
     /** User context to pass to callback */
     void *ctx;

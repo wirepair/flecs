@@ -590,7 +590,7 @@ void flecs_query_cache_set_table_match(
 
                 /* Use column index to bind term and ref */
                 if (qm->columns[field] != 0) {
-                    qm->columns[field] = -ecs_vec_count(&qm->refs);
+                    qm->columns[field] = ecs_vec_count(&qm->refs);
                 }
             }
         }
@@ -1218,7 +1218,6 @@ void flecs_query_cache_rematch_tables(
     cache->monitor_generation = world->monitor_generation;
 
     it = ecs_query_iter(world, cache->query);
-
     ECS_BIT_SET(it.flags, EcsIterIsInstanced);
     ECS_BIT_SET(it.flags, EcsIterNoData);
 
@@ -1412,7 +1411,15 @@ void flecs_query_cache_on_event(
 
     if (event == EcsOnTableCreate) {
         /* Creation of new table */
-        flecs_query_cache_match_table(world, impl, cache, table);
+        if (flecs_query_cache_match_table(world, impl, cache, table)) {
+            if (ecs_should_log_3()) {
+                char *table_str = ecs_table_str(world, table);
+                ecs_dbg_3("query cache event: %s for [%s]", 
+                    ecs_get_name(world, event),
+                    table_str);
+                ecs_os_free(table_str);
+            }
+        }
         return;
     }
 
@@ -1422,6 +1429,14 @@ void flecs_query_cache_on_event(
      * efficiently by checking the table with the query cache. */
     if (ecs_table_cache_get(&cache->cache, table) == NULL) {
         return;
+    }
+
+    if (ecs_should_log_3()) {
+        char *table_str = ecs_table_str(world, table);
+        ecs_dbg_3("query cache event: %s for [%s]", 
+            ecs_get_name(world, event),
+            table_str);
+        ecs_os_free(table_str);
     }
 
     if (event == EcsOnTableEmpty) {

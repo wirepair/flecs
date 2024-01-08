@@ -28,7 +28,7 @@ void flecs_query_get_column_for_field(
         ecs_record_t *r = flecs_entities_get(world, src);
         table = r->table;
 
-        int32_t ref_index = -match->columns[field] - 1;
+        int32_t ref_index = match->columns[field] - 1;
         ecs_ref_t *ref = ecs_vec_get_t(&match->refs, ecs_ref_t, ref_index);
         if (ref->id != 0) {
             ecs_ref_update(world, ref);
@@ -306,10 +306,12 @@ bool flecs_query_check_match_monitor(
     ecs_world_t *world = filter->world;
     int32_t i, j, field_count = filter->field_count;
     int32_t *storage_columns = match->storage_columns;
+    ecs_entity_t *sources = match->sources;
     int32_t *columns = it ? it->columns : NULL;
     if (!columns) {
         columns = match->columns;
     }
+
     ecs_vec_t *refs = &match->refs;
     for (i = 0; i < field_count; i ++) {
         int32_t mon = monitor[i + 1];
@@ -318,25 +320,26 @@ bool flecs_query_check_match_monitor(
         }
 
         int32_t column = storage_columns[i];
-        if (columns[i] >= 0) {
-            /* owned component */
-            ecs_assert(dirty_state != NULL, ECS_INTERNAL_ERROR, NULL);
-            if (mon != dirty_state[column + 1]) {
-                return true;
+        ecs_entity_t src = sources[i];
+        if (!src) {
+            if (column >= 0) {
+                /* owned component */
+                ecs_assert(dirty_state != NULL, ECS_INTERNAL_ERROR, NULL);
+                if (mon != dirty_state[column + 1]) {
+                    return true;
+                }
+                continue;
+            } else if (column == -1) {
+                continue; /* owned but not a component */
             }
-            continue;
-        } else if (column == -1) {
-            continue; /* owned but not a component */
         }
 
         column = columns[i];
+        ecs_assert(column >= 0, ECS_INTERNAL_ERROR, NULL);
         if (!column) {
             /* Not matched */
             continue;
         }
-
-        ecs_assert(column < 0, ECS_INTERNAL_ERROR, NULL);
-        column = -column;
 
         /* Find term index from field index, which differ when using || */
         int32_t term_index = i;

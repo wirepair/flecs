@@ -414,7 +414,8 @@ ecs_trav_down_t* flecs_query_get_down_cache(
     ecs_entity_t trav,
     ecs_entity_t entity,
     ecs_id_record_t *idr_with,
-    bool self);
+    bool self,
+    bool empty);
 
 /* Free down traversal cache */
 void flecs_query_down_cache_fini(
@@ -443,7 +444,7 @@ bool flecs_query_trivial_search(
     const ecs_query_run_ctx_t *ctx,
     ecs_query_impl_trivial_ctx_t *op_ctx,
     bool first,
-    int32_t until);
+    ecs_flags64_t field_set);
 
 /* Iterator for trivial queries. */
 bool flecs_query_trivial_search_nodata(
@@ -451,7 +452,7 @@ bool flecs_query_trivial_search_nodata(
     const ecs_query_run_ctx_t *ctx,
     ecs_query_impl_trivial_ctx_t *op_ctx,
     bool first,
-    int32_t until);
+    ecs_flags64_t field_set);
 
 /* Iterator for trivial queries with wildcard matching. */
 bool flecs_query_trivial_search_w_wildcards(
@@ -459,21 +460,21 @@ bool flecs_query_trivial_search_w_wildcards(
     const ecs_query_run_ctx_t *ctx,
     ecs_query_impl_trivial_ctx_t *op_ctx,
     bool first,
-    int32_t until);
+    ecs_flags64_t field_set);
 
 /* Trivial test for constrained $this. */
 bool flecs_query_trivial_test(
     const ecs_query_impl_t *rule,
     const ecs_query_run_ctx_t *ctx,
     bool first,
-    int32_t term_count);
+    ecs_flags64_t field_set);
 
 /* Trivial test for constrained $this with wildcard matching. */
 bool flecs_query_trivial_test_w_wildcards(
     const ecs_query_impl_t *rule,
     const ecs_query_run_ctx_t *ctx,
     bool first,
-    int32_t term_count);
+    ecs_flags64_t field_set);
 
 
 /* -- Cache iterators -- */

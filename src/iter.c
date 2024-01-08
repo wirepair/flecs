@@ -113,14 +113,13 @@ void ecs_iter_fini(
 }
 
 static
-bool flecs_iter_populate_term_data(
+void flecs_iter_populate_term_data(
     ecs_world_t *world,
     ecs_iter_t *it,
     int32_t t,
     int32_t column,
     void **ptr_out)
 {
-    bool is_shared = false;
     ecs_table_t *table;
     void *data;
     int32_t row, u_index;
@@ -143,7 +142,6 @@ bool flecs_iter_populate_term_data(
 
     if (column < 0) {
         table = it->table;
-        is_shared = true;
 
         /* Data is not from This */
         if (it->references && (!table || !(table->flags & EcsTableHasTarget))) {
@@ -163,16 +161,21 @@ bool flecs_iter_populate_term_data(
                 }
 
                 if (!ref->id) {
-                    is_shared = false;
+                    ECS_BIT_CLEAR(it->shared_fields, t);
+                } else {
+                    ECS_BIT_SETN(it->shared_fields, t);
                 }
 
-                return is_shared;
+                return;
             }
 
-            return true;
+            ECS_BIT_SETN(it->shared_fields, t);
+            return;
         } else {
             ecs_entity_t subj = it->sources[t];
             ecs_assert(subj != 0, ECS_INTERNAL_ERROR, NULL);
+
+            ECS_BIT_CLEARN(it->shared_fields, t);
 
             /* Don't use ecs_get_id directly. Instead, go directly to the
              * storage so that we can get both the pointer and size */
@@ -229,7 +232,7 @@ bool flecs_iter_populate_term_data(
 
 has_data:
     if (ptr_out) ptr_out[0] = ECS_ELEM(data, size, row);
-    return is_shared;
+    return;
 
 has_union: {
         /* Edge case: if column is a switch we should return the vector with case
@@ -241,8 +244,9 @@ has_union: {
     }
 
 no_data:
+    ECS_BIT_CLEARN(it->shared_fields, t);
     if (ptr_out) ptr_out[0] = NULL;
-    return false;
+    return;
 }
 
 void flecs_iter_populate_data(
@@ -274,20 +278,16 @@ void flecs_iter_populate_data(
 
     int t, field_count = it->field_count;
     if (ECS_BIT_IS_SET(it->flags, EcsIterNoData)) {
-        ECS_BIT_CLEAR(it->flags, EcsIterHasShared);
+        it->shared_fields = 0;
         return;
     }
 
-    bool has_shared = false;
     if (ptrs) {
         for (t = 0; t < field_count; t ++) {
             int32_t column = it->columns[t];
-            has_shared |= flecs_iter_populate_term_data(world, it, t, column,
-                &ptrs[t]);
+            flecs_iter_populate_term_data(world, it, t, column, &ptrs[t]);
         }
     }
-
-    ECS_BIT_COND(it->flags, EcsIterHasShared, has_shared);
 }
 
 bool flecs_iter_next_row(
@@ -333,9 +333,8 @@ bool flecs_iter_next_instanced(
 {
     it->instance_count = it->count;
     bool is_instanced = ECS_BIT_IS_SET(it->flags, EcsIterIsInstanced);
-    bool has_shared = ECS_BIT_IS_SET(it->flags, EcsIterHasShared);
 
-    if (result && !is_instanced && it->count && has_shared) {
+    if (result && !is_instanced && it->count && it->shared_fields) {
         it->count = 1;
     }
 

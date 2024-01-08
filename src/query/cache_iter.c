@@ -13,6 +13,7 @@ ecs_query_cache_table_match_t* flecs_query_cache_next(
     ecs_query_cache_table_match_t *prev = qit->prev;
 
     if (prev != qit->last) {
+        ecs_assert(node != NULL, ECS_INTERNAL_ERROR, NULL);
         ctx->vars[0].range.table = node->table;
         it->group_id = node->group_id;
         it->instance_count = 0;
@@ -35,6 +36,8 @@ void flecs_query_populate_ptrs(
     int32_t i, field_count = it->field_count;
     ecs_data_t *data = &table->data;
     for (i = 0; i < field_count; i ++) {
+        ECS_BIT_CLEARN(it->shared_fields, i);
+
         int32_t storage_column = node->storage_columns[i];
         ecs_size_t size = it->sizes[i];
         if (storage_column < 0 || !size) {
@@ -46,8 +49,6 @@ void flecs_query_populate_ptrs(
         it->ptrs[i] = ecs_vec_get(&data->columns[storage_column].data,
             it->sizes[i], offset);
     }
-
-    ECS_BIT_CLEAR(it->flags, EcsIterHasShared);
 }
 
 static
@@ -74,8 +75,6 @@ void flecs_query_populate_ptrs_w_field_map(
         it->ptrs[field_index] = ecs_vec_get(&data->columns[storage_column].data,
             size, offset);
     }
-
-    ECS_BIT_CLEAR(it->flags, EcsIterHasShared);
 }
 
 static
@@ -87,7 +86,6 @@ void flecs_query_populate_ptrs_w_shared(
     int8_t *field_map,
     int32_t field_count)
 {
-    bool has_shared = false;
     int32_t i;
 
     for (i = 0; i < field_count; i ++) {
@@ -106,11 +104,11 @@ void flecs_query_populate_ptrs_w_shared(
 
         ecs_entity_t src = it->sources[i];
         if (src != 0) {
-            ecs_ref_t *ref = &it->references[-column - 1];
+            ecs_ref_t *ref = &it->references[column - 1];
             if (ref->id) {
                 it->ptrs[field_index] = (void*)ecs_ref_get_id(
                     it->real_world, ref, ref->id);
-                has_shared = true;
+                ECS_BIT_SETN(it->shared_fields, i);
             } else {
                 it->ptrs[field_index] = NULL;
             }
@@ -123,10 +121,9 @@ void flecs_query_populate_ptrs_w_shared(
             ecs_assert(table != NULL, ECS_INTERNAL_ERROR, NULL);
             it->ptrs[field_index] = ecs_vec_get(
                 &table->data.columns[storage_column].data, size, offset);
+            ECS_BIT_CLEARN(it->shared_fields, i);
         }
     }
-
-    ECS_BIT_COND(it->flags, EcsIterHasShared, has_shared);
 }
 
 bool flecs_query_cache_search(
@@ -199,7 +196,6 @@ void flecs_query_cache_data_populate(
 
     /* If NoData flag is set on iterator, don't populate fields */
     if (ECS_BIT_IS_SET(it->flags, EcsIterNoData) || !count) {
-        ECS_BIT_CLEAR(it->flags, EcsIterHasShared);
         return;
     }
 
@@ -231,7 +227,6 @@ void flecs_query_is_cache_data_populate(
 
     /* If NoData flag is set on iterator, don't populate fields */
     if (ECS_BIT_IS_SET(it->flags, EcsIterNoData) || !count) {
-        ECS_BIT_CLEAR(it->flags, EcsIterHasShared);
         return;
     }
 

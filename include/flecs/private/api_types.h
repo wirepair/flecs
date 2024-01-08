@@ -224,6 +224,7 @@ struct ecs_iter_t {
     ecs_flags64_t constrained_vars; /* Bitset that marks constrained variables */
     uint64_t group_id;            /* Group id for table, if group_by is used */
     int32_t field_count;          /* Number of fields in iterator */
+    ecs_termset_t shared_fields;  /* Bitset with shared fields */
 
     /* Input information */
     ecs_entity_t system;          /* The system (if applicable) */

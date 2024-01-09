@@ -1275,7 +1275,7 @@ int flecs_query_query_populate_terms(
 #endif
     }
 
-    q->term_count = term_count;
+    q->term_count = flecs_ito(int8_t, term_count);
 
     return 0;
 error:  

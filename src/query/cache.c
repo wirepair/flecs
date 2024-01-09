@@ -481,7 +481,6 @@ static
 void flecs_query_cache_add_ref(
     ecs_world_t *world,
     ecs_query_impl_t *impl,
-    ecs_query_cache_t *cache,
     ecs_query_cache_table_match_t *qm,
     ecs_entity_t component,
     ecs_entity_t entity,
@@ -586,7 +585,7 @@ void flecs_query_cache_set_table_match(
 
             if (id) {
                 flecs_query_cache_add_ref(
-                    world, impl, cache, qm, id, src, size);
+                    world, impl, qm, id, src, size);
 
                 /* Use column index to bind term and ref */
                 if (qm->columns[field] != 0) {

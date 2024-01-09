@@ -12,7 +12,6 @@
 static
 int32_t flecs_type_search(
     const ecs_table_t *table,
-    ecs_id_t search_id,
     ecs_id_record_t *idr,
     ecs_id_t *ids,
     ecs_id_t *id_out,
@@ -105,7 +104,7 @@ int32_t flecs_type_search_relation(
                 return r;
             }
         } else {
-            int32_t r = flecs_type_search(table, id, idr, ids, id_out, tr_out);
+            int32_t r = flecs_type_search(table, idr, ids, id_out, tr_out);
             if (r != -1) {
                 return r;
             }
@@ -138,7 +137,7 @@ int32_t flecs_type_search_relation(
         if (offset) {
             r_column = flecs_type_offset_search(offset, rel, ids, count, &id_r);
         } else {
-            r_column = flecs_type_search(table, id, idr_r, ids, &id_r, 0);
+            r_column = flecs_type_search(table, idr_r, ids, &id_r, 0);
         }
         while (r_column != -1) {
             ecs_entity_t obj = ECS_PAIR_SECOND(id_r);
@@ -213,7 +212,7 @@ int32_t flecs_search_relation_w_idr(
             return ecs_search_offset(world, table, offset, id, id_out);
         } else {
             return flecs_type_search(
-                table, id, idr, table->type.array, id_out, tr_out);
+                table, idr, table->type.array, id_out, tr_out);
         }
     }
 
@@ -274,7 +273,7 @@ int32_t flecs_search_w_idr(
 
     ecs_type_t type = table->type;
     ecs_id_t *ids = type.array;
-    return flecs_type_search(table, id, idr, ids, id_out, 0);
+    return flecs_type_search(table, idr, ids, id_out, 0);
 }
 
 int32_t ecs_search(
@@ -295,7 +294,7 @@ int32_t ecs_search(
 
     ecs_type_t type = table->type;
     ecs_id_t *ids = type.array;
-    return flecs_type_search(table, id, idr, ids, id_out, 0);
+    return flecs_type_search(table, idr, ids, id_out, 0);
 }
 
 int32_t ecs_search_offset(

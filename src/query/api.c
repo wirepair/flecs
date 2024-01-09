@@ -20,7 +20,6 @@ int32_t ecs_query_var_count(
     const ecs_query_t *q)
 {
     ecs_poly_assert(q, ecs_query_impl_t);
-
     return flecs_query_impl(q)->var_pub_count;
 }
 
@@ -190,7 +189,7 @@ int flecs_query_create_cache(
             ecs_term_t *term = &terms[i];
             if (term->flags & EcsTermIsCacheable) {
                 cache_desc.terms[dst_count] = *term;
-                field_map[dst_field] = term->field_index;
+                field_map[dst_field] = flecs_ito(int8_t, term->field_index);
                 dst_count ++;
                 if (i) {
                     dst_field += term->field_index != term[-1].field_index;
@@ -293,7 +292,7 @@ void flecs_query_populate_tokens(
     /* Step 2: reassign term tokens to buffer */
     if (len) {
         impl->tokens = flecs_alloc(&q->stage->allocator, len);
-        impl->tokens_len = len;
+        impl->tokens_len = flecs_ito(int16_t, len);
         char *token = impl->tokens, *next;
 
         for (i = 0; i < term_count; i ++) {
@@ -362,7 +361,7 @@ ecs_query_t* ecs_query_init(
     }
 
     /* Compile filter to operations */
-    if (flecs_query_compile(world, stage, result, &desc)) {
+    if (flecs_query_compile(world, stage, result)) {
         goto error;
     }
 

@@ -6752,7 +6752,6 @@ bool ecs_children_next(
  * - The iterator must be instanced
  * 
  * @param query The query (optional if 'it' is provided).
- * @param it The iterator result to test (optional if 'query' is provided).
  * @return true if entities changed, otherwise false.
  */
 FLECS_API

@@ -2,9 +2,7 @@
 
 static
 ecs_query_cache_table_match_t* flecs_query_cache_next(
-    const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx,
-    bool first)
+    const ecs_query_run_ctx_t *ctx)
 {
     ecs_iter_t *it = ctx->it;
     ecs_query_iter_t *qit = &it->priv.iter.rule;
@@ -83,9 +81,9 @@ void flecs_query_populate_ptrs_w_shared(
     int32_t offset,
     ecs_query_cache_table_match_t *node,
     int8_t *field_map,
-    int32_t field_count)
+    int8_t field_count)
 {
-    int32_t i;
+    int8_t i;
 
     for (i = 0; i < field_count; i ++) {
         int32_t column = node->columns[i];
@@ -127,11 +125,9 @@ void flecs_query_populate_ptrs_w_shared(
 
 bool flecs_query_cache_search(
     const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx,
-    bool first)
+    const ecs_query_run_ctx_t *ctx)
 {
-    ecs_query_cache_table_match_t *node = flecs_query_cache_next(
-        impl, ctx, first);
+    ecs_query_cache_table_match_t *node = flecs_query_cache_next(ctx);
     if (!node) {
         return false;
     }
@@ -155,11 +151,11 @@ bool flecs_query_cache_search(
 
 bool flecs_query_is_cache_search(
     const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx,
-    bool first)
+    const ecs_query_run_ctx_t *ctx)
 {
-    ecs_query_cache_table_match_t *node = flecs_query_cache_next(
-        impl, ctx, first);
+    (void)impl;
+
+    ecs_query_cache_table_match_t *node = flecs_query_cache_next(ctx);
     if (!node) {
         return false;
     }
@@ -231,16 +227,15 @@ void flecs_query_is_cache_data_populate(
         flecs_query_populate_ptrs(it, table, offset, node);
     } else {
         flecs_query_populate_ptrs_w_shared(it, table, offset, node, NULL, 
-            it->field_count);
+            flecs_ito(int8_t, it->field_count));
     }
 }
 
 bool flecs_query_cache_data_search(
     const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx,
-    bool first)
+    const ecs_query_run_ctx_t *ctx)
 {
-    if (!flecs_query_cache_search(impl, ctx, first)) {
+    if (!flecs_query_cache_search(impl, ctx)) {
         return false;
     }
 
@@ -253,10 +248,9 @@ bool flecs_query_cache_data_search(
 
 bool flecs_query_is_cache_data_search(
     const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx,
-    bool first)
+    const ecs_query_run_ctx_t *ctx)
 {
-    if (!flecs_query_is_cache_search(impl, ctx, first)) {
+    if (!flecs_query_is_cache_search(impl, ctx)) {
         return false;
     }
 
@@ -289,8 +283,7 @@ bool flecs_query_is_cache_test(
         qit->last = qt->last;
     }
 
-    ecs_query_cache_table_match_t *node = flecs_query_cache_next(
-        impl, ctx, false);
+    ecs_query_cache_table_match_t *node = flecs_query_cache_next(ctx);
     if (!node) {
         return false;
     }

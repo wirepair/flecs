@@ -10,7 +10,7 @@ typedef uint8_t ecs_var_id_t;
 typedef int16_t ecs_query_lbl_t;
 typedef ecs_flags64_t ecs_write_flags_t;
 
-#define flecs_query_impl(filter) ((ecs_query_impl_t*)filter)
+#define flecs_query_impl(query) (ECS_CONST_CAST(ecs_query_impl_t*, query))
 
 #define EcsRuleMaxVarCount      (64)
 #define EcsVarNone              ((ecs_var_id_t)-1)
@@ -379,8 +379,7 @@ bool flecs_ref_is_written(
 int flecs_query_compile(
     ecs_world_t *world,
     ecs_stage_t *stage,
-    ecs_query_impl_t *rule,
-    const ecs_query_desc_t *desc);
+    ecs_query_impl_t *rule);
 
 /* Get allocator from iterator */
 ecs_allocator_t* flecs_query_get_allocator(
@@ -487,23 +486,19 @@ bool flecs_query_trivial_test_w_wildcards(
 
 bool flecs_query_cache_search(
     const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx,
-    bool first);
+    const ecs_query_run_ctx_t *ctx);
 
 bool flecs_query_cache_data_search(
     const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx,
-    bool first);
+    const ecs_query_run_ctx_t *ctx);
 
 bool flecs_query_is_cache_search(
     const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx,
-    bool first);
+    const ecs_query_run_ctx_t *ctx);
 
 bool flecs_query_is_cache_data_search(
     const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx,
-    bool first);
+    const ecs_query_run_ctx_t *ctx);
 
 bool flecs_query_is_cache_test(
     const ecs_query_impl_t *impl,

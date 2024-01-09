@@ -1911,8 +1911,7 @@ void flecs_query_insert_cache_search(
     ecs_query_impl_t *rule,
     ecs_flags64_t *compiled,
     ecs_flags64_t *populated,
-    ecs_query_compile_ctx_t *ctx,
-    const ecs_query_desc_t *desc)
+    ecs_query_compile_ctx_t *ctx)
 {
     if (!rule->cache) {
         return;
@@ -2024,7 +2023,7 @@ void flecs_query_insert_populate(
         }
 
         ecs_query_op_t op = {0};
-        op.kind = kind;
+        op.kind = flecs_ito(uint8_t, kind);
         op.src.entity = populated; /* Abuse for bitset w/fields to populate */
         flecs_query_op_insert(&op, ctx);
     }
@@ -2105,8 +2104,7 @@ int flecs_query_insert_fixed_src_terms(
 int flecs_query_compile(
     ecs_world_t *world,
     ecs_stage_t *stage,
-    ecs_query_impl_t *rule,
-    const ecs_query_desc_t *desc)
+    ecs_query_impl_t *rule)
 {
     ecs_query_t *q = &rule->pub;
     ecs_term_t *terms = q->terms;
@@ -2162,7 +2160,7 @@ int flecs_query_compile(
 
     /* Compile cacheable terms */
     flecs_query_insert_cache_search(
-        rule, &compiled, &populated, &ctx, desc);
+        rule, &compiled, &populated, &ctx);
 
     /* Insert trivial term search if query allows for it */
     flecs_query_insert_trivial_search(

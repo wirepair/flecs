@@ -8,7 +8,6 @@ typedef struct {
 static
 void flecs_query_get_column_for_field(
     ecs_world_t *world,
-    ecs_query_cache_t *cache,
     ecs_query_cache_table_match_t *match,
     int32_t field,
     flecs_table_column_t *out)
@@ -85,7 +84,7 @@ bool flecs_query_get_match_monitor(
             continue; /* Don't track terms that aren't matched */
         }
 
-        flecs_query_get_column_for_field(q->world, cache, match, field, &tc);
+        flecs_query_get_column_for_field(q->world, match, field, &tc);
         if (tc.column == -1) {
             continue; /* Don't track terms that aren't stored */
         }
@@ -225,7 +224,7 @@ bool flecs_query_check_match_monitor_term(
 
     flecs_table_column_t cur;
     flecs_query_get_column_for_field(
-        impl->pub.world, cache, match, field, &cur);
+        impl->pub.world, match, field, &cur);
     ecs_assert(cur.column != -1, ECS_INTERNAL_ERROR, NULL);
 
     return monitor[field] != flecs_table_get_dirty_state(
@@ -377,8 +376,8 @@ bool flecs_query_check_match_monitor(
                 }
             } else {
                 /* Component from static source */
-                ecs_entity_t src = match->sources[i];
-                ecs_table_t *src_table = ecs_get_table(world, src);
+                ecs_entity_t fixed_src = match->sources[i];
+                ecs_table_t *src_table = ecs_get_table(world, fixed_src);
                 ecs_assert(src_table != NULL, ECS_INTERNAL_ERROR, NULL);
                 column = ecs_table_type_to_column_index(src_table, column - 1);
                 int32_t *src_dirty_state = flecs_table_get_dirty_state(
@@ -559,8 +558,7 @@ void flecs_query_sync_match_monitor(
                 continue;
             }
 
-            flecs_query_get_column_for_field(
-                q->world, cache, match, field, &tc);
+            flecs_query_get_column_for_field(q->world, match, field, &tc);
 
             monitor[field + 1] = flecs_table_get_dirty_state(
                 q->world, tc.table)[tc.column + 1];

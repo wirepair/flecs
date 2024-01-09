@@ -605,7 +605,7 @@ int32_t flecs_query_pivot_term(
             continue;
         }
 
-        ecs_id_record_t *idr = flecs_query_cache_id_record_get(world, id);
+        ecs_id_record_t *idr = flecs_id_record_get(world, id);
         if (!idr) {
             /* If one of the terms does not match with any data, iterator 
              * should not return anything */
@@ -641,30 +641,4 @@ void flecs_query_apply_iter_flags(
         ECS_BIT_IS_SET(filter->flags, EcsQueryNoData));
     ECS_BIT_COND(it->flags, EcsIterHasCondSet, 
         ECS_BIT_IS_SET(filter->flags, EcsQueryHasCondSet));
-}
-
-ecs_id_t flecs_to_public_id(
-    ecs_id_t id)
-{
-    if (ECS_PAIR_FIRST(id) == EcsUnion) {
-        return ecs_pair(ECS_PAIR_SECOND(id), EcsWildcard);
-    } else {
-        return id;
-    }
-}
-
-ecs_id_t flecs_from_public_id(
-    ecs_world_t *world,
-    ecs_id_t id)
-{
-    if (ECS_HAS_ID_FLAG(id, PAIR)) {
-        ecs_entity_t first = ECS_PAIR_FIRST(id);
-        ecs_id_record_t *idr = flecs_id_record_ensure(world, 
-            ecs_pair(first, EcsWildcard));
-        if (idr->flags & EcsIdUnion) {
-            return ecs_pair(EcsUnion, first);
-        }
-    }
-
-    return id;
 }

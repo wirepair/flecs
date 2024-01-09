@@ -115,18 +115,6 @@ void flecs_invoke_hook(
 //// Query API
 ////////////////////////////////////////////////////////////////////////////////
 
-ecs_iter_t flecs_query_iter_w_flags(
-    const ecs_world_t *stage,
-    const ecs_query_t *filter,
-    ecs_flags32_t flags);
-
-ecs_id_t flecs_to_public_id(
-    ecs_id_t id);
-
-ecs_id_t flecs_from_public_id(
-    ecs_world_t *world,
-    ecs_id_t id);
-
 void flecs_query_apply_iter_flags(
     ecs_iter_t *it,
     const ecs_query_t *filter);

@@ -44,7 +44,7 @@ int32_t flecs_trav_type_offset_search(
     while (offset < type->count) {
         ecs_id_t type_id = type->array[offset ++];
         if (ecs_id_match(type_id, with)) {
-            up->id = flecs_to_public_id(type_id);
+            up->id = type_id;
             return up->column = offset - 1;
         }
     }

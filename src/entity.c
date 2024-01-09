@@ -288,16 +288,6 @@ void flecs_instantiate_children(
         if ((id != ecs_pair(ecs_id(EcsIdentifier), EcsName)) &&
             ECS_PAIR_FIRST(id) != EcsChildOf) 
         {
-            if (id == EcsUnion) {
-                /* This should eventually be handled by the DontInherit property
-                 * but right now there is no way to selectively apply it to
-                 * EcsUnion itself: it would also apply to (Union, *) pairs,
-                 * which would make all union relationships uninheritable. 
-                 * 
-                 * The reason this is explicitly skipped is so that slot 
-                 * instances don't all end up with the Union property. */
-                continue;
-            }
             ecs_table_record_t *tr = &child_table->_->records[i];
             ecs_id_record_t *idr = (ecs_id_record_t*)tr->hdr.cache;
             if (idr->flags & EcsIdDontInherit) {
@@ -351,7 +341,6 @@ void flecs_instantiate_children(
     /* Instantiate the prefab child table for each new instance */
     ecs_entity_t *instances = ecs_vec_first(&table->data.entities);
     int32_t child_count = ecs_vec_count(&child_data->entities);
-    bool has_union = child_table->flags & EcsTableHasUnion;
 
     for (i = row; i < count + row; i ++) {
         ecs_entity_t instance = instances[i];
@@ -396,25 +385,6 @@ void flecs_instantiate_children(
             &components, child_count, component_data, false, &child_row, 
             &table_diff);
         flecs_table_diff_builder_fini(world, &diff);
-
-        /* If children have union relationships, initialize */
-        if (has_union) {
-            ecs_table__t *meta = child_table->_;
-            ecs_assert(meta != NULL, ECS_INTERNAL_ERROR, NULL);
-            ecs_assert(i_table->_ != NULL, ECS_INTERNAL_ERROR, NULL);
-            int32_t u, u_count = meta->sw_count;
-            for (u = 0; u < u_count; u ++) {
-                ecs_switch_t *src_sw = &meta->sw_columns[i];
-                ecs_switch_t *dst_sw = &i_table->_->sw_columns[i];
-                ecs_vec_t *v_src_values = flecs_switch_values(src_sw);
-                ecs_vec_t *v_dst_values = flecs_switch_values(dst_sw);
-                uint64_t *src_values = ecs_vec_first(v_src_values);
-                uint64_t *dst_values = ecs_vec_first(v_dst_values);
-                for (j = 0; j < child_count; j ++) {
-                    dst_values[j] = src_values[j];
-                }
-            }
-        }
 
         /* If children are slots, add slot relationships to parent */
         if (slot_of) {
@@ -462,43 +432,6 @@ void flecs_instantiate(
 }
 
 static
-void flecs_set_union(
-    ecs_world_t *world,
-    ecs_table_t *table,
-    int32_t row,
-    int32_t count,    
-    const ecs_type_t *ids)
-{
-    ecs_id_t *array = ids->array;
-    int32_t i, id_count = ids->count;
-
-    for (i = 0; i < id_count; i ++) {
-        ecs_id_t id = array[i];
-
-        if (ECS_HAS_ID_FLAG(id, PAIR)) {
-            ecs_id_record_t *idr = flecs_id_record_get(world, 
-                ecs_pair(EcsUnion, ECS_PAIR_FIRST(id)));
-            if (!idr) {
-                continue;
-            }
-
-            ecs_table_record_t *tr = flecs_id_record_get_table(idr, table);
-            ecs_assert(tr != NULL, ECS_INTERNAL_ERROR, NULL);
-            ecs_assert(table->_ != NULL, ECS_INTERNAL_ERROR, NULL);
-            int32_t column = tr->index - table->_->sw_offset;
-            ecs_switch_t *sw = &table->_->sw_columns[column];
-            ecs_entity_t union_case = 0;
-            union_case = ecs_pair_second(world, id);
-
-            int32_t r;
-            for (r = 0; r < count; r ++) {
-                flecs_switch_set(sw, row + r, union_case);
-            }
-        }
-    }
-}
-
-static
 void flecs_notify_on_add(
     ecs_world_t *world,
     ecs_table_t *table,
@@ -512,10 +445,6 @@ void flecs_notify_on_add(
 
     if (added->count) {
         ecs_flags32_t table_flags = table->flags;
-
-        if (table_flags & EcsTableHasUnion) {
-            flecs_set_union(world, table, row, count, added);
-        }
 
         if (table_flags & (EcsTableHasOnAdd|EcsTableHasIsA|EcsTableHasTraversable)) {
             flecs_emit(world, world, &(ecs_event_desc_t){
@@ -3339,7 +3268,7 @@ bool ecs_has_id(
         }
     }
 
-    if (!(table->flags & (EcsTableHasUnion|EcsTableHasIsA))) {
+    if (!(table->flags & EcsTableHasIsA)) {
         return false;
     }
 
@@ -3350,20 +3279,6 @@ bool ecs_has_id(
         return false;
     }
 
-    table = tr->hdr.table;
-    if ((table->flags & EcsTableHasUnion) && ECS_HAS_ID_FLAG(id, PAIR) &&
-        ECS_PAIR_SECOND(id) != EcsWildcard) 
-    {
-        if (ECS_PAIR_FIRST(table->type.array[column]) == EcsUnion) {
-            ecs_assert(table->_ != NULL, ECS_INTERNAL_ERROR, NULL);
-            ecs_switch_t *sw = &table->_->sw_columns[
-                column - table->_->sw_offset];
-            int32_t row = ECS_RECORD_TO_ROW(r->row);
-            uint64_t value = flecs_switch_get(sw, row);
-            return value == ecs_pair_second(world, id);
-        }
-    }
-    
     return true;
 error:
     return false;
@@ -3403,19 +3318,6 @@ ecs_entity_t ecs_get_target(
         tr = flecs_id_record_get_table(idr, table);
     }
     if (!tr) {
-        if (table->flags & EcsTableHasUnion) {
-            wc = ecs_pair(EcsUnion, rel);
-            tr = flecs_table_record_get(world, table, wc);
-            if (tr) {
-                ecs_assert(table->_ != NULL, ECS_INTERNAL_ERROR, NULL);
-                ecs_switch_t *sw = &table->_->sw_columns[
-                    tr->index - table->_->sw_offset];
-                int32_t row = ECS_RECORD_TO_ROW(r->row);
-                return flecs_switch_get(sw, row);
-                
-            }
-        }
-
         if (!idr || !(idr->flags & EcsIdDontInherit)) {
             goto look_in_base;
         } else {
@@ -4135,24 +4037,6 @@ bool ecs_id_is_tag(
         }
     } else {
         if (ecs_get_typeid(world, id) == 0) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool ecs_id_is_union(
-    const ecs_world_t *world,
-    ecs_id_t id)
-{
-    if (!ECS_IS_PAIR(id)) {
-        return false;
-    } else if (ECS_PAIR_FIRST(id) == EcsUnion) {
-        return true;
-    } else {
-        ecs_entity_t first = ecs_pair_first(world, id);
-        if (ecs_has_id(world, first, EcsUnion)) {
             return true;
         }
     }

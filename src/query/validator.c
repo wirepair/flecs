@@ -667,7 +667,7 @@ int flecs_term_finalize(
         first_id = 0;
     }
 
-    term->idr = flecs_query_cache_id_record_get(world, term->id);
+    term->idr = flecs_id_record_get(world, term->id);
     ecs_flags32_t id_flags = term->idr ? term->idr->flags : 0;
 
     if (first_id) {
@@ -973,12 +973,10 @@ int flecs_query_query_finalize_terms(
         if (term->inout == EcsInOutNone) {
             nodata_term = true;
         } else if (term->idr) {
-            if (!term->idr->type_info && !(term->idr->flags & EcsIdUnion)) {
+            if (!term->idr->type_info) {
                 nodata_term = true;
             }
-        } else if (!ecs_id_is_union(world, term->id)) {
-            /* Union ids aren't filters because they return their target
-             * as component value with type ecs_entity_t */
+        } else {
             if (ecs_id_is_tag(world, term->id)) {
                 nodata_term = true;
             } else if (ECS_PAIR_SECOND(term->id) == EcsWildcard) {
@@ -1110,28 +1108,15 @@ int flecs_query_query_finalize_terms(
 
             if (idr) {
                 if (!ECS_IS_PAIR(idr->id) || ECS_PAIR_FIRST(idr->id) != EcsWildcard) {
-                    if (idr->flags & EcsIdUnion) {
-                        q->sizes[field] = ECS_SIZEOF(ecs_entity_t);
-                    } else if (idr->type_info) {
+                    if (idr->type_info) {
                         q->sizes[field] = idr->type_info->size;
                     }
                 }
             } else {
-                bool is_union = false;
-                if (ECS_IS_PAIR(term->id)) {
-                    ecs_entity_t first = ecs_pair_first(world, term->id);
-                    if (ecs_has_id(world, first, EcsUnion)) {
-                        is_union = true;
-                    }
-                }
-                if (is_union) {
-                    q->sizes[field] = ECS_SIZEOF(ecs_entity_t);
-                } else {
-                    const ecs_type_info_t *ti = ecs_get_type_info(
-                        world, term->id);
-                    if (ti) {
-                        q->sizes[field] = ti->size;
-                    }
+                const ecs_type_info_t *ti = ecs_get_type_info(
+                    world, term->id);
+                if (ti) {
+                    q->sizes[field] = ti->size;
                 }
             }
         }

@@ -20,7 +20,6 @@
 #include "storage/entity_index.h"
 #include "datastructures/stack_allocator.h"
 #include "flecs/private/bitset.h"
-#include "flecs/private/switch_list.h"
 #include "storage/table.h"
 
 /* Used in id records to keep track of entities used with id flags */
@@ -131,7 +130,6 @@ typedef struct flecs_flat_table_term_t {
 /* Entity filter. This filters the entities of a matched table, for example when
  * it has disabled components or union relationships (switch). */
 typedef struct ecs_entity_filter_t {
-    ecs_vec_t sw_terms;              /* Terms with switch (union) entity filter */
     ecs_vec_t bs_terms;              /* Terms with bitset (toggle) entity filter */
     ecs_vec_t ft_terms;              /* Terms with components from flattened tree */
     int32_t flat_tree_column;

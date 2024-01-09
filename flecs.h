@@ -357,7 +357,6 @@ extern "C" {
 #define EcsIdTraversable               (1u << 8)
 #define EcsIdTag                       (1u << 9)
 #define EcsIdWith                      (1u << 10)
-#define EcsIdUnion                     (1u << 11)
 #define EcsIdAlwaysOverride            (1u << 12)
 
 #define EcsIdHasOnAdd                  (1u << 16) /* Same values as table flags */
@@ -460,7 +459,6 @@ extern "C" {
 #define EcsTableHasDtors               (1u << 10u)
 #define EcsTableHasCopy                (1u << 11u)
 #define EcsTableHasMove                (1u << 12u)
-#define EcsTableHasUnion               (1u << 13u)
 #define EcsTableHasToggle              (1u << 14u)
 #define EcsTableHasOverrides           (1u << 15u)
 
@@ -480,8 +478,8 @@ extern "C" {
 
 /* Composite table flags */
 #define EcsTableHasLifecycle        (EcsTableHasCtors | EcsTableHasDtors)
-#define EcsTableIsComplex           (EcsTableHasLifecycle | EcsTableHasUnion | EcsTableHasToggle)
-#define EcsTableHasAddActions       (EcsTableHasIsA | EcsTableHasUnion | EcsTableHasCtors | EcsTableHasOnAdd | EcsTableHasOnSet)
+#define EcsTableIsComplex           (EcsTableHasLifecycle | EcsTableHasToggle)
+#define EcsTableHasAddActions       (EcsTableHasIsA | EcsTableHasCtors | EcsTableHasOnAdd | EcsTableHasOnSet)
 #define EcsTableHasRemoveActions    (EcsTableHasIsA | EcsTableHasDtors | EcsTableHasOnRemove | EcsTableHasUnSet)
 
 
@@ -4192,11 +4190,6 @@ FLECS_API extern const ecs_entity_t EcsOneOf;
  * even when it or the relationship target is a component. */
 FLECS_API extern const ecs_entity_t EcsTag;
 
-/** Tag to indicate that relationship is stored as union. Union relationships 
- * enable changing the target of a union without switching tables. Union 
- * relationships are also marked as exclusive. */
-FLECS_API extern const ecs_entity_t EcsUnion;
-
 /** Tag to indicate name identifier */
 FLECS_API extern const ecs_entity_t EcsName;
 
@@ -6477,23 +6470,6 @@ const ecs_type_hooks_t* ecs_get_hooks_id(
  */
 FLECS_API
 bool ecs_id_is_tag(
-    const ecs_world_t *world,
-    ecs_id_t id);
-
-/** Return whether represents a union.
- * This operation returns whether the specified type represents a union. Only
- * pair ids can be unions.
- * 
- * An id represents a union when:
- * - The first element of the pair is EcsUnion/flecs::Union
- * - The first element of the pair has EcsUnion/flecs::Union
- *
- * @param world The world.
- * @param id The id.
- * @return Whether the provided id represents a union.
- */
-FLECS_API
-bool ecs_id_is_union(
     const ecs_world_t *world,
     ecs_id_t id);
 
@@ -15341,7 +15317,6 @@ static const flecs::entity_t Final = EcsFinal;
 static const flecs::entity_t DontInherit = EcsDontInherit;
 static const flecs::entity_t AlwaysOverride = EcsAlwaysOverride;
 static const flecs::entity_t Tag = EcsTag;
-static const flecs::entity_t Union = EcsUnion;
 static const flecs::entity_t Exclusive = EcsExclusive;
 static const flecs::entity_t Acyclic = EcsAcyclic;
 static const flecs::entity_t Traversable = EcsTraversable;
@@ -26387,13 +26362,6 @@ inline void entity_view::each(const Func& func) const {
         ecs_id_t id = ids[i];
         flecs::id ent(m_world, id);
         func(ent); 
-
-        // Union object is not stored in type, so handle separately
-        if (ECS_PAIR_FIRST(id) == EcsUnion) {
-            ent = flecs::id(m_world, ECS_PAIR_SECOND(id),
-                ecs_get_target(m_world, m_id, ECS_PAIR_SECOND(id), 0));
-            func(ent);
-        }
     }
 }
 
@@ -26588,22 +26556,6 @@ namespace _ {
         void populate(const Builder& b) {
             size_t i = 0;
             for (auto id : ids) {
-                if (!(id & ECS_ID_FLAGS_MASK)) {
-                    const flecs::type_info_t *ti = ecs_get_type_info(m_world, id);
-                    if (ti) {
-                        // Union relationships always return a value of type
-                        // flecs::entity_t which holds the target id of the 
-                        // union relationship.
-                        // If a union component with a non-zero size (like an 
-                        // enum) is added to the query signature, the each/iter
-                        // functions would accept a parameter of the component
-                        // type instead of flecs::entity_t, which would cause
-                        // an assert.
-                        ecs_assert(!ti->size || !ecs_has_id(m_world, id, flecs::Union),
-                            ECS_INVALID_PARAMETER,
-                            "use term() method to add union relationship");
-                    }
-                }
                 b->term(id).inout(inout[i]).oper(oper[i]);
                 i ++;
             }

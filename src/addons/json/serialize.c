@@ -679,17 +679,6 @@ int flecs_json_append_type_labels(
             continue;
         }
 
-        if (obj && (pred == EcsUnion)) {
-            pred = obj;
-            obj = ecs_get_target(world, ent, pred, 0);
-            if (!ecs_is_alive(world, obj)) {
-                /* Union relationships aren't automatically cleaned up, so they
-                 * can contain invalid entity ids. Don't serialize value until
-                 * relationship is valid again. */
-                continue;
-            }
-        }
-
         if (desc && desc->serialize_id_labels) {
             flecs_json_next(buf);
 
@@ -891,17 +880,6 @@ int flecs_json_append_type(
             ecs_entity_t pred = 0, obj = 0, role = 0;
             if (flecs_json_skip_id(world, ids[i], desc, ent, inst, &pred, &obj, &role, 0)) {
                 continue;
-            }
-
-            if (obj && (pred == EcsUnion)) {
-                pred = obj;
-                obj = ecs_get_target(world, ent, pred, 0);
-                if (!ecs_is_alive(world, obj)) {
-                    /* Union relationships aren't automatically cleaned up, so they
-                    * can contain invalid entity ids. Don't serialize value until
-                    * relationship is valid again. */
-                    continue;
-                }
             }
 
             flecs_json_next(buf);

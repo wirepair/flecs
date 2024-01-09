@@ -1367,18 +1367,18 @@
                 "group_table_count"
             ]
         }, {
-            "id": "Union",
+            "id": "MemberTarget",
+            "setup": true,
+            "params": {
+                "cache_kind": ["default", "auto"]
+            },
             "testcases": [
-                "query_w_existing_switch_and_case",
-                "query_w_new_switch_and_case",
-                "query_for_case_existing",
-                "query_for_case_new",
-                "query_for_switch_filter_term",
-                "query_switch_from_nothing",
-                "query_case_from_nothing",
-                "query_case_inherited",
-                "query_case_w_generation",
-                "query_case_w_not_alive"
+                "this_member_eq",
+                "this_member_wildcard",
+                "this_member_var",
+                "this_written_member_eq",
+                "this_written_member_wildcard",
+                "this_written_member_var"
             ]
         }, {
             "id": "Toggle",

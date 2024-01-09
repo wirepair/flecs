@@ -1316,17 +1316,14 @@ void GroupBy_group_by_callbacks(void);
 void GroupBy_group_by_default_action(void);
 void GroupBy_group_table_count(void);
 
-// Testsuite 'Union'
-void Union_query_w_existing_switch_and_case(void);
-void Union_query_w_new_switch_and_case(void);
-void Union_query_for_case_existing(void);
-void Union_query_for_case_new(void);
-void Union_query_for_switch_filter_term(void);
-void Union_query_switch_from_nothing(void);
-void Union_query_case_from_nothing(void);
-void Union_query_case_inherited(void);
-void Union_query_case_w_generation(void);
-void Union_query_case_w_not_alive(void);
+// Testsuite 'MemberTarget'
+void MemberTarget_setup(void);
+void MemberTarget_this_member_eq(void);
+void MemberTarget_this_member_wildcard(void);
+void MemberTarget_this_member_var(void);
+void MemberTarget_this_written_member_eq(void);
+void MemberTarget_this_written_member_wildcard(void);
+void MemberTarget_this_written_member_var(void);
 
 // Testsuite 'Toggle'
 void Toggle_query_disabled_from_nothing(void);
@@ -6463,46 +6460,30 @@ bake_test_case GroupBy_testcases[] = {
     }
 };
 
-bake_test_case Union_testcases[] = {
+bake_test_case MemberTarget_testcases[] = {
     {
-        "query_w_existing_switch_and_case",
-        Union_query_w_existing_switch_and_case
+        "this_member_eq",
+        MemberTarget_this_member_eq
     },
     {
-        "query_w_new_switch_and_case",
-        Union_query_w_new_switch_and_case
+        "this_member_wildcard",
+        MemberTarget_this_member_wildcard
     },
     {
-        "query_for_case_existing",
-        Union_query_for_case_existing
+        "this_member_var",
+        MemberTarget_this_member_var
     },
     {
-        "query_for_case_new",
-        Union_query_for_case_new
+        "this_written_member_eq",
+        MemberTarget_this_written_member_eq
     },
     {
-        "query_for_switch_filter_term",
-        Union_query_for_switch_filter_term
+        "this_written_member_wildcard",
+        MemberTarget_this_written_member_wildcard
     },
     {
-        "query_switch_from_nothing",
-        Union_query_switch_from_nothing
-    },
-    {
-        "query_case_from_nothing",
-        Union_query_case_from_nothing
-    },
-    {
-        "query_case_inherited",
-        Union_query_case_inherited
-    },
-    {
-        "query_case_w_generation",
-        Union_query_case_w_generation
-    },
-    {
-        "query_case_w_not_alive",
-        Union_query_case_w_not_alive
+        "this_written_member_var",
+        MemberTarget_this_written_member_var
     }
 };
 
@@ -6526,6 +6507,9 @@ bake_test_param Recycled_params[] = {
     {"cache_kind", (char*[]){"default", "auto"}, 2}
 };
 bake_test_param Traversal_params[] = {
+    {"cache_kind", (char*[]){"default", "auto"}, 2}
+};
+bake_test_param MemberTarget_params[] = {
     {"cache_kind", (char*[]){"default", "auto"}, 2}
 };
 
@@ -6653,11 +6637,13 @@ static bake_test_suite suites[] = {
         GroupBy_testcases
     },
     {
-        "Union",
+        "MemberTarget",
+        MemberTarget_setup,
         NULL,
-        NULL,
-        10,
-        Union_testcases
+        6,
+        MemberTarget_testcases,
+        1,
+        MemberTarget_params
     },
     {
         "Toggle",

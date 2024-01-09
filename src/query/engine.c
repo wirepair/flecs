@@ -20,18 +20,6 @@ bool flecs_query_run_until(
     ecs_query_lbl_t cur,
     ecs_query_op_kind_t until);
 
-ecs_allocator_t* flecs_query_get_allocator(
-    const ecs_iter_t *it)
-{
-    ecs_world_t *world = it->world;
-    if (ecs_poly_is(world, ecs_world_t)) {
-        return &world->allocator;
-    } else {
-        ecs_assert(ecs_poly_is(world, ecs_stage_t), ECS_INTERNAL_ERROR, NULL);
-        return &((ecs_stage_t*)world)->allocator;
-    }
-}
-
 static
 void flecs_query_set_iter_this(
     ecs_iter_t *it,

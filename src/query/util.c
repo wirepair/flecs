@@ -5,6 +5,171 @@
 
 #include "../private_api.h"
 
+ecs_query_lbl_t flecs_itolbl(int64_t val) {
+    return flecs_ito(int16_t, val);
+}
+
+ecs_var_id_t flecs_itovar(int64_t val) {
+    return flecs_ito(uint8_t, val);
+}
+
+ecs_var_id_t flecs_utovar(uint64_t val) {
+    return flecs_uto(uint8_t, val);
+}
+
+bool flecs_term_is_builtin_pred(
+    ecs_term_t *term)
+{
+    if (term->first.id & EcsIsEntity) {
+        ecs_entity_t id = ECS_TERM_REF_ID(&term->first);
+        if (id == EcsPredEq || id == EcsPredMatch || id == EcsPredLookup) {
+            return true;
+        }
+    }
+    return false;
+}
+
+const char* flecs_term_ref_var_name(
+    ecs_term_ref_t *ref)
+{
+    if (!(ref->id & EcsIsVariable)) {
+        return NULL;
+    }
+
+    if (ECS_TERM_REF_ID(ref) == EcsThis) {
+        return EcsThisName;
+    }
+
+    return ref->name;
+}
+
+bool flecs_term_ref_is_wildcard(
+    ecs_term_ref_t *ref)
+{
+    if ((ref->id & EcsIsVariable) && 
+        ((ECS_TERM_REF_ID(ref) == EcsWildcard) || (ECS_TERM_REF_ID(ref) == EcsAny))) 
+    {
+        return true;
+    }
+    return false;
+}
+
+bool flecs_term_is_fixed_id(
+    ecs_query_t *q,
+    ecs_term_t *term)
+{
+    /* Transitive/inherited terms have variable ids */
+    if (term->flags & (EcsTermTransitive|EcsTermIdInherited)) {
+        return false;
+    }
+
+    /* Or terms can match different ids */
+    if (term->oper == EcsOr) {
+        return false;
+    }
+    if ((term != q->terms) && term[-1].oper == EcsOr) {
+        return false;
+    }
+
+    /* Wildcards can assume different ids */
+    if (ecs_id_is_wildcard(term->id)) {
+        return false;
+    }
+
+    /* Any terms can have fixed ids, but they require special handling */
+    if (term->flags & (EcsTermMatchAny|EcsTermMatchAnySrc)) {
+        return false;
+    }
+
+    /* First terms that are Not or Optional require special handling */
+    if (term->oper == EcsNot || term->oper == EcsOptional) {
+        if (term == q->terms) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool flecs_term_is_or(
+    const ecs_query_t *q,
+    const ecs_term_t *term)
+{
+    bool first_term = term == q->terms;
+    return (term->oper == EcsOr) || (!first_term && term[-1].oper == EcsOr);
+}
+
+ecs_flags16_t flecs_query_ref_flags(
+    ecs_flags16_t flags,
+    ecs_flags16_t kind)
+{
+    return (flags >> kind) & (EcsRuleIsVar | EcsRuleIsEntity);
+}
+
+bool flecs_query_is_written(
+    ecs_var_id_t var_id,
+    uint64_t written)
+{
+    if (var_id == EcsVarNone) {
+        return true;
+    }
+
+    ecs_assert(var_id < EcsRuleMaxVarCount, ECS_INTERNAL_ERROR, NULL);
+    return (written & (1ull << var_id)) != 0;
+}
+
+void flecs_query_write(
+    ecs_var_id_t var_id,
+    uint64_t *written)
+{
+    ecs_assert(var_id < EcsRuleMaxVarCount, ECS_INTERNAL_ERROR, NULL);
+    *written |= (1ull << var_id);
+}
+
+void flecs_query_write_ctx(
+    ecs_var_id_t var_id,
+    ecs_query_compile_ctx_t *ctx,
+    bool cond_write)
+{
+    bool is_written = flecs_query_is_written(var_id, ctx->written);
+    flecs_query_write(var_id, &ctx->written);
+    if (!is_written) {
+        if (cond_write) {
+            flecs_query_write(var_id, &ctx->cond_written);
+        }
+    }
+}
+
+bool flecs_ref_is_written(
+    const ecs_query_op_t *op,
+    const ecs_query_ref_t *ref,
+    ecs_flags16_t kind,
+    uint64_t written)
+{
+    ecs_flags16_t flags = flecs_query_ref_flags(op->flags, kind);
+    if (flags & EcsRuleIsEntity) {
+        ecs_assert(!(flags & EcsRuleIsVar), ECS_INTERNAL_ERROR, NULL);
+        if (ref->entity) {
+            return true;
+        }
+    } else if (flags & EcsRuleIsVar) {
+        return flecs_query_is_written(ref->var, written);
+    }
+    return false;
+}
+
+ecs_allocator_t* flecs_query_get_allocator(
+    const ecs_iter_t *it)
+{
+    ecs_world_t *world = it->world;
+    if (ecs_poly_is(world, ecs_world_t)) {
+        return &world->allocator;
+    } else {
+        ecs_assert(ecs_poly_is(world, ecs_stage_t), ECS_INTERNAL_ERROR, NULL);
+        return &((ecs_stage_t*)world)->allocator;
+    }
+}
+
 const char* flecs_query_op_str(
     uint16_t kind)
 {
@@ -45,6 +210,7 @@ const char* flecs_query_op_str(
     case EcsRulePredNeqName:   return "neq_nm    ";
     case EcsRulePredEqMatch:   return "eq_m      ";
     case EcsRulePredNeqMatch:  return "neq_m     ";
+    case EcsRuleMemberEq:      return "membereq  ";
     case EcsRuleLookup:        return "lookup    ";
     case EcsRuleSetVars:       return "setvars   ";
     case EcsRuleSetThis:       return "setthis   ";

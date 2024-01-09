@@ -9,7 +9,7 @@
 #include "private_types.h"
 #include "storage/table_cache.h"
 #include "storage/id_index.h"
-#include "query/rules.h"
+#include "query/query.h"
 #include "observable.h"
 #include "iter.h"
 #include "poly.h"

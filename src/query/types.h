@@ -1,9 +1,10 @@
  /**
- * @file addons/rules/rules.h
- * @brief Internal types and functions for rules addon.
+ * @file query/types.h
+ * @brief Internal types and functions for queries.
  */
 
-#include "cache.h"
+#ifndef FLECS_QUERY_TYPES
+#define FLECS_QUERY_TYPES
 
 typedef struct ecs_query_impl_t ecs_query_impl_t;
 typedef uint8_t ecs_var_id_t;
@@ -74,6 +75,7 @@ typedef enum {
     EcsRulePredNeqName,    /* Same as EcsRulePredNeq but with matching by name */
     EcsRulePredEqMatch,    /* Same as EcsRulePredEq but with fuzzy matching by name */
     EcsRulePredNeqMatch,   /* Same as EcsRulePredNeq but with fuzzy matching by name */
+    EcsRuleMemberEq,       /* Compare member value */
     EcsRuleLookup,         /* Lookup relative to variable */
     EcsRuleSetVars,        /* Populate it.sources from variables */
     EcsRuleSetThis,        /* Populate This entity variable */
@@ -317,7 +319,7 @@ struct ecs_query_impl_t {
     int32_t op_count;             /* Number of operations */
 
     /* Query cache */
-    ecs_query_cache_t *cache;     /* Cache, if query contains cached terms */
+    struct ecs_query_cache_t *cache; /* Cache, if query contains cached terms */
     int8_t *field_map;            /* Map field indices from cache to query */
 
     /* Change detection */
@@ -340,254 +342,111 @@ struct ecs_query_impl_t {
 #endif
 };
 
-/* Helper type for passing around context required for error messages */
-typedef struct {
-    const ecs_world_t *world;
-    ecs_query_t *filter;
-    ecs_term_t *term;
-    int32_t term_index;
-} ecs_query_validator_ctx_t;
 
-/* Convert integer to label */
-ecs_query_lbl_t flecs_itolbl(
-    int64_t val);
+/* Query cache types */
 
-/* Find variable by name/kind */
-ecs_var_id_t flecs_query_find_var_id(
-    const ecs_query_impl_t *rule,
-    const char *name,
-    ecs_var_kind_t kind);
+/** Table match data.
+ * Each table matched by the query is represented by a ecs_query_cache_table_match_t
+ * instance, which are linked together in a list. A table may match a query
+ * multiple times (due to wildcard queries) with different columns being matched
+ * by the query. */
+struct ecs_query_cache_table_match_t {
+    ecs_query_cache_table_match_t *next, *prev;
+    ecs_table_t *table;              /* The current table. */
+    int32_t offset;                  /* Starting point in table  */
+    int32_t count;                   /* Number of entities to iterate in table */
+    int32_t *columns;                /* Mapping from query fields to table columns */
+    int32_t *storage_columns;        /* Mapping from query fields to storage columns */
+    ecs_id_t *ids;                   /* Resolved (component) ids for current table */
+    ecs_entity_t *sources;           /* Subjects (sources) of ids */
+    ecs_vec_t refs;                  /* Cached components for non-this terms */
+    uint64_t group_id;               /* Value used to organize tables in groups */
+    int32_t *monitor;                /* Used to monitor table for changes */
+    ecs_entity_filter_t *entity_filter; /* Entity specific filters */
 
-/* Get ref flags (IsEntity) or IsVar) for ref (Src, First, Second) */
-ecs_flags16_t flecs_query_ref_flags(
-    ecs_flags16_t flags,
-    ecs_flags16_t kind);
+    /* Next match in cache for same table (includes empty tables) */
+    ecs_query_cache_table_match_t *next_match;
+};
 
-/* Check if variable is written */
-bool flecs_query_is_written(
-    ecs_var_id_t var_id,
-    uint64_t written);
+/** Table record type for query table cache. A query only has one per table. */
+typedef struct ecs_query_cache_table_t {
+    ecs_table_cache_hdr_t hdr;       /* Header for ecs_table_cache_t */
+    ecs_query_cache_table_match_t *first;  /* List with matches for table */
+    ecs_query_cache_table_match_t *last;   /* Last discovered match for table */
+    uint64_t table_id;
+    int32_t rematch_count;           /* Track whether table was rematched */
+} ecs_query_cache_table_t;
 
-/* Check if ref is written (calls flecs_query_is_written)*/
-bool flecs_ref_is_written(
-    const ecs_query_op_t *op,
-    const ecs_query_ref_t *ref,
-    ecs_flags16_t kind,
-    uint64_t written);
+/** Points to the beginning & ending of a query group */
+typedef struct ecs_query_cache_table_list_t {
+    ecs_query_cache_table_match_t *first;
+    ecs_query_cache_table_match_t *last;
+    ecs_query_group_info_t info;
+} ecs_query_cache_table_list_t;
 
-/* Compile filter to list of operations */
-int flecs_query_compile(
-    ecs_world_t *world,
-    ecs_stage_t *stage,
-    ecs_query_impl_t *rule);
+/* Query event type for notifying queries of world events */
+typedef enum ecs_query_cache_eventkind_t {
+    EcsQueryTableMatch,
+    EcsQueryTableRematch,
+    EcsQueryTableUnmatch,
+} ecs_query_cache_eventkind_t;
 
-/* Get allocator from iterator */
-ecs_allocator_t* flecs_query_get_allocator(
-    const ecs_iter_t *it);
+typedef struct ecs_query_cache_event_t {
+    ecs_query_cache_eventkind_t kind;
+    ecs_table_t *table;
+} ecs_query_cache_event_t;
 
+/* Query level block allocators have sizes that depend on query field count */
+typedef struct ecs_query_cache_allocators_t {
+    ecs_block_allocator_t columns;
+    ecs_block_allocator_t ids;
+    ecs_block_allocator_t sources;
+    ecs_block_allocator_t monitors;
+} ecs_query_cache_allocators_t;
 
-/* Traversal cache for transitive queries. Finds all reachable entities by
- * following a relationship */
+/** Query that is automatically matched against tables */
+typedef struct ecs_query_cache_t {
+    /* Query filter */
+    ecs_query_t *query;
 
-/* Find all entities when traversing downwards */
-void flecs_query_get_trav_down_cache(
-    const ecs_query_run_ctx_t *ctx,
-    ecs_trav_cache_t *cache,
-    ecs_entity_t trav,
-    ecs_entity_t entity);
+    /* Tables matched with query */
+    ecs_table_cache_t cache;
 
-/* Find all entities when traversing upwards */
-void flecs_query_get_trav_up_cache(
-    const ecs_query_run_ctx_t *ctx,
-    ecs_trav_cache_t *cache,
-    ecs_entity_t trav,
-    ecs_table_t *table);
+    /* Linked list with all matched non-empty tables, in iteration order */
+    ecs_query_cache_table_list_t list;
 
-/* Free traversal cache */
-void flecs_query_trav_cache_fini(
-    ecs_allocator_t *a,
-    ecs_trav_cache_t *cache);
+    /* Contains head/tail to nodes of query groups (if group_by is used) */
+    ecs_map_t groups;
 
-/* Traversal caches for up traversal. Enables searching upwards until an entity
- * with the queried for id has been found. */
+    /* Table sorting */
+    ecs_entity_t order_by_component;
+    ecs_order_by_action_t order_by;
+    ecs_sort_table_action_t sort_table;
+    ecs_vec_t table_slices;
+    int32_t order_by_term;
 
-/* Traverse downwards from starting entity to find all tables for which the 
- * specified entity is the source of the queried for id ('with'). */
-ecs_trav_down_t* flecs_query_get_down_cache(
-    const ecs_query_run_ctx_t *ctx,
-    ecs_trav_up_cache_t *cache,
-    ecs_entity_t trav,
-    ecs_entity_t entity,
-    ecs_id_record_t *idr_with,
-    bool self,
-    bool empty);
+    /* Table grouping */
+    ecs_entity_t group_by_id;
+    ecs_group_by_action_t group_by;
+    ecs_group_create_action_t on_group_create;
+    ecs_group_delete_action_t on_group_delete;
+    void *group_by_ctx;
+    ecs_ctx_free_t group_by_ctx_free;
 
-/* Free down traversal cache */
-void flecs_query_down_cache_fini(
-    ecs_allocator_t *a,
-    ecs_trav_up_cache_t *cache);
+    /* Monitor generation */
+    int32_t monitor_generation;
 
-ecs_trav_up_t* flecs_query_get_up_cache(
-    const ecs_query_run_ctx_t *ctx,
-    ecs_trav_up_cache_t *cache,
-    ecs_table_t *table,
-    ecs_id_t with,
-    ecs_entity_t trav,
-    ecs_id_record_t *idr_with,
-    ecs_id_record_t *idr_trav);
+    int32_t cascade_by;              /* Identify cascade term */
+    int32_t match_count;             /* How often have tables been (un)matched */
+    int32_t prev_match_count;        /* Track if sorting is needed */
+    int32_t rematch_count;           /* Track which tables were added during rematch */
 
-/* Free up traversal cache */
-void flecs_query_up_cache_fini(
-    ecs_trav_up_cache_t *cache);
+    /* Mixins */
+    ecs_world_t *world;
+    ecs_entity_t entity;
 
+    /* Query-level allocators */
+    ecs_query_cache_allocators_t allocators;
+} ecs_query_cache_t;
 
-/* -- Trivial iterators -- */
-
-/* Iterator for trivial queries. */
-bool flecs_query_trivial_search(
-    const ecs_query_impl_t *rule,
-    const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_trivial_ctx_t *op_ctx,
-    bool first,
-    ecs_flags64_t field_set);
-
-/* Iterator for trivial queries. */
-bool flecs_query_trivial_search_nodata(
-    const ecs_query_impl_t *rule,
-    const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_trivial_ctx_t *op_ctx,
-    bool first,
-    ecs_flags64_t field_set);
-
-/* Iterator for trivial queries with wildcard matching. */
-bool flecs_query_trivial_search_w_wildcards(
-    const ecs_query_impl_t *rule,
-    const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_trivial_ctx_t *op_ctx,
-    bool first,
-    ecs_flags64_t field_set);
-
-/* Trivial test for constrained $this. */
-bool flecs_query_trivial_test(
-    const ecs_query_impl_t *rule,
-    const ecs_query_run_ctx_t *ctx,
-    bool first,
-    ecs_flags64_t field_set);
-
-/* Trivial test for constrained $this with wildcard matching. */
-bool flecs_query_trivial_test_w_wildcards(
-    const ecs_query_impl_t *rule,
-    const ecs_query_run_ctx_t *ctx,
-    bool first,
-    ecs_flags64_t field_set);
-
-
-/* -- Cache iterators -- */
-
-bool flecs_query_cache_search(
-    const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx);
-
-bool flecs_query_cache_data_search(
-    const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx);
-
-bool flecs_query_is_cache_search(
-    const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx);
-
-bool flecs_query_is_cache_data_search(
-    const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx);
-
-bool flecs_query_is_cache_test(
-    const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx,
-    bool first);
-
-bool flecs_query_is_cache_data_test(
-    const ecs_query_impl_t *impl,
-    const ecs_query_run_ctx_t *ctx,
-    bool first);
-
-/* -- Cache internals -- */
-
-ecs_query_cache_t* flecs_query_cache_init(
-    ecs_query_impl_t *impl,
-    const ecs_query_desc_t *desc);
-
-void flecs_query_cache_fini(
-    ecs_query_impl_t *impl);
-
-void flecs_query_cache_notify(
-    ecs_world_t *world,
-    ecs_query_t *q,
-    ecs_query_cache_event_t *event);
-
-ecs_query_cache_table_t* flecs_query_cache_get_table(
-    ecs_query_cache_t *query,
-    ecs_table_t *table);
-
-void flecs_query_cache_sort_tables(
-    ecs_world_t *world,
-    ecs_query_impl_t *impl);
-
-int32_t flecs_query_cache_table_count(
-    ecs_query_cache_t *cache);
-
-int32_t flecs_query_cache_empty_table_count(
-    ecs_query_cache_t *cache);
-
-int32_t flecs_query_cache_entity_count(
-    const ecs_query_cache_t *cache);
-
-
-/* -- Change detection -- */
-
-void flecs_query_sync_match_monitor(
-    ecs_query_impl_t *impl,
-    ecs_query_cache_table_match_t *match);
-
-void flecs_query_mark_fields_dirty(
-    ecs_query_impl_t *impl,
-    ecs_iter_t *it);
-
-void flecs_query_mark_fixed_fields_dirty(
-    ecs_query_impl_t *impl,
-    ecs_iter_t *it);
-
-bool flecs_query_check_table_monitor(
-    ecs_query_impl_t *impl,
-    ecs_query_cache_table_t *table,
-    int32_t term);
-
-bool flecs_query_update_fixed_monitor(
-    ecs_query_impl_t *impl);
-
-bool flecs_query_check_fixed_monitor(
-    ecs_query_impl_t *impl);
-
-/* -- Validator -- */
-
-int flecs_query_finalize_query(
-    ecs_world_t *world,
-    ecs_query_t *q,
-    const ecs_query_desc_t *desc);
-
-
-/* -- Utils -- */
-
-char* flecs_query_str(
-    const ecs_world_t *world,
-    const ecs_query_t *filter,
-    const ecs_query_validator_ctx_t *ctx,
-    int32_t *term_start_out);
-
-/* Convert instruction kind to string */
-const char* flecs_query_op_str(
-    uint16_t kind);
-
-/* Internal function for creating iterator, doesn't run aperiodic tasks */
-ecs_iter_t flecs_query_iter(
-    const ecs_world_t *world,
-    const ecs_query_t *q);
+#endif

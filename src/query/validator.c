@@ -710,6 +710,17 @@ int flecs_term_finalize(
                 term->flags |= EcsTermReflexive;
             }
         }
+
+        /* Check if this is a member query */
+#ifdef FLECS_META
+        if (ecs_id(EcsMember) != 0) {
+            if (first_id && (term->first.id & EcsIsEntity)) {
+                if (ecs_has(world, first_id, EcsMember)) {
+                    term->flags |= EcsTermIsMember;
+                }
+            }
+        }
+#endif
     }
 
     if (ECS_TERM_REF_ID(first) == EcsVariable) {
@@ -749,6 +760,7 @@ int flecs_term_finalize(
             }
         }
     }
+
     if (!ecs_term_match_this(term)) {
         trivial_term = false;
     }
@@ -773,6 +785,10 @@ int flecs_term_finalize(
         cacheable_term = false;
     }
     if (term->id == ecs_childof(0)) {
+        cacheable_term = false;
+    }
+    if (term->flags & EcsTermIsMember) {
+        trivial_term = false;
         cacheable_term = false;
     }
 
@@ -866,7 +882,7 @@ ecs_term_t* flecs_query_or_other_type(
 }
 
 static
-int flecs_query_query_finalize_terms(
+int flecs_query_finalize_terms(
     const ecs_world_t *world,
     ecs_query_t *q)
 {
@@ -1017,6 +1033,10 @@ int flecs_query_query_finalize_terms(
             }
         }
 
+        if (term->flags & EcsTermIsMember) {
+            nodata_term = false;
+        }
+
         if (nodata_term) {
             nodata_terms ++;
             term->flags |= EcsTermNoData;
@@ -1118,6 +1138,10 @@ int flecs_query_query_finalize_terms(
                 if (ti) {
                     q->sizes[field] = ti->size;
                 }
+            }
+
+            if (term->flags & EcsTermIsMember) {
+                q->sizes[field] = ECS_SIZEOF(ecs_entity_t);
             }
         }
     }
@@ -1300,7 +1324,7 @@ int flecs_query_finalize_query(
     }
 
     /* Ensure all fields are consistent and properly filled out */
-    if (flecs_query_query_finalize_terms(world, q)) {
+    if (flecs_query_finalize_terms(world, q)) {
         goto error;
     }
 

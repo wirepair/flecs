@@ -1373,7 +1373,10 @@
                 "cache_kind": ["default", "auto"]
             },
             "testcases": [
-                "this_member_eq",
+                "this_member_eq_1",
+                "this_member_eq_2",
+                "this_member_eq_no_matches",
+                "this_member_eq_all_matches",
                 "this_member_wildcard",
                 "this_member_var",
                 "this_written_member_eq",

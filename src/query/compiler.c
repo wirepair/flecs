@@ -257,11 +257,17 @@ int flecs_query_discover_vars(
             }
         }
 
+        /* If member term, make sure source is available as entity */
+        if (term->flags & EcsTermIsMember) {
+            flecs_query_add_var_for_term_id(rule, src, vars, EcsVarEntity);
+        }
+
         /* Track if a This entity variable is used before a potential This table 
          * variable. If this happens, the rule has no This table variable */
         if (ECS_TERM_REF_ID(src) == EcsThis) {
             table_this = true;
         }
+
         if (ECS_TERM_REF_ID(first) == EcsThis || ECS_TERM_REF_ID(second) == EcsThis) {
             if (!table_this) {
                 entity_before_table_this = true;
@@ -679,7 +685,6 @@ bool flecs_term_match_multiple(
 }
 
 /* Insert instruction to populate data fields. */
-static
 void flecs_query_insert_populate(
     ecs_query_impl_t *rule,
     ecs_query_compile_ctx_t *ctx,
@@ -772,7 +777,7 @@ int flecs_query_insert_fixed_src_terms(
         }
 
         if (term->src.id & EcsIsEntity && ECS_TERM_REF_ID(&term->src)) {
-            if (flecs_query_compile_term(world, rule, term, ctx)) {
+            if (flecs_query_compile_term(world, rule, term, populated_out, ctx)) {
                 return -1;
             }
 
@@ -796,7 +801,7 @@ int flecs_query_insert_fixed_src_terms(
         flecs_query_insert_populate(rule, ctx, populated);
     }
 
-    *populated_out = populated;
+    *populated_out |= populated;
 
     return 0;
 }
@@ -841,7 +846,8 @@ int flecs_query_compile(
         for (i = 0; i < term_count; i ++) {
             ecs_term_t *term = &terms[i];
             if (flecs_term_is_fixed_id(q, term) || 
-            (term->src.id & EcsIsEntity && !(term->src.id & ~EcsTermRefFlags))) 
+                (term->src.id & EcsIsEntity && 
+                    !(term->src.id & ~EcsTermRefFlags))) 
             {
                 ecs_query_op_t set_ids = {0};
                 set_ids.kind = EcsRuleSetIds;
@@ -897,7 +903,7 @@ int flecs_query_compile(
             }
         }
 
-        if (flecs_query_compile_term(world, rule, term, &ctx)) {
+        if (flecs_query_compile_term(world, rule, term, &populated, &ctx)) {
             return -1;
         }
 

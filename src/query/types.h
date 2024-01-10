@@ -233,7 +233,7 @@ typedef struct {
 typedef struct {
     ecs_table_cache_iter_t it;
     const ecs_table_record_t *tr;
-} ecs_query_impl_trivial_ctx_t;
+} ecs_query_trivial_ctx_t;
 
 /* *From operator iterator context */
 typedef struct {
@@ -242,6 +242,12 @@ typedef struct {
     int32_t first_id_index;
     int32_t cur_id_index;
 } ecs_query_xfrom_ctx_t;
+
+/* Member equality context */
+typedef struct {
+    ecs_query_each_ctx_t each;
+    void *data;
+} ecs_query_membereq_ctx_t;
 
 typedef struct ecs_query_op_ctx_t {
     union {
@@ -254,7 +260,8 @@ typedef struct ecs_query_op_ctx_t {
         ecs_query_each_ctx_t each;
         ecs_query_setthis_ctx_t setthis;
         ecs_query_ctrl_ctx_t ctrl;
-        ecs_query_impl_trivial_ctx_t trivial;
+        ecs_query_trivial_ctx_t trivial;
+        ecs_query_membereq_ctx_t membereq;
     } is;
 } ecs_query_op_ctx_t;
 

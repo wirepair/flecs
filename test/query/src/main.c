@@ -1318,7 +1318,10 @@ void GroupBy_group_table_count(void);
 
 // Testsuite 'MemberTarget'
 void MemberTarget_setup(void);
-void MemberTarget_this_member_eq(void);
+void MemberTarget_this_member_eq_1(void);
+void MemberTarget_this_member_eq_2(void);
+void MemberTarget_this_member_eq_no_matches(void);
+void MemberTarget_this_member_eq_all_matches(void);
 void MemberTarget_this_member_wildcard(void);
 void MemberTarget_this_member_var(void);
 void MemberTarget_this_written_member_eq(void);
@@ -6462,8 +6465,20 @@ bake_test_case GroupBy_testcases[] = {
 
 bake_test_case MemberTarget_testcases[] = {
     {
-        "this_member_eq",
-        MemberTarget_this_member_eq
+        "this_member_eq_1",
+        MemberTarget_this_member_eq_1
+    },
+    {
+        "this_member_eq_2",
+        MemberTarget_this_member_eq_2
+    },
+    {
+        "this_member_eq_no_matches",
+        MemberTarget_this_member_eq_no_matches
+    },
+    {
+        "this_member_eq_all_matches",
+        MemberTarget_this_member_eq_all_matches
     },
     {
         "this_member_wildcard",
@@ -6640,7 +6655,7 @@ static bake_test_suite suites[] = {
         "MemberTarget",
         MemberTarget_setup,
         NULL,
-        6,
+        9,
         MemberTarget_testcases,
         1,
         MemberTarget_params

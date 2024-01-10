@@ -31,7 +31,7 @@ bool flecs_query_trivial_init(
 static
 bool flecs_query_trivial_search_init(
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_trivial_ctx_t *op_ctx,
+    ecs_query_trivial_ctx_t *op_ctx,
     const ecs_query_t *filter,
     bool first)
 {
@@ -58,7 +58,7 @@ bool flecs_query_trivial_search_init(
 bool flecs_query_trivial_search(
     const ecs_query_impl_t *rule,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_trivial_ctx_t *op_ctx,
+    ecs_query_trivial_ctx_t *op_ctx,
     bool first,
     ecs_flags64_t term_set)
 {
@@ -121,7 +121,7 @@ bool flecs_query_trivial_search(
 bool flecs_query_trivial_search_w_wildcards(
     const ecs_query_impl_t *rule,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_trivial_ctx_t *op_ctx,
+    ecs_query_trivial_ctx_t *op_ctx,
     bool first,
     ecs_flags64_t term_set)
 {
@@ -146,7 +146,7 @@ bool flecs_query_trivial_search_w_wildcards(
 bool flecs_query_trivial_search_nodata(
     const ecs_query_impl_t *rule,
     const ecs_query_run_ctx_t *ctx,
-    ecs_query_impl_trivial_ctx_t *op_ctx,
+    ecs_query_trivial_ctx_t *op_ctx,
     bool first,
     ecs_flags64_t term_set)
 {

@@ -16,6 +16,7 @@ int flecs_query_compile_term(
     ecs_world_t *world,
     ecs_query_impl_t *rule,
     ecs_term_t *term,
+    ecs_flags64_t *populated,
     ecs_query_compile_ctx_t *ctx);
 
 /* Compile term ref (first, second or src) */
@@ -52,6 +53,12 @@ void flecs_query_insert_each(
     ecs_var_id_t evar,
     ecs_query_compile_ctx_t *ctx,
     bool cond_write);
+
+/* Insert instruction that populates field */
+void flecs_query_insert_populate(
+    ecs_query_impl_t *rule,
+    ecs_query_compile_ctx_t *ctx,
+    ecs_flags64_t populated);
 
 /* Add discovered variable */
 ecs_var_id_t flecs_query_add_var(

@@ -108,7 +108,7 @@ ecs_query_lbl_t flecs_query_op_insert(
     if (count > 1) {
         if (ctx->cur->lbl_begin == -1) {
             /* Variables written by previous instruction can't be written by
-             * this instruction, except when this is a union. */
+             * this instruction, except when this is part of an OR chain. */
             elem->written &= ~elem[-1].written;
         }
     }
@@ -736,12 +736,190 @@ void flecs_query_compile_pop(
     ctx->cur = &ctx->ctrlflow[-- ctx->scope];
 }
 
+static
+int flecs_query_compile_0_src(
+    ecs_world_t *world,
+    ecs_query_impl_t *impl,
+    ecs_term_t *term,
+    ecs_query_compile_ctx_t *ctx)
+{
+    /* If the term has a 0 source, check if it's a scope open/close */
+    if (ECS_TERM_REF_ID(&term->first) == EcsScopeOpen) {
+        if (flecs_query_ensure_scope_vars(world, impl, ctx, term)) {
+            goto error;
+        }
+        if (term->oper == EcsNot) {
+            ctx->scope_is_not |= (ecs_flags32_t)(1ull << ctx->scope);
+            flecs_query_begin_block(EcsRuleNot, ctx);
+        } else {
+            ctx->scope_is_not &= (ecs_flags32_t)~(1ull << ctx->scope);
+        }
+        flecs_query_compile_push(ctx);
+    } else if (ECS_TERM_REF_ID(&term->first) == EcsScopeClose) {
+        flecs_query_compile_pop(ctx);
+        if (ctx->scope_is_not & (ecs_flags32_t)(1ull << (ctx->scope))) {
+            ctx->cur->lbl_query = -1;
+            flecs_query_end_block(ctx);
+        }
+    } else {
+        /* Noop */
+    }
+
+    return 0;
+error:
+    return -1;
+}
+
+static
+bool flecs_query_select_all(
+    ecs_term_t *term,
+    ecs_query_op_t *op,
+    ecs_var_id_t src_var,
+    ecs_query_compile_ctx_t *ctx)
+{
+    bool builtin_pred = flecs_term_is_builtin_pred(term);
+    bool pred_match = builtin_pred && ECS_TERM_REF_ID(&term->first) == EcsPredMatch;
+    if (term->oper == EcsNot || term->oper == EcsOptional || term->oper == EcsNotFrom || pred_match) {
+        ecs_query_op_t match_any = {0};
+        match_any.kind = EcsAnd;
+        match_any.flags = EcsRuleIsSelf | (EcsRuleIsEntity << EcsRuleFirst);
+        match_any.flags |= (EcsRuleIsVar << EcsRuleSrc);
+        match_any.src = op->src;
+        match_any.field_index = -1;
+        if (!pred_match) {
+            match_any.first.entity = EcsAny;
+        } else {
+            /* If matching by name, instead of finding all tables, just find
+                * the ones with a name. */
+            match_any.first.entity = ecs_id(EcsIdentifier);
+            match_any.second.entity = EcsName;
+            match_any.flags |= (EcsRuleIsEntity << EcsRuleSecond);
+        }
+        match_any.written = (1ull << src_var);
+        flecs_query_op_insert(&match_any, ctx);
+        flecs_query_write_ctx(op->src.var, ctx, false);
+
+        /* Update write administration */
+        return true;
+    }
+    return false;
+}
+
+#ifdef FLECS_META
+int flecs_query_compile_begin_member_term(
+    ecs_world_t *world,
+    ecs_query_impl_t *impl,
+    ecs_term_t *term,
+    ecs_query_compile_ctx_t *ctx,
+    ecs_id_t term_id,
+    ecs_entity_t first_id,
+    ecs_entity_t second_id)
+{
+    ecs_assert(first_id != 0, ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(first_id & EcsIsEntity, ECS_INTERNAL_ERROR, NULL);
+
+    first_id = ECS_TERM_REF_ID(&term->first);
+
+    /* First compile as if it's a regular term, to match the component */
+    term->flags &= ~EcsTermIsMember;
+
+    /* Replace term id with member parent (the component) */
+    ecs_entity_t component = ecs_get_parent(world, first_id);
+    if (!component) {
+        ecs_err("member without parent in query");
+        return -1;
+    }
+
+    if (!ecs_has(world, component, EcsComponent)) {
+        ecs_err("parent of member is not a component");
+        return -1;
+    }
+
+    term->first.id = component | ECS_TERM_REF_FLAGS(&term->first);
+    term->second.id = 0;
+    term->id = component;
+    return 0;
+}
+
+int flecs_query_compile_end_member_term(
+    ecs_world_t *world,
+    ecs_query_impl_t *impl,
+    ecs_query_op_t *op,
+    ecs_term_t *term,
+    ecs_query_compile_ctx_t *ctx,
+    ecs_id_t term_id,
+    ecs_entity_t first_id,
+    ecs_entity_t second_id,
+    bool cond_write)
+{
+    ecs_entity_t component = ECS_TERM_REF_ID(&term->first);
+    const EcsComponent *comp = ecs_get(world, component, EcsComponent);
+    ecs_assert(comp != NULL, ECS_INTERNAL_ERROR, NULL);
+
+    /* Restore term values */
+    term->id = term_id;
+    term->first.id = first_id;
+    term->second.id = second_id;
+    term->flags |= EcsTermIsMember;
+
+    first_id = ECS_TERM_REF_ID(&term->first);
+    const EcsMember *member = ecs_get(world, first_id, EcsMember);
+    ecs_assert(member != NULL, ECS_INTERNAL_ERROR, NULL);
+
+    /* Insert instruction that populates field before checking the value */
+    ecs_flags64_t populate_flags = 1llu << term->field_index;
+    flecs_query_insert_populate(impl, ctx, populate_flags);
+
+    ecs_query_op_t mbr_op = *op;
+    mbr_op.kind = EcsRuleMemberEq;
+    mbr_op.first.entity = /* Encode type size and member offset */
+        flecs_ito(uint32_t, member->offset) | 
+        (flecs_ito(uint64_t, comp->size) << 32);
+    
+    ecs_query_var_t *var = &impl->vars[op->src.var];
+    if (var->kind == EcsVarTable) {
+        /* If MemberEq is called on table variable, store it on .other member.
+         * This causes MemberEq to do double duty as 'each' instruction,
+         * which is faster than having to go back & forth between instructions
+         * while finding matching values. */
+        mbr_op.other = op->src.var + 1;
+
+        /* Mark entity variable as written */
+        const char *var_name = flecs_term_ref_var_name(&term->src);
+        ecs_var_id_t evar = flecs_query_find_var_id(
+            impl, var_name, EcsVarEntity);
+        flecs_query_write_ctx(evar, ctx, cond_write);
+        flecs_query_write(evar, &mbr_op.written);
+    }
+
+    flecs_query_compile_term_ref(world, impl, &mbr_op, &term->src, 
+        &mbr_op.src, EcsRuleSrc, EcsVarEntity, ctx, true);
+    flecs_query_compile_term_ref(world, impl, &mbr_op, &term->second, 
+        &mbr_op.second, EcsRuleSecond, EcsVarEntity, ctx, true);
+
+    flecs_query_op_insert(&mbr_op, ctx);
+
+    return 0;
+}
+#endif
+
 int flecs_query_compile_term(
     ecs_world_t *world,
     ecs_query_impl_t *rule,
     ecs_term_t *term,
+    ecs_flags64_t *populated,
     ecs_query_compile_ctx_t *ctx)
 {
+    ecs_id_t term_id = term->id;
+    ecs_entity_t first_id = term->first.id;
+    ecs_entity_t second_id = term->second.id;
+    bool member_term = (term->flags & EcsTermIsMember) != 0;
+    if (member_term) {
+        (*populated) |= (1llu << term->field_index);
+        flecs_query_compile_begin_member_term(
+            world, rule, term, ctx, term_id, first_id, second_id);
+    }
+
     ecs_query_t *q = &rule->pub;
     bool first_term = term == q->terms;
     bool first_is_var = term->first.id & EcsIsVariable;
@@ -776,26 +954,8 @@ int flecs_query_compile_term(
     }
 
     if (!ECS_TERM_REF_ID(&term->src) && term->src.id & EcsIsEntity) {
-        /* If the term has a 0 source, check if it's a scope open/close */
-        if (ECS_TERM_REF_ID(&term->first) == EcsScopeOpen) {
-            if (flecs_query_ensure_scope_vars(world, rule, ctx, term)) {
-                goto error;
-            }
-            if (term->oper == EcsNot) {
-                ctx->scope_is_not |= (ecs_flags32_t)(1ull << ctx->scope);
-                flecs_query_begin_block(EcsRuleNot, ctx);
-            } else {
-                ctx->scope_is_not &= (ecs_flags32_t)~(1ull << ctx->scope);
-            }
-            flecs_query_compile_push(ctx);
-        } else if (ECS_TERM_REF_ID(&term->first) == EcsScopeClose) {
-            flecs_query_compile_pop(ctx);
-            if (ctx->scope_is_not & (ecs_flags32_t)(1ull << (ctx->scope))) {
-                ctx->cur->lbl_query = -1;
-                flecs_query_end_block(ctx);
-            }
-        } else {
-            /* Noop */
+        if (flecs_query_compile_0_src(world, rule, term, ctx)) {
+            goto error;
         }
         return 0;
     }
@@ -841,7 +1001,7 @@ int flecs_query_compile_term(
 
     /* If term has fixed id, insert simpler instruction that skips dealing with
      * wildcard terms and variables */
-    if (flecs_term_is_fixed_id(q, term)) {
+    if (flecs_term_is_fixed_id(q, term) && !member_term) {
         if (op.kind == EcsRuleAnd) {
             op.kind = EcsRuleAndId;
         } else if (op.kind == EcsRuleSelfUp) {
@@ -894,30 +1054,7 @@ int flecs_query_compile_term(
      * written to yet, insert instruction that selects all entities so we have
      * something to match the optional/not against. */
     if (src_is_var && !src_written && !src_is_wildcard && !src_is_lookup) {
-        bool pred_match = builtin_pred && ECS_TERM_REF_ID(&term->first) == EcsPredMatch;
-        if (term->oper == EcsNot || term->oper == EcsOptional || term->oper == EcsNotFrom || pred_match) {
-            ecs_query_op_t match_any = {0};
-            match_any.kind = EcsAnd;
-            match_any.flags = EcsRuleIsSelf | (EcsRuleIsEntity << EcsRuleFirst);
-            match_any.flags |= (EcsRuleIsVar << EcsRuleSrc);
-            match_any.src = op.src;
-            match_any.field_index = -1;
-            if (!pred_match) {
-                match_any.first.entity = EcsAny;
-            } else {
-                /* If matching by name, instead of finding all tables, just find
-                 * the ones with a name. */
-                match_any.first.entity = ecs_id(EcsIdentifier);
-                match_any.second.entity = EcsName;
-                match_any.flags |= (EcsRuleIsEntity << EcsRuleSecond);
-            }
-            match_any.written = (1ull << src_var);
-            flecs_query_op_insert(&match_any, ctx);
-            flecs_query_write_ctx(op.src.var, ctx, false);
-
-            /* Update write administration */
-            src_written = true;
-        }
+        src_written = flecs_query_select_all(term, &op, src_var, ctx);
     }
 
     /* A bit of special logic for OR expressions and equality predicates. If the
@@ -1076,6 +1213,12 @@ int flecs_query_compile_term(
         flecs_query_write_ctx(second_var, ctx, cond_write);
     }
     flecs_query_op_insert(&op, ctx);
+
+    /* Now that the term is resolved, evaluate member of component */
+    if (member_term) {
+        flecs_query_compile_end_member_term(world, rule, &op, term, ctx, 
+            term_id, first_id, second_id, cond_write);
+    }
 
     ctx->cur->lbl_query = flecs_itolbl(ecs_vec_count(ctx->ops) - 1);
     if (is_or) {

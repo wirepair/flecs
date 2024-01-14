@@ -6276,8 +6276,6 @@ void Operators_core_entities_w_optional_children(void) {
 
     test_assert(q != NULL);
 
-    printf("%s\n", ecs_query_plan(q));
-
     int this_var = ecs_query_find_var(q, "This");
     test_assert(this_var != -1);
     test_assert(this_var != 0);

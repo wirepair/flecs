@@ -1334,6 +1334,16 @@ void MemberTarget_this_written_member_eq_1(void);
 void MemberTarget_this_written_member_eq_2(void);
 void MemberTarget_this_written_member_wildcard(void);
 void MemberTarget_this_written_member_var(void);
+void MemberTarget_this_member_neq_1(void);
+void MemberTarget_this_member_neq_2(void);
+void MemberTarget_this_member_neq_no_matches(void);
+void MemberTarget_this_member_neq_all_matches(void);
+void MemberTarget_this_member_neq_wildcard(void);
+void MemberTarget_this_written_member_neq_1(void);
+void MemberTarget_this_written_member_neq_2(void);
+void MemberTarget_this_written_member_neq_no_matches(void);
+void MemberTarget_this_written_member_neq_all_matches(void);
+void MemberTarget_this_written_member_neq_wildcard(void);
 
 // Testsuite 'Toggle'
 void Toggle_query_disabled_from_nothing(void);
@@ -6534,6 +6544,46 @@ bake_test_case MemberTarget_testcases[] = {
     {
         "this_written_member_var",
         MemberTarget_this_written_member_var
+    },
+    {
+        "this_member_neq_1",
+        MemberTarget_this_member_neq_1
+    },
+    {
+        "this_member_neq_2",
+        MemberTarget_this_member_neq_2
+    },
+    {
+        "this_member_neq_no_matches",
+        MemberTarget_this_member_neq_no_matches
+    },
+    {
+        "this_member_neq_all_matches",
+        MemberTarget_this_member_neq_all_matches
+    },
+    {
+        "this_member_neq_wildcard",
+        MemberTarget_this_member_neq_wildcard
+    },
+    {
+        "this_written_member_neq_1",
+        MemberTarget_this_written_member_neq_1
+    },
+    {
+        "this_written_member_neq_2",
+        MemberTarget_this_written_member_neq_2
+    },
+    {
+        "this_written_member_neq_no_matches",
+        MemberTarget_this_written_member_neq_no_matches
+    },
+    {
+        "this_written_member_neq_all_matches",
+        MemberTarget_this_written_member_neq_all_matches
+    },
+    {
+        "this_written_member_neq_wildcard",
+        MemberTarget_this_written_member_neq_wildcard
     }
 };
 
@@ -6690,7 +6740,7 @@ static bake_test_suite suites[] = {
         "MemberTarget",
         MemberTarget_setup,
         NULL,
-        16,
+        26,
         MemberTarget_testcases,
         1,
         MemberTarget_params

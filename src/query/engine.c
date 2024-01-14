@@ -2027,10 +2027,11 @@ bool flecs_query_pred_neq_match(
 }
 
 static
-bool flecs_query_member_eq(
+bool flecs_query_member_cmp(
     const ecs_query_op_t *op,
     bool redo,
-    ecs_query_run_ctx_t *ctx)
+    ecs_query_run_ctx_t *ctx,
+    bool neq)
 {
     ecs_table_range_t range;
     if (op->other) {
@@ -2072,13 +2073,15 @@ bool flecs_query_member_eq(
         data = op_ctx->data;
     }
 
-    ecs_assert(row < ecs_table_count(table), ECS_INTERNAL_ERROR, NULL);
-
     uint32_t offset = (uint32_t)op->first.entity;
     uint32_t size = (uint32_t)(op->first.entity >> 32);
     ecs_entity_t *entities = table->data.entities.array;
     ecs_entity_t e = 0;
     ecs_entity_t *val;
+
+    ecs_assert(row < ecs_table_count(table), ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(data != NULL, ECS_INTERNAL_ERROR, NULL); /* Must be written */
+    ecs_assert(entities != NULL, ECS_INTERNAL_ERROR, NULL);
 
     bool second_written = true;
     if (op->flags & (EcsRuleIsVar << EcsRuleSecond)) {
@@ -2097,7 +2100,13 @@ bool flecs_query_member_eq(
 
             val = ECS_OFFSET(ECS_ELEM(data, size, row), offset);
             if (val[0] == second || second == EcsWildcard) {
-                goto match;
+                if (!neq) {
+                    goto match;
+                }
+            } else {
+                if (neq) {
+                    goto match;
+                }
             }
 
             row ++;
@@ -2120,6 +2129,24 @@ match:
     op_ctx->each.row = row;
 
     return true;
+}
+
+static
+bool flecs_query_member_eq(
+    const ecs_query_op_t *op,
+    bool redo,
+    ecs_query_run_ctx_t *ctx)
+{
+    return flecs_query_member_cmp(op, redo, ctx, false);
+}
+
+static
+bool flecs_query_member_neq(
+    const ecs_query_op_t *op,
+    bool redo,
+    ecs_query_run_ctx_t *ctx)
+{
+    return flecs_query_member_cmp(op, redo, ctx, true);
 }
 
 static
@@ -2417,8 +2444,10 @@ bool flecs_query_run_block(
 
     ctx->written[ctx->op_index + 1] = ctx->written[ctx->op_index];
 
-    return flecs_query_run_until(
+    bool result = flecs_query_run_until(
         redo, ctx, qit->ops, ctx->op_index, op_ctx->op_index, EcsRuleEnd);
+    op_ctx->op_index = ctx->op_index - 1;
+    return result;
 }
 
 static
@@ -2521,6 +2550,7 @@ bool flecs_query_run_block_w_reset(
     ecs_query_run_ctx_t *ctx)
 {
     ecs_query_ctrl_ctx_t *op_ctx = flecs_op_ctx(ctx, ctrl);
+
     bool result = flecs_query_run_block(redo, ctx, op_ctx);
     if (!result) {
         flecs_query_reset_after_block(op, ctx, op_ctx);
@@ -2573,7 +2603,7 @@ bool flecs_query_eval_if(
 }
 
 static
-bool flecs_query_if(
+bool flecs_query_if_var(
     const ecs_query_op_t *op,
     bool redo,
     ecs_query_run_ctx_t *ctx)
@@ -2585,6 +2615,21 @@ bool flecs_query_if(
         {
             return true;
         }
+    }
+
+    return flecs_query_run_block_w_reset(op, redo, ctx);
+}
+
+static
+bool flecs_query_if_set(
+    const ecs_query_op_t *op,
+    bool redo,
+    ecs_query_run_ctx_t *ctx)
+{
+    ecs_iter_t *it = ctx->it;
+    uint8_t field_index = op->other;
+    if (it->columns[field_index] == 0) {
+        return !redo;
     }
 
     return flecs_query_run_block_w_reset(op, redo, ctx);
@@ -2755,7 +2800,8 @@ bool flecs_query_dispatch(
     case EcsRuleReset: return flecs_query_reset(op, redo, ctx);
     case EcsRuleOr: return flecs_query_or(op, redo, ctx);
     case EcsRuleOptional: return flecs_query_optional(op, redo, ctx);
-    case EcsRuleIf: return flecs_query_if(op, redo, ctx);
+    case EcsRuleIfVar: return flecs_query_if_var(op, redo, ctx);
+    case EcsRuleIfSet: return flecs_query_if_set(op, redo, ctx);
     case EcsRuleEnd: return flecs_query_end(op, redo, ctx);
     case EcsRuleNot: return flecs_query_not(op, redo, ctx);
     case EcsRulePredEq: return flecs_query_pred_eq(op, redo, ctx);
@@ -2765,6 +2811,7 @@ bool flecs_query_dispatch(
     case EcsRulePredEqMatch: return flecs_query_pred_eq_match(op, redo, ctx);
     case EcsRulePredNeqMatch: return flecs_query_pred_neq_match(op, redo, ctx);
     case EcsRuleMemberEq: return flecs_query_member_eq(op, redo, ctx);
+    case EcsRuleMemberNeq: return flecs_query_member_neq(op, redo, ctx);
     case EcsRuleLookup: return flecs_query_lookup(op, redo, ctx);
     case EcsRuleSetVars: return flecs_query_setvars(op, redo, ctx);
     case EcsRuleSetThis: return flecs_query_setthis(op, redo, ctx);

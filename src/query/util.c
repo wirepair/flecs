@@ -201,7 +201,8 @@ const char* flecs_query_op_str(
     case EcsRuleReset:         return "reset     ";
     case EcsRuleOr:            return "or        ";
     case EcsRuleOptional:      return "option    ";
-    case EcsRuleIf:            return "if        ";
+    case EcsRuleIfVar:         return "ifvar     ";
+    case EcsRuleIfSet:         return "ifset     ";
     case EcsRuleEnd:           return "end       ";
     case EcsRuleNot:           return "not       ";
     case EcsRulePredEq:        return "eq        ";
@@ -211,6 +212,7 @@ const char* flecs_query_op_str(
     case EcsRulePredEqMatch:   return "eq_m      ";
     case EcsRulePredNeqMatch:  return "neq_m     ";
     case EcsRuleMemberEq:      return "membereq  ";
+    case EcsRuleMemberNeq:     return "memberneq ";
     case EcsRuleLookup:        return "lookup    ";
     case EcsRuleSetVars:       return "setvars   ";
     case EcsRuleSetThis:       return "setthis   ";
@@ -323,7 +325,8 @@ char* ecs_query_str_w_profile(
         if (op->kind == EcsRuleNot || 
             op->kind == EcsRuleOr || 
             op->kind == EcsRuleOptional || 
-            op->kind == EcsRuleIf) 
+            op->kind == EcsRuleIfVar ||
+            op->kind == EcsRuleIfSet) 
         {
             indent ++;
         }
@@ -346,6 +349,11 @@ char* ecs_query_str_w_profile(
             ecs_strbuf_list_pop(&buf, "]");
         }
 
+        if (op->kind == EcsRuleIfSet) {
+            ecs_strbuf_list_append(&buf, "[%d]\n", op->other);
+            continue;
+        }
+
         if (!first_flags && !second_flags) {
             ecs_strbuf_appendstr(&buf, "\n");
             continue;
@@ -362,7 +370,7 @@ char* ecs_query_str_w_profile(
         }
 
         ecs_strbuf_appendstr(&buf, "(");
-        if (op->kind == EcsRuleMemberEq) {
+        if (op->kind == EcsRuleMemberEq || op->kind == EcsRuleMemberNeq) {
             uint32_t offset = (uint32_t)op->first.entity;
             uint32_t size = (uint32_t)(op->first.entity >> 32);
             ecs_strbuf_append(&buf, "#[yellow]elem#[reset](%d, 0x%x, 0x%x)", 

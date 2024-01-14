@@ -710,11 +710,6 @@ void flecs_query_insert_populate(
             populate_count ++;
 
             /* Callee is asking us to populate a term without data */
-            ecs_assert(!(term->flags & EcsTermNoData), 
-                ECS_INTERNAL_ERROR, NULL);
-            ecs_assert(q->data_fields & (1llu << field), 
-                ECS_INTERNAL_ERROR, NULL);
-
             if (ecs_term_match_this(term) && !(term->src.id & EcsUp)) {
                 self_count ++;
             }

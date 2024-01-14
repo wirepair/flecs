@@ -66,7 +66,8 @@ typedef enum {
     EcsRuleReset,          /* Reset value of variable to wildcard (*) */
     EcsRuleOr,             /* Or operator */
     EcsRuleOptional,       /* Optional operator */
-    EcsRuleIf,             /* Conditional execution */
+    EcsRuleIfVar,          /* Conditional execution on whether variable is set */
+    EcsRuleIfSet,          /* Conditional execution on whether term is set */
     EcsRuleNot,            /* Sets iterator state after term was not matched */
     EcsRuleEnd,            /* End of control flow block */
     EcsRulePredEq,         /* Test if variable is equal to, or assign to if not set */
@@ -76,6 +77,7 @@ typedef enum {
     EcsRulePredEqMatch,    /* Same as EcsRulePredEq but with fuzzy matching by name */
     EcsRulePredNeqMatch,   /* Same as EcsRulePredNeq but with fuzzy matching by name */
     EcsRuleMemberEq,       /* Compare member value */
+    EcsRuleMemberNeq,      /* Compare member value */
     EcsRuleLookup,         /* Lookup relative to variable */
     EcsRuleSetVars,        /* Populate it.sources from variables */
     EcsRuleSetThis,        /* Populate This entity variable */
@@ -286,6 +288,7 @@ typedef struct {
 
     int32_t scope; /* Nesting level of query scopes */
     ecs_flags32_t scope_is_not; /* Whether scope is prefixed with not */
+    ecs_oper_kind_t oper; /* Temp storage to track current operator for term */
 } ecs_query_compile_ctx_t;    
 
 /* Rule run state */

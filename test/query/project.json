@@ -1388,7 +1388,17 @@
                 "this_written_member_eq_1",
                 "this_written_member_eq_2",
                 "this_written_member_wildcard",
-                "this_written_member_var"
+                "this_written_member_var",
+                "this_member_neq_1",
+                "this_member_neq_2",
+                "this_member_neq_no_matches",
+                "this_member_neq_all_matches",
+                "this_member_neq_wildcard",
+                "this_written_member_neq_1",
+                "this_written_member_neq_2",
+                "this_written_member_neq_no_matches",
+                "this_written_member_neq_all_matches",
+                "this_written_member_neq_wildcard"
             ]
         }, {
             "id": "Toggle",

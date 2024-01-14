@@ -1344,6 +1344,28 @@ void MemberTarget_this_written_member_neq_2(void);
 void MemberTarget_this_written_member_neq_no_matches(void);
 void MemberTarget_this_written_member_neq_all_matches(void);
 void MemberTarget_this_written_member_neq_wildcard(void);
+void MemberTarget_this_member_eq_optional(void);
+void MemberTarget_this_member_eq_optional_wildcard(void);
+void MemberTarget_this_written_member_eq_optional(void);
+void MemberTarget_this_written_member_eq_optional_wildcard(void);
+void MemberTarget_this_2_or(void);
+void MemberTarget_this_3_or(void);
+void MemberTarget_this_written_2_or(void);
+void MemberTarget_this_written_3_or(void);
+void MemberTarget_var_member_eq(void);
+void MemberTarget_var_member_eq_no_matches(void);
+void MemberTarget_var_member_eq_all_matches(void);
+void MemberTarget_var_member_wildcard(void);
+void MemberTarget_var_member_neq(void);
+void MemberTarget_var_member_neq_no_matches(void);
+void MemberTarget_var_member_neq_all_matches(void);
+void MemberTarget_var_written_member_eq(void);
+void MemberTarget_var_written_member_eq_no_matches(void);
+void MemberTarget_var_written_member_eq_all_matches(void);
+void MemberTarget_var_written_member_wildcard(void);
+void MemberTarget_var_written_member_neq(void);
+void MemberTarget_var_written_member_neq_no_matches(void);
+void MemberTarget_var_written_member_neq_all_matches(void);
 
 // Testsuite 'Toggle'
 void Toggle_query_disabled_from_nothing(void);
@@ -6584,6 +6606,94 @@ bake_test_case MemberTarget_testcases[] = {
     {
         "this_written_member_neq_wildcard",
         MemberTarget_this_written_member_neq_wildcard
+    },
+    {
+        "this_member_eq_optional",
+        MemberTarget_this_member_eq_optional
+    },
+    {
+        "this_member_eq_optional_wildcard",
+        MemberTarget_this_member_eq_optional_wildcard
+    },
+    {
+        "this_written_member_eq_optional",
+        MemberTarget_this_written_member_eq_optional
+    },
+    {
+        "this_written_member_eq_optional_wildcard",
+        MemberTarget_this_written_member_eq_optional_wildcard
+    },
+    {
+        "this_2_or",
+        MemberTarget_this_2_or
+    },
+    {
+        "this_3_or",
+        MemberTarget_this_3_or
+    },
+    {
+        "this_written_2_or",
+        MemberTarget_this_written_2_or
+    },
+    {
+        "this_written_3_or",
+        MemberTarget_this_written_3_or
+    },
+    {
+        "var_member_eq",
+        MemberTarget_var_member_eq
+    },
+    {
+        "var_member_eq_no_matches",
+        MemberTarget_var_member_eq_no_matches
+    },
+    {
+        "var_member_eq_all_matches",
+        MemberTarget_var_member_eq_all_matches
+    },
+    {
+        "var_member_wildcard",
+        MemberTarget_var_member_wildcard
+    },
+    {
+        "var_member_neq",
+        MemberTarget_var_member_neq
+    },
+    {
+        "var_member_neq_no_matches",
+        MemberTarget_var_member_neq_no_matches
+    },
+    {
+        "var_member_neq_all_matches",
+        MemberTarget_var_member_neq_all_matches
+    },
+    {
+        "var_written_member_eq",
+        MemberTarget_var_written_member_eq
+    },
+    {
+        "var_written_member_eq_no_matches",
+        MemberTarget_var_written_member_eq_no_matches
+    },
+    {
+        "var_written_member_eq_all_matches",
+        MemberTarget_var_written_member_eq_all_matches
+    },
+    {
+        "var_written_member_wildcard",
+        MemberTarget_var_written_member_wildcard
+    },
+    {
+        "var_written_member_neq",
+        MemberTarget_var_written_member_neq
+    },
+    {
+        "var_written_member_neq_no_matches",
+        MemberTarget_var_written_member_neq_no_matches
+    },
+    {
+        "var_written_member_neq_all_matches",
+        MemberTarget_var_written_member_neq_all_matches
     }
 };
 
@@ -6740,7 +6850,7 @@ static bake_test_suite suites[] = {
         "MemberTarget",
         MemberTarget_setup,
         NULL,
-        26,
+        48,
         MemberTarget_testcases,
         1,
         MemberTarget_params

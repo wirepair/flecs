@@ -373,8 +373,8 @@ char* ecs_query_str_w_profile(
         if (op->kind == EcsRuleMemberEq || op->kind == EcsRuleMemberNeq) {
             uint32_t offset = (uint32_t)op->first.entity;
             uint32_t size = (uint32_t)(op->first.entity >> 32);
-            ecs_strbuf_append(&buf, "#[yellow]elem#[reset](%d, 0x%x, 0x%x)", 
-                op->field_index + 1, size, offset);
+            ecs_strbuf_append(&buf, "#[yellow]elem#[reset]([%d], 0x%x, 0x%x)", 
+                op->field_index, size, offset);
         } else {
             flecs_query_op_ref_str(impl, &op->first, first_flags, &buf);
         }

@@ -1807,3 +1807,1415 @@ void MemberTarget_this_written_member_neq_wildcard(void) {
 
     ecs_fini(world);
 }
+
+void MemberTarget_this_member_eq_optional(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "?(Movement.value, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    ecs_entity_t e0 = ecs_new(world, Foo);
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    bool e0_found = false;
+    bool e1_found = false;
+    bool e2_found = false;
+    bool e3_found = false;
+    bool e4_found = false;
+    bool e5_found = false;
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    while (ecs_query_next(&it)) {
+        test_assert(it.count != 0);
+        for (int i = 0; i < it.count; i ++) {
+            e0_found |= it.entities[i] == e0;
+            e1_found |= it.entities[i] == e1;
+            e2_found |= it.entities[i] == e2;
+            e3_found |= it.entities[i] == e3;
+            e4_found |= it.entities[i] == e4;
+            e5_found |= it.entities[i] == e5;
+
+            if (it.entities[i] == e0) test_assert(it.table == ecs_get_table(world, e0));
+            if (it.entities[i] == e1) test_assert(it.table == ecs_get_table(world, e1));
+            if (it.entities[i] == e2) test_assert(it.table == ecs_get_table(world, e2));
+            if (it.entities[i] == e3) test_assert(it.table == ecs_get_table(world, e3));
+            if (it.entities[i] == e4) test_assert(it.table == ecs_get_table(world, e4));
+            if (it.entities[i] == e5) test_assert(it.table == ecs_get_table(world, e5));
+        }
+    }
+
+    test_bool(true, e0_found);
+    test_bool(true, e1_found);
+    test_bool(true, e2_found);
+    test_bool(true, e3_found);
+    test_bool(true, e4_found);
+    test_bool(true, e5_found);
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_this_member_eq_optional_wildcard(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "?(Movement.value, *)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    ecs_entity_t e0 = ecs_new(world, Foo);
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    bool e0_found = false;
+    bool e1_found = false;
+    bool e2_found = false;
+    bool e3_found = false;
+    bool e4_found = false;
+    bool e5_found = false;
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    while (ecs_query_next(&it)) {
+        test_assert(it.count != 0);
+        for (int i = 0; i < it.count; i ++) {
+            e0_found |= it.entities[i] == e0;
+            e1_found |= it.entities[i] == e1;
+            e2_found |= it.entities[i] == e2;
+            e3_found |= it.entities[i] == e3;
+            e4_found |= it.entities[i] == e4;
+            e5_found |= it.entities[i] == e5;
+
+            if (it.entities[i] == e0) test_assert(it.table == ecs_get_table(world, e0));
+            if (it.entities[i] == e1) test_assert(it.table == ecs_get_table(world, e1));
+            if (it.entities[i] == e2) test_assert(it.table == ecs_get_table(world, e2));
+            if (it.entities[i] == e3) test_assert(it.table == ecs_get_table(world, e3));
+            if (it.entities[i] == e4) test_assert(it.table == ecs_get_table(world, e4));
+            if (it.entities[i] == e5) test_assert(it.table == ecs_get_table(world, e5));
+        }
+    }
+
+    test_bool(true, e0_found);
+    test_bool(true, e1_found);
+    test_bool(true, e2_found);
+    test_bool(true, e3_found);
+    test_bool(true, e4_found);
+    test_bool(true, e5_found);
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_this_written_member_eq_optional(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Foo, ?(Movement.value, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    ecs_entity_t e0 = ecs_new(world, Foo);
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+    ecs_add(world, e4, Foo);
+    ecs_add(world, e5, Foo);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e0, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(Movement), ecs_field_id(&it, 2));
+        test_bool(false, ecs_field_is_set(&it, 2));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e3, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Walking);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e4, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Sitting);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e5, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_this_written_member_eq_optional_wildcard(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Foo, ?(Movement.value, *)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    ecs_entity_t e0 = ecs_new(world, Foo);
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+    ecs_add(world, e4, Foo);
+    ecs_add(world, e5, Foo);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e0, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(Movement), ecs_field_id(&it, 2));
+        test_bool(false, ecs_field_is_set(&it, 2));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e3, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Walking);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e4, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Sitting);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e5, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_this_2_or(void) {
+
+}
+
+void MemberTarget_this_3_or(void) {
+    // Implement testcase
+}
+
+void MemberTarget_this_written_2_or(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Foo, (Movement.value, Running) || (Movement.value, Walking)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    printf("%s\n", ecs_query_plan(q));
+
+    ecs_entity_t e0 = ecs_new(world, Foo);
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+    ecs_add(world, e4, Foo);
+    ecs_add(world, e5, Foo);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e0, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(Movement), ecs_field_id(&it, 2));
+        test_bool(false, ecs_field_is_set(&it, 2));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e3, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Walking);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e4, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Sitting);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e5, it.entities[0]);
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_this_written_3_or(void) {
+    // Implement testcase
+}
+
+void MemberTarget_var_member_eq(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Movement.value($x, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    /* ecs_entity_t e3 = */ ecs_set(world, 0, Movement, { Walking });
+    /* ecs_entity_t e4 = */ ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e1, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e2, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e5, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_member_eq_no_matches(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Movement.value($x, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    /* ecs_entity_t e1 = */ ecs_set(world, 0, Movement, { Walking });
+    /* ecs_entity_t e2 = */ ecs_set(world, 0, Movement, { Sitting });
+    /* ecs_entity_t e3 = */ ecs_set(world, 0, Movement, { Walking });
+    /* ecs_entity_t e4 = */ ecs_set(world, 0, Movement, { Sitting });
+    /* ecs_entity_t e5 = */ ecs_set(world, 0, Movement, { Walking });
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_member_eq_all_matches(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Movement.value($x, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e1, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e2, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e3, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e4, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e5, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_member_wildcard(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Movement.value($x, *)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e1, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e2, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e3, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Walking);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e4, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Sitting);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e5, ecs_iter_get_var(&it, x_var));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_member_neq(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "!Movement.value($x, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e0 = ecs_new(world, Foo);
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    bool e0_found = false;
+    bool e1_found = false;
+    bool e2_found = false;
+    bool e3_found = false;
+    bool e4_found = false;
+    bool e5_found = false;
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    while (ecs_query_next(&it)) {
+        test_assert(it.count == 0);
+        ecs_entity_t x = ecs_iter_get_var(&it, x_var);
+        e0_found |= x == e0;
+        e1_found |= x == e1;
+        e2_found |= x == e2;
+        e3_found |= x == e3;
+        e4_found |= x == e4;
+        e5_found |= x == e5;
+    }
+
+    test_bool(true, e0_found);
+    test_bool(false, e1_found);
+    test_bool(false, e2_found);
+    test_bool(true, e3_found);
+    test_bool(true, e4_found);
+    test_bool(false, e5_found);
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_member_neq_no_matches(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "!Movement.value($x, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e0 = ecs_new(world, Foo);
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    bool e0_found = false;
+    bool e1_found = false;
+    bool e2_found = false;
+    bool e3_found = false;
+    bool e4_found = false;
+    bool e5_found = false;
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    while (ecs_query_next(&it)) {
+        test_assert(it.count == 0);
+        ecs_entity_t x = ecs_iter_get_var(&it, x_var);
+        e0_found |= x == e0;
+        e1_found |= x == e1;
+        e2_found |= x == e2;
+        e3_found |= x == e3;
+        e4_found |= x == e4;
+        e5_found |= x == e5;
+    }
+
+    test_bool(true, e0_found);
+    test_bool(false, e1_found);
+    test_bool(false, e2_found);
+    test_bool(false, e3_found);
+    test_bool(false, e4_found);
+    test_bool(false, e5_found);
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_member_neq_all_matches(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "!Movement.value($x, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+    
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e0 = ecs_new(world, Foo);
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Walking });
+
+    bool e0_found = false;
+    bool e1_found = false;
+    bool e2_found = false;
+    bool e3_found = false;
+    bool e4_found = false;
+    bool e5_found = false;
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    while (ecs_query_next(&it)) {
+        test_assert(it.count == 0);
+        ecs_entity_t x = ecs_iter_get_var(&it, x_var);
+        e0_found |= x == e0;
+        e1_found |= x == e1;
+        e2_found |= x == e2;
+        e3_found |= x == e3;
+        e4_found |= x == e4;
+        e5_found |= x == e5;
+    }
+
+    test_bool(true, e0_found);
+    test_bool(true, e1_found);
+    test_bool(true, e2_found);
+    test_bool(true, e3_found);
+    test_bool(true, e4_found);
+    test_bool(true, e5_found);
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_written_member_eq(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Foo($x), Movement.value($x, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+    ecs_add(world, e4, Foo);
+    ecs_add(world, e5, Foo);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e1, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e2, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e5, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_written_member_eq_no_matches(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Foo($x), Movement.value($x, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Walking });
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+    ecs_add(world, e4, Foo);
+    ecs_add(world, e5, Foo);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_written_member_eq_all_matches(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Foo($x), Movement.value($x, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+    ecs_add(world, e4, Foo);
+    ecs_add(world, e5, Foo);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e1, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e2, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e3, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e4, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e5, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_written_member_wildcard(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Foo($x), Movement.value($x, *)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Walking });
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+    ecs_add(world, e4, Foo);
+    ecs_add(world, e5, Foo);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e1, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e2, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Walking);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e3, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Sitting);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e4, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e5, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Walking);
+        }
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_written_member_neq(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Foo($x), !Movement.value($x, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e0 = ecs_new(world, Foo);
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+    ecs_add(world, e4, Foo);
+    ecs_add(world, e5, Foo);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e0, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(Movement), ecs_field_id(&it, 2));
+        test_bool(false, ecs_field_is_set(&it, 2));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e3, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Walking);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e4, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Sitting);
+        }
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_written_member_neq_no_matches(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Foo($x), !Movement.value($x, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e0 = ecs_new(world, Foo);
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+    ecs_add(world, e4, Foo);
+    ecs_add(world, e5, Foo);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e0, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(Movement), ecs_field_id(&it, 2));
+        test_bool(false, ecs_field_is_set(&it, 2));
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void MemberTarget_var_written_member_neq_all_matches(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Foo($x), !Movement.value($x, Running)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    int x_var = ecs_query_find_var(q, "x");
+    test_assert(x_var != -1);
+
+    ecs_entity_t e0 = ecs_new(world, Foo);
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Walking });
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+    ecs_add(world, e4, Foo);
+    ecs_add(world, e5, Foo);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e0, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(Movement), ecs_field_id(&it, 2));
+        test_bool(false, ecs_field_is_set(&it, 2));
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e1, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Walking);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e2, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Sitting);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e3, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Walking);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e4, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Sitting);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(0, it.count);
+        test_uint(e5, ecs_iter_get_var(&it, x_var));
+        test_uint(Foo, ecs_field_id(&it, 1));
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
+            test_assert(m != NULL);
+            test_int(m[0], Walking);
+        }
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}

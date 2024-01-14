@@ -272,6 +272,7 @@ void flecs_query_begin_block_or(
         if (op->flags & (EcsRuleIsVar << EcsRuleSrc)) {
             or_op->flags = (EcsRuleIsVar << EcsRuleSrc);
             or_op->src = op->src;
+            ctx->cur->src_or = op->src;
         }
     }
 }
@@ -885,6 +886,10 @@ int flecs_query_compile_end_member_term(
     bool second_wildcard = ECS_TERM_REF_ID(&term->second) == EcsWildcard &&
         (term->second.id & EcsIsVariable) && !term->second.name;
 
+    if (term->oper == EcsOptional) {
+        second_wildcard = true;
+    }
+
     ecs_query_op_t mbr_op = *op;
     mbr_op.kind = EcsRuleMemberEq;
     mbr_op.first.entity = /* Encode type size and member offset */
@@ -893,8 +898,8 @@ int flecs_query_compile_end_member_term(
 
     /* If this is a term with a Not operator, conditionally evaluate member on
      * whether term was set by previous operation (see begin_member_term). */
-    if (ctx->oper == EcsNot) {
-        if (second_wildcard) {
+    if (ctx->oper == EcsNot || ctx->oper == EcsOptional) {
+        if (second_wildcard && ctx->oper == EcsNot) {
             /* A !(T.value, *) term doesn't need special operations */
             return 0;
         }
@@ -909,12 +914,11 @@ int flecs_query_compile_end_member_term(
 
         ecs_query_op_t *if_op = flecs_query_begin_block(EcsRuleIfSet, ctx);
         if_op->other = term->field_index;
-        mbr_op.kind = EcsRuleMemberNeq;
-    }
 
-    /* Insert instruction that populates field before checking the value */
-    ecs_flags64_t populate_flags = 1llu << term->field_index;
-    flecs_query_insert_populate(impl, ctx, populate_flags);
+        if (ctx->oper == EcsNot) {
+            mbr_op.kind = EcsRuleMemberNeq;
+        }
+    }
 
     if (var->kind == EcsVarTable) {
         /* If MemberEq is called on table variable, store it on .other member.
@@ -952,7 +956,7 @@ int flecs_query_compile_end_member_term(
 
     flecs_query_op_insert(&mbr_op, ctx);
 
-    if (ctx->oper == EcsNot) {
+    if (ctx->oper == EcsNot || ctx->oper == EcsOptional) {
         ctx->cur->lbl_query = -1; /* No field reset needed */
         flecs_query_end_block(ctx);
     }
@@ -1093,6 +1097,10 @@ int flecs_query_compile_term(
     if (src_is_var) {
         src_var = op.src.var;
         src_is_lookup = rule->vars[src_var].lookup != NULL;
+
+        if (is_or && !first_or) {
+            op.src = ctx->cur->src_or;
+        }
     }
     bool src_written = flecs_query_is_written(src_var, ctx->written);
 
@@ -1301,7 +1309,15 @@ int flecs_query_compile_term(
         flecs_query_end_block(ctx);
     } else if (term->oper == EcsOptional) {
         flecs_query_end_block(ctx);
-    } else if (last_or) {
+    }
+
+    /* Now that the term is resolved, evaluate member of component */
+    if (member_term) {
+        flecs_query_compile_end_member_term(world, rule, &op, term, ctx, 
+            term_id, first_id, second_id, cond_write);
+    }
+
+    if (last_or) {
         flecs_query_end_block_or(ctx);
     }
 
@@ -1310,12 +1326,6 @@ int flecs_query_compile_term(
         if (!is_or || last_or) {
             flecs_query_end_block_cond_eval(ctx);
         }
-    }
-
-    /* Now that the term is resolved, evaluate member of component */
-    if (member_term) {
-        flecs_query_compile_end_member_term(world, rule, &op, term, ctx, 
-            term_id, first_id, second_id, cond_write);
     }
 
     /* Ensure that term id is set after evaluating Not */

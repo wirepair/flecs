@@ -1643,6 +1643,7 @@ typedef struct {
     ecs_query_lbl_t lbl_begin;
     ecs_query_lbl_t lbl_cond_eval;
     ecs_write_flags_t cond_written_or; /* Cond written flags at start of or chain */
+    ecs_query_ref_t src_or;  /* Source for terms in current or chain */
     bool in_or; /* Whether we're in an or chain */
 } ecs_query_compile_ctrlflow_t;
 
@@ -40263,6 +40264,7 @@ void flecs_query_begin_block_or(
         if (op->flags & (EcsRuleIsVar << EcsRuleSrc)) {
             or_op->flags = (EcsRuleIsVar << EcsRuleSrc);
             or_op->src = op->src;
+            ctx->cur->src_or = op->src;
         }
     }
 }
@@ -40876,6 +40878,10 @@ int flecs_query_compile_end_member_term(
     bool second_wildcard = ECS_TERM_REF_ID(&term->second) == EcsWildcard &&
         (term->second.id & EcsIsVariable) && !term->second.name;
 
+    if (term->oper == EcsOptional) {
+        second_wildcard = true;
+    }
+
     ecs_query_op_t mbr_op = *op;
     mbr_op.kind = EcsRuleMemberEq;
     mbr_op.first.entity = /* Encode type size and member offset */
@@ -40884,8 +40890,8 @@ int flecs_query_compile_end_member_term(
 
     /* If this is a term with a Not operator, conditionally evaluate member on
      * whether term was set by previous operation (see begin_member_term). */
-    if (ctx->oper == EcsNot) {
-        if (second_wildcard) {
+    if (ctx->oper == EcsNot || ctx->oper == EcsOptional) {
+        if (second_wildcard && ctx->oper == EcsNot) {
             /* A !(T.value, *) term doesn't need special operations */
             return 0;
         }
@@ -40900,12 +40906,11 @@ int flecs_query_compile_end_member_term(
 
         ecs_query_op_t *if_op = flecs_query_begin_block(EcsRuleIfSet, ctx);
         if_op->other = term->field_index;
-        mbr_op.kind = EcsRuleMemberNeq;
-    }
 
-    /* Insert instruction that populates field before checking the value */
-    ecs_flags64_t populate_flags = 1llu << term->field_index;
-    flecs_query_insert_populate(impl, ctx, populate_flags);
+        if (ctx->oper == EcsNot) {
+            mbr_op.kind = EcsRuleMemberNeq;
+        }
+    }
 
     if (var->kind == EcsVarTable) {
         /* If MemberEq is called on table variable, store it on .other member.
@@ -40943,7 +40948,7 @@ int flecs_query_compile_end_member_term(
 
     flecs_query_op_insert(&mbr_op, ctx);
 
-    if (ctx->oper == EcsNot) {
+    if (ctx->oper == EcsNot || ctx->oper == EcsOptional) {
         ctx->cur->lbl_query = -1; /* No field reset needed */
         flecs_query_end_block(ctx);
     }
@@ -41292,7 +41297,15 @@ int flecs_query_compile_term(
         flecs_query_end_block(ctx);
     } else if (term->oper == EcsOptional) {
         flecs_query_end_block(ctx);
-    } else if (last_or) {
+    }
+
+    /* Now that the term is resolved, evaluate member of component */
+    if (member_term) {
+        flecs_query_compile_end_member_term(world, rule, &op, term, ctx, 
+            term_id, first_id, second_id, cond_write);
+    }
+
+    if (last_or) {
         flecs_query_end_block_or(ctx);
     }
 
@@ -41301,12 +41314,6 @@ int flecs_query_compile_term(
         if (!is_or || last_or) {
             flecs_query_end_block_cond_eval(ctx);
         }
-    }
-
-    /* Now that the term is resolved, evaluate member of component */
-    if (member_term) {
-        flecs_query_compile_end_member_term(world, rule, &op, term, ctx, 
-            term_id, first_id, second_id, cond_write);
     }
 
     /* Ensure that term id is set after evaluating Not */
@@ -41431,6 +41438,20 @@ bool flecs_query_run_until(
     ecs_query_lbl_t first,
     ecs_query_lbl_t cur,
     ecs_query_op_kind_t until);
+
+static
+void flecs_query_populate_field(
+    ecs_iter_t *it,
+    ecs_table_range_t *range,
+    int8_t field_index,
+    ecs_query_run_ctx_t *ctx);
+
+static
+void flecs_query_populate_field_from_range(
+    ecs_iter_t *it,
+    ecs_table_range_t *range,
+    int8_t field_index,
+    int32_t index);
 
 static
 void flecs_query_set_iter_this(
@@ -43462,22 +43483,34 @@ bool flecs_query_member_cmp(
     ecs_iter_t *it = ctx->it;
     int8_t field_index = op->field_index;
 
+    if (!range.count) {
+        range.count = ecs_table_count(range.table); 
+    }
+
+    int32_t row, end = range.count;
+    if (end) {
+        end += range.offset;
+    } else {
+        end = ecs_table_count(range.table);
+    }
+
     void *data;
-    int32_t row;
     if (!redo) {
         row = op_ctx->each.row = range.offset;
-        it->ids[field_index] = ecs_id(ecs_entity_t);
+
+        /* Get data ptr starting from offset 0 so we can use row to index */
+        range.offset = 0;
+
+        /* Populate data field so we have the array we can compare the member
+         * value against. */
+        flecs_query_populate_field_from_range(
+            it, &range, field_index, it->columns[field_index]);
         data = op_ctx->data = it->ptrs[field_index];
+
+        /* Member fields are of type ecs_entity_t */
+        it->ids[field_index] = ecs_id(ecs_entity_t);
     } else {
-        int32_t end = range.count;
-        if (end) {
-            end += range.offset;
-        } else {
-            end = table->data.entities.count;
-        }
-
         row = ++ op_ctx->each.row;
-
         if (op_ctx->each.row >= end) {
             return false;
         }
@@ -43522,7 +43555,7 @@ bool flecs_query_member_cmp(
             }
 
             row ++;
-        } while (row < range.count);
+        } while (row < end);
 
         return false;
     } else {
@@ -44058,6 +44091,60 @@ bool flecs_query_end(
 }
 
 static
+void flecs_query_populate_field_from_range(
+    ecs_iter_t *it,
+    ecs_table_range_t *range,
+    int8_t field_index,
+    int32_t index)
+{
+    ecs_assert(index > 0, ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(range->table != NULL, ECS_INTERNAL_ERROR, NULL);
+    if (range->count && range->table->column_map) {
+        int32_t column = range->table->column_map[index - 1];
+        if (column != -1) {
+            it->ptrs[field_index] = ECS_ELEM(
+                range->table->data.columns[column].data.array,
+                it->sizes[field_index],
+                range->offset);
+        }
+    }
+}
+
+static
+void flecs_query_populate_field(
+    ecs_iter_t *it,
+    ecs_table_range_t *range,
+    int8_t field_index,
+    ecs_query_run_ctx_t *ctx)
+{
+    int32_t index = it->columns[field_index];
+    ecs_assert(index >= 0, ECS_INTERNAL_ERROR, NULL);
+    if (!index) {
+        return;
+    }
+
+    ecs_entity_t src = it->sources[field_index];
+    if (!src) {
+        flecs_query_populate_field_from_range(it, range, field_index, index);
+        ECS_BIT_CLEARN(it->shared_fields, field_index);
+    } else {
+        ecs_record_t *r = flecs_entities_get(ctx->world, src);
+        ecs_table_t *src_table = r->table;
+        if (src_table->column_map) {
+            int32_t column = src_table->column_map[index - 1];
+            if (column != -1) {
+                it->ptrs[field_index] = ecs_vec_get(
+                    &src_table->data.columns[column].data,
+                    it->sizes[field_index],
+                    ECS_RECORD_TO_ROW(r->row));
+
+                ECS_BIT_SETN(it->shared_fields, field_index);
+            }
+        }
+    }
+}
+
+static
 bool flecs_query_populate(
     const ecs_query_op_t *op,
     bool redo,
@@ -44085,41 +44172,7 @@ bool flecs_query_populate(
                 continue;
             }
 
-            int32_t index = it->columns[i];
-            ecs_assert(index >= 0, ECS_INTERNAL_ERROR, NULL);
-            if (!index) {
-                continue;
-            }
-    
-            ecs_entity_t src = it->sources[i];
-            if (!src) {
-                ecs_assert(table != NULL, ECS_INTERNAL_ERROR, NULL);
-                if (range->count && table->column_map) {
-                    int32_t column = table->column_map[index - 1];
-                    if (column != -1) {
-                        it->ptrs[i] = ECS_ELEM(
-                            table->data.columns[column].data.array,
-                            it->sizes[i],
-                            range->offset);
-                    }
-                }
-
-                ECS_BIT_CLEARN(it->shared_fields, i);
-            } else {
-                ecs_record_t *r = flecs_entities_get(ctx->world, src);
-                ecs_table_t *src_table = r->table;
-                if (src_table->column_map) {
-                    int32_t column = src_table->column_map[index - 1];
-                    if (column != -1) {
-                        it->ptrs[i] = ecs_vec_get(
-                            &src_table->data.columns[column].data,
-                            it->sizes[i],
-                            ECS_RECORD_TO_ROW(r->row));
-
-                        ECS_BIT_SETN(it->shared_fields, i);
-                    }
-                }
-            }
+            flecs_query_populate_field(it, range, i, ctx);
         }
 
         return true;
@@ -45903,8 +45956,8 @@ char* ecs_query_str_w_profile(
         if (op->kind == EcsRuleMemberEq || op->kind == EcsRuleMemberNeq) {
             uint32_t offset = (uint32_t)op->first.entity;
             uint32_t size = (uint32_t)(op->first.entity >> 32);
-            ecs_strbuf_append(&buf, "#[yellow]elem#[reset](%d, 0x%x, 0x%x)", 
-                op->field_index + 1, size, offset);
+            ecs_strbuf_append(&buf, "#[yellow]elem#[reset]([%d], 0x%x, 0x%x)", 
+                op->field_index, size, offset);
         } else {
             flecs_query_op_ref_str(impl, &op->first, first_flags, &buf);
         }

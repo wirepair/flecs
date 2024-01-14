@@ -875,7 +875,7 @@ int flecs_query_compile_end_member_term(
     mbr_op.first.entity = /* Encode type size and member offset */
         flecs_ito(uint32_t, member->offset) | 
         (flecs_ito(uint64_t, comp->size) << 32);
-    
+
     ecs_query_var_t *var = &impl->vars[op->src.var];
     if (var->kind == EcsVarTable) {
         /* If MemberEq is called on table variable, store it on .other member.
@@ -894,12 +894,33 @@ int flecs_query_compile_end_member_term(
 
     flecs_query_compile_term_ref(world, impl, &mbr_op, &term->src, 
         &mbr_op.src, EcsRuleSrc, EcsVarEntity, ctx, true);
-    flecs_query_compile_term_ref(world, impl, &mbr_op, &term->second, 
-        &mbr_op.second, EcsRuleSecond, EcsVarEntity, ctx, true);
+
+    if (ECS_TERM_REF_ID(&term->second) == EcsWildcard &&
+        (term->second.id & EcsIsVariable) && !term->second.name)
+    {
+        mbr_op.flags |= (EcsRuleIsEntity << EcsRuleSecond);
+        mbr_op.second.entity = EcsWildcard;
+    } else {
+        flecs_query_compile_term_ref(world, impl, &mbr_op, &term->second, 
+            &mbr_op.second, EcsRuleSecond, EcsVarEntity, ctx, true);
+        
+        if (term->second.id & EcsIsVariable) {
+            if (flecs_query_compile_ensure_vars(impl, &mbr_op, &mbr_op.second, 
+                EcsRuleSecond, ctx, cond_write, NULL)) 
+            {
+                goto error;
+            }
+
+            flecs_query_write_ctx(mbr_op.second.var, ctx, cond_write);
+            flecs_query_write(mbr_op.second.var, &mbr_op.written);
+        }
+    }
 
     flecs_query_op_insert(&mbr_op, ctx);
 
     return 0;
+error:
+    return -1;
 }
 #endif
 
@@ -1187,7 +1208,7 @@ int flecs_query_compile_term(
         if (!(filter_flags & EcsQueryMatchDisabled) || 
             !(filter_flags & EcsQueryMatchPrefab)) 
         {
-            ecs_flags32_t table_flags = 0;
+            ecs_flags32_t table_flags = EcsTableNotQueryable;
             if (!(filter_flags & EcsQueryMatchDisabled)) {
                 table_flags |= EcsTableIsDisabled;
             }

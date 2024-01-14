@@ -1426,6 +1426,11 @@ FLECS_API extern const ecs_entity_t EcsPrefab;
  * EcsDisabled is explicitly queried for. */
 FLECS_API extern const ecs_entity_t EcsDisabled;
 
+/** Trait added to entities that should never be returned by queries. Reserved
+ * for internal entities that have special meaning to the query engine, such as
+ * EcsThis, EcsWildcard, EcsAny. */
+FLECS_API extern const ecs_entity_t EcsNotQueryable;
+
 /** Event that triggers when an id is added to an entity */
 FLECS_API extern const ecs_entity_t EcsOnAdd;
 

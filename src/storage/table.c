@@ -211,6 +211,8 @@ void flecs_table_init_flags(
             table->flags |= EcsTableIsPrefab;
         } else if (id == EcsDisabled) {
             table->flags |= EcsTableIsDisabled;
+        } else if (id == EcsNotQueryable) {
+            table->flags |= EcsTableNotQueryable;
         } else {
             if (ECS_IS_PAIR(id)) {
                 ecs_entity_t r = ECS_PAIR_FIRST(id);

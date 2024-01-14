@@ -79,7 +79,7 @@ bool flecs_query_trivial_search(
         }
 
         ecs_table_t *table = tr->hdr.table;
-        if (table->flags & (EcsTableIsPrefab|EcsTableIsDisabled)) {
+        if (table->flags & (EcsTableNotQueryable|EcsTableIsPrefab|EcsTableIsDisabled)) {
             continue;
         }
 
@@ -167,7 +167,7 @@ bool flecs_query_trivial_search_nodata(
         }
 
         ecs_table_t *table = tr->hdr.table;
-        if (table->flags & (EcsTableIsPrefab|EcsTableIsDisabled)) {
+        if (table->flags & (EcsTableNotQueryable|EcsTableIsPrefab|EcsTableIsDisabled)) {
             continue;
         }
 

@@ -682,6 +682,7 @@ void flecs_bootstrap(
     flecs_bootstrap_tag(world, EcsPrefab);
     flecs_bootstrap_tag(world, EcsSlotOf);
     flecs_bootstrap_tag(world, EcsDisabled);
+    flecs_bootstrap_tag(world, EcsNotQueryable);
     flecs_bootstrap_tag(world, EcsEmpty);
 
     /* Initialize builtin modules */
@@ -712,7 +713,7 @@ void flecs_bootstrap(
     flecs_bootstrap_entity(world, EcsVariable, "$", EcsFlecsCore);
     flecs_bootstrap_entity(world, EcsFlag, "Flag", EcsFlecsCore);
 
-    /* Component/relationship properties */
+    /* Component/relationship traits */
     flecs_bootstrap_tag(world, EcsTransitive);
     flecs_bootstrap_tag(world, EcsReflexive);
     flecs_bootstrap_tag(world, EcsSymmetric);
@@ -757,6 +758,11 @@ void flecs_bootstrap(
     flecs_bootstrap_entity(world, EcsOnTableDelete, "OnTableDelete", EcsFlecsCore);
     flecs_bootstrap_entity(world, EcsOnTableEmpty, "OnTableEmpty", EcsFlecsCore);
     flecs_bootstrap_entity(world, EcsOnTableFill, "OnTableFilled", EcsFlecsCore);
+
+    /* Unqueryable entities */
+    ecs_add_id(world, EcsThis, EcsNotQueryable);
+    ecs_add_id(world, EcsWildcard, EcsNotQueryable);
+    ecs_add_id(world, EcsAny, EcsNotQueryable);
 
     /* Tag relationships (relationships that should never have data) */
     ecs_add_id(world, EcsIsA, EcsTag);

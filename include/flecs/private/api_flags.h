@@ -164,10 +164,11 @@ extern "C" {
 #define EcsTableHasPairs               (1u << 6u)  /* Does the table type have pairs */
 #define EcsTableHasModule              (1u << 7u)  /* Does the table have module data */
 #define EcsTableIsDisabled             (1u << 8u)  /* Does the table type has EcsDisabled */
-#define EcsTableHasCtors               (1u << 9u)
-#define EcsTableHasDtors               (1u << 10u)
-#define EcsTableHasCopy                (1u << 11u)
-#define EcsTableHasMove                (1u << 12u)
+#define EcsTableNotQueryable           (1u << 9u) /* Table should never be returned by queries */
+#define EcsTableHasCtors               (1u << 10u)
+#define EcsTableHasDtors               (1u << 11u)
+#define EcsTableHasCopy                (1u << 12u)
+#define EcsTableHasMove                (1u << 13u)
 #define EcsTableHasToggle              (1u << 14u)
 #define EcsTableHasOverrides           (1u << 15u)
 

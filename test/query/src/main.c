@@ -1324,7 +1324,14 @@ void MemberTarget_this_member_eq_no_matches(void);
 void MemberTarget_this_member_eq_all_matches(void);
 void MemberTarget_this_member_wildcard(void);
 void MemberTarget_this_member_var(void);
-void MemberTarget_this_written_member_eq(void);
+void MemberTarget_this_member_var_written(void);
+void MemberTarget_this_member_var_read(void);
+void MemberTarget_this_member_eq_1_2nd_member(void);
+void MemberTarget_this_member_eq_2_2nd_member(void);
+void MemberTarget_this_member_var_same_1(void);
+void MemberTarget_this_member_var_same_2(void);
+void MemberTarget_this_written_member_eq_1(void);
+void MemberTarget_this_written_member_eq_2(void);
 void MemberTarget_this_written_member_wildcard(void);
 void MemberTarget_this_written_member_var(void);
 
@@ -6489,8 +6496,36 @@ bake_test_case MemberTarget_testcases[] = {
         MemberTarget_this_member_var
     },
     {
-        "this_written_member_eq",
-        MemberTarget_this_written_member_eq
+        "this_member_var_written",
+        MemberTarget_this_member_var_written
+    },
+    {
+        "this_member_var_read",
+        MemberTarget_this_member_var_read
+    },
+    {
+        "this_member_eq_1_2nd_member",
+        MemberTarget_this_member_eq_1_2nd_member
+    },
+    {
+        "this_member_eq_2_2nd_member",
+        MemberTarget_this_member_eq_2_2nd_member
+    },
+    {
+        "this_member_var_same_1",
+        MemberTarget_this_member_var_same_1
+    },
+    {
+        "this_member_var_same_2",
+        MemberTarget_this_member_var_same_2
+    },
+    {
+        "this_written_member_eq_1",
+        MemberTarget_this_written_member_eq_1
+    },
+    {
+        "this_written_member_eq_2",
+        MemberTarget_this_written_member_eq_2
     },
     {
         "this_written_member_wildcard",
@@ -6655,7 +6690,7 @@ static bake_test_suite suites[] = {
         "MemberTarget",
         MemberTarget_setup,
         NULL,
-        9,
+        16,
         MemberTarget_testcases,
         1,
         MemberTarget_params

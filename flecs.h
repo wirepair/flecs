@@ -455,10 +455,11 @@ extern "C" {
 #define EcsTableHasPairs               (1u << 6u)  /* Does the table type have pairs */
 #define EcsTableHasModule              (1u << 7u)  /* Does the table have module data */
 #define EcsTableIsDisabled             (1u << 8u)  /* Does the table type has EcsDisabled */
-#define EcsTableHasCtors               (1u << 9u)
-#define EcsTableHasDtors               (1u << 10u)
-#define EcsTableHasCopy                (1u << 11u)
-#define EcsTableHasMove                (1u << 12u)
+#define EcsTableNotQueryable           (1u << 9u) /* Table should never be returned by queries */
+#define EcsTableHasCtors               (1u << 10u)
+#define EcsTableHasDtors               (1u << 11u)
+#define EcsTableHasCopy                (1u << 12u)
+#define EcsTableHasMove                (1u << 13u)
 #define EcsTableHasToggle              (1u << 14u)
 #define EcsTableHasOverrides           (1u << 15u)
 
@@ -4225,6 +4226,11 @@ FLECS_API extern const ecs_entity_t EcsPrefab;
 /** When this tag is added to an entity it is skipped by queries, unless 
  * EcsDisabled is explicitly queried for. */
 FLECS_API extern const ecs_entity_t EcsDisabled;
+
+/** Trait added to entities that should never be returned by queries. Reserved
+ * for internal entities that have special meaning to the query engine, such as
+ * EcsThis, EcsWildcard, EcsAny. */
+FLECS_API extern const ecs_entity_t EcsNotQueryable;
 
 /** Event that triggers when an id is added to an entity */
 FLECS_API extern const ecs_entity_t EcsOnAdd;

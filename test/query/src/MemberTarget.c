@@ -2141,7 +2141,87 @@ void MemberTarget_this_written_member_eq_optional_wildcard(void) {
 }
 
 void MemberTarget_this_2_or(void) {
+    ecs_world_t *world = ecs_mini();
 
+    ECS_IMPORT(world, FlecsMeta);
+    ECS_TAG(world, Foo);
+
+    register_types(world);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "(Movement.value, Running) || (Movement.value, Walking)",
+        .cache_kind = cache_kind
+    });
+
+    test_assert(q != NULL);
+
+    printf("%s\n", ecs_query_plan(q));
+
+    /* ecs_entity_t e0 = */ ecs_new(world, Foo);
+    ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
+    ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
+    ecs_entity_t e4 = ecs_set(world, 0, Movement, { Sitting });
+    ecs_entity_t e5 = ecs_set(world, 0, Movement, { Running });
+
+    ecs_add(world, e1, Foo);
+    ecs_add(world, e2, Foo);
+    ecs_add(world, e3, Foo);
+    ecs_add(world, e4, Foo);
+    ecs_add(world, e5, Foo);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e1, it.entities[0]);
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e2, it.entities[0]);
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e3, it.entities[0]);
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Walking);
+        }
+
+        test_bool(true, ecs_query_next(&it));
+        test_int(1, it.count);
+        test_uint(e5, it.entities[0]);
+        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        test_bool(true, ecs_field_is_set(&it, 2));
+        {
+            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
+            test_assert(m != NULL);
+            test_int(m[0], Running);
+        }
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
 void MemberTarget_this_3_or(void) {
@@ -2163,9 +2243,7 @@ void MemberTarget_this_written_2_or(void) {
 
     test_assert(q != NULL);
 
-    printf("%s\n", ecs_query_plan(q));
-
-    ecs_entity_t e0 = ecs_new(world, Foo);
+    /* ecs_entity_t e0 = */ ecs_new(world, Foo);
     ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
     ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });
     ecs_entity_t e3 = ecs_set(world, 0, Movement, { Walking });
@@ -2180,13 +2258,6 @@ void MemberTarget_this_written_2_or(void) {
 
     {
         ecs_iter_t it = ecs_query_iter(world, q);
-        test_bool(true, ecs_query_next(&it));
-        test_int(1, it.count);
-        test_uint(e0, it.entities[0]);
-        test_uint(Foo, ecs_field_id(&it, 1));
-        test_uint(ecs_id(Movement), ecs_field_id(&it, 2));
-        test_bool(false, ecs_field_is_set(&it, 2));
-
         test_bool(true, ecs_query_next(&it));
         test_int(1, it.count);
         test_uint(e1, it.entities[0]);
@@ -2221,18 +2292,6 @@ void MemberTarget_this_written_2_or(void) {
             ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
             test_assert(m != NULL);
             test_int(m[0], Walking);
-        }
-
-        test_bool(true, ecs_query_next(&it));
-        test_int(1, it.count);
-        test_uint(e4, it.entities[0]);
-        test_uint(Foo, ecs_field_id(&it, 1));
-        test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 2));
-        test_bool(true, ecs_field_is_set(&it, 2));
-        {
-            ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 2);
-            test_assert(m != NULL);
-            test_int(m[0], Sitting);
         }
 
         test_bool(true, ecs_query_next(&it));

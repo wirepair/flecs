@@ -45,6 +45,9 @@
 #define TOK_INOUT_NONE "none"
 
 static
+const ecs_id_t ECS_AND =                                           (1ull << 60);
+
+static
 const ecs_id_t ECS_OR =                                            (1ull << 59);
 
 static

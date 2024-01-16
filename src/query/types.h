@@ -272,6 +272,7 @@ typedef struct {
     ecs_query_lbl_t lbl_query; /* Used to find the op that does the actual searching */
     ecs_query_lbl_t lbl_begin;
     ecs_query_lbl_t lbl_cond_eval;
+    ecs_write_flags_t written_or; /* Cond written flags at start of or chain */
     ecs_write_flags_t cond_written_or; /* Cond written flags at start of or chain */
     ecs_query_ref_t src_or;  /* Source for terms in current or chain */
     bool in_or; /* Whether we're in an or chain */

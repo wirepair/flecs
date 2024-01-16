@@ -1810,10 +1810,10 @@ bool flecs_query_pred_eq_w_range(
     }
 
     uint64_t written = ctx->written[ctx->op_index];
-    ecs_var_id_t first_var = op->first.var;
-    if (!(written & (1ull << first_var))) {
+    ecs_var_id_t src_var = op->src.var;
+    if (!(written & (1ull << src_var))) {
         /* left = unknown, right = known. Assign right-hand value to left */
-        ecs_var_id_t l = first_var;
+        ecs_var_id_t l = src_var;
         ctx->vars[l].range = r;
         if (r.count == 1) {
             ctx->vars[l].entity = ecs_vec_get_t(&r.table->data.entities, 
@@ -1822,14 +1822,14 @@ bool flecs_query_pred_eq_w_range(
         return true;
     } else {
         ecs_table_range_t l = flecs_query_get_range(
-            op, &op->first, EcsRuleFirst, ctx);
+            op, &op->src, EcsRuleSrc, ctx);
 
         if (!flecs_query_compare_range(&l, &r)) {
             return false;
         }
 
-        ctx->vars[first_var].range.offset = r.offset;
-        ctx->vars[first_var].range.count = r.count;
+        ctx->vars[src_var].range.offset = r.offset;
+        ctx->vars[src_var].range.count = r.count;
         return true;
     }
 }
@@ -1875,9 +1875,9 @@ bool flecs_query_pred_neq_w_range(
     ecs_table_range_t r)
 {
     ecs_query_eq_ctx_t *op_ctx = flecs_op_ctx(ctx, eq);
-    ecs_var_id_t first_var = op->first.var;
+    ecs_var_id_t src_var = op->src.var;
     ecs_table_range_t l = flecs_query_get_range(
-        op, &op->first, EcsRuleFirst, ctx);
+        op, &op->src, EcsRuleSrc, ctx);
 
     /* If tables don't match, neq always returns once */
     if (l.table != r.table) {
@@ -1906,7 +1906,7 @@ bool flecs_query_pred_neq_w_range(
      * excluded slice, once for the slice after the excluded slice. If the right
      * hand range starts & overlaps with the left hand range, there is only
      * one slice. */
-    ecs_var_t *var = &ctx->vars[first_var];
+    ecs_var_t *var = &ctx->vars[src_var];
     if (!redo && r.offset > l_offset) {
         int32_t end = r.offset;
         if (end > l_count) {
@@ -1954,16 +1954,16 @@ bool flecs_query_pred_match(
 {
     ecs_query_eq_ctx_t *op_ctx = flecs_op_ctx(ctx, eq);
     uint64_t written = ctx->written[ctx->op_index];
-    ecs_assert(flecs_ref_is_written(op, &op->first, EcsRuleFirst, written),
+    ecs_assert(flecs_ref_is_written(op, &op->src, EcsRuleSrc, written),
         ECS_INTERNAL_ERROR, 
             "invalid instruction sequence: uninitialized match operand");
     (void)written;
 
-    ecs_var_id_t first_var = op->first.var;
+    ecs_var_id_t src_var = op->src.var;
     const char *match = flecs_query_name_arg(op, ctx);
     ecs_table_range_t l;
     if (!redo) {
-        l = flecs_query_get_range(op, &op->first, EcsRuleFirst, ctx);
+        l = flecs_query_get_range(op, &op->src, EcsRuleSrc, ctx);
         if (!l.table) {
             return false;
         }
@@ -2013,12 +2013,12 @@ bool flecs_query_pred_match(
     }
 
     if (offset == -1) {
-        ctx->vars[first_var].range = op_ctx->range;
+        ctx->vars[src_var].range = op_ctx->range;
         return false;
     }
 
-    ctx->vars[first_var].range.offset = offset;
-    ctx->vars[first_var].range.count = (op_ctx->index - offset);
+    ctx->vars[src_var].range.offset = offset;
+    ctx->vars[src_var].range.count = (op_ctx->index - offset);
     return true;
 }
 

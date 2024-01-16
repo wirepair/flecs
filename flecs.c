@@ -1642,6 +1642,7 @@ typedef struct {
     ecs_query_lbl_t lbl_query; /* Used to find the op that does the actual searching */
     ecs_query_lbl_t lbl_begin;
     ecs_query_lbl_t lbl_cond_eval;
+    ecs_write_flags_t written_or; /* Cond written flags at start of or chain */
     ecs_write_flags_t cond_written_or; /* Cond written flags at start of or chain */
     ecs_query_ref_t src_or;  /* Source for terms in current or chain */
     bool in_or; /* Whether we're in an or chain */
@@ -8083,9 +8084,6 @@ const char* ecs_id_flag_str(
     if (ECS_HAS_ID_FLAG(entity, TOGGLE)) {
         return "TOGGLE";
     } else
-    if (ECS_HAS_ID_FLAG(entity, AND)) {
-        return "AND";
-    } else
     if (ECS_HAS_ID_FLAG(entity, OVERRIDE)) {
         return "OVERRIDE";
     } else {
@@ -8109,11 +8107,6 @@ void ecs_id_str_buf(
 
     if (ECS_HAS_ID_FLAG(id, OVERRIDE)) {
         ecs_strbuf_appendstr(buf, ecs_id_flag_str(ECS_OVERRIDE));
-        ecs_strbuf_appendch(buf, '|');
-    }
-
-    if (ECS_HAS_ID_FLAG(id, AND)) {
-        ecs_strbuf_appendstr(buf, ecs_id_flag_str(ECS_AND));
         ecs_strbuf_appendch(buf, '|');
     }
 
@@ -24943,6 +24936,9 @@ void FlecsMonitorImport(
 #define TOK_INOUT_NONE "none"
 
 static
+const ecs_id_t ECS_AND =                                           (1ull << 60);
+
+static
 const ecs_id_t ECS_OR =                                            (1ull << 59);
 
 static
@@ -40623,12 +40619,6 @@ int flecs_query_compile_builtin_pred(
         op->kind = flecs_ito(uint8_t, eq_match[term->oper == EcsNot]);
     }
 
-    op->first = op->src;
-    op->src = (ecs_query_ref_t){0};
-    op->flags &= (ecs_flags8_t)~((EcsRuleIsEntity|EcsRuleIsVar) << EcsRuleSrc);
-    op->flags &= (ecs_flags8_t)~((EcsRuleIsEntity|EcsRuleIsVar) << EcsRuleFirst);
-    op->flags |= EcsRuleIsVar << EcsRuleFirst;
-
     if (flags_2nd & EcsRuleIsVar) {
         if (!(write_state & (1ull << op->second.var))) {
             ecs_err("uninitialized variable '%s' on right-hand side of "
@@ -40959,6 +40949,64 @@ error:
 }
 #endif
 
+static
+void flecs_query_mark_last_or_op(
+    ecs_query_compile_ctx_t *ctx)
+{
+    ecs_query_op_t *op_ptr = ecs_vec_last_t(ctx->ops, ecs_query_op_t);
+    op_ptr->next = FlecsRuleOrMarker;
+}
+
+static
+void flecs_query_set_op_kind(
+    ecs_query_t *q,
+    ecs_query_op_t *op,
+    ecs_term_t *term,
+    bool src_is_var,
+    bool member_term)
+{
+    /* Default instruction for And operators. If the source is fixed (like for
+     * singletons or terms with an entity source), use With, which like And but
+     * just matches against a source (vs. finding a source). */
+    op->kind = src_is_var ? EcsRuleAnd : EcsRuleWith;
+
+    /* Handle *From operators */
+    if (term->oper == EcsAndFrom) {
+        op->kind = EcsRuleAndFrom;
+    } else if (term->oper == EcsOrFrom) {
+        op->kind = EcsRuleOrFrom;
+    } else if (term->oper == EcsNotFrom) {
+        op->kind = EcsRuleNotFrom;
+
+    /* If rule is transitive, use Trav(ersal) instruction */
+    } else if (term->flags & EcsTermTransitive) {
+        ecs_assert(ecs_term_ref_is_set(&term->second), ECS_INTERNAL_ERROR, NULL);
+        op->kind = EcsRuleTrav;
+    } else {
+        /* Ignore cascade flag */
+        ecs_entity_t trav_flags = EcsTraverseFlags & ~(EcsCascade|EcsDesc);
+        if (term->flags & (EcsTermMatchAny|EcsTermMatchAnySrc)) {
+            op->kind = EcsRuleAndAny;
+        } else if ((term->src.id & trav_flags) == EcsUp) {
+            op->kind = EcsRuleUp;
+        } else if ((term->src.id & trav_flags) == (EcsSelf|EcsUp)) {
+            op->kind = EcsRuleSelfUp;
+        }
+    }
+
+    /* If term has fixed id, insert simpler instruction that skips dealing with
+     * wildcard terms and variables */
+    if (flecs_term_is_fixed_id(q, term) && !member_term) {
+        if (op->kind == EcsRuleAnd) {
+            op->kind = EcsRuleAndId;
+        } else if (op->kind == EcsRuleSelfUp) {
+            op->kind = EcsRuleSelfUpId;
+        } else if (op->kind == EcsRuleUp) {
+            op->kind = EcsRuleUpId;
+        }
+    }
+}
+
 int flecs_query_compile_term(
     ecs_world_t *world,
     ecs_query_impl_t *rule,
@@ -41004,7 +41052,7 @@ int flecs_query_compile_term(
         return 0;
     }
 
-    if (is_or && (first_term || term[-1].oper != EcsOr)) {
+    if (first_or) {
         ctx->ctrlflow->cond_written_or = ctx->cond_written;
         ctx->ctrlflow->in_or = true;
     }
@@ -41024,73 +41072,28 @@ int flecs_query_compile_term(
         }
     }
 
-    /* Default instruction for And operators. If the source is fixed (like for
-     * singletons or terms with an entity source), use With, which like And but
-     * just matches against a source (vs. finding a source). */
-    op.kind = src_is_var ? EcsRuleAnd : EcsRuleWith;
     op.field_index = flecs_ito(int8_t, term->field_index);
     op.term_index = flecs_ito(int8_t, term - q->terms);
 
-    /* Handle *From operators */
-    if (term->oper == EcsAndFrom) {
-        op.kind = EcsRuleAndFrom;
-    } else if (term->oper == EcsOrFrom) {
-        op.kind = EcsRuleOrFrom;
-    } else if (term->oper == EcsNotFrom) {
-        op.kind = EcsRuleNotFrom;
-
-    /* If rule is transitive, use Trav(ersal) instruction */
-    } else if (term->flags & EcsTermTransitive) {
-        ecs_assert(ecs_term_ref_is_set(&term->second), ECS_INTERNAL_ERROR, NULL);
-        op.kind = EcsRuleTrav;
-    } else {
-        /* Ignore cascade flag */
-        ecs_entity_t trav_flags = EcsTraverseFlags & ~(EcsCascade|EcsDesc);
-        if (term->flags & (EcsTermMatchAny|EcsTermMatchAnySrc)) {
-            op.kind = EcsRuleAndAny;
-        } else if ((term->src.id & trav_flags) == EcsUp) {
-            op.kind = EcsRuleUp;
-        } else if ((term->src.id & trav_flags) == (EcsSelf|EcsUp)) {
-            op.kind = EcsRuleSelfUp;
-        }
-    }
-
-    /* If term has fixed id, insert simpler instruction that skips dealing with
-     * wildcard terms and variables */
-    if (flecs_term_is_fixed_id(q, term) && !member_term) {
-        if (op.kind == EcsRuleAnd) {
-            op.kind = EcsRuleAndId;
-        } else if (op.kind == EcsRuleSelfUp) {
-            op.kind = EcsRuleSelfUpId;
-        } else if (op.kind == EcsRuleUp) {
-            op.kind = EcsRuleUpId;
-        }
-    }
+    flecs_query_set_op_kind(q, &op, term, src_is_var, member_term);
 
     /* Save write state at start of term so we can use it to reliably track
      * variables got written by this term. */
     ecs_write_flags_t cond_write_state = ctx->cond_written;
-
-    /* Resolve component inheritance if necessary */
-    ecs_var_id_t first_var = EcsVarNone, second_var = EcsVarNone, 
-        src_var = EcsVarNone;
 
     /* Resolve variables and entities for operation arguments */
     flecs_query_compile_term_ref(world, rule, &op, &term->first, 
         &op.first, EcsRuleFirst, EcsVarEntity, ctx, true);
     flecs_query_compile_term_ref(world, rule, &op, &term->second, 
         &op.second, EcsRuleSecond, EcsVarEntity, ctx, true);
-
-    if (first_is_var) first_var = op.first.var;
-    if (second_is_var) second_var = op.second.var;
-
     flecs_query_compile_term_ref(world, rule, &op, &term->src, 
         &op.src, EcsRuleSrc, EcsVarAny, ctx, true);
+
+    bool src_written = true;
     if (src_is_var) {
-        src_var = op.src.var;
-        src_is_lookup = rule->vars[src_var].lookup != NULL;
+        src_is_lookup = rule->vars[op.src.var].lookup != NULL;
+        src_written = flecs_query_is_written(op.src.var, ctx->written);
     }
-    bool src_written = flecs_query_is_written(src_var, ctx->written);
 
     /* Insert each instructions for table -> entity variable if needed */
     bool first_written, second_written;
@@ -41110,7 +41113,7 @@ int flecs_query_compile_term(
      * written to yet, insert instruction that selects all entities so we have
      * something to match the optional/not against. */
     if (src_is_var && !src_written && !src_is_wildcard && !src_is_lookup) {
-        src_written = flecs_query_select_all(term, &op, src_var, ctx);
+        src_written = flecs_query_select_all(term, &op, op.src.var, ctx);
     }
 
     /* A bit of special logic for OR expressions and equality predicates. If the
@@ -41122,10 +41125,9 @@ int flecs_query_compile_term(
     if (src_is_var && src_written && builtin_pred && term->oper == EcsOr) {
         /* Or terms are required to have the same source, so we don't have to
          * worry about the last term in the chain. */
-        if (rule->vars[src_var].kind == EcsVarTable) {
+        if (rule->vars[op.src.var].kind == EcsVarTable) {
             flecs_query_compile_term_ref(world, rule, &op, &term->src, 
                     &op.src, EcsRuleSrc, EcsVarEntity, ctx, true);
-            src_var = op.src.var;
         }
     }
 
@@ -41148,6 +41150,7 @@ int flecs_query_compile_term(
                 op.kind = EcsRuleIdsRight;
             }
             op.src.entity = 0;
+            src_is_var = false;
             op.flags &= (ecs_flags8_t)~(EcsRuleIsVar << EcsRuleSrc); /* ids has no src */
             op.flags &= (ecs_flags8_t)~(EcsRuleIsEntity << EcsRuleSrc);
         }
@@ -41201,7 +41204,6 @@ int flecs_query_compile_term(
 
     ecs_write_flags_t write_state = ctx->written;
     if (first_is_var) {
-        op.first.var = first_var;
         op.flags &= (ecs_flags8_t)~(EcsRuleIsEntity << EcsRuleFirst);
         op.flags |= (EcsRuleIsVar << EcsRuleFirst);
     }
@@ -41212,18 +41214,18 @@ int flecs_query_compile_term(
 
     /* Insert instructions for lookup variables */
     if (first_is_var) {
-        if (flecs_query_compile_lookup(rule, first_var, ctx, cond_write)) {
-            write_state |= (1ull << first_var); // lookups are resolved inline
+        if (flecs_query_compile_lookup(rule, op.first.var, ctx, cond_write)) {
+            write_state |= (1ull << op.first.var); // lookups are resolved inline
         }
     }
     if (src_is_var) {
-        if (flecs_query_compile_lookup(rule, src_var, ctx, cond_write)) {
-            write_state |= (1ull << src_var); // lookups are resolved inline
+        if (flecs_query_compile_lookup(rule, op.src.var, ctx, cond_write)) {
+            write_state |= (1ull << op.src.var); // lookups are resolved inline
         }
     }
     if (second_is_var) {
-        if (flecs_query_compile_lookup(rule, second_var, ctx, cond_write)) {
-            write_state |= (1ull << second_var); // lookups are resolved inline
+        if (flecs_query_compile_lookup(rule, op.second.var, ctx, cond_write)) {
+            write_state |= (1ull << op.second.var); // lookups are resolved inline
         }
     }
 
@@ -41238,7 +41240,7 @@ int flecs_query_compile_term(
      * This could've been done with regular With instructions, but since 
      * filtering out disabled/prefab entities is the default and this check is
      * cheap to perform on table flags, it's worth special casing. */
-    if (!src_written && src_var == 0) {
+    if (!src_written && op.src.var == 0) {
         ecs_flags32_t filter_flags = q->flags;
         if (!(filter_flags & EcsQueryMatchDisabled) || 
             !(filter_flags & EcsQueryMatchPrefab)) 
@@ -41257,38 +41259,37 @@ int flecs_query_compile_term(
 
     /* After evaluating a term, a used variable is always written */
     if (src_is_var) {
-        flecs_query_write(src_var, &op.written);
+        flecs_query_write(op.src.var, &op.written);
         flecs_query_write_ctx(op.src.var, ctx, cond_write);
     }
     if (first_is_var) {
-        flecs_query_write(first_var, &op.written);
-        flecs_query_write_ctx(first_var, ctx, cond_write);
+        flecs_query_write(op.first.var, &op.written);
+        flecs_query_write_ctx(op.first.var, ctx, cond_write);
     }
     if (second_is_var) {
-        flecs_query_write(second_var, &op.written);
-        flecs_query_write_ctx(second_var, ctx, cond_write);
+        flecs_query_write(op.second.var, &op.written);
+        flecs_query_write_ctx(op.second.var, ctx, cond_write);
     }
+    
     flecs_query_op_insert(&op, ctx);
 
     ctx->cur->lbl_query = flecs_itolbl(ecs_vec_count(ctx->ops) - 1);
-    if (is_or) {
-        ecs_query_op_t *op_ptr = ecs_vec_get_t(ctx->ops, ecs_query_op_t, 
-            ctx->cur->lbl_query);
-        op_ptr->next = FlecsRuleOrMarker;
+    if (is_or && !member_term) {
+        flecs_query_mark_last_or_op(ctx);
     }
 
     /* Handle self-references between src and first/second variables */
     if (src_is_var) {
         if (first_is_var) {
-            flecs_query_insert_contains(rule, src_var, first_var, ctx);
+            flecs_query_insert_contains(rule, op.src.var, op.first.var, ctx);
         }
-        if (second_is_var && first_var != second_var) {
-            flecs_query_insert_contains(rule, src_var, second_var, ctx);
+        if (second_is_var && op.first.var != op.second.var) {
+            flecs_query_insert_contains(rule, op.src.var, op.second.var, ctx);
         }
     }
 
     /* Handle self references between first and second variables */
-    if (first_is_var && !first_written && (first_var == second_var)) {
+    if (first_is_var && !first_written && (op.first.var == op.second.var)) {
         flecs_query_insert_pair_eq(term->field_index, ctx);
     }
 
@@ -41303,6 +41304,9 @@ int flecs_query_compile_term(
     if (member_term) {
         flecs_query_compile_end_member_term(world, rule, &op, term, ctx, 
             term_id, first_id, second_id, cond_write);
+        if (is_or) {
+            flecs_query_mark_last_or_op(ctx);
+        }
     }
 
     if (last_or) {
@@ -43229,10 +43233,10 @@ bool flecs_query_pred_eq_w_range(
     }
 
     uint64_t written = ctx->written[ctx->op_index];
-    ecs_var_id_t first_var = op->first.var;
-    if (!(written & (1ull << first_var))) {
+    ecs_var_id_t src_var = op->src.var;
+    if (!(written & (1ull << src_var))) {
         /* left = unknown, right = known. Assign right-hand value to left */
-        ecs_var_id_t l = first_var;
+        ecs_var_id_t l = src_var;
         ctx->vars[l].range = r;
         if (r.count == 1) {
             ctx->vars[l].entity = ecs_vec_get_t(&r.table->data.entities, 
@@ -43241,14 +43245,14 @@ bool flecs_query_pred_eq_w_range(
         return true;
     } else {
         ecs_table_range_t l = flecs_query_get_range(
-            op, &op->first, EcsRuleFirst, ctx);
+            op, &op->src, EcsRuleSrc, ctx);
 
         if (!flecs_query_compare_range(&l, &r)) {
             return false;
         }
 
-        ctx->vars[first_var].range.offset = r.offset;
-        ctx->vars[first_var].range.count = r.count;
+        ctx->vars[src_var].range.offset = r.offset;
+        ctx->vars[src_var].range.count = r.count;
         return true;
     }
 }
@@ -43294,9 +43298,9 @@ bool flecs_query_pred_neq_w_range(
     ecs_table_range_t r)
 {
     ecs_query_eq_ctx_t *op_ctx = flecs_op_ctx(ctx, eq);
-    ecs_var_id_t first_var = op->first.var;
+    ecs_var_id_t src_var = op->src.var;
     ecs_table_range_t l = flecs_query_get_range(
-        op, &op->first, EcsRuleFirst, ctx);
+        op, &op->src, EcsRuleSrc, ctx);
 
     /* If tables don't match, neq always returns once */
     if (l.table != r.table) {
@@ -43325,7 +43329,7 @@ bool flecs_query_pred_neq_w_range(
      * excluded slice, once for the slice after the excluded slice. If the right
      * hand range starts & overlaps with the left hand range, there is only
      * one slice. */
-    ecs_var_t *var = &ctx->vars[first_var];
+    ecs_var_t *var = &ctx->vars[src_var];
     if (!redo && r.offset > l_offset) {
         int32_t end = r.offset;
         if (end > l_count) {
@@ -43373,16 +43377,16 @@ bool flecs_query_pred_match(
 {
     ecs_query_eq_ctx_t *op_ctx = flecs_op_ctx(ctx, eq);
     uint64_t written = ctx->written[ctx->op_index];
-    ecs_assert(flecs_ref_is_written(op, &op->first, EcsRuleFirst, written),
+    ecs_assert(flecs_ref_is_written(op, &op->src, EcsRuleSrc, written),
         ECS_INTERNAL_ERROR, 
             "invalid instruction sequence: uninitialized match operand");
     (void)written;
 
-    ecs_var_id_t first_var = op->first.var;
+    ecs_var_id_t src_var = op->src.var;
     const char *match = flecs_query_name_arg(op, ctx);
     ecs_table_range_t l;
     if (!redo) {
-        l = flecs_query_get_range(op, &op->first, EcsRuleFirst, ctx);
+        l = flecs_query_get_range(op, &op->src, EcsRuleSrc, ctx);
         if (!l.table) {
             return false;
         }
@@ -43432,12 +43436,12 @@ bool flecs_query_pred_match(
     }
 
     if (offset == -1) {
-        ctx->vars[first_var].range = op_ctx->range;
+        ctx->vars[src_var].range = op_ctx->range;
         return false;
     }
 
-    ctx->vars[first_var].range.offset = offset;
-    ctx->vars[first_var].range.count = (op_ctx->index - offset);
+    ctx->vars[src_var].range.offset = offset;
+    ctx->vars[src_var].range.count = (op_ctx->index - offset);
     return true;
 }
 

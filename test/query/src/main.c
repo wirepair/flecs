@@ -1010,6 +1010,9 @@ void BuiltinPredicates_var_2_neq_name_written(void);
 void BuiltinPredicates_this_2_or_id(void);
 void BuiltinPredicates_this_3_or_id(void);
 void BuiltinPredicates_this_2_or_name(void);
+void BuiltinPredicates_this_3_or_name(void);
+void BuiltinPredicates_this_2_or_match(void);
+void BuiltinPredicates_this_3_or_match(void);
 void BuiltinPredicates_var_2_or_id(void);
 void BuiltinPredicates_var_2_or_name(void);
 void BuiltinPredicates_this_2_or_id_written(void);
@@ -5317,6 +5320,18 @@ bake_test_case BuiltinPredicates_testcases[] = {
         BuiltinPredicates_this_2_or_name
     },
     {
+        "this_3_or_name",
+        BuiltinPredicates_this_3_or_name
+    },
+    {
+        "this_2_or_match",
+        BuiltinPredicates_this_2_or_match
+    },
+    {
+        "this_3_or_match",
+        BuiltinPredicates_this_3_or_match
+    },
+    {
         "var_2_or_id",
         BuiltinPredicates_var_2_or_id
     },
@@ -6809,7 +6824,7 @@ static bake_test_suite suites[] = {
         "BuiltinPredicates",
         NULL,
         NULL,
-        77,
+        80,
         BuiltinPredicates_testcases
     },
     {

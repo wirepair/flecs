@@ -1647,14 +1647,11 @@ void BuiltinPredicates_this_3_or_id(void) {
     ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
     /* ecs_entity_t ent_5 = */ ecs_new_entity(world, "ent_5");
 
-    printf("\n\n\n");
     ecs_query_t *q = ecs_query(world, {
         .expr = "$this == ent_2 || $this == ent_3 || $this == ent_4"
     });
 
     test_assert(q != NULL);
-
-    printf("%s\n", ecs_query_plan(q));
 
     {
         ecs_iter_t it = ecs_query_iter(world, q);
@@ -1709,6 +1706,157 @@ void BuiltinPredicates_this_2_or_name(void) {
         test_uint(1, it.count);
         test_uint(false, ecs_field_is_set(&it, 1));
         test_uint(ent_3, it.entities[0]);
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void BuiltinPredicates_this_3_or_name(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, RelA);
+
+    /* ecs_entity_t ent_1 = */ ecs_new_entity(world, "ent_1");
+    ecs_entity_t ent_2 = ecs_new_entity(world, "ent_2");
+    ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
+    ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
+    /* ecs_entity_t ent_5 = */ ecs_new_entity(world, "ent_5");
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "$this == \"ent_2\" || $this == \"ent_3\" || $this == \"ent_4\""
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_2, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_3, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_4, it.entities[0]);
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void BuiltinPredicates_this_2_or_match(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, RelA);
+
+    /* ecs_entity_t ent_1 = */ ecs_new_entity(world, "ent_1");
+    ecs_entity_t ent_2 = ecs_new_entity(world, "ent_2");
+    ecs_entity_t ent_2_5 = ecs_new_entity(world, "ent_25");
+    ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
+    ecs_entity_t ent_3_5 = ecs_new_entity(world, "ent_35");
+    /* ecs_entity_t ent_4 = */ ecs_new_entity(world, "ent_4");
+    /* ecs_entity_t ent_5 = */ ecs_new_entity(world, "ent_5");
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "$this ~= \"ent_2\" || $this ~= \"ent_3\""
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_2, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_2_5, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_3, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_3_5, it.entities[0]);
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void BuiltinPredicates_this_3_or_match(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, RelA);
+
+    /* ecs_entity_t ent_1 = */ ecs_new_entity(world, "ent_1");
+    ecs_entity_t ent_2 = ecs_new_entity(world, "ent_2");
+    ecs_entity_t ent_2_5 = ecs_new_entity(world, "ent_25");
+    ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
+    ecs_entity_t ent_3_5 = ecs_new_entity(world, "ent_35");
+    ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
+    ecs_entity_t ent_4_5 = ecs_new_entity(world, "ent_45");
+    /* ecs_entity_t ent_5 = */ ecs_new_entity(world, "ent_5");
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "$this ~= \"ent_2\" || $this ~= \"ent_3\" || $this ~= \"ent_4\""
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_2, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_2_5, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_3, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_3_5, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_4, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(false, ecs_field_is_set(&it, 1));
+        test_uint(ent_4_5, it.entities[0]);
 
         test_bool(false, ecs_query_next(&it));
     }
@@ -1818,8 +1966,6 @@ void BuiltinPredicates_this_2_or_id_written(void) {
 
     test_assert(q != NULL);
 
-    printf("%s\n", ecs_query_plan(q));
-
     {
         ecs_iter_t it = ecs_query_iter(world, q);
         test_bool(true, ecs_query_next(&it));
@@ -1845,7 +1991,56 @@ void BuiltinPredicates_this_2_or_id_written(void) {
 }
 
 void BuiltinPredicates_this_3_or_id_written(void) {
-    // Implement testcase
+    ecs_world_t *world = ecs_mini();
+
+    ECS_TAG(world, RelA);
+
+    ecs_entity_t ent_1 = ecs_new_entity(world, "ent_1");
+    ecs_add(world, ent_1, RelA);
+    ecs_entity_t ent_2 = ecs_new_entity(world, "ent_2");
+    ecs_add(world, ent_2, RelA);
+    ecs_entity_t ent_3 = ecs_new_entity(world, "ent_3");
+    ecs_add(world, ent_3, RelA);
+    ecs_entity_t ent_4 = ecs_new_entity(world, "ent_4");
+    ecs_add(world, ent_4, RelA);
+    ecs_entity_t ent_5 = ecs_new_entity(world, "ent_5");
+    ecs_add(world, ent_5, RelA);
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "RelA($this), $this == ent_2 || $this == ent_3 || $this == ent_4"
+    });
+
+    test_assert(q != NULL);
+
+    {
+        ecs_iter_t it = ecs_query_iter(world, q);
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(RelA, ecs_field_id(&it, 1));
+        test_uint(true, ecs_field_is_set(&it, 1));
+        test_uint(false, ecs_field_is_set(&it, 2));
+        test_uint(ent_2, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(RelA, ecs_field_id(&it, 1));
+        test_uint(true, ecs_field_is_set(&it, 1));
+        test_uint(false, ecs_field_is_set(&it, 2));
+        test_uint(ent_3, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(1, it.count);
+        test_uint(RelA, ecs_field_id(&it, 1));
+        test_uint(true, ecs_field_is_set(&it, 1));
+        test_uint(false, ecs_field_is_set(&it, 2));
+        test_uint(ent_4, it.entities[0]);
+
+        test_bool(false, ecs_query_next(&it));
+    }
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
 }
 
 void BuiltinPredicates_this_2_or_name_written(void) {

@@ -40267,6 +40267,7 @@ void flecs_query_begin_block_or(
 
 static
 void flecs_query_end_block_or(
+    ecs_query_impl_t *impl,
     ecs_query_compile_ctx_t *ctx)
 {
     ecs_query_op_t op = {0};
@@ -40298,9 +40299,36 @@ void flecs_query_end_block_or(
         }
     }
 
-    ops[ctx->cur->lbl_begin].next = flecs_itolbl(end);
+    ecs_query_op_t *first = &ops[ctx->cur->lbl_begin];
+    first->next = flecs_itolbl(end);
     ops[end].prev = ctx->cur->lbl_begin;
     ops[end - 1].prev = ctx->cur->lbl_begin;
+
+    ctx->ctrlflow->in_or = false;
+    ctx->cur->lbl_begin = -1;
+    if (first->flags & (EcsRuleIsVar << EcsRuleSrc)) {
+        ecs_var_id_t src_var = first->src.var;
+        ctx->written |= (1llu << src_var);
+
+        /* If src is a table variable, it is possible that this was resolved to
+         * an entity variable in all of the OR terms. If this is the case, mark
+         * entity variable as written as well. */
+        ecs_query_var_t *var = &impl->vars[src_var];
+        if (var->kind == EcsVarTable) {
+            const char *name = var->name;
+            if (!name) {
+                name = "this";
+            }
+
+            ecs_var_id_t evar = flecs_query_find_var_id(
+                impl, name, EcsVarEntity);
+            if (evar != EcsVarNone && (ctx->cond_written & (1llu << evar))) {
+                ctx->written |= (1llu << evar);
+                ctx->cond_written &= ~(1llu << evar);
+            }
+        }
+    }
+    ctx->written |= ctx->cond_written;
 
     /* Scan which variables were conditionally written in the OR chain and 
      * reset instructions after the OR chain. If a variable is set in part one
@@ -40319,9 +40347,6 @@ void flecs_query_end_block_or(
             flecs_query_op_insert(&reset_op, ctx);
         }
     }
-
-    ctx->ctrlflow->in_or = false;
-    ctx->cur->lbl_begin = -1;
 }
 
 void flecs_query_insert_each(
@@ -41055,6 +41080,8 @@ int flecs_query_compile_term(
     if (first_or) {
         ctx->ctrlflow->cond_written_or = ctx->cond_written;
         ctx->ctrlflow->in_or = true;
+    } else if (is_or) {
+        ctx->written = ctx->ctrlflow->written_or;
     }
 
     if (!ECS_TERM_REF_ID(&term->src) && term->src.id & EcsIsEntity) {
@@ -41109,6 +41136,13 @@ int flecs_query_compile_term(
         goto error;
     }
 
+    /* Store write state of variables for first OR term in chain which will get
+     * restored for the other terms in the chain, so that all OR terms make the
+     * same assumptions about which variables were already written. */
+    if (first_or) {
+        ctx->ctrlflow->written_or = ctx->written;
+    }
+
     /* If an optional or not term is inserted for a source that's not been 
      * written to yet, insert instruction that selects all entities so we have
      * something to match the optional/not against. */
@@ -41122,12 +41156,11 @@ int flecs_query_compile_term(
      * the table that match the right hand sides of the operator expressions. 
      * For this to work, the src variable needs to be resolved as entity, as an
      * Or chain would otherwise only yield the first match from a table. */
-    if (src_is_var && src_written && builtin_pred && term->oper == EcsOr) {
-        /* Or terms are required to have the same source, so we don't have to
-         * worry about the last term in the chain. */
+    if (src_is_var && src_written && (builtin_pred || member_term) && term->oper == EcsOr) {
         if (rule->vars[op.src.var].kind == EcsVarTable) {
             flecs_query_compile_term_ref(world, rule, &op, &term->src, 
                     &op.src, EcsRuleSrc, EcsVarEntity, ctx, true);
+            ctx->ctrlflow->written_or |= (1llu << op.src.var);
         }
     }
 
@@ -41310,7 +41343,7 @@ int flecs_query_compile_term(
     }
 
     if (last_or) {
-        flecs_query_end_block_or(ctx);
+        flecs_query_end_block_or(rule, ctx);
     }
 
     /* Handle closing of conditional evaluation */

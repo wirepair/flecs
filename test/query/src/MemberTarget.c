@@ -2243,6 +2243,8 @@ void MemberTarget_this_written_2_or(void) {
 
     test_assert(q != NULL);
 
+    printf("%s\n", ecs_query_plan(q));
+
     /* ecs_entity_t e0 = */ ecs_new(world, Foo);
     ecs_entity_t e1 = ecs_set(world, 0, Movement, { Running });
     ecs_entity_t e2 = ecs_set(world, 0, Movement, { Running });

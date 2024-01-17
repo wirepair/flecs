@@ -41474,7 +41474,7 @@ bool flecs_query_run_until(
     const ecs_query_op_t *ops,
     ecs_query_lbl_t first,
     ecs_query_lbl_t cur,
-    ecs_query_op_kind_t until);
+    int32_t count);
 
 static
 void flecs_query_populate_field(
@@ -43926,8 +43926,10 @@ bool flecs_query_run_block(
 
     ctx->written[ctx->op_index + 1] = ctx->written[ctx->op_index];
 
+    const ecs_query_op_t *op = &ctx->qit->ops[ctx->op_index];
     bool result = flecs_query_run_until(
-        redo, ctx, qit->ops, ctx->op_index, op_ctx->op_index, EcsRuleEnd);
+        redo, ctx, qit->ops, ctx->op_index, op_ctx->op_index, op->next);
+
     op_ctx->op_index = ctx->op_index - 1;
     return result;
 }
@@ -44337,7 +44339,7 @@ bool flecs_query_run_until(
     const ecs_query_op_t *ops,
     ecs_query_lbl_t first,
     ecs_query_lbl_t cur,
-    ecs_query_op_kind_t until)
+    int32_t last)
 {
     ecs_assert(first >= -1, ECS_INTERNAL_ERROR, NULL);
     ecs_assert(cur >= 0, ECS_INTERNAL_ERROR, NULL);
@@ -44345,7 +44347,8 @@ bool flecs_query_run_until(
 
     ctx->op_index = cur;
     const ecs_query_op_t *op = &ops[ctx->op_index];
-    ecs_assert(op->kind != until, ECS_INTERNAL_ERROR, NULL);
+    const ecs_query_op_t *last_op = &ops[last];
+    ecs_assert(last > first, ECS_INTERNAL_ERROR, NULL);
 
     do {
         #ifdef FLECS_DEBUG
@@ -44366,12 +44369,9 @@ bool flecs_query_run_until(
         if (cur <= first) {
             return false;
         }
-        if (op->kind == until) {
-            return true;
-        }
-    } while (true);
+    } while (op != last_op);
 
-    return false;
+    return true;
 }
 
 static
@@ -44546,7 +44546,7 @@ bool ecs_query_next_instanced(
     }
 
     /* Default iterator mode */
-    if (flecs_query_run_until(redo, &ctx, ops, -1, qit->op, EcsRuleYield)) {
+    if (flecs_query_run_until(redo, &ctx, ops, -1, qit->op, impl->op_count - 1)) {
         ecs_assert(ops[ctx.op_index].kind == EcsRuleYield, 
             ECS_INTERNAL_ERROR, NULL);
         flecs_query_set_iter_this(it, &ctx);

@@ -1357,6 +1357,16 @@ void MemberTarget_this_2_or(void);
 void MemberTarget_this_3_or(void);
 void MemberTarget_this_written_2_or(void);
 void MemberTarget_this_written_3_or(void);
+void MemberTarget_var_2_or(void);
+void MemberTarget_var_3_or(void);
+void MemberTarget_this_2_or_w_2_members(void);
+void MemberTarget_this_2_or_w_2_types(void);
+void MemberTarget_this_written_2_or_w_2_members(void);
+void MemberTarget_this_written_2_or_w_2_types(void);
+void MemberTarget_this_2_or_2_types_wildcard(void);
+void MemberTarget_this_2_or_2_types_dep_var(void);
+void MemberTarget_var_written_2_or(void);
+void MemberTarget_var_written_3_or(void);
 void MemberTarget_var_member_eq(void);
 void MemberTarget_var_member_eq_no_matches(void);
 void MemberTarget_var_member_eq_all_matches(void);
@@ -6665,6 +6675,46 @@ bake_test_case MemberTarget_testcases[] = {
         MemberTarget_this_written_3_or
     },
     {
+        "var_2_or",
+        MemberTarget_var_2_or
+    },
+    {
+        "var_3_or",
+        MemberTarget_var_3_or
+    },
+    {
+        "this_2_or_w_2_members",
+        MemberTarget_this_2_or_w_2_members
+    },
+    {
+        "this_2_or_w_2_types",
+        MemberTarget_this_2_or_w_2_types
+    },
+    {
+        "this_written_2_or_w_2_members",
+        MemberTarget_this_written_2_or_w_2_members
+    },
+    {
+        "this_written_2_or_w_2_types",
+        MemberTarget_this_written_2_or_w_2_types
+    },
+    {
+        "this_2_or_2_types_wildcard",
+        MemberTarget_this_2_or_2_types_wildcard
+    },
+    {
+        "this_2_or_2_types_dep_var",
+        MemberTarget_this_2_or_2_types_dep_var
+    },
+    {
+        "var_written_2_or",
+        MemberTarget_var_written_2_or
+    },
+    {
+        "var_written_3_or",
+        MemberTarget_var_written_3_or
+    },
+    {
         "var_member_eq",
         MemberTarget_var_member_eq
     },
@@ -6875,7 +6925,7 @@ static bake_test_suite suites[] = {
         "MemberTarget",
         MemberTarget_setup,
         NULL,
-        48,
+        58,
         MemberTarget_testcases,
         1,
         MemberTarget_params

@@ -3918,6 +3918,8 @@ void Operators_2_or(void) {
     ECS_TAG(world, RelB);
     ECS_TAG(world, RelC);
 
+    ECS_TAG(world, Tag);
+
     ecs_query_t *q = ecs_query(world, {
         .expr = "RelA($this) || RelB($this)",
         .cache_kind = cache_kind
@@ -3931,24 +3933,42 @@ void Operators_2_or(void) {
     }
 
     ecs_entity_t e1 = ecs_new(world, RelA);
-    ecs_entity_t e2 = ecs_new(world, RelB);
+    ecs_entity_t e2 = ecs_new(world, RelA);
+    ecs_add(world, e2, RelB);
+    ecs_entity_t e3 = ecs_new(world, RelB);
+    ecs_entity_t e4 = ecs_new(world, RelB);
+    ecs_add(world, e4, Tag);
     ecs_new(world, RelC);
 
     {
         ecs_iter_t it = ecs_query_iter(world, q);
         test_bool(true, ecs_query_next(&it));
+        test_uint(e1, it.entities[0]);
         test_uint(1, it.count);
         test_uint(RelA, ecs_field_id(&it, 1));
         test_uint(0, ecs_field_src(&it, 1));
         test_bool(true, ecs_field_is_set(&it, 1));
-        test_uint(e1, it.entities[0]);
 
         test_bool(true, ecs_query_next(&it));
+        test_uint(e2, it.entities[0]);
+        test_uint(1, it.count);
+        test_uint(RelA, ecs_field_id(&it, 1));
+        test_uint(0, ecs_field_src(&it, 1));
+        test_bool(true, ecs_field_is_set(&it, 1));
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(e3, it.entities[0]);
         test_uint(1, it.count);
         test_uint(RelB, ecs_field_id(&it, 1));
         test_uint(0, ecs_field_src(&it, 1));
         test_bool(true, ecs_field_is_set(&it, 1));
-        test_uint(e2, it.entities[0]);
+
+        test_bool(true, ecs_query_next(&it));
+        test_uint(e4, it.entities[0]);
+        test_uint(1, it.count);
+        test_uint(RelB, ecs_field_id(&it, 1));
+        test_uint(0, ecs_field_src(&it, 1));
+        test_bool(true, ecs_field_is_set(&it, 1));
 
         test_bool(false, ecs_query_next(&it));
     }

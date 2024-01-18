@@ -268,12 +268,15 @@ void flecs_query_begin_block_or(
         }
     }
 
-    if (add_src) {
-        if (op->flags & (EcsRuleIsVar << EcsRuleSrc)) {
+    if (op->flags & (EcsRuleIsVar << EcsRuleSrc)) {
+        if (add_src) {
             or_op->flags = (EcsRuleIsVar << EcsRuleSrc);
             or_op->src = op->src;
             ctx->cur->src_or = op->src;
         }
+
+        ctx->cur->src_written_or = flecs_query_is_written(
+            op->src.var, ctx->written);
     }
 }
 
@@ -285,40 +288,45 @@ void flecs_query_end_block_or(
     ecs_query_op_t op = {0};
     op.kind = EcsRuleEnd;
     ecs_query_lbl_t end = flecs_query_op_insert(&op, ctx);
-    
+
     ecs_query_op_t *ops = ecs_vec_first_t(ctx->ops, ecs_query_op_t);
-    int32_t i, j, prev_or = -2;
+    int32_t i, j, prev_or = ctx->cur->lbl_begin + 1;
     for (i = ctx->cur->lbl_begin + 1; i < end; i ++) {
         if (ops[i].next == FlecsRuleOrMarker) {
-            if (prev_or != -2) {
-                ops[prev_or].prev = flecs_itolbl(i);
+            if (i == (end - 1)) {
+                ops[prev_or].prev = ctx->cur->lbl_begin;
+            } else {
+                ops[prev_or].prev = flecs_itolbl(i + 1);
             }
+
+            // printf("i = %d, prev_or = %d\n", i, prev_or);
+            // ops[prev_or].prev = flecs_itolbl(i + 1);
             ops[i].next = flecs_itolbl(end);
-            prev_or = i;
-        } else {
-            /* Combine operation with next OR marker. This supports OR chains 
-             * with terms that require multiple operations to test. */
-            for (j = i + 1; j < end; j ++) {
-                if (ops[j].next == FlecsRuleOrMarker) {
-                    if (j == (end - 1)) {
-                        ops[i].prev = ctx->cur->lbl_begin;
-                    } else {
-                        ops[i].prev = flecs_itolbl(j + 1);
-                    }
-                    break;
-                }
-            }
+
+            // /* Combine operation with next OR marker. This supports OR chains 
+            //  * with terms that require multiple operations to test. */
+            // for (j = prev_or + 1; j < i; j ++) {
+            //     if (i == (end - 1)) {
+            //         ops[j].prev = ctx->cur->lbl_begin;
+            //     } else {
+            //         ops[j].prev = flecs_itolbl(i + 1);
+            //     }
+            //     break;
+            // }
+
+            prev_or = i + 1;
         }
     }
 
     ecs_query_op_t *first = &ops[ctx->cur->lbl_begin];
+    bool src_is_var = first->flags & (EcsRuleIsVar << EcsRuleSrc);
     first->next = flecs_itolbl(end);
     ops[end].prev = ctx->cur->lbl_begin;
     ops[end - 1].prev = ctx->cur->lbl_begin;
 
     ctx->ctrlflow->in_or = false;
     ctx->cur->lbl_begin = -1;
-    if (first->flags & (EcsRuleIsVar << EcsRuleSrc)) {
+    if (src_is_var) {
         ecs_var_id_t src_var = first->src.var;
         ctx->written |= (1llu << src_var);
 
@@ -350,6 +358,11 @@ void flecs_query_end_block_or(
     for (i = 1; i < (8 * ECS_SIZEOF(ecs_write_flags_t)); i ++) {
         ecs_write_flags_t prev = 1 & (ctx->ctrlflow->cond_written_or >> i);
         ecs_write_flags_t cur = 1 & (ctx->cond_written >> i);
+
+        /* Skip variable if it's the source for the OR chain */
+        if (src_is_var && (i == first->src.var)) {
+            continue;
+        }
 
         if (!prev && cur) {
             ecs_query_op_t reset_op = {0};

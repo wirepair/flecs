@@ -275,6 +275,7 @@ typedef struct {
     ecs_write_flags_t written_or; /* Cond written flags at start of or chain */
     ecs_write_flags_t cond_written_or; /* Cond written flags at start of or chain */
     ecs_query_ref_t src_or;  /* Source for terms in current or chain */
+    bool src_written_or; /* Was src populated before OR chain */
     bool in_or; /* Whether we're in an or chain */
 } ecs_query_compile_ctrlflow_t;
 

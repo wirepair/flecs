@@ -1645,6 +1645,7 @@ typedef struct {
     ecs_write_flags_t written_or; /* Cond written flags at start of or chain */
     ecs_write_flags_t cond_written_or; /* Cond written flags at start of or chain */
     ecs_query_ref_t src_or;  /* Source for terms in current or chain */
+    bool src_written_or; /* Was src populated before OR chain */
     bool in_or; /* Whether we're in an or chain */
 } ecs_query_compile_ctrlflow_t;
 
@@ -40256,12 +40257,15 @@ void flecs_query_begin_block_or(
         }
     }
 
-    if (add_src) {
-        if (op->flags & (EcsRuleIsVar << EcsRuleSrc)) {
+    if (op->flags & (EcsRuleIsVar << EcsRuleSrc)) {
+        if (add_src) {
             or_op->flags = (EcsRuleIsVar << EcsRuleSrc);
             or_op->src = op->src;
             ctx->cur->src_or = op->src;
         }
+
+        ctx->cur->src_written_or = flecs_query_is_written(
+            op->src.var, ctx->written);
     }
 }
 
@@ -40273,40 +40277,45 @@ void flecs_query_end_block_or(
     ecs_query_op_t op = {0};
     op.kind = EcsRuleEnd;
     ecs_query_lbl_t end = flecs_query_op_insert(&op, ctx);
-    
+
     ecs_query_op_t *ops = ecs_vec_first_t(ctx->ops, ecs_query_op_t);
-    int32_t i, j, prev_or = -2;
+    int32_t i, j, prev_or = ctx->cur->lbl_begin + 1;
     for (i = ctx->cur->lbl_begin + 1; i < end; i ++) {
         if (ops[i].next == FlecsRuleOrMarker) {
-            if (prev_or != -2) {
-                ops[prev_or].prev = flecs_itolbl(i);
+            if (i == (end - 1)) {
+                ops[prev_or].prev = ctx->cur->lbl_begin;
+            } else {
+                ops[prev_or].prev = flecs_itolbl(i + 1);
             }
+
+            // printf("i = %d, prev_or = %d\n", i, prev_or);
+            // ops[prev_or].prev = flecs_itolbl(i + 1);
             ops[i].next = flecs_itolbl(end);
-            prev_or = i;
-        } else {
-            /* Combine operation with next OR marker. This supports OR chains 
-             * with terms that require multiple operations to test. */
-            for (j = i + 1; j < end; j ++) {
-                if (ops[j].next == FlecsRuleOrMarker) {
-                    if (j == (end - 1)) {
-                        ops[i].prev = ctx->cur->lbl_begin;
-                    } else {
-                        ops[i].prev = flecs_itolbl(j + 1);
-                    }
-                    break;
-                }
-            }
+
+            // /* Combine operation with next OR marker. This supports OR chains 
+            //  * with terms that require multiple operations to test. */
+            // for (j = prev_or + 1; j < i; j ++) {
+            //     if (i == (end - 1)) {
+            //         ops[j].prev = ctx->cur->lbl_begin;
+            //     } else {
+            //         ops[j].prev = flecs_itolbl(i + 1);
+            //     }
+            //     break;
+            // }
+
+            prev_or = i + 1;
         }
     }
 
     ecs_query_op_t *first = &ops[ctx->cur->lbl_begin];
+    bool src_is_var = first->flags & (EcsRuleIsVar << EcsRuleSrc);
     first->next = flecs_itolbl(end);
     ops[end].prev = ctx->cur->lbl_begin;
     ops[end - 1].prev = ctx->cur->lbl_begin;
 
     ctx->ctrlflow->in_or = false;
     ctx->cur->lbl_begin = -1;
-    if (first->flags & (EcsRuleIsVar << EcsRuleSrc)) {
+    if (src_is_var) {
         ecs_var_id_t src_var = first->src.var;
         ctx->written |= (1llu << src_var);
 
@@ -40338,6 +40347,11 @@ void flecs_query_end_block_or(
     for (i = 1; i < (8 * ECS_SIZEOF(ecs_write_flags_t)); i ++) {
         ecs_write_flags_t prev = 1 & (ctx->ctrlflow->cond_written_or >> i);
         ecs_write_flags_t cur = 1 & (ctx->cond_written >> i);
+
+        /* Skip variable if it's the source for the OR chain */
+        if (src_is_var && (i == first->src.var)) {
+            continue;
+        }
 
         if (!prev && cur) {
             ecs_query_op_t reset_op = {0};
@@ -41461,6 +41475,12 @@ bool ecs_children_next(
  */
 
 
+// #define FLECS_QUERY_TRACE
+
+#ifdef FLECS_QUERY_TRACE
+static int flecs_query_trace_indent = 0;
+#endif
+
 static
 bool flecs_query_dispatch(
     const ecs_query_op_t *op,
@@ -41474,7 +41494,7 @@ bool flecs_query_run_until(
     const ecs_query_op_t *ops,
     ecs_query_lbl_t first,
     ecs_query_lbl_t cur,
-    int32_t count);
+    int32_t last);
 
 static
 void flecs_query_populate_field(
@@ -43540,9 +43560,13 @@ bool flecs_query_member_cmp(
 
         /* Populate data field so we have the array we can compare the member
          * value against. */
+        void *old_data = it->ptrs[field_index];
         flecs_query_populate_field_from_range(
             it, &range, field_index, it->columns[field_index]);
         data = op_ctx->data = it->ptrs[field_index];
+
+        /* Ensure we only write ptrs when we match data */
+        it->ptrs[field_index] = old_data;
 
         /* Member fields are of type ecs_entity_t */
         it->ids[field_index] = ecs_id(ecs_entity_t);
@@ -43935,6 +43959,47 @@ bool flecs_query_run_block(
 }
 
 static
+ecs_query_lbl_t flecs_query_last_op_for_or_cond(
+    const ecs_query_op_t *ops,
+    ecs_query_lbl_t cur,
+    ecs_query_lbl_t last)
+{
+    const ecs_query_op_t *cur_op, *last_op = &ops[last];
+
+    do {
+        cur_op = &ops[cur];
+        cur ++;
+    } while (cur_op->next != last && cur_op != last_op);
+
+    return cur;
+}
+
+static
+bool flecs_query_run_until_for_select_or(
+    bool redo,
+    ecs_query_run_ctx_t *ctx,
+    const ecs_query_op_t *ops,
+    ecs_query_lbl_t first,
+    ecs_query_lbl_t cur,
+    int32_t last)
+{
+    ecs_query_lbl_t last_for_cur = flecs_query_last_op_for_or_cond(
+        ops, cur, last);
+    if (redo) {
+        /* If redoing, start from the last instruction of the last executed 
+         * sequence */
+        cur = last_for_cur - 1;
+    }
+
+    flecs_query_run_until(redo, ctx, ops, first, cur, last_for_cur);
+#ifdef FLECS_QUERY_TRACE
+    printf("%*s%s (or)\n", (flecs_query_trace_indent + 1)*2, "",
+        ctx->op_index == last ? "true" : "false");
+#endif
+    return ctx->op_index == last;
+}
+
+static
 bool flecs_query_select_or(
     const ecs_query_op_t *op,
     bool redo,
@@ -43949,47 +44014,88 @@ bool flecs_query_select_or(
         op_ctx->op_index = first;
     }
 
-    const ecs_query_op_t *cur = &qit->ops[op_ctx->op_index];
+    const ecs_query_op_t *ops = qit->ops;
+    const ecs_query_op_t *first_op = &ops[first - 1];
+    ecs_query_lbl_t last = first_op->next;
+    const ecs_query_op_t *last_op = &ops[last];
+    const ecs_query_op_t *cur_op = &ops[op_ctx->op_index];
     bool result = false;
-    
-    /* Evaluate operations in OR chain one by one. */
 
     do {
-        ctx->op_index = op_ctx->op_index;
-        ctx->written[op_ctx->op_index] = op->written;
+        ecs_query_lbl_t cur = op_ctx->op_index;
+        ctx->op_index = cur;
+        ctx->written[cur] = op->written;
 
-        result = flecs_query_dispatch(cur, redo, ctx);
+        result = flecs_query_run_until_for_select_or(
+            redo, ctx, ops, first - 1, cur, last);
+
         if (result) {
-            ctx->written[op_ctx->op_index] |= cur->written;
+            if (first == cur) {
+                break;
+            }
 
             /* If a previous operation in the OR chain returned a result for the
              * same matched source, skip it so we don't yield for each matching
              * element in the chain. */
-            ecs_query_lbl_t prev_index;
-            for (prev_index = first; prev_index < op_ctx->op_index; 
-                prev_index ++) 
-            {
-                const ecs_query_op_t *prev = &qit->ops[prev_index];
-                ctx->op_index = prev_index;
-                ctx->written[prev_index] = ctx->written[op_ctx->op_index];
-                if (flecs_query_dispatch(prev, false, ctx)) {
-                    break;
+
+            /* Copy written status so that the variables we just wrote will show
+             * up as written for the test. This ensures that the instructions
+             * match against the result we already found, vs. starting a new
+             * search (the difference between select & with). */
+            ecs_query_lbl_t prev = first;
+            bool dup_found = false;
+
+            /* While terms of an OR chain always operate on the same source, it
+             * is possible that a table variable is resolved to an entity 
+             * variable. When checking for duplicates, copy the entity variable
+             * to the table, to ensure we're only testing the found entity. */
+            const ecs_query_op_t *prev_op = &ops[cur - 1];
+            ecs_var_t old_table_var;
+            bool restore_table_var = false;
+            
+            if (prev_op->flags & (EcsRuleIsVar << EcsRuleSrc)) {
+                if (first_op->src.var != prev_op->src.var) {
+                    restore_table_var = true;
+                    old_table_var = ctx->vars[first_op->src.var];
+                    ctx->vars[first_op->src.var] = 
+                        ctx->vars[prev_op->src.var];
                 }
             }
 
-            if (prev_index != op_ctx->op_index) {
-                /* Duplicate match was found, redo search */
-                redo = true;
+            do {
+                ctx->written[prev] = ctx->written[last];
+
+                flecs_query_run_until(false, ctx, ops, first - 1, prev, cur);
+
+                if (ctx->op_index == last) {
+                    /* Duplicate match was found, find next result */
+                    redo = true;
+                    dup_found = true;
+                    break;
+                }
+
+                break;
+            } while (true);
+
+            /* Restore table variable to full range for next result */
+            if (restore_table_var) {
+                ctx->vars[first_op->src.var] = old_table_var;
+            }
+
+            if (dup_found) {
                 continue;
             }
+
             break;
         }
 
         /* No result was found, go to next operation in chain */
-        op_ctx->op_index ++;
-        cur = &qit->ops[op_ctx->op_index];
+        op_ctx->op_index = flecs_query_last_op_for_or_cond(
+            ops, op_ctx->op_index, last);
+        cur_op = &qit->ops[op_ctx->op_index];
+
         redo = false;
-    } while (cur->kind != EcsRuleEnd);
+    } while (cur_op != last_op);
 
     return result;
 }
@@ -44350,10 +44456,20 @@ bool flecs_query_run_until(
     const ecs_query_op_t *last_op = &ops[last];
     ecs_assert(last > first, ECS_INTERNAL_ERROR, NULL);
 
+#ifdef FLECS_QUERY_TRACE
+    printf("%*sblock:\n", flecs_query_trace_indent*2, "");
+    flecs_query_trace_indent ++;
+#endif
+
     do {
         #ifdef FLECS_DEBUG
         ctx->qit->profile[ctx->op_index].count[redo] ++;
         #endif
+
+#ifdef FLECS_QUERY_TRACE
+        printf("%*s%d: %s\n", flecs_query_trace_indent*2, "", 
+            ctx->op_index, flecs_query_op_str(op->kind));
+#endif
 
         bool result = flecs_query_dispatch(op, redo, ctx);
         cur = (&op->prev)[result];
@@ -44367,9 +44483,18 @@ bool flecs_query_run_until(
         op = &ops[ctx->op_index];
 
         if (cur <= first) {
+#ifdef FLECS_QUERY_TRACE
+            printf("%*sfalse\n", flecs_query_trace_indent*2, "");
+            flecs_query_trace_indent --;
+#endif
             return false;
         }
-    } while (op != last_op);
+    } while (op < last_op);
+    
+#ifdef FLECS_QUERY_TRACE
+        printf("%*strue\n", flecs_query_trace_indent*2, "");
+        flecs_query_trace_indent --;
+#endif
 
     return true;
 }

@@ -7,11 +7,14 @@ typedef struct {
 
 static
 void flecs_query_get_column_for_field(
-    ecs_world_t *world,
+    const ecs_query_t *q,
     ecs_query_cache_table_match_t *match,
     int32_t field,
     flecs_table_column_t *out)
 {
+    ecs_assert(field >= 0, ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(field < q->field_count, ECS_INTERNAL_ERROR, NULL);
+
     ecs_entity_t src = match->sources[field];
     ecs_table_t *table = NULL;
     int32_t column = -1;
@@ -24,13 +27,13 @@ void flecs_query_get_column_for_field(
             column = -1;
         }
     } else {
-        ecs_record_t *r = flecs_entities_get(world, src);
+        ecs_record_t *r = flecs_entities_get(q->world, src);
         table = r->table;
 
         int32_t ref_index = match->columns[field] - 1;
         ecs_ref_t *ref = ecs_vec_get_t(&match->refs, ecs_ref_t, ref_index);
         if (ref->id != 0) {
-            ecs_ref_update(world, ref);
+            ecs_ref_update(q->world, ref);
             column = ref->tr->column;
         }
     }
@@ -84,7 +87,7 @@ bool flecs_query_get_match_monitor(
             continue; /* Don't track terms that aren't matched */
         }
 
-        flecs_query_get_column_for_field(q->world, match, field, &tc);
+        flecs_query_get_column_for_field(q, match, field, &tc);
         if (tc.column == -1) {
             continue; /* Don't track terms that aren't stored */
         }
@@ -224,7 +227,7 @@ bool flecs_query_check_match_monitor_term(
 
     flecs_table_column_t cur;
     flecs_query_get_column_for_field(
-        impl->pub.world, match, field, &cur);
+        &impl->pub, match, field - 1, &cur);
     ecs_assert(cur.column != -1, ECS_INTERNAL_ERROR, NULL);
 
     return monitor[field] != flecs_table_get_dirty_state(
@@ -558,7 +561,7 @@ void flecs_query_sync_match_monitor(
                 continue;
             }
 
-            flecs_query_get_column_for_field(q->world, match, field, &tc);
+            flecs_query_get_column_for_field(q, match, field, &tc);
 
             monitor[field + 1] = flecs_table_get_dirty_state(
                 q->world, tc.table)[tc.column + 1];

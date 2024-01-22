@@ -144,8 +144,8 @@ bool flecs_query_cache_search(
         it->sources[field_index] = node->sources[i];
     }
 
-    ctx->vars[0].range.count = 0;
-    ctx->vars[0].range.offset = 0;
+    ctx->vars[0].range.count = node->count;
+    ctx->vars[0].range.offset = node->offset;
     return true;
 }
 
@@ -165,8 +165,8 @@ bool flecs_query_is_cache_search(
     it->ids = node->ids;
     it->sources = node->sources;
 
-    ctx->vars[0].range.count = 0;
-    ctx->vars[0].range.offset = 0;
+    ctx->vars[0].range.count = node->count;
+    ctx->vars[0].range.offset = node->offset;
     return true;
 }
 

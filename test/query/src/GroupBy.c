@@ -142,8 +142,6 @@ void GroupBy_group_by_w_sort_reverse_group_creation(void) {
         .group_by = group_by_first_id
     });
 
-    printf("%s\n", ecs_query_plan(q));
-
     ecs_entity_t e1 = ecs_new_w_id(world, TagX);
     ecs_entity_t e2 = ecs_new_w_id(world, TagX);
     ecs_entity_t e3 = ecs_new_w_id(world, TagX);

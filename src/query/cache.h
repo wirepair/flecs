@@ -28,6 +28,9 @@ void flecs_query_cache_sort_tables(
     ecs_world_t *world,
     ecs_query_impl_t *impl);
 
+void flecs_query_cache_build_sorted_tables(
+    ecs_query_cache_t *cache);
+
 /* Return number of tables in cache */
 int32_t flecs_query_cache_table_count(
     ecs_query_cache_t *cache);

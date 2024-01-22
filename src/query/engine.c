@@ -3094,16 +3094,6 @@ void flecs_query_iter_init(
     }
 
     if (cache) {
-        ecs_world_t *world = rule->pub.world;
-
-        /* If query has order_by, apply sort */
-        flecs_query_cache_sort_tables(world, 
-            ECS_CONST_CAST(ecs_query_impl_t*, rule));
-
-        // if (flags & EcsQueryIsCacheable) {
-        //     it->flags |= EcsIterCacheSearch;
-        // }
-
         cache->prev_match_count = cache->match_count;
     }
 
@@ -3338,7 +3328,10 @@ ecs_iter_t flecs_query_iter(
         qit->last = cache->list.last;
 
         if (cache->order_by && cache->list.info.table_count) {
+            flecs_query_cache_sort_tables(it.real_world, impl);
             qit->node = ecs_vec_first(&cache->table_slices);
+            qit->last = ecs_vec_last_t(
+                &cache->table_slices, ecs_query_cache_table_match_t);
         }
     }
 

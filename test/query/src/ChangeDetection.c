@@ -508,8 +508,6 @@ void ChangeDetection_query_change_parent_term(void) {
 
     test_assert(q != NULL);
 
-    printf("%s\n", ecs_query_plan(q));
-
     test_bool(true, ecs_query_changed(q));
     test_bool(true, ecs_query_changed(q));
 

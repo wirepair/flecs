@@ -3236,6 +3236,8 @@ void MemberTarget_this_2_or_2_types_dep_var(void) {
         test_int(1, it.count);
         test_uint(e1, it.entities[0]);
         test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        test_uint(Running, ecs_iter_get_var(&it, x_var));
+        test_uint(EcsWildcard, ecs_iter_get_var(&it, y_var));
         {
             ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
             test_assert(m != NULL);
@@ -3246,6 +3248,8 @@ void MemberTarget_this_2_or_2_types_dep_var(void) {
         test_int(1, it.count);
         test_uint(e5, it.entities[0]);
         test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        test_uint(Sitting, ecs_iter_get_var(&it, x_var));
+        test_uint(EcsWildcard, ecs_iter_get_var(&it, y_var));
         {
             ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
             test_assert(m != NULL);
@@ -3256,6 +3260,8 @@ void MemberTarget_this_2_or_2_types_dep_var(void) {
         test_int(1, it.count);
         test_uint(e4, it.entities[0]);
         test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        test_uint(Walking, ecs_iter_get_var(&it, x_var));
+        test_uint(EcsWildcard, ecs_iter_get_var(&it, y_var));
         {
             ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
             test_assert(m != NULL);
@@ -3266,6 +3272,8 @@ void MemberTarget_this_2_or_2_types_dep_var(void) {
         test_int(1, it.count);
         test_uint(e2, it.entities[0]);
         test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        test_uint(EcsWildcard, ecs_iter_get_var(&it, x_var));
+        test_uint(Running, ecs_iter_get_var(&it, y_var));
         {
             ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
             test_assert(m != NULL);
@@ -3276,6 +3284,8 @@ void MemberTarget_this_2_or_2_types_dep_var(void) {
         test_int(1, it.count);
         test_uint(e3, it.entities[0]);
         test_uint(ecs_id(ecs_entity_t), ecs_field_id(&it, 1));
+        test_uint(EcsWildcard, ecs_iter_get_var(&it, x_var));
+        test_uint(Sitting, ecs_iter_get_var(&it, y_var));
         {
             ecs_entity_t *m = ecs_field(&it, ecs_entity_t, 1);
             test_assert(m != NULL);

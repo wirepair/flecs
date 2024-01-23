@@ -72,3 +72,11 @@ ecs_var_id_t flecs_query_find_var_id(
     const ecs_query_impl_t *rule,
     const char *name,
     ecs_var_kind_t kind);
+
+ecs_query_op_t* flecs_query_begin_block(
+    ecs_query_op_kind_t kind,
+    ecs_query_compile_ctx_t *ctx);
+
+void flecs_query_end_block(
+    ecs_query_compile_ctx_t *ctx);
+

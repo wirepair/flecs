@@ -79,6 +79,7 @@ typedef enum {
     EcsRuleMemberEq,       /* Compare member value */
     EcsRuleMemberNeq,      /* Compare member value */
     EcsRuleToggle,         /* Evaluate toggle bitset, if present */
+    EcsRuleNotToggle,      /* Toggle with Not operator */
     EcsRuleLookup,         /* Lookup relative to variable */
     EcsRuleSetVars,        /* Populate it.sources from variables */
     EcsRuleSetThis,        /* Populate This entity variable */
@@ -230,6 +231,7 @@ typedef struct {
 typedef struct {
     ecs_query_lbl_t op_index;
     ecs_id_t field_id;
+    bool is_set;
 } ecs_query_ctrl_ctx_t;
 
 /* Trivial iterator context */

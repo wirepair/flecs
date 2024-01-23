@@ -1456,6 +1456,7 @@ typedef enum {
     EcsRuleMemberEq,       /* Compare member value */
     EcsRuleMemberNeq,      /* Compare member value */
     EcsRuleToggle,         /* Evaluate toggle bitset, if present */
+    EcsRuleNotToggle,      /* Toggle with Not operator */
     EcsRuleLookup,         /* Lookup relative to variable */
     EcsRuleSetVars,        /* Populate it.sources from variables */
     EcsRuleSetThis,        /* Populate This entity variable */
@@ -1607,6 +1608,7 @@ typedef struct {
 typedef struct {
     ecs_query_lbl_t op_index;
     ecs_id_t field_id;
+    bool is_set;
 } ecs_query_ctrl_ctx_t;
 
 /* Trivial iterator context */
@@ -1921,6 +1923,14 @@ ecs_var_id_t flecs_query_find_var_id(
     const ecs_query_impl_t *rule,
     const char *name,
     ecs_var_kind_t kind);
+
+ecs_query_op_t* flecs_query_begin_block(
+    ecs_query_op_kind_t kind,
+    ecs_query_compile_ctx_t *ctx);
+
+void flecs_query_end_block(
+    ecs_query_compile_ctx_t *ctx);
+
 
  /**
  * @file query/cache.h
@@ -39568,7 +39578,20 @@ int flecs_query_insert_toggle(
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
         if (term->flags & EcsTermIsToggle) {
-            toggles |= (1llu << term->field_index);
+            if (term->oper != EcsNot) {
+                toggles |= (1llu << term->field_index);
+            } else {
+                ecs_query_op_t *if_op = flecs_query_begin_block(
+                    EcsRuleIfSet, ctx);
+                if_op->other = term->field_index;
+
+                ecs_query_op_t op = {0};
+                op.kind = EcsRuleNotToggle;
+                op.src.entity = (1llu << term->field_index);
+                flecs_query_op_insert(&op, ctx);
+
+                flecs_query_end_block(ctx);
+            }
         }
     }
 
@@ -39993,7 +40016,6 @@ ecs_query_lbl_t flecs_query_op_insert(
     return flecs_itolbl(count - 1);
 }
 
-static
 ecs_query_op_t* flecs_query_begin_block(
     ecs_query_op_kind_t kind,
     ecs_query_compile_ctx_t *ctx)
@@ -40004,7 +40026,6 @@ ecs_query_op_t* flecs_query_begin_block(
     return ecs_vec_get_t(ctx->ops, ecs_query_op_t, ctx->cur->lbl_begin);
 }
 
-static
 void flecs_query_end_block(
     ecs_query_compile_ctx_t *ctx)
 {
@@ -40929,6 +40950,7 @@ int flecs_query_compile_term(
     ecs_id_t term_id = term->id;
     ecs_entity_t first_id = term->first.id;
     ecs_entity_t second_id = term->second.id;
+    bool toggle_term = (term->flags & EcsTermIsToggle) != 0;
     bool member_term = (term->flags & EcsTermIsMember) != 0;
     if (member_term) {
         (*populated) |= (1llu << term->field_index);
@@ -40947,6 +40969,7 @@ int flecs_query_compile_term(
     bool src_is_lookup = false;
     bool builtin_pred = flecs_term_is_builtin_pred(term);
     bool is_not = (term->oper == EcsNot) && !builtin_pred;
+    bool is_optional = (term->oper == EcsOptional);
     bool is_or = flecs_term_is_or(q, term);
     bool first_or = false, last_or = false;
     bool cond_write = term->oper == EcsOptional || is_or;
@@ -41105,10 +41128,17 @@ int flecs_query_compile_term(
         }
     }
 
+    /* If term can toggle and is Not, change operator to Optional as we
+     * have to match entities that have the component but disabled. */
+    if (toggle_term && is_not) {
+        is_not = false;
+        is_optional = true;
+    }
+
     /* Handle Not, Optional, Or operators */
     if (is_not) {
         flecs_query_begin_block(EcsRuleNot, ctx);
-    } else if (term->oper == EcsOptional) {
+    } else if (is_optional) {
         flecs_query_begin_block(EcsRuleOptional, ctx);
     } else if (first_or) {
         flecs_query_begin_block_or(&op, term, ctx);
@@ -41216,7 +41246,7 @@ int flecs_query_compile_term(
     /* Handle closing of Not, Optional and Or operators */
     if (is_not) {
         flecs_query_end_block(ctx);
-    } else if (term->oper == EcsOptional) {
+    } else if (is_optional) {
         flecs_query_end_block(ctx);
     }
 
@@ -43529,25 +43559,35 @@ bool flecs_query_member_neq(
 }
 
 static
-bool flecs_query_toggle(
+bool flecs_query_toggle_cmp(
     const ecs_query_op_t *op,
     bool redo,
-    ecs_query_run_ctx_t *ctx)
+    ecs_query_run_ctx_t *ctx,
+    bool not)
 {
+    ecs_table_range_t *range = &ctx->vars[0].range;
+    ecs_table_t *table = range->table;
+
+    /* If table doesn't have toggle columns, all results match. */
+    if (!(table->flags & EcsTableHasToggle)) {
+        if (not) {
+            /* If this is a not operator, none of the results match */
+            return false;
+        } else {
+            return !redo;
+        }
+    }
+
+    if (table && !range->count) {
+        range->count = ecs_table_count(table);
+    }
+
     ecs_query_toggle_ctx_t *op_ctx = flecs_op_ctx(ctx, toggle);
     const ecs_query_impl_t *rule = ctx->rule;
     const ecs_query_t *q = &rule->pub;
     int32_t i, j, field_count = q->field_count;
     ecs_flags64_t data_fields = op->src.entity; /* Bitset with fields to set */
-
-    ecs_iter_t *it = ctx->it;
-    ecs_table_range_t *range = &ctx->vars[0].range;
-    ecs_table_t *table = range->table;
-    if (table && !range->count) {
-        range->count = ecs_table_count(table);
-    }
-
-    bool has_bitset = false;
+    
     int32_t block_index, row, end;
     uint64_t block;
     if (!redo) {
@@ -43573,6 +43613,9 @@ bool flecs_query_toggle(
 
     /* If end of last iteration is start of new block, compute new block */
     int32_t new_block_index = end / 64;
+    ecs_iter_t *it = ctx->it;
+    bool has_bitset = false;
+
     if (new_block_index != block_index) {
 compute_block:
         block = UINT64_MAX;
@@ -43596,10 +43639,20 @@ compute_block:
                 block &= bs->data[block_index];
                 has_bitset = true;
             }
+
+            if (not) {
+                /* Unset column */
+                it->columns[i] = 0;
+            }
         }
 
+        /* If table doesn't have bitset columns, all columns match */
         if (!(op_ctx->has_bitset = has_bitset)) {
-            return true;
+            if (!not) {
+                return true;
+            } else {
+                goto done;
+            }
         }
 
         /* No enabled bits */
@@ -43626,11 +43679,19 @@ next_block:
 
     for (i = first_bit; i < 64; i ++) {
         uint64_t bit = (1ull << i);
-        if (block & bit) {
+        bool cond = 0 != (block & bit);
+        if (not) {
+            cond = !cond;
+        }
+        if (cond) {
             /* Find last enabled bit */
             for (j = i; j < 64; j ++) {
                 bit = (1ull << j);
-                if (!(block & bit)) {
+                cond = !(block & bit);
+                if (not) {
+                    cond = !cond;
+                }
+                if (cond) {
                     break;
                 }
             }
@@ -43658,6 +43719,25 @@ next_block:
 done:
     *range = op_ctx->range;
     return false;
+}
+
+static
+bool flecs_query_toggle(
+    const ecs_query_op_t *op,
+    bool redo,
+    ecs_query_run_ctx_t *ctx)
+{
+    return flecs_query_toggle_cmp(op, redo, ctx, false);
+
+}
+
+static
+bool flecs_query_not_toggle(
+    const ecs_query_op_t *op,
+    bool redo,
+    ecs_query_run_ctx_t *ctx)
+{
+    return flecs_query_toggle_cmp(op, redo, ctx, true);
 }
 
 static
@@ -44223,7 +44303,13 @@ bool flecs_query_if_set(
 {
     ecs_iter_t *it = ctx->it;
     uint8_t field_index = op->other;
-    if (it->columns[field_index] == 0) {
+
+    ecs_query_ctrl_ctx_t *op_ctx = flecs_op_ctx(ctx, ctrl);
+    if (!redo) {
+        op_ctx->is_set = it->columns[field_index] != 0;
+    }
+
+    if (!op_ctx->is_set) {
         return !redo;
     }
 
@@ -44428,6 +44514,7 @@ bool flecs_query_dispatch(
     case EcsRuleMemberEq: return flecs_query_member_eq(op, redo, ctx);
     case EcsRuleMemberNeq: return flecs_query_member_neq(op, redo, ctx);
     case EcsRuleToggle: return flecs_query_toggle(op, redo, ctx);
+    case EcsRuleNotToggle: return flecs_query_not_toggle(op, redo, ctx);
     case EcsRuleLookup: return flecs_query_lookup(op, redo, ctx);
     case EcsRuleSetVars: return flecs_query_setvars(op, redo, ctx);
     case EcsRuleSetThis: return flecs_query_setthis(op, redo, ctx);
@@ -45958,6 +46045,7 @@ const char* flecs_query_op_str(
     case EcsRuleMemberEq:      return "membereq  ";
     case EcsRuleMemberNeq:     return "memberneq ";
     case EcsRuleToggle:        return "toggle    ";
+    case EcsRuleNotToggle:     return "nottoggle ";
     case EcsRuleLookup:        return "lookup    ";
     case EcsRuleSetVars:       return "setvars   ";
     case EcsRuleSetThis:       return "setthis   ";
@@ -46081,7 +46169,8 @@ char* ecs_query_str_w_profile(
             op->kind == EcsRuleTriv ||
             op->kind == EcsRuleTrivData ||
             op->kind == EcsRuleTrivWildcard ||
-            op->kind == EcsRuleToggle)
+            op->kind == EcsRuleToggle ||
+            op->kind == EcsRuleNotToggle)
         {
             ecs_flags64_t fieldset = op->src.entity;
             int32_t f;

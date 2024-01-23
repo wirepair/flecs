@@ -2186,25 +2186,35 @@ bool flecs_query_member_neq(
 }
 
 static
-bool flecs_query_toggle(
+bool flecs_query_toggle_cmp(
     const ecs_query_op_t *op,
     bool redo,
-    ecs_query_run_ctx_t *ctx)
+    ecs_query_run_ctx_t *ctx,
+    bool not)
 {
+    ecs_table_range_t *range = &ctx->vars[0].range;
+    ecs_table_t *table = range->table;
+
+    /* If table doesn't have toggle columns, all results match. */
+    if (!(table->flags & EcsTableHasToggle)) {
+        if (not) {
+            /* If this is a not operator, none of the results match */
+            return false;
+        } else {
+            return !redo;
+        }
+    }
+
+    if (table && !range->count) {
+        range->count = ecs_table_count(table);
+    }
+
     ecs_query_toggle_ctx_t *op_ctx = flecs_op_ctx(ctx, toggle);
     const ecs_query_impl_t *rule = ctx->rule;
     const ecs_query_t *q = &rule->pub;
     int32_t i, j, field_count = q->field_count;
     ecs_flags64_t data_fields = op->src.entity; /* Bitset with fields to set */
-
-    ecs_iter_t *it = ctx->it;
-    ecs_table_range_t *range = &ctx->vars[0].range;
-    ecs_table_t *table = range->table;
-    if (table && !range->count) {
-        range->count = ecs_table_count(table);
-    }
-
-    bool has_bitset = false;
+    
     int32_t block_index, row, end;
     uint64_t block;
     if (!redo) {
@@ -2230,6 +2240,9 @@ bool flecs_query_toggle(
 
     /* If end of last iteration is start of new block, compute new block */
     int32_t new_block_index = end / 64;
+    ecs_iter_t *it = ctx->it;
+    bool has_bitset = false;
+
     if (new_block_index != block_index) {
 compute_block:
         block = UINT64_MAX;
@@ -2253,10 +2266,20 @@ compute_block:
                 block &= bs->data[block_index];
                 has_bitset = true;
             }
+
+            if (not) {
+                /* Unset column */
+                it->columns[i] = 0;
+            }
         }
 
+        /* If table doesn't have bitset columns, all columns match */
         if (!(op_ctx->has_bitset = has_bitset)) {
-            return true;
+            if (!not) {
+                return true;
+            } else {
+                goto done;
+            }
         }
 
         /* No enabled bits */
@@ -2283,11 +2306,19 @@ next_block:
 
     for (i = first_bit; i < 64; i ++) {
         uint64_t bit = (1ull << i);
-        if (block & bit) {
+        bool cond = 0 != (block & bit);
+        if (not) {
+            cond = !cond;
+        }
+        if (cond) {
             /* Find last enabled bit */
             for (j = i; j < 64; j ++) {
                 bit = (1ull << j);
-                if (!(block & bit)) {
+                cond = !(block & bit);
+                if (not) {
+                    cond = !cond;
+                }
+                if (cond) {
                     break;
                 }
             }
@@ -2315,6 +2346,25 @@ next_block:
 done:
     *range = op_ctx->range;
     return false;
+}
+
+static
+bool flecs_query_toggle(
+    const ecs_query_op_t *op,
+    bool redo,
+    ecs_query_run_ctx_t *ctx)
+{
+    return flecs_query_toggle_cmp(op, redo, ctx, false);
+
+}
+
+static
+bool flecs_query_not_toggle(
+    const ecs_query_op_t *op,
+    bool redo,
+    ecs_query_run_ctx_t *ctx)
+{
+    return flecs_query_toggle_cmp(op, redo, ctx, true);
 }
 
 static
@@ -2880,7 +2930,13 @@ bool flecs_query_if_set(
 {
     ecs_iter_t *it = ctx->it;
     uint8_t field_index = op->other;
-    if (it->columns[field_index] == 0) {
+
+    ecs_query_ctrl_ctx_t *op_ctx = flecs_op_ctx(ctx, ctrl);
+    if (!redo) {
+        op_ctx->is_set = it->columns[field_index] != 0;
+    }
+
+    if (!op_ctx->is_set) {
         return !redo;
     }
 
@@ -3085,6 +3141,7 @@ bool flecs_query_dispatch(
     case EcsRuleMemberEq: return flecs_query_member_eq(op, redo, ctx);
     case EcsRuleMemberNeq: return flecs_query_member_neq(op, redo, ctx);
     case EcsRuleToggle: return flecs_query_toggle(op, redo, ctx);
+    case EcsRuleNotToggle: return flecs_query_not_toggle(op, redo, ctx);
     case EcsRuleLookup: return flecs_query_lookup(op, redo, ctx);
     case EcsRuleSetVars: return flecs_query_setvars(op, redo, ctx);
     case EcsRuleSetThis: return flecs_query_setthis(op, redo, ctx);

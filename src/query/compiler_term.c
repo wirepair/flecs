@@ -118,7 +118,6 @@ ecs_query_lbl_t flecs_query_op_insert(
     return flecs_itolbl(count - 1);
 }
 
-static
 ecs_query_op_t* flecs_query_begin_block(
     ecs_query_op_kind_t kind,
     ecs_query_compile_ctx_t *ctx)
@@ -129,7 +128,6 @@ ecs_query_op_t* flecs_query_begin_block(
     return ecs_vec_get_t(ctx->ops, ecs_query_op_t, ctx->cur->lbl_begin);
 }
 
-static
 void flecs_query_end_block(
     ecs_query_compile_ctx_t *ctx)
 {
@@ -1054,6 +1052,7 @@ int flecs_query_compile_term(
     ecs_id_t term_id = term->id;
     ecs_entity_t first_id = term->first.id;
     ecs_entity_t second_id = term->second.id;
+    bool toggle_term = (term->flags & EcsTermIsToggle) != 0;
     bool member_term = (term->flags & EcsTermIsMember) != 0;
     if (member_term) {
         (*populated) |= (1llu << term->field_index);
@@ -1072,6 +1071,7 @@ int flecs_query_compile_term(
     bool src_is_lookup = false;
     bool builtin_pred = flecs_term_is_builtin_pred(term);
     bool is_not = (term->oper == EcsNot) && !builtin_pred;
+    bool is_optional = (term->oper == EcsOptional);
     bool is_or = flecs_term_is_or(q, term);
     bool first_or = false, last_or = false;
     bool cond_write = term->oper == EcsOptional || is_or;
@@ -1230,10 +1230,17 @@ int flecs_query_compile_term(
         }
     }
 
+    /* If term can toggle and is Not, change operator to Optional as we
+     * have to match entities that have the component but disabled. */
+    if (toggle_term && is_not) {
+        is_not = false;
+        is_optional = true;
+    }
+
     /* Handle Not, Optional, Or operators */
     if (is_not) {
         flecs_query_begin_block(EcsRuleNot, ctx);
-    } else if (term->oper == EcsOptional) {
+    } else if (is_optional) {
         flecs_query_begin_block(EcsRuleOptional, ctx);
     } else if (first_or) {
         flecs_query_begin_block_or(&op, term, ctx);
@@ -1341,7 +1348,7 @@ int flecs_query_compile_term(
     /* Handle closing of Not, Optional and Or operators */
     if (is_not) {
         flecs_query_end_block(ctx);
-    } else if (term->oper == EcsOptional) {
+    } else if (is_optional) {
         flecs_query_end_block(ctx);
     }
 

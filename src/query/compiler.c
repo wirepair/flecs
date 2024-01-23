@@ -758,7 +758,20 @@ int flecs_query_insert_toggle(
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
         if (term->flags & EcsTermIsToggle) {
-            toggles |= (1llu << term->field_index);
+            if (term->oper != EcsNot) {
+                toggles |= (1llu << term->field_index);
+            } else {
+                ecs_query_op_t *if_op = flecs_query_begin_block(
+                    EcsRuleIfSet, ctx);
+                if_op->other = term->field_index;
+
+                ecs_query_op_t op = {0};
+                op.kind = EcsRuleNotToggle;
+                op.src.entity = (1llu << term->field_index);
+                flecs_query_op_insert(&op, ctx);
+
+                flecs_query_end_block(ctx);
+            }
         }
     }
 

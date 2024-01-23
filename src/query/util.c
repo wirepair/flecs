@@ -214,6 +214,7 @@ const char* flecs_query_op_str(
     case EcsRuleMemberEq:      return "membereq  ";
     case EcsRuleMemberNeq:     return "memberneq ";
     case EcsRuleToggle:        return "toggle    ";
+    case EcsRuleNotToggle:     return "nottoggle ";
     case EcsRuleLookup:        return "lookup    ";
     case EcsRuleSetVars:       return "setvars   ";
     case EcsRuleSetThis:       return "setthis   ";
@@ -337,7 +338,8 @@ char* ecs_query_str_w_profile(
             op->kind == EcsRuleTriv ||
             op->kind == EcsRuleTrivData ||
             op->kind == EcsRuleTrivWildcard ||
-            op->kind == EcsRuleToggle)
+            op->kind == EcsRuleToggle ||
+            op->kind == EcsRuleNotToggle)
         {
             ecs_flags64_t fieldset = op->src.entity;
             int32_t f;

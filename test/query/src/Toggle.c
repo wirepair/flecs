@@ -16,7 +16,7 @@ void Toggle_setup(void) {
     }
 }
 
-void Toggle_disabled_from_nothing(void) {
+void Toggle_this_disabled_from_nothing(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_TAG(world, TagA);
@@ -50,7 +50,7 @@ void Toggle_disabled_from_nothing(void) {
     ecs_fini(world);
 }
 
-void Toggle_disabled(void) {
+void Toggle_this_disabled(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -90,7 +90,7 @@ void Toggle_disabled(void) {
     ecs_fini(world);
 }
 
-void Toggle_disabled_pair(void) {
+void Toggle_this_disabled_pair(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -132,7 +132,7 @@ void Toggle_disabled_pair(void) {
     ecs_fini(world);
 }
 
-void Toggle_disabled_skip_initial(void) {
+void Toggle_this_disabled_skip_initial(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -171,7 +171,7 @@ void Toggle_disabled_skip_initial(void) {
     ecs_fini(world);
 }
 
-void Toggle_disabled_pair_skip_initial(void) {
+void Toggle_this_disabled_pair_skip_initial(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -315,327 +315,327 @@ void test_enable_toggle_mod(int32_t total, int32_t mod) {
     ecs_fini(world);
 }
 
-void Toggle_64_mod_2(void) {
+void Toggle_this_64_mod_2(void) {
     test_disable_toggle_mod(64, 2);
 }
 
-void Toggle_64_mod_3(void) {
+void Toggle_this_64_mod_3(void) {
     test_disable_toggle_mod(64, 3);
 }
 
-void Toggle_64_mod_7(void) {
+void Toggle_this_64_mod_7(void) {
     test_disable_toggle_mod(64, 7);
 }
 
-void Toggle_64_mod_8(void) {
+void Toggle_this_64_mod_8(void) {
     test_disable_toggle_mod(64, 8);
 }
 
-void Toggle_64_mod_10(void) {
+void Toggle_this_64_mod_10(void) {
     test_disable_toggle_mod(64, 10);
 }
 
-void Toggle_64_mod_64(void) {
+void Toggle_this_64_mod_64(void) {
     test_disable_toggle_mod(64, 64);
 }
 
-void Toggle_64_mod_256(void) {
+void Toggle_this_64_mod_256(void) {
     test_disable_toggle_mod(64, 256);
 }
 
-void Toggle_64_mod_1024(void) {
+void Toggle_this_64_mod_1024(void) {
     test_disable_toggle_mod(64, 1024);
 }
 
-void Toggle_100_mod_2(void) {
+void Toggle_this_100_mod_2(void) {
     test_disable_toggle_mod(100, 2);
 }
 
-void Toggle_100_mod_3(void) {
+void Toggle_this_100_mod_3(void) {
     test_disable_toggle_mod(100, 3);
 }
 
-void Toggle_100_mod_7(void) {
+void Toggle_this_100_mod_7(void) {
     test_disable_toggle_mod(100, 7);
 }
 
-void Toggle_100_mod_8(void) {
+void Toggle_this_100_mod_8(void) {
     test_disable_toggle_mod(100, 8);
 }
 
-void Toggle_100_mod_10(void) {
+void Toggle_this_100_mod_10(void) {
     test_disable_toggle_mod(100, 10);
 }
 
-void Toggle_100_mod_64(void) {
+void Toggle_this_100_mod_64(void) {
     test_disable_toggle_mod(100, 64);
 }
 
-void Toggle_100_mod_256(void) {
+void Toggle_this_100_mod_256(void) {
     test_disable_toggle_mod(100, 256);
 }
 
-void Toggle_100_mod_1024(void) {
+void Toggle_this_100_mod_1024(void) {
     test_disable_toggle_mod(100, 1024);
 }
 
-void Toggle_128_mod_2(void) {
+void Toggle_this_128_mod_2(void) {
     test_disable_toggle_mod(128, 2);
 }
 
-void Toggle_128_mod_3(void) {
+void Toggle_this_128_mod_3(void) {
     test_disable_toggle_mod(128, 3);
 }
 
-void Toggle_128_mod_7(void) {
+void Toggle_this_128_mod_7(void) {
     test_disable_toggle_mod(128, 7);
 }
 
-void Toggle_128_mod_8(void) {
+void Toggle_this_128_mod_8(void) {
     test_disable_toggle_mod(128, 8);
 }
 
-void Toggle_128_mod_10(void) {
+void Toggle_this_128_mod_10(void) {
     test_disable_toggle_mod(128, 10);
 }
 
-void Toggle_128_mod_64(void) {
+void Toggle_this_128_mod_64(void) {
     test_disable_toggle_mod(128, 64);
 }
 
-void Toggle_128_mod_256(void) {
+void Toggle_this_128_mod_256(void) {
     test_disable_toggle_mod(128, 256);
 }
 
-void Toggle_128_mod_1024(void) {
+void Toggle_this_128_mod_1024(void) {
     test_disable_toggle_mod(128, 1024);
 }
 
-void Toggle_200_mod_2(void) {
+void Toggle_this_200_mod_2(void) {
     test_disable_toggle_mod(200, 2);
 }
 
-void Toggle_200_mod_3(void) {
+void Toggle_this_200_mod_3(void) {
     test_disable_toggle_mod(200, 3);
 }
 
-void Toggle_200_mod_7(void) {
+void Toggle_this_200_mod_7(void) {
     test_disable_toggle_mod(200, 7);
 }
 
-void Toggle_200_mod_8(void) {
+void Toggle_this_200_mod_8(void) {
     test_disable_toggle_mod(200, 8);
 }
 
-void Toggle_200_mod_10(void) {
+void Toggle_this_200_mod_10(void) {
     test_disable_toggle_mod(200, 10);
 }
 
-void Toggle_200_mod_64(void) {
+void Toggle_this_200_mod_64(void) {
     test_disable_toggle_mod(200, 64);
 }
 
-void Toggle_200_mod_256(void) {
+void Toggle_this_200_mod_256(void) {
     test_disable_toggle_mod(200, 256);
 }
 
-void Toggle_200_mod_1024(void) {
+void Toggle_this_200_mod_1024(void) {
     test_disable_toggle_mod(200, 1024);
 }
 
-void Toggle_1024_mod_2(void) {
+void Toggle_this_1024_mod_2(void) {
     test_disable_toggle_mod(1024, 2);
 }
 
-void Toggle_1024_mod_3(void) {
+void Toggle_this_1024_mod_3(void) {
     test_disable_toggle_mod(1024, 3);
 }
 
-void Toggle_1024_mod_7(void) {
+void Toggle_this_1024_mod_7(void) {
     test_disable_toggle_mod(1024, 7);
 }
 
-void Toggle_1024_mod_8(void) {
+void Toggle_this_1024_mod_8(void) {
     test_disable_toggle_mod(1024, 8);
 }
 
-void Toggle_1024_mod_10(void) {
+void Toggle_this_1024_mod_10(void) {
     test_disable_toggle_mod(1024, 10);
 }
 
-void Toggle_1024_mod_64(void) {
+void Toggle_this_1024_mod_64(void) {
     test_disable_toggle_mod(1024, 64);
 }
 
-void Toggle_1024_mod_256(void) {
+void Toggle_this_1024_mod_256(void) {
     test_disable_toggle_mod(1024, 256);
 }
 
-void Toggle_1024_mod_1024(void) {
+void Toggle_this_1024_mod_1024(void) {
     test_disable_toggle_mod(1024, 1024);
 }
 
-void Toggle_enabled_64_mod_2(void) {
+void Toggle_this_enabled_64_mod_2(void) {
     test_enable_toggle_mod(64, 2);
 }
 
-void Toggle_enabled_64_mod_3(void) {
+void Toggle_this_enabled_64_mod_3(void) {
     test_enable_toggle_mod(64, 3);
 }
 
-void Toggle_enabled_64_mod_7(void) {
+void Toggle_this_enabled_64_mod_7(void) {
     test_enable_toggle_mod(64, 7);
 }
 
-void Toggle_enabled_64_mod_8(void) {
+void Toggle_this_enabled_64_mod_8(void) {
     test_enable_toggle_mod(64, 8);
 }
 
-void Toggle_enabled_64_mod_10(void) {
+void Toggle_this_enabled_64_mod_10(void) {
     test_enable_toggle_mod(64, 10);
 }
 
-void Toggle_enabled_64_mod_64(void) {
+void Toggle_this_enabled_64_mod_64(void) {
     test_enable_toggle_mod(64, 64);
 }
 
-void Toggle_enabled_64_mod_256(void) {
+void Toggle_this_enabled_64_mod_256(void) {
     test_enable_toggle_mod(64, 256);
 }
 
-void Toggle_enabled_64_mod_1024(void) {
+void Toggle_this_enabled_64_mod_1024(void) {
     test_enable_toggle_mod(64, 1024);
 }
 
-void Toggle_enabled_100_mod_2(void) {
+void Toggle_this_enabled_100_mod_2(void) {
     test_enable_toggle_mod(100, 2);
 }
 
-void Toggle_enabled_100_mod_3(void) {
+void Toggle_this_enabled_100_mod_3(void) {
     test_enable_toggle_mod(100, 3);
 }
 
-void Toggle_enabled_100_mod_7(void) {
+void Toggle_this_enabled_100_mod_7(void) {
     test_enable_toggle_mod(100, 7);
 }
 
-void Toggle_enabled_100_mod_8(void) {
+void Toggle_this_enabled_100_mod_8(void) {
     test_enable_toggle_mod(100, 8);
 }
 
-void Toggle_enabled_100_mod_10(void) {
+void Toggle_this_enabled_100_mod_10(void) {
     test_enable_toggle_mod(100, 10);
 }
 
-void Toggle_enabled_100_mod_64(void) {
+void Toggle_this_enabled_100_mod_64(void) {
     test_enable_toggle_mod(100, 64);
 }
 
-void Toggle_enabled_100_mod_256(void) {
+void Toggle_this_enabled_100_mod_256(void) {
     test_enable_toggle_mod(100, 256);
 }
 
-void Toggle_enabled_100_mod_1024(void) {
+void Toggle_this_enabled_100_mod_1024(void) {
     test_enable_toggle_mod(100, 1024);
 }
 
-void Toggle_enabled_128_mod_2(void) {
+void Toggle_this_enabled_128_mod_2(void) {
     test_enable_toggle_mod(128, 2);
 }
 
-void Toggle_enabled_128_mod_3(void) {
+void Toggle_this_enabled_128_mod_3(void) {
     test_enable_toggle_mod(128, 3);
 }
 
-void Toggle_enabled_128_mod_7(void) {
+void Toggle_this_enabled_128_mod_7(void) {
     test_enable_toggle_mod(128, 7);
 }
 
-void Toggle_enabled_128_mod_8(void) {
+void Toggle_this_enabled_128_mod_8(void) {
     test_enable_toggle_mod(128, 8);
 }
 
-void Toggle_enabled_128_mod_10(void) {
+void Toggle_this_enabled_128_mod_10(void) {
     test_enable_toggle_mod(128, 10);
 }
 
-void Toggle_enabled_128_mod_64(void) {
+void Toggle_this_enabled_128_mod_64(void) {
     test_enable_toggle_mod(128, 64);
 }
 
-void Toggle_enabled_128_mod_256(void) {
+void Toggle_this_enabled_128_mod_256(void) {
     test_enable_toggle_mod(128, 256);
 }
 
-void Toggle_enabled_128_mod_1024(void) {
+void Toggle_this_enabled_128_mod_1024(void) {
     test_enable_toggle_mod(128, 1024);
 }
 
-void Toggle_enabled_200_mod_2(void) {
+void Toggle_this_enabled_200_mod_2(void) {
     test_enable_toggle_mod(200, 2);
 }
 
-void Toggle_enabled_200_mod_3(void) {
+void Toggle_this_enabled_200_mod_3(void) {
     test_enable_toggle_mod(200, 3);
 }
 
-void Toggle_enabled_200_mod_7(void) {
+void Toggle_this_enabled_200_mod_7(void) {
     test_enable_toggle_mod(200, 7);
 }
 
-void Toggle_enabled_200_mod_8(void) {
+void Toggle_this_enabled_200_mod_8(void) {
     test_enable_toggle_mod(200, 8);
 }
 
-void Toggle_enabled_200_mod_10(void) {
+void Toggle_this_enabled_200_mod_10(void) {
     test_enable_toggle_mod(200, 10);
 }
 
-void Toggle_enabled_200_mod_64(void) {
+void Toggle_this_enabled_200_mod_64(void) {
     test_enable_toggle_mod(200, 64);
 }
 
-void Toggle_enabled_200_mod_256(void) {
+void Toggle_this_enabled_200_mod_256(void) {
     test_enable_toggle_mod(200, 256);
 }
 
-void Toggle_enabled_200_mod_1024(void) {
+void Toggle_this_enabled_200_mod_1024(void) {
     test_enable_toggle_mod(200, 1024);
 }
 
-void Toggle_enabled_1024_mod_2(void) {
+void Toggle_this_enabled_1024_mod_2(void) {
     test_enable_toggle_mod(1024, 2);
 }
 
-void Toggle_enabled_1024_mod_3(void) {
+void Toggle_this_enabled_1024_mod_3(void) {
     test_enable_toggle_mod(1024, 3);
 }
 
-void Toggle_enabled_1024_mod_7(void) {
+void Toggle_this_enabled_1024_mod_7(void) {
     test_enable_toggle_mod(1024, 7);
 }
 
-void Toggle_enabled_1024_mod_8(void) {
+void Toggle_this_enabled_1024_mod_8(void) {
     test_enable_toggle_mod(1024, 8);
 }
 
-void Toggle_enabled_1024_mod_10(void) {
+void Toggle_this_enabled_1024_mod_10(void) {
     test_enable_toggle_mod(1024, 10);
 }
 
-void Toggle_enabled_1024_mod_64(void) {
+void Toggle_this_enabled_1024_mod_64(void) {
     test_enable_toggle_mod(1024, 64);
 }
 
-void Toggle_enabled_1024_mod_256(void) {
+void Toggle_this_enabled_1024_mod_256(void) {
     test_enable_toggle_mod(1024, 256);
 }
 
-void Toggle_enabled_1024_mod_1024(void) {
+void Toggle_this_enabled_1024_mod_1024(void) {
     test_enable_toggle_mod(1024, 1024);
 }
 
-void Toggle_mod_2_2_bitsets(void) {
+void Toggle_this_mod_2_2_bitsets(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -692,7 +692,7 @@ void Toggle_mod_2_2_bitsets(void) {
     ecs_fini(world);
 }
 
-void Toggle_mod_8_2_bitsets(void) {
+void Toggle_this_mod_8_2_bitsets(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -749,7 +749,7 @@ void Toggle_mod_8_2_bitsets(void) {
     ecs_fini(world);
 }
 
-void Toggle_mod_64_2_bitsets(void) {
+void Toggle_this_mod_64_2_bitsets(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -806,7 +806,7 @@ void Toggle_mod_64_2_bitsets(void) {
     ecs_fini(world);
 }
 
-void Toggle_mod_256_2_bitsets(void) {
+void Toggle_this_mod_256_2_bitsets(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -863,7 +863,7 @@ void Toggle_mod_256_2_bitsets(void) {
     ecs_fini(world);
 }
 
-void Toggle_mod_1024_2_bitsets(void) {
+void Toggle_this_mod_1024_2_bitsets(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -920,7 +920,7 @@ void Toggle_mod_1024_2_bitsets(void) {
     ecs_fini(world);
 }
 
-void Toggle_randomized_2_bitsets(void) {
+void Toggle_this_randomized_2_bitsets(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -970,7 +970,7 @@ void Toggle_randomized_2_bitsets(void) {
     ecs_fini(world);
 }
 
-void Toggle_randomized_3_bitsets(void) {
+void Toggle_this_randomized_3_bitsets(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -1026,7 +1026,7 @@ void Toggle_randomized_3_bitsets(void) {
     ecs_fini(world);
 }
 
-void Toggle_randomized_4_bitsets(void) {
+void Toggle_this_randomized_4_bitsets(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -1088,7 +1088,7 @@ void Toggle_randomized_4_bitsets(void) {
     ecs_fini(world);
 }
 
-void Toggle_toggle_w_other_tag(void) {
+void Toggle_this_toggle_w_other_tag(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -1150,7 +1150,7 @@ void Toggle_toggle_w_other_tag(void) {
     ecs_fini(world);
 }
 
-void Toggle_toggle_w_other_component(void) {
+void Toggle_this_toggle_w_other_component(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -1217,6 +1217,157 @@ void Toggle_toggle_w_other_component(void) {
     ecs_fini(world);
 }
 
+void Toggle_this_not_toggle(void) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_COMPONENT(world, Position);
+
+    ecs_add_id(world, ecs_id(Position), EcsCanToggle);
+
+    for (int i = 0; i < 1024; i ++) {
+        ecs_entity_t e = ecs_new(world, Position);
+        ecs_set(world, e, Position, {e, e});
+
+        if (!(e % 3)) {
+            ecs_enable_component(world, e, Position, false);
+        } else {
+            ecs_enable_component(world, e, Position, true);
+        }
+    }
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "!Position",
+        .cache_kind = cache_kind
+    });
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    int32_t count = 0, pos_count = 0;
+
+    while (ecs_query_next(&it)) {
+        test_uint(ecs_id(Position), ecs_field_id(&it, 1));
+        test_bool(false, ecs_field_is_set(&it, 1));
+
+        int32_t i;
+        for (i = 0; i < it.count; i ++) {
+            if (ecs_has(world, it.entities[i], Position)) {
+                pos_count ++;
+            }
+
+            test_assert(!ecs_is_enabled_component(
+                world, it.entities[i], Position));
+        }
+
+        count += it.count;
+    }
+
+    test_assert(count != 0);
+    test_assert(pos_count != 0);
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+static
+void this_written_not(int total, int mod) {
+    ecs_world_t *world = ecs_mini();
+
+    ECS_COMPONENT(world, Position);
+    ECS_TAG(world, Tag);
+
+    ecs_add_id(world, ecs_id(Position), EcsCanToggle);
+
+    int i, total_count = 0;
+    for (i = 0; i < total; i ++) {
+        ecs_entity_t e = ecs_new(world, Position);
+        ecs_set(world, e, Position, {e, e});
+
+        if (!(e % mod)) {
+            ecs_enable_component(world, e, Position, false);
+            total_count ++;
+        } else {
+            ecs_enable_component(world, e, Position, true);
+        }
+
+        ecs_add(world, e, Tag);
+    }
+
+    // for (int i = 0; i < total; i ++) {
+    //     ecs_new(world, Tag);
+    //     total_count ++;
+    // }
+
+    ecs_query_t *q = ecs_query(world, {
+        .expr = "Tag, !Position",
+        .cache_kind = cache_kind
+    });
+
+    // printf("%s\n", ecs_query_plan(q));
+
+    ecs_iter_t it = ecs_query_iter(world, q);
+    int32_t count = 0, pos_count = 0;
+
+    while (ecs_query_next(&it)) {
+        test_uint(Tag, ecs_field_id(&it, 1));
+        test_bool(true, ecs_field_is_set(&it, 1));
+        test_uint(ecs_id(Position), ecs_field_id(&it, 2));
+        test_bool(false, ecs_field_is_set(&it, 2));
+
+        int32_t i;
+        for (i = 0; i < it.count; i ++) {
+            if (ecs_has(world, it.entities[i], Position)) {
+                pos_count ++;
+                test_assert(!(it.entities[i] % mod));
+            }
+
+            test_assert(!ecs_is_enabled_component(
+                world, it.entities[i], Position));
+        }
+
+        count += it.count;
+    }
+
+    test_assert(count != 0);
+    test_assert(pos_count != 0);
+    test_int(count, total_count);
+
+    ecs_query_fini(q);
+
+    ecs_fini(world);
+}
+
+void Toggle_this_written_not_1024_mod_2(void) {
+    this_written_not(1024, 2);
+}
+
+void Toggle_this_written_not_1024_mod_3(void) {
+    this_written_not(1024, 3);
+}
+
+void Toggle_this_written_not_1024_mod_7(void) {
+    this_written_not(1024, 7);
+}
+
+void Toggle_this_written_not_1024_mod_8(void) {
+    this_written_not(1024, 8);
+}
+
+void Toggle_this_written_not_1024_mod_10(void) {
+    this_written_not(1024, 10);
+}
+
+void Toggle_this_written_not_1024_mod_64(void) {
+    this_written_not(1024, 64);
+}
+
+void Toggle_this_written_not_1024_mod_256(void) {
+    this_written_not(1024, 256);
+}
+
+void Toggle_this_written_not_1024_mod_1024(void) {
+    this_written_not(1024, 1024);
+}
+
 static
 int compare_position(ecs_entity_t e1, const void *ptr1, ecs_entity_t e2, const void *ptr2) {
     const Position *p1 = ptr1;
@@ -1224,7 +1375,7 @@ int compare_position(ecs_entity_t e1, const void *ptr1, ecs_entity_t e2, const v
     return (p1->x > p2->x) - (p1->x < p2->x);
 }
 
-void Toggle_sort(void) {
+void Toggle_this_sort(void) {
     ecs_world_t *world = ecs_mini();
 
     ECS_COMPONENT(world, Position);
@@ -1271,7 +1422,7 @@ void Toggle_sort(void) {
     ecs_fini(world);
 }
 
-void Toggle_table_move_2_from_3(void) {
+void Toggle_this_table_move_2_from_3(void) {
     ecs_world_t *world = ecs_init();
 
     ECS_COMPONENT(world, Position);

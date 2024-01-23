@@ -290,7 +290,7 @@ void flecs_query_end_block_or(
     ecs_query_lbl_t end = flecs_query_op_insert(&op, ctx);
 
     ecs_query_op_t *ops = ecs_vec_first_t(ctx->ops, ecs_query_op_t);
-    int32_t i, j, prev_or = ctx->cur->lbl_begin + 1;
+    int32_t i, prev_or = ctx->cur->lbl_begin + 1;
     for (i = ctx->cur->lbl_begin + 1; i < end; i ++) {
         if (ops[i].next == FlecsRuleOrMarker) {
             if (i == (end - 1)) {
@@ -299,20 +299,7 @@ void flecs_query_end_block_or(
                 ops[prev_or].prev = flecs_itolbl(i + 1);
             }
 
-            // printf("i = %d, prev_or = %d\n", i, prev_or);
-            // ops[prev_or].prev = flecs_itolbl(i + 1);
             ops[i].next = flecs_itolbl(end);
-
-            // /* Combine operation with next OR marker. This supports OR chains 
-            //  * with terms that require multiple operations to test. */
-            // for (j = prev_or + 1; j < i; j ++) {
-            //     if (i == (end - 1)) {
-            //         ops[j].prev = ctx->cur->lbl_begin;
-            //     } else {
-            //         ops[j].prev = flecs_itolbl(i + 1);
-            //     }
-            //     break;
-            // }
 
             prev_or = i + 1;
         }

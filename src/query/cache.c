@@ -1242,7 +1242,7 @@ ecs_query_cache_t* flecs_query_cache_init(
 
     ecs_observer_desc_t observer_desc = { .filter = desc };
 
-    desc.flags |= EcsQueryMatchEmptyTables;
+    desc.flags |= EcsQueryMatchEmptyTables | EcsQueryTableOnly;
     ecs_query_t *q = result->query = ecs_query_init(world, &desc);
     if (!q) {
         goto error;

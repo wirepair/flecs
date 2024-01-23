@@ -624,6 +624,8 @@ void flecs_query_insert_cache_search(
     }
 
     ecs_query_t *q = &rule->pub;
+    bool populate = true;
+
     if (q->cache_kind == EcsQueryCacheAll) {
         /* If all terms are cacheable, make sure no other terms are compiled */
         *compiled = 0xFFFFFFFFFFFFFFFF;
@@ -632,6 +634,17 @@ void flecs_query_insert_cache_search(
         /* The query is partially cacheable */
         ecs_term_t *terms = q->terms;
         int32_t i, count = q->term_count;
+
+        for (i = 0; i < count; i ++) {
+            ecs_term_t *term = &terms[i];
+            if (term->flags & (EcsTermIsToggle | EcsTermIsMember)) {
+                /* If query returns individual entities, let dedicated populate
+                 * instruction handle populating data fields */
+                populate = false;
+                break;
+            }
+        }
+
         for (i = 0; i < count; i ++) {
             ecs_term_t *term = &terms[i];
             int16_t field = term->field_index;
@@ -644,13 +657,16 @@ void flecs_query_insert_cache_search(
             }
 
             *compiled |= (1ull << i);
-            *populated |= (1ull << field);
+
+            if (populate) {
+                *populated |= (1ull << field);
+            }
         }
     }
 
     /* Insert the operation for cache traversal */
     ecs_query_op_t op = {0};
-    if (q->flags & EcsQueryNoData) {
+    if (!populate || (q->flags & EcsQueryNoData)) {
         if (q->flags & EcsQueryIsCacheable) {
             op.kind = EcsRuleIsCache;
         } else {
@@ -730,14 +746,41 @@ void flecs_query_insert_populate(
 }
 
 static
+int flecs_query_insert_toggle(
+    ecs_query_impl_t *impl,
+    ecs_query_compile_ctx_t *ctx)
+{
+    ecs_query_t *q = &impl->pub;
+    int32_t i, term_count = q->term_count;
+    ecs_term_t *terms = q->terms;
+    ecs_flags64_t toggles = 0;
+
+    for (i = 0; i < term_count; i ++) {
+        ecs_term_t *term = &terms[i];
+        if (term->flags & EcsTermIsToggle) {
+            toggles |= (1llu << term->field_index);
+        }
+    }
+
+    if (toggles) {
+        ecs_query_op_t op = {0};
+        op.kind = EcsRuleToggle;
+        op.src.entity = toggles; /* Abuse for bitset w/fields that can toggle */
+        flecs_query_op_insert(&op, ctx);
+    }
+
+    return 0;
+}
+
+static
 int flecs_query_insert_fixed_src_terms(
     ecs_world_t *world,
-    ecs_query_impl_t *rule,
+    ecs_query_impl_t *impl,
     ecs_flags64_t *compiled,
     ecs_flags64_t *populated_out,
     ecs_query_compile_ctx_t *ctx)
 {
-    ecs_query_t *q = &rule->pub;
+    ecs_query_t *q = &impl->pub;
     int32_t i, term_count = q->term_count;
     ecs_term_t *terms = q->terms;
     ecs_flags64_t populated = 0;
@@ -772,7 +815,7 @@ int flecs_query_insert_fixed_src_terms(
         }
 
         if (term->src.id & EcsIsEntity && ECS_TERM_REF_ID(&term->src)) {
-            if (flecs_query_compile_term(world, rule, term, populated_out, ctx)) {
+            if (flecs_query_compile_term(world, impl, term, populated_out, ctx)) {
                 return -1;
             }
 
@@ -793,7 +836,7 @@ int flecs_query_insert_fixed_src_terms(
          * this before the rest of the query is evaluated, is that we only 
          * populate data for static fields once vs. for each returned result of
          * the query, which would be wasteful since this data doesn't change. */
-        flecs_query_insert_populate(rule, ctx, populated);
+        flecs_query_insert_populate(impl, ctx, populated);
     }
 
     *populated_out |= populated;
@@ -995,6 +1038,11 @@ int flecs_query_compile(
         nothing.kind = EcsRuleNothing;
         flecs_query_op_insert(&nothing, &ctx);
     } else {
+        /* If query contains terms for toggleable components, insert toggle */
+        if (!(q->flags & EcsQueryTableOnly)) {
+            flecs_query_insert_toggle(rule, &ctx);
+        }
+
         /* Insert instruction to populate remaining data fields */
         ecs_flags64_t remaining = q->data_fields & ~populated;
         flecs_query_insert_populate(rule, &ctx, remaining);

@@ -67,6 +67,7 @@ extern "C" {
 #define EcsIdTag                       (1u << 9)
 #define EcsIdWith                      (1u << 10)
 #define EcsIdAlwaysOverride            (1u << 12)
+#define EcsIdCanToggle                 (1u << 13)
 
 #define EcsIdHasOnAdd                  (1u << 16) /* Same values as table flags */
 #define EcsIdHasOnRemove               (1u << 17) 
@@ -150,6 +151,7 @@ extern "C" {
 #define EcsQueryNoData                (1u << 7u)  /* Query won't provide component data */
 #define EcsQueryIsInstanced           (1u << 8u)  /* Query iteration is always instanced */
 #define EcsQueryAllowUnresolvedByName (1u << 11u) /* Query may have unresolved entity identifiers */
+#define EcsQueryTableOnly             (1u << 23u) /* Query only returns whole tables (ignores toggle/member fields) */
 
 
 ////////////////////////////////////////////////////////////////////////////////

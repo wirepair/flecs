@@ -445,6 +445,7 @@ int flecs_term_verify(
     if (first->id & EcsIsEntity) {
         first_id = ECS_TERM_REF_ID(first);
     }
+
     if (second->id & EcsIsEntity) {
         second_id = ECS_TERM_REF_ID(second);
     }
@@ -711,6 +712,11 @@ int flecs_term_finalize(
             }
         }
 
+        /* Check if term has toggleable component */
+        if (id_flags & EcsIdCanToggle) {
+            term->flags |= EcsTermIsToggle;
+        }
+
         /* Check if this is a member query */
 #ifdef FLECS_META
         if (ecs_id(EcsMember) != 0) {
@@ -790,6 +796,9 @@ int flecs_term_finalize(
     if (term->flags & EcsTermIsMember) {
         trivial_term = false;
         cacheable_term = false;
+    }
+    if (term->flags & EcsTermIsToggle) {
+        trivial_term = false;
     }
 
     ECS_BIT_COND(term->flags, EcsTermIsTrivial, trivial_term);
@@ -897,6 +906,7 @@ int flecs_query_finalize_terms(
 
     q->flags |= EcsQueryMatchOnlyThis;
 
+    bool cacheable = true;
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
         bool prev_is_or = i && term[-1].oper == EcsOr;
@@ -918,6 +928,12 @@ int flecs_query_finalize_terms(
                 }
             } else {
                 cacheable_terms ++;
+            }
+
+            /* Toggle terms may be cacheable for fetching the initial component, 
+             * but require an additional toggle instruction for evaluation. */
+            if (term->flags & EcsTermIsToggle) {
+                cacheable = false;
             }
         } else if (prev_is_or) {
             /* Current term is not cacheable. If it is part of an OR chain, mark
@@ -1178,6 +1194,7 @@ int flecs_query_finalize_terms(
                     }
                 }
             }
+
             if (term_count && (i == term_count)) {
                 ECS_BIT_SET(q->flags, EcsQueryIsTrivial);
             }
@@ -1189,7 +1206,7 @@ int flecs_query_finalize_terms(
         ECS_BIT_COND(q->flags, EcsQueryHasCacheable, 
             cacheable_terms != 0);
         ECS_BIT_COND(q->flags, EcsQueryIsCacheable, 
-            cacheable_terms == term_count);
+            cacheable && (cacheable_terms == term_count));
     }
 
     return 0;

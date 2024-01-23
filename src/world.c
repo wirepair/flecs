@@ -36,11 +36,13 @@ const ecs_entity_t EcsNotQueryable =                FLECS_HI_COMPONENT_ID + 8;
 const ecs_entity_t EcsSlotOf =                      FLECS_HI_COMPONENT_ID + 9;
 const ecs_entity_t EcsFlag =                        FLECS_HI_COMPONENT_ID + 10;
 
-/* Relationship properties */
+/* Marker entities for query encoding */
 const ecs_entity_t EcsWildcard =                    FLECS_HI_COMPONENT_ID + 11;
 const ecs_entity_t EcsAny =                         FLECS_HI_COMPONENT_ID + 12;
 const ecs_entity_t EcsThis =                        FLECS_HI_COMPONENT_ID + 13;
 const ecs_entity_t EcsVariable =                    FLECS_HI_COMPONENT_ID + 14;
+
+/* Traits */
 const ecs_entity_t EcsTransitive =                  FLECS_HI_COMPONENT_ID + 15;
 const ecs_entity_t EcsReflexive =                   FLECS_HI_COMPONENT_ID + 16;
 const ecs_entity_t EcsSymmetric =                   FLECS_HI_COMPONENT_ID + 17;
@@ -53,33 +55,34 @@ const ecs_entity_t EcsAcyclic =                     FLECS_HI_COMPONENT_ID + 23;
 const ecs_entity_t EcsTraversable =                 FLECS_HI_COMPONENT_ID + 24;
 const ecs_entity_t EcsWith =                        FLECS_HI_COMPONENT_ID + 25;
 const ecs_entity_t EcsOneOf =                       FLECS_HI_COMPONENT_ID + 26;
+const ecs_entity_t EcsCanToggle =                   FLECS_HI_COMPONENT_ID + 27;
 
 /* Builtin relationships */
-const ecs_entity_t EcsChildOf =                     FLECS_HI_COMPONENT_ID + 27;
-const ecs_entity_t EcsIsA =                         FLECS_HI_COMPONENT_ID + 28;
-const ecs_entity_t EcsDependsOn =                   FLECS_HI_COMPONENT_ID + 29;
+const ecs_entity_t EcsChildOf =                     FLECS_HI_COMPONENT_ID + 28;
+const ecs_entity_t EcsIsA =                         FLECS_HI_COMPONENT_ID + 29;
+const ecs_entity_t EcsDependsOn =                   FLECS_HI_COMPONENT_ID + 30;
 
 /* Identifier tags */
-const ecs_entity_t EcsName =                        FLECS_HI_COMPONENT_ID + 30;
-const ecs_entity_t EcsSymbol =                      FLECS_HI_COMPONENT_ID + 31;
-const ecs_entity_t EcsAlias =                       FLECS_HI_COMPONENT_ID + 32;
+const ecs_entity_t EcsName =                        FLECS_HI_COMPONENT_ID + 31;
+const ecs_entity_t EcsSymbol =                      FLECS_HI_COMPONENT_ID + 32;
+const ecs_entity_t EcsAlias =                       FLECS_HI_COMPONENT_ID + 33;
 
 /* Events */
-const ecs_entity_t EcsOnAdd =                       FLECS_HI_COMPONENT_ID + 33;
-const ecs_entity_t EcsOnRemove =                    FLECS_HI_COMPONENT_ID + 34;
-const ecs_entity_t EcsOnSet =                       FLECS_HI_COMPONENT_ID + 35;
-const ecs_entity_t EcsUnSet =                       FLECS_HI_COMPONENT_ID + 36;
-const ecs_entity_t EcsOnDelete =                    FLECS_HI_COMPONENT_ID + 37;
-const ecs_entity_t EcsOnTableCreate =               FLECS_HI_COMPONENT_ID + 38;
-const ecs_entity_t EcsOnTableDelete =               FLECS_HI_COMPONENT_ID + 39;
-const ecs_entity_t EcsOnTableEmpty =                FLECS_HI_COMPONENT_ID + 40;
-const ecs_entity_t EcsOnTableFill =                 FLECS_HI_COMPONENT_ID + 41;
-const ecs_entity_t EcsOnDeleteTarget =              FLECS_HI_COMPONENT_ID + 46;
+const ecs_entity_t EcsOnAdd =                       FLECS_HI_COMPONENT_ID + 34;
+const ecs_entity_t EcsOnRemove =                    FLECS_HI_COMPONENT_ID + 35;
+const ecs_entity_t EcsOnSet =                       FLECS_HI_COMPONENT_ID + 36;
+const ecs_entity_t EcsUnSet =                       FLECS_HI_COMPONENT_ID + 37;
+const ecs_entity_t EcsOnDelete =                    FLECS_HI_COMPONENT_ID + 38;
+const ecs_entity_t EcsOnDeleteTarget =              FLECS_HI_COMPONENT_ID + 39;
+const ecs_entity_t EcsOnTableCreate =               FLECS_HI_COMPONENT_ID + 40;
+const ecs_entity_t EcsOnTableDelete =               FLECS_HI_COMPONENT_ID + 41;
+const ecs_entity_t EcsOnTableEmpty =                FLECS_HI_COMPONENT_ID + 42;
+const ecs_entity_t EcsOnTableFill =                 FLECS_HI_COMPONENT_ID + 43;
 
 /* Timers */
 const ecs_entity_t ecs_id(EcsTickSource) =          FLECS_HI_COMPONENT_ID + 47;
 const ecs_entity_t ecs_id(EcsTimer) =               FLECS_HI_COMPONENT_ID + 48;
-const ecs_entity_t ecs_id(EcsRateQuery) =          FLECS_HI_COMPONENT_ID + 49;
+const ecs_entity_t ecs_id(EcsRateQuery) =           FLECS_HI_COMPONENT_ID + 49;
 
 /* Actions */
 const ecs_entity_t EcsRemove =                      FLECS_HI_COMPONENT_ID + 50;
@@ -95,8 +98,8 @@ const ecs_entity_t EcsDefaultChildComponent =       FLECS_HI_COMPONENT_ID + 55;
 const ecs_entity_t EcsPredEq =                      FLECS_HI_COMPONENT_ID + 56;
 const ecs_entity_t EcsPredMatch =                   FLECS_HI_COMPONENT_ID + 57;
 const ecs_entity_t EcsPredLookup =                  FLECS_HI_COMPONENT_ID + 58;
-const ecs_entity_t EcsScopeOpen =                    FLECS_HI_COMPONENT_ID + 59;
-const ecs_entity_t EcsScopeClose =                   FLECS_HI_COMPONENT_ID + 60;
+const ecs_entity_t EcsScopeOpen =                   FLECS_HI_COMPONENT_ID + 59;
+const ecs_entity_t EcsScopeClose =                  FLECS_HI_COMPONENT_ID + 60;
 
 /* Systems */
 const ecs_entity_t EcsMonitor =                     FLECS_HI_COMPONENT_ID + 61;

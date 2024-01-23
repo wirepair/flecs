@@ -3156,6 +3156,21 @@ error:
     return 0;
 }
 
+#ifdef FLECS_DEBUG
+static
+bool flecs_can_toggle(
+    ecs_world_t *world,
+    ecs_id_t id)
+{
+    ecs_id_record_t *idr = flecs_id_record_get(world, id);
+    if (!idr) {
+        return false;
+    }
+
+    return (idr->flags & EcsIdCanToggle) != 0;
+}
+#endif
+
 void ecs_enable_id(
     ecs_world_t *world,
     ecs_entity_t entity,
@@ -3165,6 +3180,8 @@ void ecs_enable_id(
     ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(ecs_is_valid(world, entity), ECS_INVALID_PARAMETER, NULL);
     ecs_check(ecs_id_is_valid(world, id), ECS_INVALID_PARAMETER, NULL);
+    ecs_check(flecs_can_toggle(world, id), ECS_INVALID_OPERATION, 
+        "add CanToggle trait to component");
 
     ecs_stage_t *stage = flecs_stage_from_world(&world);
 
@@ -3194,7 +3211,7 @@ void ecs_enable_id(
     index -= table->_->bs_offset;
     ecs_assert(index >= 0, ECS_INTERNAL_ERROR, NULL);
 
-    /* Data cannot be NULl, since entity is stored in the table */
+    /* Data cannot be NULL, since entity is stored in the table */
     ecs_bitset_t *bs = &table->_->bs_columns[index];
     ecs_assert(bs != NULL, ECS_INTERNAL_ERROR, NULL);
 

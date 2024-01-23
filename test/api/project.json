@@ -353,7 +353,7 @@
                 "get_case_w_generation_not_alive"
             ]
         }, {
-            "id": "EnabledComponents",
+            "id": "Toggle",
             "testcases": [
                 "is_component_enabled",
                 "is_empty_entity_disabled",
@@ -386,27 +386,7 @@
                 "is_pair_enabled_3",
                 "is_pair_enabled_2_after_add",
                 "is_pair_enabled_3_after_add",
-                "query_disabled",
-                "query_disabled_skip_initial",
-                "query_disabled_pair",
-                "query_disabled_pair_skip_initial",
-                "query_mod_2",
-                "query_mod_8",
-                "query_mod_64",
-                "query_mod_256",
-                "query_mod_1024",
-                "query_enable_mod_10",
-                "query_mod_2_2_bitsets",
-                "query_mod_8_2_bitsets",
-                "query_mod_64_2_bitsets",
-                "query_mod_256_2_bitsets",
-                "query_mod_1024_2_bitsets",
-                "query_randomized_2_bitsets",
-                "query_randomized_3_bitsets",
-                "query_randomized_4_bitsets",
-                "defer_enable",
-                "sort",
-                "table_move_2_from_3"
+                "defer_enable"
             ]
         }, {
             "id": "Remove",

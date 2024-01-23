@@ -78,6 +78,7 @@ typedef enum {
     EcsRulePredNeqMatch,   /* Same as EcsRulePredNeq but with fuzzy matching by name */
     EcsRuleMemberEq,       /* Compare member value */
     EcsRuleMemberNeq,      /* Compare member value */
+    EcsRuleToggle,         /* Evaluate toggle bitset, if present */
     EcsRuleLookup,         /* Lookup relative to variable */
     EcsRuleSetVars,        /* Populate it.sources from variables */
     EcsRuleSetThis,        /* Populate This entity variable */
@@ -251,6 +252,16 @@ typedef struct {
     void *data;
 } ecs_query_membereq_ctx_t;
 
+/* Toggle context */
+typedef struct {
+    ecs_table_range_t range;
+    int32_t row;
+    int32_t end;
+    int32_t block_index;
+    uint64_t block;
+    bool has_bitset;
+} ecs_query_toggle_ctx_t;
+
 typedef struct ecs_query_op_ctx_t {
     union {
         ecs_query_and_ctx_t and;
@@ -264,6 +275,7 @@ typedef struct ecs_query_op_ctx_t {
         ecs_query_ctrl_ctx_t ctrl;
         ecs_query_trivial_ctx_t trivial;
         ecs_query_membereq_ctx_t membereq;
+        ecs_query_toggle_ctx_t toggle;
     } is;
 } ecs_query_op_ctx_t;
 

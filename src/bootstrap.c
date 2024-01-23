@@ -340,6 +340,12 @@ void flecs_register_always_override(ecs_iter_t *it) {
 }
 
 static
+void flecs_register_can_toggle(ecs_iter_t *it) {
+    flecs_register_id_flag_for_relation(it, EcsCanToggle, 
+        EcsIdCanToggle, EcsIdCanToggle, 0);
+}
+
+static
 void flecs_register_with(ecs_iter_t *it) {
     flecs_register_id_flag_for_relation(it, EcsWith, EcsIdWith, 0, 0);
 }
@@ -726,6 +732,7 @@ void flecs_bootstrap(
     flecs_bootstrap_tag(world, EcsTraversable);
     flecs_bootstrap_tag(world, EcsWith);
     flecs_bootstrap_tag(world, EcsOneOf);
+    flecs_bootstrap_tag(world, EcsCanToggle);
 
     flecs_bootstrap_tag(world, EcsOnDelete);
     flecs_bootstrap_tag(world, EcsOnDeleteTarget);
@@ -851,6 +858,13 @@ void flecs_bootstrap(
         .filter.flags = EcsQueryMatchPrefab,
         .events = {EcsOnAdd},
         .callback = flecs_register_always_override
+    });
+
+    ecs_observer(world, {
+        .filter.terms = {{ .id = EcsCanToggle, .src.id = EcsSelf } },
+        .filter.flags = EcsQueryMatchPrefab,
+        .events = {EcsOnAdd},
+        .callback = flecs_register_can_toggle
     });
 
     ecs_observer(world, {

@@ -257,4 +257,12 @@ void flecs_table_emit(
     ecs_table_t *table,
     ecs_entity_t event);
 
+int32_t flecs_table_get_toggle_column(
+    ecs_table_t *table,
+    ecs_id_t id);
+
+ecs_bitset_t* flecs_table_get_toggle(
+    ecs_table_t *table,
+    ecs_id_t id);
+
 #endif

@@ -727,6 +727,14 @@ void flecs_table_emit(
     ecs_table_t *table,
     ecs_entity_t event);
 
+int32_t flecs_table_get_toggle_column(
+    ecs_table_t *table,
+    ecs_id_t id);
+
+ecs_bitset_t* flecs_table_get_toggle(
+    ecs_table_t *table,
+    ecs_id_t id);
+
 #endif
 
 
@@ -838,7 +846,6 @@ typedef struct flecs_flat_table_term_t {
 /* Entity filter. This filters the entities of a matched table, for example when
  * it has disabled components or union relationships (switch). */
 typedef struct ecs_entity_filter_t {
-    ecs_vec_t bs_terms;              /* Terms with bitset (toggle) entity filter */
     ecs_vec_t ft_terms;              /* Terms with components from flattened tree */
     int32_t flat_tree_column;
 } ecs_entity_filter_t;
@@ -1448,6 +1455,7 @@ typedef enum {
     EcsRulePredNeqMatch,   /* Same as EcsRulePredNeq but with fuzzy matching by name */
     EcsRuleMemberEq,       /* Compare member value */
     EcsRuleMemberNeq,      /* Compare member value */
+    EcsRuleToggle,         /* Evaluate toggle bitset, if present */
     EcsRuleLookup,         /* Lookup relative to variable */
     EcsRuleSetVars,        /* Populate it.sources from variables */
     EcsRuleSetThis,        /* Populate This entity variable */
@@ -1621,6 +1629,16 @@ typedef struct {
     void *data;
 } ecs_query_membereq_ctx_t;
 
+/* Toggle context */
+typedef struct {
+    ecs_table_range_t range;
+    int32_t row;
+    int32_t end;
+    int32_t block_index;
+    uint64_t block;
+    bool has_bitset;
+} ecs_query_toggle_ctx_t;
+
 typedef struct ecs_query_op_ctx_t {
     union {
         ecs_query_and_ctx_t and;
@@ -1634,6 +1652,7 @@ typedef struct ecs_query_op_ctx_t {
         ecs_query_ctrl_ctx_t ctrl;
         ecs_query_trivial_ctx_t trivial;
         ecs_query_membereq_ctx_t membereq;
+        ecs_query_toggle_ctx_t toggle;
     } is;
 } ecs_query_op_ctx_t;
 
@@ -3365,6 +3384,12 @@ void flecs_register_always_override(ecs_iter_t *it) {
 }
 
 static
+void flecs_register_can_toggle(ecs_iter_t *it) {
+    flecs_register_id_flag_for_relation(it, EcsCanToggle, 
+        EcsIdCanToggle, EcsIdCanToggle, 0);
+}
+
+static
 void flecs_register_with(ecs_iter_t *it) {
     flecs_register_id_flag_for_relation(it, EcsWith, EcsIdWith, 0, 0);
 }
@@ -3751,6 +3776,7 @@ void flecs_bootstrap(
     flecs_bootstrap_tag(world, EcsTraversable);
     flecs_bootstrap_tag(world, EcsWith);
     flecs_bootstrap_tag(world, EcsOneOf);
+    flecs_bootstrap_tag(world, EcsCanToggle);
 
     flecs_bootstrap_tag(world, EcsOnDelete);
     flecs_bootstrap_tag(world, EcsOnDeleteTarget);
@@ -3876,6 +3902,13 @@ void flecs_bootstrap(
         .filter.flags = EcsQueryMatchPrefab,
         .events = {EcsOnAdd},
         .callback = flecs_register_always_override
+    });
+
+    ecs_observer(world, {
+        .filter.terms = {{ .id = EcsCanToggle, .src.id = EcsSelf } },
+        .filter.flags = EcsQueryMatchPrefab,
+        .events = {EcsOnAdd},
+        .callback = flecs_register_can_toggle
     });
 
     ecs_observer(world, {
@@ -7100,6 +7133,21 @@ error:
     return 0;
 }
 
+#ifdef FLECS_DEBUG
+static
+bool flecs_can_toggle(
+    ecs_world_t *world,
+    ecs_id_t id)
+{
+    ecs_id_record_t *idr = flecs_id_record_get(world, id);
+    if (!idr) {
+        return false;
+    }
+
+    return (idr->flags & EcsIdCanToggle) != 0;
+}
+#endif
+
 void ecs_enable_id(
     ecs_world_t *world,
     ecs_entity_t entity,
@@ -7109,6 +7157,8 @@ void ecs_enable_id(
     ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_check(ecs_is_valid(world, entity), ECS_INVALID_PARAMETER, NULL);
     ecs_check(ecs_id_is_valid(world, id), ECS_INVALID_PARAMETER, NULL);
+    ecs_check(flecs_can_toggle(world, id), ECS_INVALID_OPERATION, 
+        "add CanToggle trait to component");
 
     ecs_stage_t *stage = flecs_stage_from_world(&world);
 
@@ -7138,7 +7188,7 @@ void ecs_enable_id(
     index -= table->_->bs_offset;
     ecs_assert(index >= 0, ECS_INTERNAL_ERROR, NULL);
 
-    /* Data cannot be NULl, since entity is stored in the table */
+    /* Data cannot be NULL, since entity is stored in the table */
     ecs_bitset_t *bs = &table->_->bs_columns[index];
     ecs_assert(bs != NULL, ECS_INTERNAL_ERROR, NULL);
 
@@ -8859,193 +8909,6 @@ error:
  */
 
 
-#define BS_MAX ((uint64_t)0xFFFFFFFFFFFFFFFF)
-
-static
-int flecs_entity_filter_bitset_next(
-    ecs_table_t *table,
-    ecs_entity_filter_iter_t *iter)
-{
-    /* Precomputed single-bit test */
-    static const uint64_t bitmask[64] = {
-    (uint64_t)1 << 0, (uint64_t)1 << 1, (uint64_t)1 << 2, (uint64_t)1 << 3,
-    (uint64_t)1 << 4, (uint64_t)1 << 5, (uint64_t)1 << 6, (uint64_t)1 << 7,
-    (uint64_t)1 << 8, (uint64_t)1 << 9, (uint64_t)1 << 10, (uint64_t)1 << 11,
-    (uint64_t)1 << 12, (uint64_t)1 << 13, (uint64_t)1 << 14, (uint64_t)1 << 15,
-    (uint64_t)1 << 16, (uint64_t)1 << 17, (uint64_t)1 << 18, (uint64_t)1 << 19,
-    (uint64_t)1 << 20, (uint64_t)1 << 21, (uint64_t)1 << 22, (uint64_t)1 << 23,
-    (uint64_t)1 << 24, (uint64_t)1 << 25, (uint64_t)1 << 26, (uint64_t)1 << 27,  
-    (uint64_t)1 << 28, (uint64_t)1 << 29, (uint64_t)1 << 30, (uint64_t)1 << 31,
-    (uint64_t)1 << 32, (uint64_t)1 << 33, (uint64_t)1 << 34, (uint64_t)1 << 35,  
-    (uint64_t)1 << 36, (uint64_t)1 << 37, (uint64_t)1 << 38, (uint64_t)1 << 39,
-    (uint64_t)1 << 40, (uint64_t)1 << 41, (uint64_t)1 << 42, (uint64_t)1 << 43,
-    (uint64_t)1 << 44, (uint64_t)1 << 45, (uint64_t)1 << 46, (uint64_t)1 << 47,  
-    (uint64_t)1 << 48, (uint64_t)1 << 49, (uint64_t)1 << 50, (uint64_t)1 << 51,
-    (uint64_t)1 << 52, (uint64_t)1 << 53, (uint64_t)1 << 54, (uint64_t)1 << 55,  
-    (uint64_t)1 << 56, (uint64_t)1 << 57, (uint64_t)1 << 58, (uint64_t)1 << 59,
-    (uint64_t)1 << 60, (uint64_t)1 << 61, (uint64_t)1 << 62, (uint64_t)1 << 63
-    };
-
-    /* Precomputed test to verify if remainder of block is set (or not) */
-    static const uint64_t bitmask_remain[64] = {
-    BS_MAX, BS_MAX - (BS_MAX >> 63), BS_MAX - (BS_MAX >> 62),
-    BS_MAX - (BS_MAX >> 61), BS_MAX - (BS_MAX >> 60), BS_MAX - (BS_MAX >> 59),
-    BS_MAX - (BS_MAX >> 58), BS_MAX - (BS_MAX >> 57), BS_MAX - (BS_MAX >> 56), 
-    BS_MAX - (BS_MAX >> 55), BS_MAX - (BS_MAX >> 54), BS_MAX - (BS_MAX >> 53), 
-    BS_MAX - (BS_MAX >> 52), BS_MAX - (BS_MAX >> 51), BS_MAX - (BS_MAX >> 50), 
-    BS_MAX - (BS_MAX >> 49), BS_MAX - (BS_MAX >> 48), BS_MAX - (BS_MAX >> 47), 
-    BS_MAX - (BS_MAX >> 46), BS_MAX - (BS_MAX >> 45), BS_MAX - (BS_MAX >> 44), 
-    BS_MAX - (BS_MAX >> 43), BS_MAX - (BS_MAX >> 42), BS_MAX - (BS_MAX >> 41), 
-    BS_MAX - (BS_MAX >> 40), BS_MAX - (BS_MAX >> 39), BS_MAX - (BS_MAX >> 38), 
-    BS_MAX - (BS_MAX >> 37), BS_MAX - (BS_MAX >> 36), BS_MAX - (BS_MAX >> 35), 
-    BS_MAX - (BS_MAX >> 34), BS_MAX - (BS_MAX >> 33), BS_MAX - (BS_MAX >> 32), 
-    BS_MAX - (BS_MAX >> 31), BS_MAX - (BS_MAX >> 30), BS_MAX - (BS_MAX >> 29), 
-    BS_MAX - (BS_MAX >> 28), BS_MAX - (BS_MAX >> 27), BS_MAX - (BS_MAX >> 26), 
-    BS_MAX - (BS_MAX >> 25), BS_MAX - (BS_MAX >> 24), BS_MAX - (BS_MAX >> 23), 
-    BS_MAX - (BS_MAX >> 22), BS_MAX - (BS_MAX >> 21), BS_MAX - (BS_MAX >> 20), 
-    BS_MAX - (BS_MAX >> 19), BS_MAX - (BS_MAX >> 18), BS_MAX - (BS_MAX >> 17), 
-    BS_MAX - (BS_MAX >> 16), BS_MAX - (BS_MAX >> 15), BS_MAX - (BS_MAX >> 14), 
-    BS_MAX - (BS_MAX >> 13), BS_MAX - (BS_MAX >> 12), BS_MAX - (BS_MAX >> 11), 
-    BS_MAX - (BS_MAX >> 10), BS_MAX - (BS_MAX >> 9), BS_MAX - (BS_MAX >> 8), 
-    BS_MAX - (BS_MAX >> 7), BS_MAX - (BS_MAX >> 6), BS_MAX - (BS_MAX >> 5), 
-    BS_MAX - (BS_MAX >> 4), BS_MAX - (BS_MAX >> 3), BS_MAX - (BS_MAX >> 2),
-    BS_MAX - (BS_MAX >> 1)
-    };
-
-    int32_t i, count = ecs_vec_count(&iter->entity_filter->bs_terms);
-    flecs_bitset_term_t *terms = ecs_vec_first(&iter->entity_filter->bs_terms);
-    int32_t bs_offset = table->_->bs_offset;
-    int32_t first = iter->bs_offset;
-    int32_t last = 0;
-
-    for (i = 0; i < count; i ++) {
-        flecs_bitset_term_t *column = &terms[i];
-        ecs_bitset_t *bs = terms[i].bs_column;
-
-        if (!bs) {
-            int32_t index = column->column_index;
-            ecs_assert((index - bs_offset >= 0), ECS_INTERNAL_ERROR, NULL);
-            bs = &table->_->bs_columns[index - bs_offset];
-            terms[i].bs_column = bs;
-        }
-        
-        int32_t bs_elem_count = bs->count;
-        int32_t bs_block = first >> 6;
-        int32_t bs_block_count = ((bs_elem_count - 1) >> 6) + 1;
-
-        if (bs_block >= bs_block_count) {
-            goto done;
-        }
-
-        uint64_t *data = bs->data;
-        int32_t bs_start = first & 0x3F;
-
-        /* Step 1: find the first non-empty block */
-        uint64_t v = data[bs_block];
-        uint64_t remain = bitmask_remain[bs_start];
-        while (!(v & remain)) {
-            /* If no elements are remaining, move to next block */
-            if ((++bs_block) >= bs_block_count) {
-                /* No non-empty blocks left */
-                goto done;
-            }
-
-            bs_start = 0;
-            remain = BS_MAX; /* Test the full block */
-            v = data[bs_block];
-        }
-
-        /* Step 2: find the first non-empty element in the block */
-        while (!(v & bitmask[bs_start])) {
-            bs_start ++;
-
-            /* Block was not empty, so bs_start must be smaller than 64 */
-            ecs_assert(bs_start < 64, ECS_INTERNAL_ERROR, NULL);
-        }
-
-        /* Step 3: Find number of contiguous enabled elements after start */
-        int32_t bs_end = bs_start, bs_block_end = bs_block;
-
-        remain = bitmask_remain[bs_end];
-        while ((v & remain) == remain) {
-            bs_end = 0;
-            bs_block_end ++;
-
-            if (bs_block_end == bs_block_count) {
-                break;
-            }
-
-            v = data[bs_block_end];
-            remain = BS_MAX; /* Test the full block */
-        }
-
-        /* Step 4: find remainder of enabled elements in current block */
-        if (bs_block_end != bs_block_count) {
-            while ((v & bitmask[bs_end])) {
-                bs_end ++;
-            }
-        }
-
-        /* Block was not 100% occupied, so bs_start must be smaller than 64 */
-        ecs_assert(bs_end < 64, ECS_INTERNAL_ERROR, NULL);
-
-        /* Step 5: translate to element start/end and make sure that each column
-         * range is a subset of the previous one. */
-        first = bs_block * 64 + bs_start;
-        int32_t cur_last = bs_block_end * 64 + bs_end;
-        
-        /* No enabled elements found in table */
-        if (first == cur_last) {
-            goto done;
-        }
-
-        /* If multiple bitsets are evaluated, make sure each subsequent range
-         * is equal or a subset of the previous range */
-        if (i) {
-            /* If the first element of a subsequent bitset is larger than the
-             * previous last value, start over. */
-            if (first >= last) {
-                i = -1;
-                continue;
-            }
-
-            /* Make sure the last element of the range doesn't exceed the last
-             * element of the previous range. */
-            if (cur_last > last) {
-                cur_last = last;
-            }
-        }
-
-        last = cur_last;
-        int32_t elem_count = last - first;
-
-        /* Make sure last element doesn't exceed total number of elements in 
-         * the table */
-        if (elem_count > (bs_elem_count - first)) {
-            elem_count = (bs_elem_count - first);
-            if (!elem_count) {
-                iter->bs_offset = 0;
-                goto done;
-            }
-        }
-        
-        iter->range.offset = first;
-        iter->range.count = elem_count;
-        iter->bs_offset = first;
-    }
-
-    /* Keep track of last processed element for iteration */ 
-    iter->bs_offset = last;
-
-    return 0;
-done:
-    iter->sw_smallest = 0;
-    iter->sw_offset = 0;
-    return -1;
-}
-
-#undef BS_MAX
-
 static
 int32_t flecs_get_flattened_target(
     ecs_world_t *world,
@@ -9105,40 +8968,16 @@ void flecs_entity_filter_init(
     ecs_allocator_t *a = &world->allocator;
     ecs_entity_filter_t ef;
     ecs_os_zeromem(&ef);
-    ecs_vec_t *bs_terms = &ef.bs_terms;
     ecs_vec_t *ft_terms = &ef.ft_terms;
     if (*entity_filter) {
-        ef.bs_terms = (*entity_filter)->bs_terms;
         ef.ft_terms = (*entity_filter)->ft_terms;
     }
-    ecs_vec_reset_t(a, bs_terms, flecs_bitset_term_t);
+
     ecs_vec_reset_t(a, ft_terms, flecs_flat_table_term_t);
     const ecs_term_t *terms = filter->terms;
     int32_t i, term_count = filter->term_count;
     bool has_filter = false;
     ef.flat_tree_column = -1;
-
-    /* Look for disabled fields */
-    if (table->flags & EcsTableHasToggle) {
-        for (i = 0; i < term_count; i ++) {
-            if (ecs_term_match_0(&terms[i])) {
-                continue;
-            }
-
-            int32_t field = terms[i].field_index;
-            ecs_id_t id = ids[field];
-            ecs_id_t bs_id = ECS_TOGGLE | id;
-            int32_t bs_index = ecs_table_get_type_index(world, table, bs_id);
-
-            if (bs_index != -1) {
-                flecs_bitset_term_t *bc = ecs_vec_append_t(a, bs_terms, 
-                    flecs_bitset_term_t);
-                bc->column_index = bs_index;
-                bc->bs_column = NULL;
-                has_filter = true;
-            }
-        }
-    }
 
     /* Look for flattened fields */
     if (table->flags & EcsTableHasTarget) {
@@ -9194,7 +9033,6 @@ void flecs_entity_filter_fini(
         ecs_vec_fini_t(NULL, &fields[i].monitor, flecs_flat_monitor_t);
     }
 
-    ecs_vec_fini_t(a, &ef->bs_terms, flecs_bitset_term_t);
     ecs_vec_fini_t(a, &ef->ft_terms, flecs_flat_table_term_t);
     ecs_os_free(ef);
 }
@@ -9203,7 +9041,6 @@ int flecs_entity_filter_next(
     ecs_entity_filter_iter_t *it)
 {
     ecs_table_t *table = it->range.table;
-    flecs_bitset_term_t *bs_terms = ecs_vec_first(&it->entity_filter->bs_terms);
     ecs_entity_filter_t *ef = it->entity_filter;
     int32_t flat_tree_column = ef->flat_tree_column;
     ecs_table_range_t *range = &it->range;
@@ -9213,17 +9050,6 @@ int flecs_entity_filter_next(
 
     do {
         found = false;
-
-        if (bs_terms) {
-            if (flecs_entity_filter_bitset_next(table, it) == -1) {
-                /* No more enabled components for table */
-                it->bs_offset = 0;
-                break;
-            } else {
-                result = EcsIterYield;
-                found = true;
-            }
-        }
 
         if (flat_tree_column != -1) {
             bool first_for_table = it->prev != table;
@@ -16246,11 +16072,13 @@ const ecs_entity_t EcsNotQueryable =                FLECS_HI_COMPONENT_ID + 8;
 const ecs_entity_t EcsSlotOf =                      FLECS_HI_COMPONENT_ID + 9;
 const ecs_entity_t EcsFlag =                        FLECS_HI_COMPONENT_ID + 10;
 
-/* Relationship properties */
+/* Marker entities for query encoding */
 const ecs_entity_t EcsWildcard =                    FLECS_HI_COMPONENT_ID + 11;
 const ecs_entity_t EcsAny =                         FLECS_HI_COMPONENT_ID + 12;
 const ecs_entity_t EcsThis =                        FLECS_HI_COMPONENT_ID + 13;
 const ecs_entity_t EcsVariable =                    FLECS_HI_COMPONENT_ID + 14;
+
+/* Traits */
 const ecs_entity_t EcsTransitive =                  FLECS_HI_COMPONENT_ID + 15;
 const ecs_entity_t EcsReflexive =                   FLECS_HI_COMPONENT_ID + 16;
 const ecs_entity_t EcsSymmetric =                   FLECS_HI_COMPONENT_ID + 17;
@@ -16263,33 +16091,34 @@ const ecs_entity_t EcsAcyclic =                     FLECS_HI_COMPONENT_ID + 23;
 const ecs_entity_t EcsTraversable =                 FLECS_HI_COMPONENT_ID + 24;
 const ecs_entity_t EcsWith =                        FLECS_HI_COMPONENT_ID + 25;
 const ecs_entity_t EcsOneOf =                       FLECS_HI_COMPONENT_ID + 26;
+const ecs_entity_t EcsCanToggle =                   FLECS_HI_COMPONENT_ID + 27;
 
 /* Builtin relationships */
-const ecs_entity_t EcsChildOf =                     FLECS_HI_COMPONENT_ID + 27;
-const ecs_entity_t EcsIsA =                         FLECS_HI_COMPONENT_ID + 28;
-const ecs_entity_t EcsDependsOn =                   FLECS_HI_COMPONENT_ID + 29;
+const ecs_entity_t EcsChildOf =                     FLECS_HI_COMPONENT_ID + 28;
+const ecs_entity_t EcsIsA =                         FLECS_HI_COMPONENT_ID + 29;
+const ecs_entity_t EcsDependsOn =                   FLECS_HI_COMPONENT_ID + 30;
 
 /* Identifier tags */
-const ecs_entity_t EcsName =                        FLECS_HI_COMPONENT_ID + 30;
-const ecs_entity_t EcsSymbol =                      FLECS_HI_COMPONENT_ID + 31;
-const ecs_entity_t EcsAlias =                       FLECS_HI_COMPONENT_ID + 32;
+const ecs_entity_t EcsName =                        FLECS_HI_COMPONENT_ID + 31;
+const ecs_entity_t EcsSymbol =                      FLECS_HI_COMPONENT_ID + 32;
+const ecs_entity_t EcsAlias =                       FLECS_HI_COMPONENT_ID + 33;
 
 /* Events */
-const ecs_entity_t EcsOnAdd =                       FLECS_HI_COMPONENT_ID + 33;
-const ecs_entity_t EcsOnRemove =                    FLECS_HI_COMPONENT_ID + 34;
-const ecs_entity_t EcsOnSet =                       FLECS_HI_COMPONENT_ID + 35;
-const ecs_entity_t EcsUnSet =                       FLECS_HI_COMPONENT_ID + 36;
-const ecs_entity_t EcsOnDelete =                    FLECS_HI_COMPONENT_ID + 37;
-const ecs_entity_t EcsOnTableCreate =               FLECS_HI_COMPONENT_ID + 38;
-const ecs_entity_t EcsOnTableDelete =               FLECS_HI_COMPONENT_ID + 39;
-const ecs_entity_t EcsOnTableEmpty =                FLECS_HI_COMPONENT_ID + 40;
-const ecs_entity_t EcsOnTableFill =                 FLECS_HI_COMPONENT_ID + 41;
-const ecs_entity_t EcsOnDeleteTarget =              FLECS_HI_COMPONENT_ID + 46;
+const ecs_entity_t EcsOnAdd =                       FLECS_HI_COMPONENT_ID + 34;
+const ecs_entity_t EcsOnRemove =                    FLECS_HI_COMPONENT_ID + 35;
+const ecs_entity_t EcsOnSet =                       FLECS_HI_COMPONENT_ID + 36;
+const ecs_entity_t EcsUnSet =                       FLECS_HI_COMPONENT_ID + 37;
+const ecs_entity_t EcsOnDelete =                    FLECS_HI_COMPONENT_ID + 38;
+const ecs_entity_t EcsOnDeleteTarget =              FLECS_HI_COMPONENT_ID + 39;
+const ecs_entity_t EcsOnTableCreate =               FLECS_HI_COMPONENT_ID + 40;
+const ecs_entity_t EcsOnTableDelete =               FLECS_HI_COMPONENT_ID + 41;
+const ecs_entity_t EcsOnTableEmpty =                FLECS_HI_COMPONENT_ID + 42;
+const ecs_entity_t EcsOnTableFill =                 FLECS_HI_COMPONENT_ID + 43;
 
 /* Timers */
 const ecs_entity_t ecs_id(EcsTickSource) =          FLECS_HI_COMPONENT_ID + 47;
 const ecs_entity_t ecs_id(EcsTimer) =               FLECS_HI_COMPONENT_ID + 48;
-const ecs_entity_t ecs_id(EcsRateQuery) =          FLECS_HI_COMPONENT_ID + 49;
+const ecs_entity_t ecs_id(EcsRateQuery) =           FLECS_HI_COMPONENT_ID + 49;
 
 /* Actions */
 const ecs_entity_t EcsRemove =                      FLECS_HI_COMPONENT_ID + 50;
@@ -16305,8 +16134,8 @@ const ecs_entity_t EcsDefaultChildComponent =       FLECS_HI_COMPONENT_ID + 55;
 const ecs_entity_t EcsPredEq =                      FLECS_HI_COMPONENT_ID + 56;
 const ecs_entity_t EcsPredMatch =                   FLECS_HI_COMPONENT_ID + 57;
 const ecs_entity_t EcsPredLookup =                  FLECS_HI_COMPONENT_ID + 58;
-const ecs_entity_t EcsScopeOpen =                    FLECS_HI_COMPONENT_ID + 59;
-const ecs_entity_t EcsScopeClose =                   FLECS_HI_COMPONENT_ID + 60;
+const ecs_entity_t EcsScopeOpen =                   FLECS_HI_COMPONENT_ID + 59;
+const ecs_entity_t EcsScopeClose =                  FLECS_HI_COMPONENT_ID + 60;
 
 /* Systems */
 const ecs_entity_t EcsMonitor =                     FLECS_HI_COMPONENT_ID + 61;
@@ -37471,7 +37300,7 @@ ecs_query_cache_t* flecs_query_cache_init(
 
     ecs_observer_desc_t observer_desc = { .filter = desc };
 
-    desc.flags |= EcsQueryMatchEmptyTables;
+    desc.flags |= EcsQueryMatchEmptyTables | EcsQueryTableOnly;
     ecs_query_t *q = result->query = ecs_query_init(world, &desc);
     if (!q) {
         goto error;
@@ -39605,6 +39434,8 @@ void flecs_query_insert_cache_search(
     }
 
     ecs_query_t *q = &rule->pub;
+    bool populate = true;
+
     if (q->cache_kind == EcsQueryCacheAll) {
         /* If all terms are cacheable, make sure no other terms are compiled */
         *compiled = 0xFFFFFFFFFFFFFFFF;
@@ -39613,6 +39444,17 @@ void flecs_query_insert_cache_search(
         /* The query is partially cacheable */
         ecs_term_t *terms = q->terms;
         int32_t i, count = q->term_count;
+
+        for (i = 0; i < count; i ++) {
+            ecs_term_t *term = &terms[i];
+            if (term->flags & (EcsTermIsToggle | EcsTermIsMember)) {
+                /* If query returns individual entities, let dedicated populate
+                 * instruction handle populating data fields */
+                populate = false;
+                break;
+            }
+        }
+
         for (i = 0; i < count; i ++) {
             ecs_term_t *term = &terms[i];
             int16_t field = term->field_index;
@@ -39625,13 +39467,16 @@ void flecs_query_insert_cache_search(
             }
 
             *compiled |= (1ull << i);
-            *populated |= (1ull << field);
+
+            if (populate) {
+                *populated |= (1ull << field);
+            }
         }
     }
 
     /* Insert the operation for cache traversal */
     ecs_query_op_t op = {0};
-    if (q->flags & EcsQueryNoData) {
+    if (!populate || (q->flags & EcsQueryNoData)) {
         if (q->flags & EcsQueryIsCacheable) {
             op.kind = EcsRuleIsCache;
         } else {
@@ -39711,14 +39556,41 @@ void flecs_query_insert_populate(
 }
 
 static
+int flecs_query_insert_toggle(
+    ecs_query_impl_t *impl,
+    ecs_query_compile_ctx_t *ctx)
+{
+    ecs_query_t *q = &impl->pub;
+    int32_t i, term_count = q->term_count;
+    ecs_term_t *terms = q->terms;
+    ecs_flags64_t toggles = 0;
+
+    for (i = 0; i < term_count; i ++) {
+        ecs_term_t *term = &terms[i];
+        if (term->flags & EcsTermIsToggle) {
+            toggles |= (1llu << term->field_index);
+        }
+    }
+
+    if (toggles) {
+        ecs_query_op_t op = {0};
+        op.kind = EcsRuleToggle;
+        op.src.entity = toggles; /* Abuse for bitset w/fields that can toggle */
+        flecs_query_op_insert(&op, ctx);
+    }
+
+    return 0;
+}
+
+static
 int flecs_query_insert_fixed_src_terms(
     ecs_world_t *world,
-    ecs_query_impl_t *rule,
+    ecs_query_impl_t *impl,
     ecs_flags64_t *compiled,
     ecs_flags64_t *populated_out,
     ecs_query_compile_ctx_t *ctx)
 {
-    ecs_query_t *q = &rule->pub;
+    ecs_query_t *q = &impl->pub;
     int32_t i, term_count = q->term_count;
     ecs_term_t *terms = q->terms;
     ecs_flags64_t populated = 0;
@@ -39753,7 +39625,7 @@ int flecs_query_insert_fixed_src_terms(
         }
 
         if (term->src.id & EcsIsEntity && ECS_TERM_REF_ID(&term->src)) {
-            if (flecs_query_compile_term(world, rule, term, populated_out, ctx)) {
+            if (flecs_query_compile_term(world, impl, term, populated_out, ctx)) {
                 return -1;
             }
 
@@ -39774,7 +39646,7 @@ int flecs_query_insert_fixed_src_terms(
          * this before the rest of the query is evaluated, is that we only 
          * populate data for static fields once vs. for each returned result of
          * the query, which would be wasteful since this data doesn't change. */
-        flecs_query_insert_populate(rule, ctx, populated);
+        flecs_query_insert_populate(impl, ctx, populated);
     }
 
     *populated_out |= populated;
@@ -39976,6 +39848,11 @@ int flecs_query_compile(
         nothing.kind = EcsRuleNothing;
         flecs_query_op_insert(&nothing, &ctx);
     } else {
+        /* If query contains terms for toggleable components, insert toggle */
+        if (!(q->flags & EcsQueryTableOnly)) {
+            flecs_query_insert_toggle(rule, &ctx);
+        }
+
         /* Insert instruction to populate remaining data fields */
         ecs_flags64_t remaining = q->data_fields & ~populated;
         flecs_query_insert_populate(rule, &ctx, remaining);
@@ -40288,7 +40165,7 @@ void flecs_query_end_block_or(
     ecs_query_lbl_t end = flecs_query_op_insert(&op, ctx);
 
     ecs_query_op_t *ops = ecs_vec_first_t(ctx->ops, ecs_query_op_t);
-    int32_t i, j, prev_or = ctx->cur->lbl_begin + 1;
+    int32_t i, prev_or = ctx->cur->lbl_begin + 1;
     for (i = ctx->cur->lbl_begin + 1; i < end; i ++) {
         if (ops[i].next == FlecsRuleOrMarker) {
             if (i == (end - 1)) {
@@ -40297,20 +40174,7 @@ void flecs_query_end_block_or(
                 ops[prev_or].prev = flecs_itolbl(i + 1);
             }
 
-            // printf("i = %d, prev_or = %d\n", i, prev_or);
-            // ops[prev_or].prev = flecs_itolbl(i + 1);
             ops[i].next = flecs_itolbl(end);
-
-            // /* Combine operation with next OR marker. This supports OR chains 
-            //  * with terms that require multiple operations to test. */
-            // for (j = prev_or + 1; j < i; j ++) {
-            //     if (i == (end - 1)) {
-            //         ops[j].prev = ctx->cur->lbl_begin;
-            //     } else {
-            //         ops[j].prev = flecs_itolbl(i + 1);
-            //     }
-            //     break;
-            // }
 
             prev_or = i + 1;
         }
@@ -43665,6 +43529,138 @@ bool flecs_query_member_neq(
 }
 
 static
+bool flecs_query_toggle(
+    const ecs_query_op_t *op,
+    bool redo,
+    ecs_query_run_ctx_t *ctx)
+{
+    ecs_query_toggle_ctx_t *op_ctx = flecs_op_ctx(ctx, toggle);
+    const ecs_query_impl_t *rule = ctx->rule;
+    const ecs_query_t *q = &rule->pub;
+    int32_t i, j, field_count = q->field_count;
+    ecs_flags64_t data_fields = op->src.entity; /* Bitset with fields to set */
+
+    ecs_iter_t *it = ctx->it;
+    ecs_table_range_t *range = &ctx->vars[0].range;
+    ecs_table_t *table = range->table;
+    if (table && !range->count) {
+        range->count = ecs_table_count(table);
+    }
+
+    bool has_bitset = false;
+    int32_t block_index, row, end;
+    uint64_t block;
+    if (!redo) {
+        op_ctx->range = *range;
+        row = op_ctx->row = range->offset;
+        end = op_ctx->end = 0;
+        block_index = op_ctx->block_index = -1;
+    } else {
+        if (!op_ctx->has_bitset) {
+            goto done;
+        }
+
+        ecs_assert(op_ctx->end <= op_ctx->range.offset + op_ctx->range.count, 
+            ECS_INTERNAL_ERROR, NULL);
+        if (op_ctx->end == (op_ctx->range.offset + op_ctx->range.count)) {
+            goto done;
+        }
+
+        block_index = op_ctx->block_index;
+        end = op_ctx->end;
+        block = op_ctx->block;
+    }
+
+    /* If end of last iteration is start of new block, compute new block */
+    int32_t new_block_index = end / 64;
+    if (new_block_index != block_index) {
+compute_block:
+        block = UINT64_MAX;
+        block_index = op_ctx->block_index = new_block_index;
+
+        for (i = 0; i < field_count; i ++) {
+            if (!(data_fields & (1llu << i))) {
+                continue;
+            }
+
+            ecs_id_t id = it->ids[i];
+            ecs_entity_t src = it->sources[i];
+            if (!src) {
+                ecs_bitset_t *bs = flecs_table_get_toggle(table, id);
+                if (!bs) {
+                    continue;
+                }
+
+                ecs_assert((64 * block_index) < bs->size, 
+                    ECS_INTERNAL_ERROR, NULL);
+                block &= bs->data[block_index];
+                has_bitset = true;
+            }
+        }
+
+        if (!(op_ctx->has_bitset = has_bitset)) {
+            return true;
+        }
+
+        /* No enabled bits */
+        if (!block) {
+next_block:
+            new_block_index ++;
+            end = new_block_index * 64;
+            if (end >= (op_ctx->range.offset + op_ctx->range.count)) {
+                /* No more rows */
+                goto done;
+            }
+
+            op_ctx->end = end;
+            goto compute_block;
+        }
+
+        op_ctx->block = block;
+    }
+
+    /* Find first enabled bit (TODO: use faster bitmagic) */
+    int32_t first_bit = end - (block_index * 64);
+    ecs_assert(first_bit >= 0, ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(first_bit < 64, ECS_INTERNAL_ERROR, NULL);
+
+    for (i = first_bit; i < 64; i ++) {
+        uint64_t bit = (1ull << i);
+        if (block & bit) {
+            /* Find last enabled bit */
+            for (j = i; j < 64; j ++) {
+                bit = (1ull << j);
+                if (!(block & bit)) {
+                    break;
+                }
+            }
+
+            row = i + (block_index * 64);
+            end = j + (block_index * 64);
+            break;
+        }
+    }
+
+    if (i == 64) {
+        goto next_block;
+    }
+
+    op_ctx->row = row;
+    op_ctx->end = end;
+
+    range->offset = row;
+    range->count = end - row;
+    if (!range->count) {
+        goto done;
+    }
+
+    return true;
+done:
+    *range = op_ctx->range;
+    return false;
+}
+
+static
 bool flecs_query_pred_neq(
     const ecs_query_op_t *op,
     bool redo,
@@ -44431,6 +44427,7 @@ bool flecs_query_dispatch(
     case EcsRulePredNeqMatch: return flecs_query_pred_neq_match(op, redo, ctx);
     case EcsRuleMemberEq: return flecs_query_member_eq(op, redo, ctx);
     case EcsRuleMemberNeq: return flecs_query_member_neq(op, redo, ctx);
+    case EcsRuleToggle: return flecs_query_toggle(op, redo, ctx);
     case EcsRuleLookup: return flecs_query_lookup(op, redo, ctx);
     case EcsRuleSetVars: return flecs_query_setvars(op, redo, ctx);
     case EcsRuleSetThis: return flecs_query_setthis(op, redo, ctx);
@@ -45960,6 +45957,7 @@ const char* flecs_query_op_str(
     case EcsRulePredNeqMatch:  return "neq_m     ";
     case EcsRuleMemberEq:      return "membereq  ";
     case EcsRuleMemberNeq:     return "memberneq ";
+    case EcsRuleToggle:        return "toggle    ";
     case EcsRuleLookup:        return "lookup    ";
     case EcsRuleSetVars:       return "setvars   ";
     case EcsRuleSetThis:       return "setthis   ";
@@ -46082,7 +46080,8 @@ char* ecs_query_str_w_profile(
             op->kind == EcsRulePopulateSelf ||
             op->kind == EcsRuleTriv ||
             op->kind == EcsRuleTrivData ||
-            op->kind == EcsRuleTrivWildcard) 
+            op->kind == EcsRuleTrivWildcard ||
+            op->kind == EcsRuleToggle)
         {
             ecs_flags64_t fieldset = op->src.entity;
             int32_t f;
@@ -47017,6 +47016,7 @@ int flecs_term_verify(
     if (first->id & EcsIsEntity) {
         first_id = ECS_TERM_REF_ID(first);
     }
+
     if (second->id & EcsIsEntity) {
         second_id = ECS_TERM_REF_ID(second);
     }
@@ -47283,6 +47283,11 @@ int flecs_term_finalize(
             }
         }
 
+        /* Check if term has toggleable component */
+        if (id_flags & EcsIdCanToggle) {
+            term->flags |= EcsTermIsToggle;
+        }
+
         /* Check if this is a member query */
 #ifdef FLECS_META
         if (ecs_id(EcsMember) != 0) {
@@ -47362,6 +47367,9 @@ int flecs_term_finalize(
     if (term->flags & EcsTermIsMember) {
         trivial_term = false;
         cacheable_term = false;
+    }
+    if (term->flags & EcsTermIsToggle) {
+        trivial_term = false;
     }
 
     ECS_BIT_COND(term->flags, EcsTermIsTrivial, trivial_term);
@@ -47469,6 +47477,7 @@ int flecs_query_finalize_terms(
 
     q->flags |= EcsQueryMatchOnlyThis;
 
+    bool cacheable = true;
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
         bool prev_is_or = i && term[-1].oper == EcsOr;
@@ -47490,6 +47499,12 @@ int flecs_query_finalize_terms(
                 }
             } else {
                 cacheable_terms ++;
+            }
+
+            /* Toggle terms may be cacheable for fetching the initial component, 
+             * but require an additional toggle instruction for evaluation. */
+            if (term->flags & EcsTermIsToggle) {
+                cacheable = false;
             }
         } else if (prev_is_or) {
             /* Current term is not cacheable. If it is part of an OR chain, mark
@@ -47750,6 +47765,7 @@ int flecs_query_finalize_terms(
                     }
                 }
             }
+
             if (term_count && (i == term_count)) {
                 ECS_BIT_SET(q->flags, EcsQueryIsTrivial);
             }
@@ -47761,7 +47777,7 @@ int flecs_query_finalize_terms(
         ECS_BIT_COND(q->flags, EcsQueryHasCacheable, 
             cacheable_terms != 0);
         ECS_BIT_COND(q->flags, EcsQueryIsCacheable, 
-            cacheable_terms == term_count);
+            cacheable && (cacheable_terms == term_count));
     }
 
     return 0;
@@ -51006,6 +51022,37 @@ void flecs_table_notify(
     case EcsTableNoTriggersForId:
         break;
     }
+}
+
+int32_t flecs_table_get_toggle_column(
+    ecs_table_t *table,
+    ecs_id_t id)
+{
+    ecs_id_t *ids = table->type.array;
+    int32_t i = table->_->bs_offset, end = i + table->_->bs_count;
+
+    for (; i < end; i ++) {
+        if (ids[i] == (ECS_TOGGLE | id)) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+ecs_bitset_t* flecs_table_get_toggle(
+    ecs_table_t *table,
+    ecs_id_t id)
+{
+    int32_t toggle_column = flecs_table_get_toggle_column(table, id);
+    if (toggle_column == -1) {
+        return NULL;
+    }
+
+    toggle_column -= table->_->bs_offset;
+    ecs_assert(toggle_column >= 0, ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(toggle_column < table->_->bs_count, ECS_INTERNAL_ERROR, NULL);
+    return &table->_->bs_columns[toggle_column];
 }
 
 /* -- Public API -- */

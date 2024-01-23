@@ -2152,6 +2152,37 @@ void flecs_table_notify(
     }
 }
 
+int32_t flecs_table_get_toggle_column(
+    ecs_table_t *table,
+    ecs_id_t id)
+{
+    ecs_id_t *ids = table->type.array;
+    int32_t i = table->_->bs_offset, end = i + table->_->bs_count;
+
+    for (; i < end; i ++) {
+        if (ids[i] == (ECS_TOGGLE | id)) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+ecs_bitset_t* flecs_table_get_toggle(
+    ecs_table_t *table,
+    ecs_id_t id)
+{
+    int32_t toggle_column = flecs_table_get_toggle_column(table, id);
+    if (toggle_column == -1) {
+        return NULL;
+    }
+
+    toggle_column -= table->_->bs_offset;
+    ecs_assert(toggle_column >= 0, ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(toggle_column < table->_->bs_count, ECS_INTERNAL_ERROR, NULL);
+    return &table->_->bs_columns[toggle_column];
+}
+
 /* -- Public API -- */
 
 void ecs_table_lock(

@@ -668,6 +668,8 @@ typedef enum ecs_query_cache_kind_t {
 #define EcsIsVariable                 (1llu << 58)  /**< Term id is a variable */
 #define EcsIsEntity                   (1llu << 57)  /**< Term id is an entity */
 #define EcsIsName                     (1llu << 56)  /**< Term id is a name (don't attempt to lookup as entity) */
+
+/* Composite term flags */
 #define EcsTraverseFlags              (EcsSelf|EcsUp|EcsTrav|EcsCascade|EcsDesc)
 #define EcsTermRefFlags               (EcsTraverseFlags|EcsIsVariable|EcsIsEntity|EcsIsName)
 
@@ -683,6 +685,7 @@ typedef enum ecs_query_cache_kind_t {
 #define EcsTermIsCacheable            (1u << 7)
 #define EcsTermIsScope                (1u << 8)
 #define EcsTermIsMember               (1u << 9)
+#define EcsTermIsToggle               (1u << 10)
 
 /** Type that describes a reference to an entity or variable in a term. */
 typedef struct ecs_term_ref_t {
@@ -1383,6 +1386,9 @@ FLECS_API extern const ecs_entity_t EcsWith;
  *   If OneOf(R) and R(X, Y), Y must be a child of R
  */
 FLECS_API extern const ecs_entity_t EcsOneOf;
+
+/** Mark a component as toggleable with enable_id/disable_id. */
+FLECS_API extern const ecs_entity_t EcsCanToggle;
 
 /** Can be added to relationship to indicate that it should never hold data, 
  * even when it or the relationship target is a component. */

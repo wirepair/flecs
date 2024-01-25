@@ -129,7 +129,8 @@ ecs_query_op_t* flecs_query_begin_block(
 }
 
 void flecs_query_end_block(
-    ecs_query_compile_ctx_t *ctx)
+    ecs_query_compile_ctx_t *ctx,
+    bool reset)
 {
     ecs_query_op_t new_op = {0};
     new_op.kind = EcsRuleEnd;
@@ -139,7 +140,7 @@ void flecs_query_end_block(
     ops[ctx->cur->lbl_begin].next = end;
 
     ecs_query_op_t *end_op = &ops[end];
-    if (ctx->cur->lbl_query != -1) {
+    if (reset && ctx->cur->lbl_query != -1) {
         ecs_query_op_t *query_op = &ops[ctx->cur->lbl_query];
         end_op->prev = ctx->cur->lbl_begin;
         end_op->src = query_op->src;
@@ -776,8 +777,7 @@ int flecs_query_compile_0_src(
     } else if (ECS_TERM_REF_ID(&term->first) == EcsScopeClose) {
         flecs_query_compile_pop(ctx);
         if (ctx->scope_is_not & (ecs_flags32_t)(1ull << (ctx->scope))) {
-            ctx->cur->lbl_query = -1;
-            flecs_query_end_block(ctx);
+            flecs_query_end_block(ctx, false);
         }
     } else {
         /* Noop */
@@ -974,8 +974,7 @@ int flecs_query_compile_end_member_term(
     flecs_query_op_insert(&mbr_op, ctx);
 
     if (ctx->oper == EcsNot || ctx->oper == EcsOptional) {
-        ctx->cur->lbl_query = -1; /* No field reset needed */
-        flecs_query_end_block(ctx);
+        flecs_query_end_block(ctx, false);
     }
 
     return 0;
@@ -1347,9 +1346,9 @@ int flecs_query_compile_term(
 
     /* Handle closing of Not, Optional and Or operators */
     if (is_not) {
-        flecs_query_end_block(ctx);
+        flecs_query_end_block(ctx, true);
     } else if (is_optional) {
-        flecs_query_end_block(ctx);
+        flecs_query_end_block(ctx, true);
     }
 
     /* Now that the term is resolved, evaluate member of component */

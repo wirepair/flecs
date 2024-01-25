@@ -78,5 +78,6 @@ ecs_query_op_t* flecs_query_begin_block(
     ecs_query_compile_ctx_t *ctx);
 
 void flecs_query_end_block(
-    ecs_query_compile_ctx_t *ctx);
+    ecs_query_compile_ctx_t *ctx,
+    bool reset);
 

@@ -758,19 +758,38 @@ int flecs_query_insert_toggle(
     for (i = 0; i < term_count; i ++) {
         ecs_term_t *term = &terms[i];
         if (term->flags & EcsTermIsToggle) {
-            if (term->oper != EcsNot) {
-                toggles |= (1llu << term->field_index);
-            } else {
+            if (term->oper == EcsNot) {
+                /* Conditionally run toggle instruction if component was set */
                 ecs_query_op_t *if_op = flecs_query_begin_block(
                     EcsRuleIfSet, ctx);
                 if_op->other = term->field_index;
 
+                /* Use NotToggle, since we're interested in disabled entities */
                 ecs_query_op_t op = {0};
                 op.kind = EcsRuleNotToggle;
                 op.src.entity = (1llu << term->field_index);
                 flecs_query_op_insert(&op, ctx);
 
-                flecs_query_end_block(ctx);
+                flecs_query_end_block(ctx, false);
+            } else if (term->oper == EcsOptional) {
+                /* Conditionally run toggle if field was set. */
+                ecs_query_op_t *if_op = flecs_query_begin_block(
+                    EcsRuleIfSet, ctx);
+                if_op->other = term->field_index;
+
+                /* We now need to take the union of the Toggle and NotToggle
+                 * operations. While we could just return all entities since 
+                 * they all technically match the query, this would return
+                 * a result in which the field is enabled for some entities, and
+                 * disabled for other entities. */
+                ecs_query_op_t op = {0};
+                op.kind = EcsRuleAnyToggle;
+                op.src.entity = (1llu << term->field_index);
+                flecs_query_op_insert(&op, ctx);
+
+                flecs_query_end_block(ctx, false);
+            } else {
+                toggles |= (1llu << term->field_index);
             }
         }
     }

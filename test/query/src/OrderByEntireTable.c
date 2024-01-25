@@ -1846,3 +1846,15 @@ void OrderByEntireTable_dont_resort_after_set_unsorted_component_w_tag_w_out_ter
 
     ecs_fini(world);
 }
+
+void OrderByEntireTable_sort_not_term(void) {
+    // Implement testcase
+}
+
+void OrderByEntireTable_sort_or_term(void) {
+    // Implement testcase
+}
+
+void OrderByEntireTable_sort_optional_term(void) {
+    // Implement testcase
+}

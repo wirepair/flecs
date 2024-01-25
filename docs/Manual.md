@@ -614,7 +614,7 @@ int main() {
     ecs_enable_component(world, e, Position, false);
 
     /* Will return false */
-    printf("%d\n", ecs_is_enabled_component(world, e, Position));
+    printf("%d\n", ecs_is_enabled(world, e, Position));
 
     /* Re-enable the component */
     ecs_enable_component(world, e, Position, true);

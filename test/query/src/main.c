@@ -1388,11 +1388,26 @@ void MemberTarget_var_written_member_neq_all_matches(void);
 
 // Testsuite 'Toggle'
 void Toggle_setup(void);
-void Toggle_this_disabled_from_nothing(void);
-void Toggle_this_disabled(void);
-void Toggle_this_disabled_skip_initial(void);
-void Toggle_this_disabled_pair(void);
-void Toggle_this_disabled_pair_skip_initial(void);
+void Toggle_fixed_src_1_tag_toggle(void);
+void Toggle_fixed_src_1_component_toggle(void);
+void Toggle_fixed_src_2_tag_toggle(void);
+void Toggle_fixed_src_2_component_toggle(void);
+void Toggle_fixed_2_src_w_toggle(void);
+void Toggle_this_w_fixed_src_w_toggle(void);
+void Toggle_fixed_src_w_this_w_toggle(void);
+void Toggle_this_from_nothing(void);
+void Toggle_this(void);
+void Toggle_this_skip_initial(void);
+void Toggle_this_pair(void);
+void Toggle_this_pair_skip_initial(void);
+void Toggle_this_tag(void);
+void Toggle_this_tag_pair(void);
+void Toggle_this_tag_pair_wildcard(void);
+void Toggle_this_enabled_shared_self_up(void);
+void Toggle_this_disabled_shared_self_up(void);
+void Toggle_this_enabled_shared_up(void);
+void Toggle_this_disabled_shared_up(void);
+void Toggle_this_64_mod_1(void);
 void Toggle_this_64_mod_2(void);
 void Toggle_this_64_mod_3(void);
 void Toggle_this_64_mod_7(void);
@@ -1401,6 +1416,7 @@ void Toggle_this_64_mod_10(void);
 void Toggle_this_64_mod_64(void);
 void Toggle_this_64_mod_256(void);
 void Toggle_this_64_mod_1024(void);
+void Toggle_this_100_mod_1(void);
 void Toggle_this_100_mod_2(void);
 void Toggle_this_100_mod_3(void);
 void Toggle_this_100_mod_7(void);
@@ -1409,6 +1425,7 @@ void Toggle_this_100_mod_10(void);
 void Toggle_this_100_mod_64(void);
 void Toggle_this_100_mod_256(void);
 void Toggle_this_100_mod_1024(void);
+void Toggle_this_128_mod_1(void);
 void Toggle_this_128_mod_2(void);
 void Toggle_this_128_mod_3(void);
 void Toggle_this_128_mod_7(void);
@@ -1417,6 +1434,7 @@ void Toggle_this_128_mod_10(void);
 void Toggle_this_128_mod_64(void);
 void Toggle_this_128_mod_256(void);
 void Toggle_this_128_mod_1024(void);
+void Toggle_this_200_mod_1(void);
 void Toggle_this_200_mod_2(void);
 void Toggle_this_200_mod_3(void);
 void Toggle_this_200_mod_7(void);
@@ -1425,6 +1443,7 @@ void Toggle_this_200_mod_10(void);
 void Toggle_this_200_mod_64(void);
 void Toggle_this_200_mod_256(void);
 void Toggle_this_200_mod_1024(void);
+void Toggle_this_1024_mod_1(void);
 void Toggle_this_1024_mod_2(void);
 void Toggle_this_1024_mod_3(void);
 void Toggle_this_1024_mod_7(void);
@@ -1433,6 +1452,7 @@ void Toggle_this_1024_mod_10(void);
 void Toggle_this_1024_mod_64(void);
 void Toggle_this_1024_mod_256(void);
 void Toggle_this_1024_mod_1024(void);
+void Toggle_this_enabled_64_mod_1(void);
 void Toggle_this_enabled_64_mod_2(void);
 void Toggle_this_enabled_64_mod_3(void);
 void Toggle_this_enabled_64_mod_7(void);
@@ -1441,6 +1461,7 @@ void Toggle_this_enabled_64_mod_10(void);
 void Toggle_this_enabled_64_mod_64(void);
 void Toggle_this_enabled_64_mod_256(void);
 void Toggle_this_enabled_64_mod_1024(void);
+void Toggle_this_enabled_100_mod_1(void);
 void Toggle_this_enabled_100_mod_2(void);
 void Toggle_this_enabled_100_mod_3(void);
 void Toggle_this_enabled_100_mod_7(void);
@@ -1449,6 +1470,7 @@ void Toggle_this_enabled_100_mod_10(void);
 void Toggle_this_enabled_100_mod_64(void);
 void Toggle_this_enabled_100_mod_256(void);
 void Toggle_this_enabled_100_mod_1024(void);
+void Toggle_this_enabled_128_mod_1(void);
 void Toggle_this_enabled_128_mod_2(void);
 void Toggle_this_enabled_128_mod_3(void);
 void Toggle_this_enabled_128_mod_7(void);
@@ -1457,6 +1479,7 @@ void Toggle_this_enabled_128_mod_10(void);
 void Toggle_this_enabled_128_mod_64(void);
 void Toggle_this_enabled_128_mod_256(void);
 void Toggle_this_enabled_128_mod_1024(void);
+void Toggle_this_enabled_200_mod_1(void);
 void Toggle_this_enabled_200_mod_2(void);
 void Toggle_this_enabled_200_mod_3(void);
 void Toggle_this_enabled_200_mod_7(void);
@@ -1465,6 +1488,7 @@ void Toggle_this_enabled_200_mod_10(void);
 void Toggle_this_enabled_200_mod_64(void);
 void Toggle_this_enabled_200_mod_256(void);
 void Toggle_this_enabled_200_mod_1024(void);
+void Toggle_this_enabled_1024_mod_1(void);
 void Toggle_this_enabled_1024_mod_2(void);
 void Toggle_this_enabled_1024_mod_3(void);
 void Toggle_this_enabled_1024_mod_7(void);
@@ -1481,9 +1505,9 @@ void Toggle_this_mod_1024_2_bitsets(void);
 void Toggle_this_randomized_2_bitsets(void);
 void Toggle_this_randomized_3_bitsets(void);
 void Toggle_this_randomized_4_bitsets(void);
-void Toggle_this_toggle_w_other_tag(void);
-void Toggle_this_toggle_w_other_component(void);
-void Toggle_this_not_toggle(void);
+void Toggle_this_w_other_tag(void);
+void Toggle_this_w_other_component(void);
+void Toggle_this_not(void);
 void Toggle_this_written_not_1024_mod_2(void);
 void Toggle_this_written_not_1024_mod_3(void);
 void Toggle_this_written_not_1024_mod_7(void);
@@ -1492,6 +1516,27 @@ void Toggle_this_written_not_1024_mod_10(void);
 void Toggle_this_written_not_1024_mod_64(void);
 void Toggle_this_written_not_1024_mod_256(void);
 void Toggle_this_written_not_1024_mod_1024(void);
+void Toggle_this_optional(void);
+void Toggle_this_written_optional_1024_mod_2(void);
+void Toggle_this_written_optional_1024_mod_3(void);
+void Toggle_this_written_optional_1024_mod_7(void);
+void Toggle_this_written_optional_1024_mod_8(void);
+void Toggle_this_written_optional_1024_mod_10(void);
+void Toggle_this_written_optional_1024_mod_64(void);
+void Toggle_this_written_optional_1024_mod_256(void);
+void Toggle_this_written_optional_1024_mod_1024(void);
+void Toggle_this_written_toggle_w_not_toggle(void);
+void Toggle_this_written_not_toggle_w_toggle(void);
+void Toggle_this_written_toggle_w_optional_toggle(void);
+void Toggle_this_written_optional_toggle_w_toggle(void);
+void Toggle_this_written_not_w_optional_toggle(void);
+void Toggle_this_written_optional_w_not_toggle(void);
+void Toggle_this_written_2_not_toggle(void);
+void Toggle_this_written_2_optional_toggle(void);
+void Toggle_this_written_toggle_w_2_not_toggle(void);
+void Toggle_this_written_toggle_w_2_optional_toggle(void);
+void Toggle_this_written_2_toggle_w_not_toggle(void);
+void Toggle_this_written_2_toggle_w_optional_toggle(void);
 void Toggle_this_sort(void);
 void Toggle_this_table_move_2_from_3(void);
 
@@ -1532,6 +1577,9 @@ void OrderBy_dont_resort_after_set_unsorted_component_w_tag(void);
 void OrderBy_dont_resort_after_set_unsorted_component_w_tag_w_out_term(void);
 void OrderBy_sort_component_not_queried_for(void);
 void OrderBy_sort_by_wildcard(void);
+void OrderBy_sort_not_term(void);
+void OrderBy_sort_or_term(void);
+void OrderBy_sort_optional_term(void);
 
 // Testsuite 'OrderByEntireTable'
 void OrderByEntireTable_sort_by_component(void);
@@ -1567,6 +1615,9 @@ void OrderByEntireTable_sort_relation_marked(void);
 void OrderByEntireTable_dont_resort_after_set_unsorted_component(void);
 void OrderByEntireTable_dont_resort_after_set_unsorted_component_w_tag(void);
 void OrderByEntireTable_dont_resort_after_set_unsorted_component_w_tag_w_out_term(void);
+void OrderByEntireTable_sort_not_term(void);
+void OrderByEntireTable_sort_or_term(void);
+void OrderByEntireTable_sort_optional_term(void);
 
 bake_test_case Validator_testcases[] = {
     {
@@ -6973,24 +7024,84 @@ bake_test_case MemberTarget_testcases[] = {
 
 bake_test_case Toggle_testcases[] = {
     {
-        "this_disabled_from_nothing",
-        Toggle_this_disabled_from_nothing
+        "fixed_src_1_tag_toggle",
+        Toggle_fixed_src_1_tag_toggle
     },
     {
-        "this_disabled",
-        Toggle_this_disabled
+        "fixed_src_1_component_toggle",
+        Toggle_fixed_src_1_component_toggle
     },
     {
-        "this_disabled_skip_initial",
-        Toggle_this_disabled_skip_initial
+        "fixed_src_2_tag_toggle",
+        Toggle_fixed_src_2_tag_toggle
     },
     {
-        "this_disabled_pair",
-        Toggle_this_disabled_pair
+        "fixed_src_2_component_toggle",
+        Toggle_fixed_src_2_component_toggle
     },
     {
-        "this_disabled_pair_skip_initial",
-        Toggle_this_disabled_pair_skip_initial
+        "fixed_2_src_w_toggle",
+        Toggle_fixed_2_src_w_toggle
+    },
+    {
+        "this_w_fixed_src_w_toggle",
+        Toggle_this_w_fixed_src_w_toggle
+    },
+    {
+        "fixed_src_w_this_w_toggle",
+        Toggle_fixed_src_w_this_w_toggle
+    },
+    {
+        "this_from_nothing",
+        Toggle_this_from_nothing
+    },
+    {
+        "this",
+        Toggle_this
+    },
+    {
+        "this_skip_initial",
+        Toggle_this_skip_initial
+    },
+    {
+        "this_pair",
+        Toggle_this_pair
+    },
+    {
+        "this_pair_skip_initial",
+        Toggle_this_pair_skip_initial
+    },
+    {
+        "this_tag",
+        Toggle_this_tag
+    },
+    {
+        "this_tag_pair",
+        Toggle_this_tag_pair
+    },
+    {
+        "this_tag_pair_wildcard",
+        Toggle_this_tag_pair_wildcard
+    },
+    {
+        "this_enabled_shared_self_up",
+        Toggle_this_enabled_shared_self_up
+    },
+    {
+        "this_disabled_shared_self_up",
+        Toggle_this_disabled_shared_self_up
+    },
+    {
+        "this_enabled_shared_up",
+        Toggle_this_enabled_shared_up
+    },
+    {
+        "this_disabled_shared_up",
+        Toggle_this_disabled_shared_up
+    },
+    {
+        "this_64_mod_1",
+        Toggle_this_64_mod_1
     },
     {
         "this_64_mod_2",
@@ -7025,6 +7136,10 @@ bake_test_case Toggle_testcases[] = {
         Toggle_this_64_mod_1024
     },
     {
+        "this_100_mod_1",
+        Toggle_this_100_mod_1
+    },
+    {
         "this_100_mod_2",
         Toggle_this_100_mod_2
     },
@@ -7055,6 +7170,10 @@ bake_test_case Toggle_testcases[] = {
     {
         "this_100_mod_1024",
         Toggle_this_100_mod_1024
+    },
+    {
+        "this_128_mod_1",
+        Toggle_this_128_mod_1
     },
     {
         "this_128_mod_2",
@@ -7089,6 +7208,10 @@ bake_test_case Toggle_testcases[] = {
         Toggle_this_128_mod_1024
     },
     {
+        "this_200_mod_1",
+        Toggle_this_200_mod_1
+    },
+    {
         "this_200_mod_2",
         Toggle_this_200_mod_2
     },
@@ -7119,6 +7242,10 @@ bake_test_case Toggle_testcases[] = {
     {
         "this_200_mod_1024",
         Toggle_this_200_mod_1024
+    },
+    {
+        "this_1024_mod_1",
+        Toggle_this_1024_mod_1
     },
     {
         "this_1024_mod_2",
@@ -7153,6 +7280,10 @@ bake_test_case Toggle_testcases[] = {
         Toggle_this_1024_mod_1024
     },
     {
+        "this_enabled_64_mod_1",
+        Toggle_this_enabled_64_mod_1
+    },
+    {
         "this_enabled_64_mod_2",
         Toggle_this_enabled_64_mod_2
     },
@@ -7183,6 +7314,10 @@ bake_test_case Toggle_testcases[] = {
     {
         "this_enabled_64_mod_1024",
         Toggle_this_enabled_64_mod_1024
+    },
+    {
+        "this_enabled_100_mod_1",
+        Toggle_this_enabled_100_mod_1
     },
     {
         "this_enabled_100_mod_2",
@@ -7217,6 +7352,10 @@ bake_test_case Toggle_testcases[] = {
         Toggle_this_enabled_100_mod_1024
     },
     {
+        "this_enabled_128_mod_1",
+        Toggle_this_enabled_128_mod_1
+    },
+    {
         "this_enabled_128_mod_2",
         Toggle_this_enabled_128_mod_2
     },
@@ -7249,6 +7388,10 @@ bake_test_case Toggle_testcases[] = {
         Toggle_this_enabled_128_mod_1024
     },
     {
+        "this_enabled_200_mod_1",
+        Toggle_this_enabled_200_mod_1
+    },
+    {
         "this_enabled_200_mod_2",
         Toggle_this_enabled_200_mod_2
     },
@@ -7279,6 +7422,10 @@ bake_test_case Toggle_testcases[] = {
     {
         "this_enabled_200_mod_1024",
         Toggle_this_enabled_200_mod_1024
+    },
+    {
+        "this_enabled_1024_mod_1",
+        Toggle_this_enabled_1024_mod_1
     },
     {
         "this_enabled_1024_mod_2",
@@ -7345,16 +7492,16 @@ bake_test_case Toggle_testcases[] = {
         Toggle_this_randomized_4_bitsets
     },
     {
-        "this_toggle_w_other_tag",
-        Toggle_this_toggle_w_other_tag
+        "this_w_other_tag",
+        Toggle_this_w_other_tag
     },
     {
-        "this_toggle_w_other_component",
-        Toggle_this_toggle_w_other_component
+        "this_w_other_component",
+        Toggle_this_w_other_component
     },
     {
-        "this_not_toggle",
-        Toggle_this_not_toggle
+        "this_not",
+        Toggle_this_not
     },
     {
         "this_written_not_1024_mod_2",
@@ -7387,6 +7534,90 @@ bake_test_case Toggle_testcases[] = {
     {
         "this_written_not_1024_mod_1024",
         Toggle_this_written_not_1024_mod_1024
+    },
+    {
+        "this_optional",
+        Toggle_this_optional
+    },
+    {
+        "this_written_optional_1024_mod_2",
+        Toggle_this_written_optional_1024_mod_2
+    },
+    {
+        "this_written_optional_1024_mod_3",
+        Toggle_this_written_optional_1024_mod_3
+    },
+    {
+        "this_written_optional_1024_mod_7",
+        Toggle_this_written_optional_1024_mod_7
+    },
+    {
+        "this_written_optional_1024_mod_8",
+        Toggle_this_written_optional_1024_mod_8
+    },
+    {
+        "this_written_optional_1024_mod_10",
+        Toggle_this_written_optional_1024_mod_10
+    },
+    {
+        "this_written_optional_1024_mod_64",
+        Toggle_this_written_optional_1024_mod_64
+    },
+    {
+        "this_written_optional_1024_mod_256",
+        Toggle_this_written_optional_1024_mod_256
+    },
+    {
+        "this_written_optional_1024_mod_1024",
+        Toggle_this_written_optional_1024_mod_1024
+    },
+    {
+        "this_written_toggle_w_not_toggle",
+        Toggle_this_written_toggle_w_not_toggle
+    },
+    {
+        "this_written_not_toggle_w_toggle",
+        Toggle_this_written_not_toggle_w_toggle
+    },
+    {
+        "this_written_toggle_w_optional_toggle",
+        Toggle_this_written_toggle_w_optional_toggle
+    },
+    {
+        "this_written_optional_toggle_w_toggle",
+        Toggle_this_written_optional_toggle_w_toggle
+    },
+    {
+        "this_written_not_w_optional_toggle",
+        Toggle_this_written_not_w_optional_toggle
+    },
+    {
+        "this_written_optional_w_not_toggle",
+        Toggle_this_written_optional_w_not_toggle
+    },
+    {
+        "this_written_2_not_toggle",
+        Toggle_this_written_2_not_toggle
+    },
+    {
+        "this_written_2_optional_toggle",
+        Toggle_this_written_2_optional_toggle
+    },
+    {
+        "this_written_toggle_w_2_not_toggle",
+        Toggle_this_written_toggle_w_2_not_toggle
+    },
+    {
+        "this_written_toggle_w_2_optional_toggle",
+        Toggle_this_written_toggle_w_2_optional_toggle
+    },
+    {
+        "this_written_2_toggle_w_not_toggle",
+        Toggle_this_written_2_toggle_w_not_toggle
+    },
+    {
+        "this_written_2_toggle_w_optional_toggle",
+        Toggle_this_written_2_toggle_w_optional_toggle
     },
     {
         "this_sort",
@@ -7542,6 +7773,18 @@ bake_test_case OrderBy_testcases[] = {
     {
         "sort_by_wildcard",
         OrderBy_sort_by_wildcard
+    },
+    {
+        "sort_not_term",
+        OrderBy_sort_not_term
+    },
+    {
+        "sort_or_term",
+        OrderBy_sort_or_term
+    },
+    {
+        "sort_optional_term",
+        OrderBy_sort_optional_term
     }
 };
 
@@ -7677,6 +7920,18 @@ bake_test_case OrderByEntireTable_testcases[] = {
     {
         "dont_resort_after_set_unsorted_component_w_tag_w_out_term",
         OrderByEntireTable_dont_resort_after_set_unsorted_component_w_tag_w_out_term
+    },
+    {
+        "sort_not_term",
+        OrderByEntireTable_sort_not_term
+    },
+    {
+        "sort_or_term",
+        OrderByEntireTable_sort_or_term
+    },
+    {
+        "sort_optional_term",
+        OrderByEntireTable_sort_optional_term
     }
 };
 
@@ -7838,7 +8093,7 @@ static bake_test_suite suites[] = {
         "Toggle",
         Toggle_setup,
         NULL,
-        106,
+        151,
         Toggle_testcases,
         1,
         Toggle_params
@@ -7847,14 +8102,14 @@ static bake_test_suite suites[] = {
         "OrderBy",
         NULL,
         NULL,
-        36,
+        39,
         OrderBy_testcases
     },
     {
         "OrderByEntireTable",
         NULL,
         NULL,
-        33,
+        36,
         OrderByEntireTable_testcases
     }
 };

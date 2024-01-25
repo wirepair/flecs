@@ -449,7 +449,7 @@
 #define ecs_enable_component(world, entity, T, enable)\
     ecs_enable_id(world, entity, ecs_id(T), enable)
 
-#define ecs_is_enabled_component(world, entity, T)\
+#define ecs_is_enabled(world, entity, T)\
     ecs_is_enabled_id(world, entity, ecs_id(T))
 
 #define ecs_enable_pair(world, entity, First, second, enable)\

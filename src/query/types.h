@@ -80,6 +80,7 @@ typedef enum {
     EcsRuleMemberNeq,      /* Compare member value */
     EcsRuleToggle,         /* Evaluate toggle bitset, if present */
     EcsRuleNotToggle,      /* Toggle with Not operator */
+    EcsRuleAnyToggle,      /* Toggle with Optional operator */
     EcsRuleLookup,         /* Lookup relative to variable */
     EcsRuleSetVars,        /* Populate it.sources from variables */
     EcsRuleSetThis,        /* Populate This entity variable */
@@ -257,11 +258,13 @@ typedef struct {
 /* Toggle context */
 typedef struct {
     ecs_table_range_t range;
-    int32_t row;
-    int32_t end;
+    int32_t not_column; /* Field column before resetting */
+    int32_t not_field; /* Field of not toggle */
+    int32_t cur;
     int32_t block_index;
     uint64_t block;
     bool has_bitset;
+    bool is_not_toggle;
 } ecs_query_toggle_ctx_t;
 
 typedef struct ecs_query_op_ctx_t {

@@ -2410,35 +2410,35 @@ void OnDelete_id_w_disabled(void) {
     ecs_add_id(world, e3, ECS_TOGGLE | Tag);
     ecs_add_id(world, e4, ECS_TOGGLE | Tag);
 
-    test_bool(false, ecs_is_enabled_component(world, e1, Tag));
-    test_bool(false, ecs_is_enabled_component(world, e2, Tag));
-    test_bool(false, ecs_is_enabled_component(world, e3, Tag));
-    test_bool(false, ecs_is_enabled_component(world, e4, Tag));
+    test_bool(false, ecs_is_enabled(world, e1, Tag));
+    test_bool(false, ecs_is_enabled(world, e2, Tag));
+    test_bool(false, ecs_is_enabled(world, e3, Tag));
+    test_bool(false, ecs_is_enabled(world, e4, Tag));
 
     ecs_enable_component(world, e1, Tag, true);
     ecs_enable_component(world, e3, Tag, true);
 
-    test_bool(true, ecs_is_enabled_component(world, e1, Tag));
-    test_bool(false, ecs_is_enabled_component(world, e2, Tag));
-    test_bool(true, ecs_is_enabled_component(world, e3, Tag));
-    test_bool(false, ecs_is_enabled_component(world, e4, Tag));
+    test_bool(true, ecs_is_enabled(world, e1, Tag));
+    test_bool(false, ecs_is_enabled(world, e2, Tag));
+    test_bool(true, ecs_is_enabled(world, e3, Tag));
+    test_bool(false, ecs_is_enabled(world, e4, Tag));
 
     ecs_entity_t t = ecs_new_id(world);
 
     ecs_add_id(world, e3, t);
     ecs_add_id(world, e4, t);
 
-    test_bool(true, ecs_is_enabled_component(world, e1, Tag));
-    test_bool(false, ecs_is_enabled_component(world, e2, Tag));
-    test_bool(true, ecs_is_enabled_component(world, e3, Tag));
-    test_bool(false, ecs_is_enabled_component(world, e4, Tag));
+    test_bool(true, ecs_is_enabled(world, e1, Tag));
+    test_bool(false, ecs_is_enabled(world, e2, Tag));
+    test_bool(true, ecs_is_enabled(world, e3, Tag));
+    test_bool(false, ecs_is_enabled(world, e4, Tag));
     
     ecs_delete(world, t);
 
-    test_bool(true, ecs_is_enabled_component(world, e1, Tag));
-    test_bool(false, ecs_is_enabled_component(world, e2, Tag));
-    test_bool(true, ecs_is_enabled_component(world, e3, Tag));
-    test_bool(false, ecs_is_enabled_component(world, e4, Tag));
+    test_bool(true, ecs_is_enabled(world, e1, Tag));
+    test_bool(false, ecs_is_enabled(world, e2, Tag));
+    test_bool(true, ecs_is_enabled(world, e3, Tag));
+    test_bool(false, ecs_is_enabled(world, e4, Tag));
 
     ecs_fini(world);
 }
@@ -2494,8 +2494,8 @@ void OnDelete_id_to_no_disabled(void) {
     ecs_add_id(world, e1, ECS_TOGGLE | TagB);
     ecs_add_id(world, e2, ECS_TOGGLE | TagB);
 
-    test_bool(false, ecs_is_enabled_component(world, e1, TagB));
-    test_bool(false, ecs_is_enabled_component(world, e2, TagB));
+    test_bool(false, ecs_is_enabled(world, e1, TagB));
+    test_bool(false, ecs_is_enabled(world, e2, TagB));
 
     ecs_delete(world, TagB);
 

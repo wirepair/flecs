@@ -8,7 +8,7 @@ void Toggle_is_component_enabled(void) {
 
     ecs_entity_t e = ecs_new(world, Position);
 
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
 
     ecs_fini(world);
 }
@@ -20,7 +20,7 @@ void Toggle_is_empty_entity_disabled(void) {
 
     ecs_entity_t e = ecs_new(world, 0);
 
-    test_bool(ecs_is_enabled_component(world, e, Position), false);
+    test_bool(ecs_is_enabled(world, e, Position), false);
 
     ecs_fini(world);
 }
@@ -35,7 +35,7 @@ void Toggle_is_0_entity_disabled(void) {
 
     test_expect_abort();
 
-    test_bool(ecs_is_enabled_component(world, 0, Position), false);
+    test_bool(ecs_is_enabled(world, 0, Position), false);
 }
 
 void Toggle_is_0_component_disabled(void) {
@@ -60,7 +60,7 @@ void Toggle_is_nonexist_component_disabled(void) {
 
     ecs_entity_t e = ecs_new(world, Velocity);
 
-    test_bool(ecs_is_enabled_component(world, e, Position), false);
+    test_bool(ecs_is_enabled(world, e, Position), false);
 
     ecs_fini(world);
 }
@@ -73,7 +73,7 @@ void Toggle_is_enabled_component_enabled(void) {
     ecs_entity_t e = ecs_new_id(world);
 
     ecs_enable_component(world, e, Position, true);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
 
     ecs_fini(world);
 }
@@ -86,7 +86,7 @@ void Toggle_is_disabled_component_enabled(void) {
     ecs_entity_t e = ecs_new_id(world);
 
     ecs_enable_component(world, e, Position, false);
-    test_bool(ecs_is_enabled_component(world, e, Position), false);
+    test_bool(ecs_is_enabled(world, e, Position), false);
 
     ecs_fini(world);
 }
@@ -113,10 +113,10 @@ void Toggle_is_enabled_after_add(void) {
     ecs_entity_t e = ecs_new_id(world);
 
     ecs_enable_component(world, e, Position, true);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
 
     ecs_add(world, e, Position);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
     test_bool(ecs_has_id(world, e, ECS_TOGGLE | ecs_id(Position)), true);
     test_bool(ecs_has(world, e, Position), true);
 
@@ -131,10 +131,10 @@ void Toggle_is_enabled_after_remove(void) {
     ecs_entity_t e = ecs_new(world, Position);
 
     ecs_enable_component(world, e, Position, true);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
 
     ecs_remove(world, e, Position);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
     test_bool(ecs_has_id(world, e, ECS_TOGGLE | ecs_id(Position)), true);
     test_bool(ecs_has(world, e, Position), false);
 
@@ -149,13 +149,13 @@ void Toggle_is_enabled_after_disable(void) {
     ecs_entity_t e = ecs_new_id(world);
 
     ecs_enable_component(world, e, Position, true);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
 
     ecs_enable_component(world, e, Position, false);
-    test_bool(ecs_is_enabled_component(world, e, Position), false);
+    test_bool(ecs_is_enabled(world, e, Position), false);
 
     ecs_enable_component(world, e, Position, true);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
 
     ecs_fini(world);
 }
@@ -168,13 +168,13 @@ void Toggle_is_disabled_after_enable(void) {
     ecs_entity_t e = ecs_new_id(world);
 
     ecs_enable_component(world, e, Position, false);
-    test_bool(ecs_is_enabled_component(world, e, Position), false);
+    test_bool(ecs_is_enabled(world, e, Position), false);
 
     ecs_enable_component(world, e, Position, true);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
 
     ecs_enable_component(world, e, Position, false);
-    test_bool(ecs_is_enabled_component(world, e, Position), false);
+    test_bool(ecs_is_enabled(world, e, Position), false);
 
     ecs_fini(world);
 }
@@ -196,7 +196,7 @@ void Toggle_is_enabled_randomized(void) {
 
     for (i = 0; i < 100000; i ++) {
         test_bool(
-            ecs_is_enabled_component(world, entities[i], Position), enabled[i]);
+            ecs_is_enabled(world, entities[i], Position), enabled[i]);
     }
 
     ecs_fini(world);
@@ -223,7 +223,7 @@ void Toggle_is_enabled_after_add_randomized(void) {
 
     for (i = 0; i < 100000; i ++) {
         test_bool(
-            ecs_is_enabled_component(world, entities[i], Position), enabled[i]);
+            ecs_is_enabled(world, entities[i], Position), enabled[i]);
     }
 
     ecs_fini(world);
@@ -252,7 +252,7 @@ void Toggle_is_enabled_after_randomized_add_randomized(void) {
 
     for (i = 0; i < 100000; i ++) {
         test_bool(
-            ecs_is_enabled_component(world, entities[i], Position), enabled[i]);
+            ecs_is_enabled(world, entities[i], Position), enabled[i]);
     }
 
     ecs_fini(world);
@@ -267,11 +267,11 @@ void Toggle_is_enabled_2(void) {
     ecs_entity_t e = ecs_new(world, 0);
 
     ecs_enable_component(world, e, Position, true);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
 
     ecs_enable_component(world, e, Velocity, false);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
-    test_bool(ecs_is_enabled_component(world, e, Velocity), false);
+    test_bool(ecs_is_enabled(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Velocity), false);
 
     ecs_fini(world);
 }
@@ -286,16 +286,16 @@ void Toggle_is_enabled_3(void) {
     ecs_entity_t e = ecs_new(world, 0);
 
     ecs_enable_component(world, e, Position, true);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
 
     ecs_enable_component(world, e, Velocity, false);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
-    test_bool(ecs_is_enabled_component(world, e, Velocity), false);
+    test_bool(ecs_is_enabled(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Velocity), false);
 
     ecs_enable_component(world, e, Mass, true);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
-    test_bool(ecs_is_enabled_component(world, e, Velocity), false);
-    test_bool(ecs_is_enabled_component(world, e, Mass), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Velocity), false);
+    test_bool(ecs_is_enabled(world, e, Mass), true);
 
     ecs_fini(world);
 }
@@ -309,15 +309,15 @@ void Toggle_is_enabled_2_after_add(void) {
     ecs_entity_t e = ecs_new(world, 0);
 
     ecs_enable_component(world, e, Position, true);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
 
     ecs_enable_component(world, e, Velocity, false);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
-    test_bool(ecs_is_enabled_component(world, e, Velocity), false);
+    test_bool(ecs_is_enabled(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Velocity), false);
 
     ecs_add(world, e, Position);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
-    test_bool(ecs_is_enabled_component(world, e, Velocity), false);    
+    test_bool(ecs_is_enabled(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Velocity), false);    
 
     ecs_fini(world);
 }
@@ -332,21 +332,21 @@ void Toggle_is_enabled_3_after_add(void) {
     ecs_entity_t e = ecs_new(world, 0);
 
     ecs_enable_component(world, e, Position, true);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
 
     ecs_enable_component(world, e, Velocity, false);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
-    test_bool(ecs_is_enabled_component(world, e, Velocity), false);
+    test_bool(ecs_is_enabled(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Velocity), false);
 
     ecs_enable_component(world, e, Mass, true);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
-    test_bool(ecs_is_enabled_component(world, e, Velocity), false);
-    test_bool(ecs_is_enabled_component(world, e, Mass), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Velocity), false);
+    test_bool(ecs_is_enabled(world, e, Mass), true);
 
     ecs_add(world, e, Position);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
-    test_bool(ecs_is_enabled_component(world, e, Velocity), false);
-    test_bool(ecs_is_enabled_component(world, e, Mass), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Velocity), false);
+    test_bool(ecs_is_enabled(world, e, Mass), true);
 
     ecs_fini(world);
 }
@@ -588,14 +588,14 @@ void Toggle_defer_enable(void) {
     ECS_COMPONENT(world, Position);
 
     ecs_entity_t e = ecs_new(world, Position);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
 
     ecs_defer_begin(world);
     ecs_enable_component(world, e, Position, false);
-    test_bool(ecs_is_enabled_component(world, e, Position), true);
+    test_bool(ecs_is_enabled(world, e, Position), true);
     ecs_defer_end(world);
 
-    test_bool(ecs_is_enabled_component(world, e, Position), false);
+    test_bool(ecs_is_enabled(world, e, Position), false);
 
     ecs_fini(world);
 }

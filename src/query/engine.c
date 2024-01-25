@@ -1,6 +1,6 @@
 /**
  * @file addons/rules/engine.c
- * @brief Rules engine implementation.
+ * @brief Query engine implementation.
  */
 
 #include "../private_api.h"
@@ -2190,21 +2190,10 @@ bool flecs_query_toggle_cmp(
     const ecs_query_op_t *op,
     bool redo,
     ecs_query_run_ctx_t *ctx,
+    ecs_table_range_t *range,
     bool not)
 {
-    ecs_table_range_t *range = &ctx->vars[0].range;
     ecs_table_t *table = range->table;
-
-    /* If table doesn't have toggle columns, all results match. */
-    if (!(table->flags & EcsTableHasToggle)) {
-        if (not) {
-            /* If this is a not operator, none of the results match */
-            return false;
-        } else {
-            return !redo;
-        }
-    }
-
     if (table && !range->count) {
         range->count = ecs_table_count(table);
     }
@@ -2214,33 +2203,36 @@ bool flecs_query_toggle_cmp(
     const ecs_query_t *q = &rule->pub;
     int32_t i, j, field_count = q->field_count;
     ecs_flags64_t data_fields = op->src.entity; /* Bitset with fields to set */
-    
-    int32_t block_index, row, end;
+    ecs_iter_t *it = ctx->it;
+
+    int32_t first, last, block_index, cur;
     uint64_t block;
     if (!redo) {
         op_ctx->range = *range;
-        row = op_ctx->row = range->offset;
-        end = op_ctx->end = 0;
+        op_ctx->not_field = -1;
+        cur = op_ctx->cur = range->offset;
         block_index = op_ctx->block_index = -1;
+        first = range->offset;
+        last = range->offset + range->count;
     } else {
         if (!op_ctx->has_bitset) {
             goto done;
         }
 
-        ecs_assert(op_ctx->end <= op_ctx->range.offset + op_ctx->range.count, 
-            ECS_INTERNAL_ERROR, NULL);
-        if (op_ctx->end == (op_ctx->range.offset + op_ctx->range.count)) {
+        last = op_ctx->range.offset + op_ctx->range.count;
+        cur = op_ctx->cur;
+        ecs_assert(cur <= last, ECS_INTERNAL_ERROR, NULL);
+        if (cur == last) {
             goto done;
         }
 
+        first = cur;
         block_index = op_ctx->block_index;
-        end = op_ctx->end;
         block = op_ctx->block;
     }
 
-    /* If end of last iteration is start of new block, compute new block */
-    int32_t new_block_index = end / 64;
-    ecs_iter_t *it = ctx->it;
+    /* If end of last iteration is start of new block, compute new block */    
+    int32_t new_block_index = cur / 64, row = first;    
     bool has_bitset = false;
 
     if (new_block_index != block_index) {
@@ -2268,8 +2260,20 @@ compute_block:
             }
 
             if (not) {
+                if (!redo) {
+                    /* Store old column value so we can restore it later */
+                    op_ctx->not_column = it->columns[i];
+                    op_ctx->not_field = i;
+                }
+
                 /* Unset column */
                 it->columns[i] = 0;
+
+                /* Not toggle operations only operate on a single field */
+                ecs_assert((data_fields & ~(ecs_flags64_t)(1llu << i)) == 0, 
+                    ECS_INTERNAL_ERROR, NULL);
+                
+                break;
             }
         }
 
@@ -2284,15 +2288,21 @@ compute_block:
 
         /* No enabled bits */
         if (!block) {
+            if (not) {
+                /* No enabled bits, so all entities match */
+                row = block_index * 64;
+                cur = row + 64;
+                goto yield;
+            }
 next_block:
             new_block_index ++;
-            end = new_block_index * 64;
-            if (end >= (op_ctx->range.offset + op_ctx->range.count)) {
+            cur = new_block_index * 64;
+            if (cur >= last) {
                 /* No more rows */
                 goto done;
             }
 
-            op_ctx->end = end;
+            op_ctx->cur = cur;
             goto compute_block;
         }
 
@@ -2300,11 +2310,15 @@ next_block:
     }
 
     /* Find first enabled bit (TODO: use faster bitmagic) */
-    int32_t first_bit = end - (block_index * 64);
+    int32_t first_bit = cur - (block_index * 64);
+    int32_t last_bit = ECS_MIN(64, last - (block_index * 64));
     ecs_assert(first_bit >= 0, ECS_INTERNAL_ERROR, NULL);
     ecs_assert(first_bit < 64, ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(last_bit >= 0, ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(last_bit <= 64, ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(last_bit >= first_bit, ECS_INTERNAL_ERROR, NULL);
 
-    for (i = first_bit; i < 64; i ++) {
+    for (i = first_bit; i < last_bit; i ++) {
         uint64_t bit = (1ull << i);
         bool cond = 0 != (block & bit);
         if (not) {
@@ -2312,7 +2326,7 @@ next_block:
         }
         if (cond) {
             /* Find last enabled bit */
-            for (j = i; j < 64; j ++) {
+            for (j = i; j < last_bit; j ++) {
                 bit = (1ull << j);
                 cond = !(block & bit);
                 if (not) {
@@ -2324,27 +2338,37 @@ next_block:
             }
 
             row = i + (block_index * 64);
-            end = j + (block_index * 64);
+            cur = j + (block_index * 64);
             break;
         }
     }
 
-    if (i == 64) {
+    if (i == last_bit) {
         goto next_block;
     }
 
-    op_ctx->row = row;
-    op_ctx->end = end;
+yield:
+    ecs_assert(row >= first, ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(cur <= last, ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(cur >= first, ECS_INTERNAL_ERROR, NULL);
 
+    op_ctx->cur = cur;
     range->offset = row;
-    range->count = end - row;
+    range->count = cur - row;
     if (!range->count) {
         goto done;
     }
 
     return true;
 done:
+    /* Restore range */
     *range = op_ctx->range;
+
+    /* Restore column, which in the case of a nottoggle operation was unset */
+    if (not && op_ctx->not_field != -1) {
+        it->columns[op_ctx->not_field] = op_ctx->not_column;
+    }
+
     return false;
 }
 
@@ -2354,8 +2378,15 @@ bool flecs_query_toggle(
     bool redo,
     ecs_query_run_ctx_t *ctx)
 {
-    return flecs_query_toggle_cmp(op, redo, ctx, false);
+    ecs_table_range_t *range = &ctx->vars[0].range;
+    ecs_table_t *table = range->table;
 
+    /* If table doesn't have toggle columns, all results match. */
+    if (!(table->flags & EcsTableHasToggle)) {
+        return !redo;
+    }
+
+    return flecs_query_toggle_cmp(op, redo, ctx, range, false);
 }
 
 static
@@ -2364,7 +2395,51 @@ bool flecs_query_not_toggle(
     bool redo,
     ecs_query_run_ctx_t *ctx)
 {
-    return flecs_query_toggle_cmp(op, redo, ctx, true);
+    ecs_table_range_t *range = &ctx->vars[0].range;
+    ecs_table_t *table = range->table;
+
+    /* If this is a not operator, none of the results match */
+    if (!(table->flags & EcsTableHasToggle)) {
+        return false;
+    }
+
+    return flecs_query_toggle_cmp(op, redo, ctx, range, true);
+}
+
+static
+bool flecs_query_any_toggle(
+    const ecs_query_op_t *op,
+    bool redo,
+    ecs_query_run_ctx_t *ctx)
+{
+    ecs_query_toggle_ctx_t *op_ctx = flecs_op_ctx(ctx, toggle);
+    ecs_table_range_t *range = &ctx->vars[0].range;
+    ecs_table_t *table = range->table;
+
+    /* If table doesn't have toggle columns, all results match. */
+    if (!(table->flags & EcsTableHasToggle)) {
+        return !redo;
+    }
+
+    if (!redo) {
+        /* Start with enabled columns */
+        op_ctx->is_not_toggle = false;
+    }
+
+repeat: {}
+    bool result = flecs_query_toggle_cmp(
+        op, redo, ctx, range, op_ctx->is_not_toggle);
+    if (result) {
+        return true;
+    }
+
+    if (!op_ctx->is_not_toggle) {
+        op_ctx->is_not_toggle = true;
+        redo = false;
+        goto repeat;
+    }
+
+    return false;
 }
 
 static
@@ -2919,7 +2994,8 @@ bool flecs_query_if_var(
         }
     }
 
-    return flecs_query_run_block_w_reset(op, redo, ctx);
+    ecs_query_ctrl_ctx_t *op_ctx = flecs_op_ctx(ctx, ctrl);
+    return flecs_query_run_block(redo, ctx, op_ctx);
 }
 
 static
@@ -2940,7 +3016,7 @@ bool flecs_query_if_set(
         return !redo;
     }
 
-    return flecs_query_run_block_w_reset(op, redo, ctx);
+    return flecs_query_run_block(redo, ctx, op_ctx);
 }
 
 static
@@ -3142,6 +3218,7 @@ bool flecs_query_dispatch(
     case EcsRuleMemberNeq: return flecs_query_member_neq(op, redo, ctx);
     case EcsRuleToggle: return flecs_query_toggle(op, redo, ctx);
     case EcsRuleNotToggle: return flecs_query_not_toggle(op, redo, ctx);
+    case EcsRuleAnyToggle: return flecs_query_any_toggle(op, redo, ctx);
     case EcsRuleLookup: return flecs_query_lookup(op, redo, ctx);
     case EcsRuleSetVars: return flecs_query_setvars(op, redo, ctx);
     case EcsRuleSetThis: return flecs_query_setthis(op, redo, ctx);
@@ -3385,6 +3462,7 @@ bool ecs_query_next_instanced(
         ecs_assert(ops[ctx.op_index].kind == EcsRuleYield, 
             ECS_INTERNAL_ERROR, NULL);
         flecs_query_set_iter_this(it, &ctx);
+        ecs_assert(it->count >= 0, ECS_INTERNAL_ERROR, NULL);
         qit->op = flecs_itolbl(ctx.op_index - 1);
         return true;
     }

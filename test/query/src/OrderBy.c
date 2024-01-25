@@ -1919,3 +1919,15 @@ void OrderBy_sort_by_wildcard(void) {
         .order_by = compare_position
     });
 }
+
+void OrderBy_sort_not_term(void) {
+    // Implement testcase
+}
+
+void OrderBy_sort_or_term(void) {
+    // Implement testcase
+}
+
+void OrderBy_sort_optional_term(void) {
+    // Implement testcase
+}

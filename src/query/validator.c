@@ -1091,6 +1091,12 @@ int flecs_query_finalize_terms(
             first_id == EcsPredLookup)
         {
             q->flags |= EcsQueryHasPred;
+        } else {
+            if (!ecs_term_match_0(term) && term->oper != EcsNot && 
+                term->oper != EcsNotFrom) 
+            {
+                q->set_fields |= (1llu << term->field_index);
+            }
         }
 
         if (first_id == EcsScopeOpen) {
@@ -1111,6 +1117,7 @@ int flecs_query_finalize_terms(
             q->flags |= EcsQueryHasScopes;
             scope_nesting --;
         }
+
         if (scope_nesting < 0) {
             flecs_query_validator_error(&ctx, "'}' without matching '{'");
         }

@@ -547,6 +547,7 @@ void flecs_query_cache_set_table_match(
     ecs_os_memcpy_n(qm->columns, it->columns, int32_t, field_count);
     ecs_os_memcpy_n(qm->ids, it->ids, ecs_id_t, field_count);
     ecs_os_memcpy_n(qm->sources, it->sources, ecs_entity_t, field_count);
+    qm->set_fields = it->set_fields;
 
     if (table) {
         /* Initialize storage columns for faster access to component storage */

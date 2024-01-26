@@ -1129,11 +1129,12 @@ void Cached_query_rematch_optional_after_add(void) {
         test_assert(p != NULL);
         
         if (it.entities[0] == e1) {
+            test_assert(ecs_field_is_set(&it, 2));
             test_assert(v != NULL);
         } else if (it.entities[0] == e2) {
-            test_assert(v == NULL);
+            test_assert(!ecs_field_is_set(&it, 2));
         } else if (it.entities[0] == e3) {
-            test_assert(v == NULL);
+            test_assert(!ecs_field_is_set(&it, 2));
         }
 
         count ++;

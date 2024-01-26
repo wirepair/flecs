@@ -116,7 +116,7 @@ void Plan_2_trivial_plan(void) {
 
     const char *expect = 
     HEAD " 0. [-1,  1]  setids      " 
-    LINE " 1. [ 0,  2]  triv        [0,1]"
+    LINE " 1. [ 0,  2]  triv        {0,1}"
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -145,7 +145,7 @@ void Plan_1_trivial_plan_component(void) {
     const char *expect = 
     HEAD " 0. [-1,  1]  setids      " 
     LINE " 1. [ 0,  2]  andid       $[this]           (Position)"
-    LINE " 2. [ 1,  3]  popself     [0]"
+    LINE " 2. [ 1,  3]  popself     {0}"
     LINE " 3. [ 2,  4]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -174,7 +174,7 @@ void Plan_2_trivial_plan_component(void) {
 
     const char *expect = 
     HEAD " 0. [-1,  1]  setids      " 
-    LINE " 1. [ 0,  2]  trivpop     [0,1]"
+    LINE " 1. [ 0,  2]  trivpop     {0,1}"
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -205,7 +205,7 @@ void Plan_3_trivial_plan_w_pair(void) {
 
     const char *expect = 
     HEAD " 0. [-1,  1]  setids      " 
-    LINE " 1. [ 0,  2]  triv        [0,1,2]"
+    LINE " 1. [ 0,  2]  triv        {0,1,2}"
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -236,7 +236,7 @@ void Plan_3_trivial_plan_w_wildcard(void) {
 
     const char *expect = 
     HEAD " 0. [-1,  1]  setids      " 
-    LINE " 1. [ 0,  2]  trivwc      [0,1,2]"
+    LINE " 1. [ 0,  2]  trivwc      {0,1,2}"
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -267,7 +267,7 @@ void Plan_3_trivial_plan_w_any(void) {
 
     const char *expect = 
     HEAD " 0. [-1,  1]  setids      " 
-    LINE " 1. [ 0,  2]  triv        [0,1]"
+    LINE " 1. [ 0,  2]  triv        {0,1}"
     LINE " 2. [ 1,  3]  andany      $[this]           (ChildOf, $_'1)"
     LINE " 3. [ 2,  4]  yield       "
     LINE "";
@@ -299,7 +299,7 @@ void Plan_3_trivial_plan_w_pair_component(void) {
 
     const char *expect = 
     HEAD " 0. [-1,  1]  setids      " 
-    LINE " 1. [ 0,  2]  trivpop     [0,1,2]"
+    LINE " 1. [ 0,  2]  trivpop     {0,1,2}"
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -330,7 +330,7 @@ void Plan_3_trivial_plan_w_wildcard_component(void) {
 
     const char *expect = 
     HEAD " 0. [-1,  1]  setids      " 
-    LINE " 1. [ 0,  2]  trivwc      [0,1,2]"
+    LINE " 1. [ 0,  2]  trivwc      {0,1,2}"
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -361,7 +361,7 @@ void Plan_3_trivial_plan_w_any_component(void) {
 
     const char *expect = 
     HEAD " 0. [-1,  1]  setids      " 
-    LINE " 1. [ 0,  2]  trivpop     [0,1]"
+    LINE " 1. [ 0,  2]  trivpop     {0,1}"
     LINE " 2. [ 1,  3]  andany      $[this]           (ChildOf, $_'1)"
     LINE " 3. [ 2,  4]  yield       "
     LINE "";
@@ -424,7 +424,7 @@ void Plan_2_trivial_component_w_none(void) {
 
     const char *expect = 
     HEAD " 0. [-1,  1]  setids      " 
-    LINE " 1. [ 0,  2]  triv        [0,1]"
+    LINE " 1. [ 0,  2]  triv        {0,1}"
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -452,7 +452,7 @@ void Plan_2_trivial_plan_w_wildcard(void) {
 
     const char *expect = 
     HEAD " 0. [-1,  1]  setids      " 
-    LINE " 1. [ 0,  2]  trivwc      [0,1]"
+    LINE " 1. [ 0,  2]  trivwc      {0,1}"
     LINE " 2. [ 1,  3]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -798,7 +798,7 @@ void Plan_populate_1_fixed(void) {
     HEAD " 0. [-1,  1]  setfix      "
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
-    LINE " 3. [ 2,  4]  pop         [0]"
+    LINE " 3. [ 2,  4]  pop         {0}"
     LINE " 4. [ 3,  5]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -832,7 +832,7 @@ void Plan_populate_2_fixed(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,1]"
+    LINE " 4. [ 3,  5]  pop         {0,1}"
     LINE " 5. [ 4,  6]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -865,9 +865,9 @@ void Plan_populate_1_fixed_1_this_self(void) {
     HEAD " 0. [-1,  1]  setfix      "
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
-    LINE " 3. [ 2,  4]  pop         [0]"
+    LINE " 3. [ 2,  4]  pop         {0}"
     LINE " 4. [ 3,  5]  andid       $[this]           (Velocity)"
-    LINE " 5. [ 4,  6]  popself     [1]"
+    LINE " 5. [ 4,  6]  popself     {1}"
     LINE " 6. [ 5,  7]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -903,8 +903,8 @@ void Plan_populate_2_fixed_2_this_self(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,1]"
-    LINE " 5. [ 4,  6]  trivpop     [2,3]"
+    LINE " 4. [ 3,  5]  pop         {0,1}"
+    LINE " 5. [ 4,  6]  trivpop     {2,3}"
     LINE " 6. [ 5,  7]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -940,8 +940,8 @@ void Plan_populate_2_fixed_2_this_self_interleaved(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,2]"
-    LINE " 5. [ 4,  6]  trivpop     [1,3]"
+    LINE " 4. [ 3,  5]  pop         {0,2}"
+    LINE " 5. [ 4,  6]  trivpop     {1,3}"
     LINE " 6. [ 5,  7]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -977,8 +977,8 @@ void Plan_populate_2_this_self_2_fixed(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [2,3]"
-    LINE " 5. [ 4,  6]  trivpop     [0,1]"
+    LINE " 4. [ 3,  5]  pop         {2,3}"
+    LINE " 5. [ 4,  6]  trivpop     {0,1}"
     LINE " 6. [ 5,  7]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -1011,9 +1011,9 @@ void Plan_populate_1_fixed_1_this_up(void) {
     HEAD " 0. [-1,  1]  setfix      "
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
-    LINE " 3. [ 2,  4]  pop         [0]"
+    LINE " 3. [ 2,  4]  pop         {0}"
     LINE " 4. [ 3,  5]  upid        $[this]           (Velocity)"
-    LINE " 5. [ 4,  6]  pop         [1]"
+    LINE " 5. [ 4,  6]  pop         {1}"
     LINE " 6. [ 5,  7]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -1049,10 +1049,10 @@ void Plan_populate_2_fixed_2_this_up(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,1]"
+    LINE " 4. [ 3,  5]  pop         {0,1}"
     LINE " 5. [ 4,  6]  upid        $[this]           (Mass)"
     LINE " 6. [ 5,  7]  upid        $[this]           (Rotation)"
-    LINE " 7. [ 6,  8]  pop         [2,3]"
+    LINE " 7. [ 6,  8]  pop         {2,3}"
     LINE " 8. [ 7,  9]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -1088,10 +1088,10 @@ void Plan_populate_2_fixed_2_this_up_interleaved(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,2]"
+    LINE " 4. [ 3,  5]  pop         {0,2}"
     LINE " 5. [ 4,  6]  upid        $[this]           (Mass)"
     LINE " 6. [ 5,  7]  upid        $[this]           (Rotation)"
-    LINE " 7. [ 6,  8]  pop         [1,3]"
+    LINE " 7. [ 6,  8]  pop         {1,3}"
     LINE " 8. [ 7,  9]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -1127,10 +1127,10 @@ void Plan_populate_2_this_up_2_fixed(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [2,3]"
+    LINE " 4. [ 3,  5]  pop         {2,3}"
     LINE " 5. [ 4,  6]  upid        $[this]           (Mass)"
     LINE " 6. [ 5,  7]  upid        $[this]           (Rotation)"
-    LINE " 7. [ 6,  8]  pop         [0,1]"
+    LINE " 7. [ 6,  8]  pop         {0,1}"
     LINE " 8. [ 7,  9]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -1166,7 +1166,7 @@ void Plan_populate_1_fixed_1_this_self_cached(void) {
     HEAD " 0. [-1,  1]  setfix      "
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
-    LINE " 3. [ 2,  4]  pop         [0]"
+    LINE " 3. [ 2,  4]  pop         {0}"
     LINE " 4. [ 3,  5]  cachepop    "
     LINE " 5. [ 4,  6]  yield       "
     LINE "";
@@ -1204,7 +1204,7 @@ void Plan_populate_2_fixed_2_this_self_cached(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,1]"
+    LINE " 4. [ 3,  5]  pop         {0,1}"
     LINE " 5. [ 4,  6]  cachepop    "
     LINE " 6. [ 5,  7]  yield       "
     LINE "";
@@ -1242,7 +1242,7 @@ void Plan_populate_2_fixed_2_this_self_interleaved_cached(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,2]"
+    LINE " 4. [ 3,  5]  pop         {0,2}"
     LINE " 5. [ 4,  6]  cachepop    "
     LINE " 6. [ 5,  7]  yield       "
     LINE "";
@@ -1280,7 +1280,7 @@ void Plan_populate_2_this_self_2_fixed_cached(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [2,3]"
+    LINE " 4. [ 3,  5]  pop         {2,3}"
     LINE " 5. [ 4,  6]  cachepop    "
     LINE " 6. [ 5,  7]  yield       "
     LINE "";
@@ -1317,7 +1317,7 @@ void Plan_populate_1_fixed_1_this_up_cached(void) {
     HEAD " 0. [-1,  1]  setfix      "
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
-    LINE " 3. [ 2,  4]  pop         [0]"
+    LINE " 3. [ 2,  4]  pop         {0}"
     LINE " 4. [ 3,  5]  cachepop    "
     LINE " 5. [ 4,  6]  yield       "
     LINE "";
@@ -1355,7 +1355,7 @@ void Plan_populate_2_fixed_2_this_up_cached(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,1]"
+    LINE " 4. [ 3,  5]  pop         {0,1}"
     LINE " 5. [ 4,  6]  cachepop    "
     LINE " 6. [ 5,  7]  yield       "
     LINE "";
@@ -1393,7 +1393,7 @@ void Plan_populate_2_fixed_2_this_up_interleaved_cached(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,2]"
+    LINE " 4. [ 3,  5]  pop         {0,2}"
     LINE " 5. [ 4,  6]  cachepop    "
     LINE " 6. [ 5,  7]  yield       "
     LINE "";
@@ -1431,7 +1431,7 @@ void Plan_populate_2_this_up_2_fixed_cached(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [2,3]"
+    LINE " 4. [ 3,  5]  pop         {2,3}"
     LINE " 5. [ 4,  6]  cachepop    "
     LINE " 6. [ 5,  7]  yield       "
     LINE "";
@@ -1468,11 +1468,11 @@ void Plan_populate_1_fixed_1_var_self(void) {
     HEAD " 0. [-1,  1]  setfix      "
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
-    LINE " 3. [ 2,  4]  pop         [0]"
+    LINE " 3. [ 2,  4]  pop         {0}"
     LINE " 4. [ 3,  5]  andid       $[var]            (Velocity)"
     LINE " 5. [ 4,  6]  each        $var              ($[var])"
     LINE " 6. [ 5,  7]  setvars     "
-    LINE " 7. [ 6,  8]  pop         [1]"
+    LINE " 7. [ 6,  8]  pop         {1}"
     LINE " 8. [ 7,  9]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -1509,12 +1509,12 @@ void Plan_populate_2_fixed_2_var_self(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,1]"
+    LINE " 4. [ 3,  5]  pop         {0,1}"
     LINE " 5. [ 4,  6]  andid       $[var]            (Mass)"
     LINE " 6. [ 5,  7]  andid       $[var]            (Rotation)"
     LINE " 7. [ 6,  8]  each        $var              ($[var])"
     LINE " 8. [ 7,  9]  setvars     "
-    LINE " 9. [ 8, 10]  pop         [2,3]"
+    LINE " 9. [ 8, 10]  pop         {2,3}"
     LINE "10. [ 9, 11]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -1551,12 +1551,12 @@ void Plan_populate_2_fixed_2_var_self_interleaved(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,2]"
+    LINE " 4. [ 3,  5]  pop         {0,2}"
     LINE " 5. [ 4,  6]  andid       $[var]            (Mass)"
     LINE " 6. [ 5,  7]  andid       $[var]            (Rotation)"
     LINE " 7. [ 6,  8]  each        $var              ($[var])"
     LINE " 8. [ 7,  9]  setvars     "
-    LINE " 9. [ 8, 10]  pop         [1,3]"
+    LINE " 9. [ 8, 10]  pop         {1,3}"
     LINE "10. [ 9, 11]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -1593,12 +1593,12 @@ void Plan_populate_2_var_self_2_fixed(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [2,3]"
+    LINE " 4. [ 3,  5]  pop         {2,3}"
     LINE " 5. [ 4,  6]  andid       $[var]            (Mass)"
     LINE " 6. [ 5,  7]  andid       $[var]            (Rotation)"
     LINE " 7. [ 6,  8]  each        $var              ($[var])"
     LINE " 8. [ 7,  9]  setvars     "
-    LINE " 9. [ 8, 10]  pop         [0,1]"
+    LINE " 9. [ 8, 10]  pop         {0,1}"
     LINE "10. [ 9, 11]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -1634,11 +1634,11 @@ void Plan_populate_1_fixed_1_var_up(void) {
     HEAD " 0. [-1,  1]  setfix      "
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
-    LINE " 3. [ 2,  4]  pop         [0]"
+    LINE " 3. [ 2,  4]  pop         {0}"
     LINE " 4. [ 3,  5]  upid        $[var]            (Velocity)"
     LINE " 5. [ 4,  6]  each        $var              ($[var])"
     LINE " 6. [ 5,  7]  setvars     "
-    LINE " 7. [ 6,  8]  pop         [1]"
+    LINE " 7. [ 6,  8]  pop         {1}"
     LINE " 8. [ 7,  9]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -1675,12 +1675,12 @@ void Plan_populate_2_fixed_2_var_up(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,1]"
+    LINE " 4. [ 3,  5]  pop         {0,1}"
     LINE " 5. [ 4,  6]  upid        $[var]            (Mass)"
     LINE " 6. [ 5,  7]  upid        $[var]            (Rotation)"
     LINE " 7. [ 6,  8]  each        $var              ($[var])"
     LINE " 8. [ 7,  9]  setvars     "
-    LINE " 9. [ 8, 10]  pop         [2,3]"
+    LINE " 9. [ 8, 10]  pop         {2,3}"
     LINE "10. [ 9, 11]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -1717,12 +1717,12 @@ void Plan_populate_2_fixed_2_var_up_interleaved(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [0,2]"
+    LINE " 4. [ 3,  5]  pop         {0,2}"
     LINE " 5. [ 4,  6]  upid        $[var]            (Mass)"
     LINE " 6. [ 5,  7]  upid        $[var]            (Rotation)"
     LINE " 7. [ 6,  8]  each        $var              ($[var])"
     LINE " 8. [ 7,  9]  setvars     "
-    LINE " 9. [ 8, 10]  pop         [1,3]"
+    LINE " 9. [ 8, 10]  pop         {1,3}"
     LINE "10. [ 9, 11]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);
@@ -1759,12 +1759,12 @@ void Plan_populate_2_var_up_2_fixed(void) {
     LINE " 1. [ 0,  2]  setids      "
     LINE " 2. [ 1,  3]  selfupid    e                 (Position)"
     LINE " 3. [ 2,  4]  selfupid    e                 (Velocity)"
-    LINE " 4. [ 3,  5]  pop         [2,3]"
+    LINE " 4. [ 3,  5]  pop         {2,3}"
     LINE " 5. [ 4,  6]  upid        $[var]            (Mass)"
     LINE " 6. [ 5,  7]  upid        $[var]            (Rotation)"
     LINE " 7. [ 6,  8]  each        $var              ($[var])"
     LINE " 8. [ 7,  9]  setvars     "
-    LINE " 9. [ 8, 10]  pop         [0,1]"
+    LINE " 9. [ 8, 10]  pop         {0,1}"
     LINE "10. [ 9, 11]  yield       "
     LINE "";
     char *plan = ecs_query_plan(r);

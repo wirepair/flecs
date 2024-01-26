@@ -214,8 +214,6 @@ const char* flecs_query_op_str(
     case EcsRuleMemberEq:      return "membereq  ";
     case EcsRuleMemberNeq:     return "memberneq ";
     case EcsRuleToggle:        return "toggle    ";
-    case EcsRuleNotToggle:     return "nottoggle ";
-    case EcsRuleAnyToggle:     return "anytoggle ";
     case EcsRuleLookup:        return "lookup    ";
     case EcsRuleSetVars:       return "setvars   ";
     case EcsRuleSetThis:       return "setthis   ";
@@ -279,6 +277,20 @@ int32_t flecs_query_op_ref_str(
     return color_chars;
 }
 
+void flecs_query_str_append_bitset(
+    ecs_strbuf_t *buf,
+    ecs_flags64_t bitset)
+{
+    ecs_strbuf_list_push(buf, "{", ",");
+    int8_t b;
+    for (b = 0; b < 64; b ++) {
+        if (bitset & (1llu << b)) {
+            ecs_strbuf_list_append(buf, "%d", b);
+        }
+    }
+    ecs_strbuf_list_pop(buf, "}");
+}
+
 char* ecs_query_str_w_profile(
     const ecs_query_t *q,
     const ecs_iter_t *it)
@@ -338,21 +350,9 @@ char* ecs_query_str_w_profile(
             op->kind == EcsRulePopulateSelf ||
             op->kind == EcsRuleTriv ||
             op->kind == EcsRuleTrivData ||
-            op->kind == EcsRuleTrivWildcard ||
-            op->kind == EcsRuleToggle ||
-            op->kind == EcsRuleNotToggle ||
-            op->kind == EcsRuleAnyToggle)
+            op->kind == EcsRuleTrivWildcard)
         {
-            ecs_flags64_t fieldset = op->src.entity;
-            int32_t f;
-
-            ecs_strbuf_list_push(&buf, "[", ",");
-            for (f = 0; f < q->field_count; f ++) {
-                if (fieldset & (1llu << f)) {
-                    ecs_strbuf_list_append(&buf, "%d", f);
-                }
-            }
-            ecs_strbuf_list_pop(&buf, "]");
+            flecs_query_str_append_bitset(&buf, op->src.entity);
         }
 
         if (op->kind == EcsRuleIfSet) {
@@ -360,7 +360,7 @@ char* ecs_query_str_w_profile(
             continue;
         }
 
-        if (!first_flags && !second_flags) {
+        if (!first_flags && !second_flags && (op->kind != EcsRuleToggle)) {
             ecs_strbuf_appendstr(&buf, "\n");
             continue;
         }
@@ -370,7 +370,16 @@ char* ecs_query_str_w_profile(
             ecs_strbuf_appendch(&buf, ' ');
         }
 
-        if (!first_flags && !second_flags) {
+        if (op->kind == EcsRuleToggle) {
+            if (op->first.entity) {
+                flecs_query_str_append_bitset(&buf, op->first.entity);
+            }
+            if (op->second.entity) {
+                if (op->first.entity) {
+                    ecs_strbuf_appendlit(&buf, ", !");
+                }
+                flecs_query_str_append_bitset(&buf, op->second.entity);
+            }
             ecs_strbuf_appendstr(&buf, "\n");
             continue;
         }

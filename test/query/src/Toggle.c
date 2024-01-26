@@ -3314,6 +3314,8 @@ void Toggle_this_written_toggle_w_2_not_toggle(void) {
 
     test_assert(q != NULL);
 
+    printf("%s\n", ecs_query_plan(q));
+
     ecs_iter_t it = ecs_query_iter(world, q);
     test_bool(true, ecs_iter_next(&it));
     test_int(1, it.count);

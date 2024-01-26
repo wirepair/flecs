@@ -743,6 +743,7 @@ struct ecs_query_t {
     ecs_termset_t write_fields; /**< Fields that write data */
     ecs_termset_t read_fields;  /**< Fields that read data */
     ecs_termset_t shared_readonly_fields; /**< Fields that don't write shared data */
+    ecs_termset_t set_fields;   /**< Fields that will be set */
 
     ecs_query_cache_kind_t cache_kind;  /**< Caching policy of query */
 

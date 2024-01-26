@@ -79,8 +79,6 @@ typedef enum {
     EcsRuleMemberEq,       /* Compare member value */
     EcsRuleMemberNeq,      /* Compare member value */
     EcsRuleToggle,         /* Evaluate toggle bitset, if present */
-    EcsRuleNotToggle,      /* Toggle with Not operator */
-    EcsRuleAnyToggle,      /* Toggle with Optional operator */
     EcsRuleLookup,         /* Lookup relative to variable */
     EcsRuleSetVars,        /* Populate it.sources from variables */
     EcsRuleSetThis,        /* Populate This entity variable */
@@ -390,6 +388,7 @@ struct ecs_query_cache_table_match_t {
     ecs_id_t *ids;                   /* Resolved (component) ids for current table */
     ecs_entity_t *sources;           /* Subjects (sources) of ids */
     ecs_vec_t refs;                  /* Cached components for non-this terms */
+    ecs_flags64_t set_fields;        /* Fields that are set */
     uint64_t group_id;               /* Value used to organize tables in groups */
     int32_t *monitor;                /* Used to monitor table for changes */
     ecs_entity_filter_t *entity_filter; /* Entity specific filters */

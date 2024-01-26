@@ -751,54 +751,67 @@ int flecs_query_insert_toggle(
     ecs_query_compile_ctx_t *ctx)
 {
     ecs_query_t *q = &impl->pub;
-    int32_t i, term_count = q->term_count;
+    int32_t i, j, term_count = q->term_count;
     ecs_term_t *terms = q->terms;
-    ecs_flags64_t toggles = 0;
+    ecs_flags64_t and_toggles = 0;
+    ecs_flags64_t not_toggles = 0;
+    ecs_flags64_t optional_toggles = 0;
+    ecs_flags64_t fields_done = 0;
 
     for (i = 0; i < term_count; i ++) {
+        if (fields_done & (1llu << i)) {
+            continue;
+        }
+
         ecs_term_t *term = &terms[i];
         if (term->flags & EcsTermIsToggle) {
-            if (term->oper == EcsNot) {
-                /* Conditionally run toggle instruction if component was set */
-                ecs_query_op_t *if_op = flecs_query_begin_block(
-                    EcsRuleIfSet, ctx);
-                if_op->other = term->field_index;
+            ecs_query_op_t cur = {0};
+            flecs_query_compile_term_ref(NULL, impl, &cur, &term->src, 
+                &cur.src, EcsRuleSrc, EcsVarAny, ctx, false);
 
-                /* Use NotToggle, since we're interested in disabled entities */
+            for (j = i; j < term_count; j ++) {
+                if (fields_done & (1llu << j)) {
+                    continue;
+                }
+
+                /* Also includes term[i], so flags get set correctly */
+                term = &terms[j];
+
+                /* If term is not for the same src, skip */
+                ecs_query_op_t next = {0};
+                flecs_query_compile_term_ref(NULL, impl, &next, &term->src,
+                    &next.src, EcsRuleSrc, EcsVarAny, ctx, false);
+                if (next.src.entity != cur.src.entity || next.flags != cur.flags) {
+                    continue;
+                }
+
+                /* Source matches, set flag */
+                if (term->oper == EcsNot) {
+                    not_toggles |= (1llu << j);
+                } else if (term->oper == EcsOptional) {
+                    optional_toggles |= (1llu << j);
+                } else {
+                    and_toggles |= (1llu << j);
+                }
+
+                fields_done |= (1llu << j);
+            }
+
+            if (and_toggles || not_toggles || optional_toggles) {
                 ecs_query_op_t op = {0};
-                op.kind = EcsRuleNotToggle;
-                op.src.entity = (1llu << term->field_index);
+                op.kind = EcsRuleToggle;
+                op.src = cur.src;
+                op.flags = cur.flags;
+
+                /* Encode fields:
+                 * - first.entity is the fields that match enabled bits
+                 * - second.entity is the fields that match disabled bits
+                 */
+                op.first.entity = and_toggles | optional_toggles;
+                op.second.entity = not_toggles | optional_toggles;
                 flecs_query_op_insert(&op, ctx);
-
-                flecs_query_end_block(ctx, false);
-            } else if (term->oper == EcsOptional) {
-                /* Conditionally run toggle if field was set. */
-                ecs_query_op_t *if_op = flecs_query_begin_block(
-                    EcsRuleIfSet, ctx);
-                if_op->other = term->field_index;
-
-                /* We now need to take the union of the Toggle and NotToggle
-                 * operations. While we could just return all entities since 
-                 * they all technically match the query, this would return
-                 * a result in which the field is enabled for some entities, and
-                 * disabled for other entities. */
-                ecs_query_op_t op = {0};
-                op.kind = EcsRuleAnyToggle;
-                op.src.entity = (1llu << term->field_index);
-                flecs_query_op_insert(&op, ctx);
-
-                flecs_query_end_block(ctx, false);
-            } else {
-                toggles |= (1llu << term->field_index);
             }
         }
-    }
-
-    if (toggles) {
-        ecs_query_op_t op = {0};
-        op.kind = EcsRuleToggle;
-        op.src.entity = toggles; /* Abuse for bitset w/fields that can toggle */
-        flecs_query_op_insert(&op, ctx);
     }
 
     return 0;

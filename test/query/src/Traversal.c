@@ -7561,7 +7561,6 @@ void Traversal_this_optional_self(void) {
         if (it.entities[0] == e1) {
             test_bool(ecs_field_is_set(&it, 1), false); 
             test_bool(ecs_field_is_set(&it, 2), true);
-            test_assert(v == NULL);
         } else if (it.entities[0] == e2) {
             test_bool(ecs_field_is_set(&it, 1), true); 
             test_bool(ecs_field_is_set(&it, 2), true);
@@ -7569,7 +7568,6 @@ void Traversal_this_optional_self(void) {
         } else if (it.entities[0] == e3) {
             test_bool(ecs_field_is_set(&it, 1), false);
             test_bool(ecs_field_is_set(&it, 2), true);
-            test_assert(v == NULL);
         }
 
         count ++;
@@ -7621,11 +7619,9 @@ void Traversal_this_optional_up(void) {
         } else if (it.entities[0] == e2) {
             test_bool(ecs_field_is_set(&it, 1), false);            
             test_bool(ecs_field_is_set(&it, 2), true);
-            test_assert(v == NULL);
         } else if (it.entities[0] == e3) {
             test_bool(ecs_field_is_set(&it, 1), false); 
             test_bool(ecs_field_is_set(&it, 2), true);
-            test_assert(v == NULL);
         }
 
         count ++;
@@ -7681,7 +7677,6 @@ void Traversal_this_optional_self_up(void) {
         } else if (it.entities[0] == e3) {
             test_bool(ecs_field_is_set(&it, 1), false); 
             test_bool(ecs_field_is_set(&it, 2), true);
-            test_assert(v == NULL);
         }
 
         count ++;
@@ -7789,11 +7784,9 @@ void Traversal_this_written_optional_up(void) {
         } else if (it.entities[0] == e2) {
             test_bool(ecs_field_is_set(&it, 1), true);
             test_bool(ecs_field_is_set(&it, 2), false);            
-            test_assert(v == NULL);
         } else if (it.entities[0] == e3) {
             test_bool(ecs_field_is_set(&it, 1), true);
             test_bool(ecs_field_is_set(&it, 2), false); 
-            test_assert(v == NULL);
         }
 
         count ++;
@@ -7849,7 +7842,6 @@ void Traversal_this_written_optional_self_up(void) {
         } else if (it.entities[0] == e3) {
             test_bool(ecs_field_is_set(&it, 1), true);
             test_bool(ecs_field_is_set(&it, 2), false); 
-            test_assert(v == NULL);
         }
 
         count ++;

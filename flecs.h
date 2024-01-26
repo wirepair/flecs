@@ -3000,6 +3000,7 @@ struct ecs_query_t {
     ecs_termset_t write_fields; /**< Fields that write data */
     ecs_termset_t read_fields;  /**< Fields that read data */
     ecs_termset_t shared_readonly_fields; /**< Fields that don't write shared data */
+    ecs_termset_t set_fields;   /**< Fields that will be set */
 
     ecs_query_cache_kind_t cache_kind;  /**< Caching policy of query */
 
@@ -3336,6 +3337,7 @@ struct ecs_iter_t {
     ecs_entity_t *sources;        /* Entity on which the id was matched (0 if same as entities) */
     ecs_ref_t *references;        /* Cached refs to components (if iterating a cache) */
     ecs_flags64_t constrained_vars; /* Bitset that marks constrained variables */
+    ecs_flags64_t set_fields;     /* Fields that are set */
     uint64_t group_id;            /* Group id for table, if group_by is used */
     int32_t field_count;          /* Number of fields in iterator */
     ecs_termset_t shared_fields;  /* Bitset with shared fields */
@@ -3487,6 +3489,7 @@ void flecs_dump_backtrace(
 
 #define ECS_BIT_SETN(flags, n) ECS_BIT_SET(flags, 1llu << n)
 #define ECS_BIT_CLEARN(flags, n) ECS_BIT_CLEAR(flags, 1llu << n)
+#define ECS_BIT_CONDN(flags, n, cond) ECS_BIT_COND(flags, 1llu << n, cond)
 
 #ifdef __cplusplus
 }

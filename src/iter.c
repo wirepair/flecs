@@ -384,20 +384,9 @@ bool ecs_field_is_set(
     int32_t index)
 {
     ecs_check(it->flags & EcsIterIsValid, ECS_INVALID_PARAMETER, NULL);
-    ecs_assert(index >= 1, ECS_INVALID_PARAMETER, NULL);
-    int32_t column = it->columns[index - 1];
-    if (!column) {
-        return false;
-    } else if (column < 0) {
-        if (it->references) {
-            column = -column - 1;
-            ecs_ref_t *ref = &it->references[column];
-            return ref->entity != 0;
-        } else {
-            return true;
-        }
-    }
-    return true;
+    ecs_check(index >= 1, ECS_INVALID_PARAMETER, NULL);
+    ecs_check(index <= it->field_count, ECS_INVALID_PARAMETER, NULL);
+    return it->set_fields & (1llu << (index - 1));
 error:
     return false;
 }

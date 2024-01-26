@@ -30,7 +30,7 @@ void flecs_query_get_column_for_field(
         ecs_record_t *r = flecs_entities_get(q->world, src);
         table = r->table;
 
-        int32_t ref_index = match->columns[field] - 1;
+        int32_t ref_index = match->columns[field];
         ecs_ref_t *ref = ecs_vec_get_t(&match->refs, ecs_ref_t, ref_index);
         if (ref->id != 0) {
             ecs_ref_update(q->world, ref);
@@ -75,17 +75,21 @@ bool flecs_query_get_match_monitor(
         field = q->terms[i].field_index;
         monitor[field + 1] = -1;
 
+        /* If term isn't read, don't monitor */
         if (q->terms[i].inout != EcsIn && 
             q->terms[i].inout != EcsInOut &&
             q->terms[i].inout != EcsInOutDefault) {
-            continue; /* If term isn't read, don't monitor */
+            continue;
+        }
+
+        /* Don't track fields that aren't set */
+        if (!(match->set_fields & (1llu << field))) {
+            continue;
         }
 
         ecs_assert(match->columns != NULL, ECS_INTERNAL_ERROR, NULL);
         int32_t column = match->columns[field];
-        if (column == 0) {
-            continue; /* Don't track terms that aren't matched */
-        }
+        ecs_assert(column >= 0, ECS_INTERNAL_ERROR, NULL);
 
         flecs_query_get_column_for_field(q, match, field, &tc);
         if (tc.column == -1) {
@@ -309,15 +313,19 @@ bool flecs_query_check_match_monitor(
     int32_t i, j, field_count = filter->field_count;
     int32_t *storage_columns = match->storage_columns;
     ecs_entity_t *sources = match->sources;
-    int32_t *columns = it ? it->columns : NULL;
-    if (!columns) {
-        columns = match->columns;
-    }
+    int32_t *columns = it ? it->columns : match->columns;
+    ecs_flags64_t set_fields = it ? it->set_fields : match->set_fields;
+    
+    ecs_assert(columns != NULL, ECS_INTERNAL_ERROR, NULL);
 
     ecs_vec_t *refs = &match->refs;
     for (i = 0; i < field_count; i ++) {
         int32_t mon = monitor[i + 1];
         if (mon == -1) {
+            continue;
+        }
+
+        if (!(set_fields & (1llu << i))) {
             continue;
         }
 
@@ -338,10 +346,6 @@ bool flecs_query_check_match_monitor(
 
         column = columns[i];
         ecs_assert(column >= 0, ECS_INTERNAL_ERROR, NULL);
-        if (!column) {
-            /* Not matched */
-            continue;
-        }
 
         /* Find term index from field index, which differ when using || */
         int32_t term_index = i;
@@ -363,7 +367,7 @@ bool flecs_query_check_match_monitor(
         } else {
             if (is_this) {
                 /* Component reached through traversal from this */
-                int32_t ref_index = column - 1;
+                int32_t ref_index = column;
                 ecs_ref_t *ref = ecs_vec_get_t(refs, ecs_ref_t, ref_index);
                 if (ref->id != 0) {
                     ecs_ref_update(world, ref);
@@ -382,7 +386,7 @@ bool flecs_query_check_match_monitor(
                 ecs_entity_t fixed_src = match->sources[i];
                 ecs_table_t *src_table = ecs_get_table(world, fixed_src);
                 ecs_assert(src_table != NULL, ECS_INTERNAL_ERROR, NULL);
-                column = ecs_table_type_to_column_index(src_table, column - 1);
+                column = ecs_table_type_to_column_index(src_table, column);
                 int32_t *src_dirty_state = flecs_table_get_dirty_state(
                     world, src_table);
                 if (mon != src_dirty_state[column + 1]) {
@@ -443,8 +447,9 @@ void flecs_query_mark_fields_dirty(
 {
     ecs_query_t *q = &impl->pub;
 
-    /* Evaluate all writeable non-fixed fields */
-    ecs_termset_t write_fields = q->write_fields & ~q->fixed_fields;
+    /* Evaluate all writeable non-fixed fields, settable fields */
+    ecs_termset_t write_fields = 
+        q->write_fields & ~q->fixed_fields & q->set_fields;
     if (!write_fields) {
         return;
     }
@@ -474,16 +479,15 @@ void flecs_query_mark_fields_dirty(
         }
 
         int32_t type_index = it->columns[i];
-        if (type_index <= 0) {
-            continue;
-        }
-
+        ecs_assert(type_index >= 0, ECS_INTERNAL_ERROR, NULL);
+        
+        ecs_assert(table != NULL, ECS_INTERNAL_ERROR, NULL);
         int32_t *dirty_state = table->dirty_state;
         if (!dirty_state) {
             continue;
         }
 
-        int32_t column = table->column_map[type_index - 1];
+        int32_t column = table->column_map[type_index];
         dirty_state[column + 1] ++;
     }
 }
@@ -520,8 +524,8 @@ void flecs_query_mark_fixed_fields_dirty(
             continue;
         }
 
-        ecs_assert(it->columns[i] > 0, ECS_INTERNAL_ERROR, NULL);
-        int32_t column = table->column_map[it->columns[i] - 1];
+        ecs_assert(it->columns[i] >= 0, ECS_INTERNAL_ERROR, NULL);
+        int32_t column = table->column_map[it->columns[i]];
         dirty_state[column + 1] ++;
     }
 }

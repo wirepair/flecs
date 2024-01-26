@@ -273,6 +273,7 @@ void flecs_query_set_vars(
             }
         }
     }
+
     if (flags_2nd & EcsRuleIsVar) {
         ecs_var_id_t var = op->second.var;
         if (op->written & (1ull << var)) {
@@ -375,7 +376,7 @@ void flecs_query_it_set_column(
 {
     ecs_assert(column >= 0, ECS_INTERNAL_ERROR, NULL);
     ecs_assert(field_index >= 0, ECS_INTERNAL_ERROR, NULL);
-    it->columns[field_index] = column + 1;
+    it->columns[field_index] = column;
 }
 
 static
@@ -868,7 +869,7 @@ bool flecs_query_up_with(
 
         it->sources[op->field_index] = flecs_entities_get_generation(
             ctx->world, up->src);
-        it->columns[op->field_index] = up->column + 1;
+        it->columns[op->field_index] = up->column;
         it->ids[op->field_index] = up->id;
         flecs_query_set_vars(op, up->id, ctx);
         flecs_set_source_set_flag(ctx, op->field_index);
@@ -3000,7 +3001,7 @@ bool flecs_query_if_set(
 
     ecs_query_ctrl_ctx_t *op_ctx = flecs_op_ctx(ctx, ctrl);
     if (!redo) {
-        op_ctx->is_set = it->columns[field_index] != 0;
+        op_ctx->is_set = ecs_field_is_set(it, field_index + 1);
     }
 
     if (!op_ctx->is_set) {
@@ -3027,10 +3028,10 @@ void flecs_query_populate_field_from_range(
     int8_t field_index,
     int32_t index)
 {
-    ecs_assert(index > 0, ECS_INTERNAL_ERROR, NULL);
+    ecs_assert(index >= 0, ECS_INTERNAL_ERROR, NULL);
     ecs_assert(range->table != NULL, ECS_INTERNAL_ERROR, NULL);
     if (range->count && range->table->column_map) {
-        int32_t column = range->table->column_map[index - 1];
+        int32_t column = range->table->column_map[index];
         if (column != -1) {
             it->ptrs[field_index] = ECS_ELEM(
                 range->table->data.columns[column].data.array,
@@ -3049,9 +3050,7 @@ void flecs_query_populate_field(
 {
     int32_t index = it->columns[field_index];
     ecs_assert(index >= 0, ECS_INTERNAL_ERROR, NULL);
-    if (!index) {
-        return;
-    }
+    ecs_assert(ecs_field_is_set(it, field_index + 1), ECS_INTERNAL_ERROR, NULL);
 
     ecs_entity_t src = it->sources[field_index];
     if (!src) {
@@ -3061,7 +3060,7 @@ void flecs_query_populate_field(
         ecs_record_t *r = flecs_entities_get(ctx->world, src);
         ecs_table_t *src_table = r->table;
         if (src_table->column_map) {
-            int32_t column = src_table->column_map[index - 1];
+            int32_t column = src_table->column_map[index];
             if (column != -1) {
                 it->ptrs[field_index] = ecs_vec_get(
                     &src_table->data.columns[column].data,
@@ -3097,6 +3096,8 @@ bool flecs_query_populate(
             range->count = ecs_table_count(table);
         }
 
+        /* Only populate fields that are set */
+        data_fields &= it->set_fields;
         for (i = 0; i < field_count; i ++) {
             if (!(data_fields & (1llu << i))) {
                 continue;
@@ -3135,18 +3136,17 @@ bool flecs_query_populate_self(
             return true;
         }
 
+        /* Only populate fields that can be set */
+        data_fields &= it->set_fields;
         for (i = 0; i < field_count; i ++) {
             if (!(data_fields & (1llu << i))) {
                 continue;
             }
 
             int32_t index = it->columns[i];
-            ecs_assert(index >= 0, ECS_INTERNAL_ERROR, NULL); /* Only owned */
-            if (!index) {
-                continue;
-            }
+            ecs_assert(index >= 0, ECS_INTERNAL_ERROR, NULL);
 
-            int32_t column = table->column_map[index - 1];
+            int32_t column = table->column_map[index];
             if (column != -1) {
                 it->ptrs[i] = ECS_ELEM(
                     table->data.columns[column].data.array,

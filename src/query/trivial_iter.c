@@ -95,7 +95,7 @@ bool flecs_query_trivial_search(
                 break;
             }
 
-            it->columns[t] = tr_with->index + 1;
+            it->columns[t] = tr_with->index;
             if (tr_with->column != -1) {
                 it->ptrs[t] = ecs_vec_first(
                     &table->data.columns[tr_with->column].data);
@@ -106,7 +106,7 @@ bool flecs_query_trivial_search(
             ctx->vars[0].range.table = table;
             ctx->vars[0].range.count = 0;
             ctx->vars[0].range.offset = 0;
-            it->columns[0] = tr->index + 1;
+            it->columns[0] = tr->index;
             if (tr->column != -1) {
                 it->ptrs[0] = ecs_vec_first(
                     &table->data.columns[tr->column].data);
@@ -134,8 +134,8 @@ bool flecs_query_trivial_search_w_wildcards(
         for (t = 0; t < term_count; t ++) {
             if (term_set & (1llu << t)) {
                 int32_t column = it->columns[t];
-                ecs_assert(column > 0, ECS_INTERNAL_ERROR, NULL);
-                it->ids[t] = table->type.array[column - 1];
+                ecs_assert(column >= 0, ECS_INTERNAL_ERROR, NULL);
+                it->ids[t] = table->type.array[column];
             }
         }
     }
@@ -183,14 +183,14 @@ bool flecs_query_trivial_search_nodata(
                 break;
             }
 
-            it->columns[t] = tr_with->index + 1;
+            it->columns[t] = tr_with->index;
         }
 
         if (t == term_count) {
             ctx->vars[0].range.table = table;
             ctx->vars[0].range.count = 0;
             ctx->vars[0].range.offset = 0;
-            it->columns[0] = tr->index + 1;
+            it->columns[0] = tr->index;
             break;
         }
     } while (true);
@@ -229,7 +229,7 @@ bool flecs_query_trivial_test(
                 return false;
             }
 
-            it->columns[t] = tr->index + 1;
+            it->columns[t] = tr->index;
             if (it->count && tr->column != -1) {
                 it->ptrs[t] = ecs_vec_get(
                     &table->data.columns[tr->column].data,
@@ -264,8 +264,8 @@ bool flecs_query_trivial_test_w_wildcards(
         for (t = 0; t < term_count; t ++) {
             if (term_set & (1llu << t)) {
                 int32_t column = it->columns[t];
-                ecs_assert(column > 0, ECS_INTERNAL_ERROR, NULL);
-                it->ids[t] = table->type.array[column - 1];
+                ecs_assert(column >= 0, ECS_INTERNAL_ERROR, NULL);
+                it->ids[t] = table->type.array[column];
             }
         }
     }

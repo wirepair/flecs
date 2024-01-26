@@ -412,12 +412,7 @@ int32_t ecs_field_column_index(
     int32_t index)
 {
     ecs_assert(index >= 1, ECS_INVALID_PARAMETER, NULL);
-    int32_t result = it->columns[index - 1];
-    if (result <= 0) {
-        return -1;
-    } else {
-        return result - 1;
-    }
+    return it->columns[index - 1];
 }
 
 ecs_entity_t ecs_field_src(

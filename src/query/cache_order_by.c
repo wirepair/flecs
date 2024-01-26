@@ -115,10 +115,10 @@ void flecs_query_cache_build_sorted_table_range(
             int32_t field = term->field_index;
             int32_t column = cur->columns[field];
             ecs_size_t size = cache->query->sizes[field];
-            ecs_assert(column != 0, ECS_INTERNAL_ERROR, NULL);
+            ecs_assert(column >= 0, ECS_INTERNAL_ERROR, NULL);
             ecs_entity_t src = cur->sources[field];
             if (src == 0) {
-                column = table->column_map[column - 1];
+                column = table->column_map[column];
                 ecs_vec_t *vec = &data->columns[column].data;
                 helper[to_sort].ptr = ecs_vec_first(vec);
                 helper[to_sort].elem_size = size;

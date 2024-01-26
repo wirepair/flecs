@@ -553,7 +553,7 @@ void flecs_query_cache_set_table_match(
         /* Initialize storage columns for faster access to component storage */
         for (i = 0; i < field_count; i ++) {
             int32_t column = it->columns[i];
-            if (!column || terms[i].inout == EcsInOutNone) {
+            if (!ecs_field_is_set(it, i + 1) || terms[i].inout == EcsInOutNone) {
                 qm->storage_columns[i] = -1;
                 continue;
             }
@@ -561,7 +561,7 @@ void flecs_query_cache_set_table_match(
             ecs_entity_t src = it->sources[i];
             if (!src) {
                 qm->storage_columns[i] = ecs_table_type_to_column_index(
-                    table, column - 1);
+                    table, column);
             } else {
                 /* Shared field (not from table) */
                 qm->storage_columns[i] = -2;
@@ -589,8 +589,8 @@ void flecs_query_cache_set_table_match(
                     world, impl, qm, id, src, size);
 
                 /* Use column index to bind term and ref */
-                if (qm->columns[field] != 0) {
-                    qm->columns[field] = ecs_vec_count(&qm->refs);
+                if (qm->set_fields & (1llu << field)) {
+                    qm->columns[field] = ecs_vec_count(&qm->refs) - 1;
                 }
             }
         }

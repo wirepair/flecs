@@ -93,7 +93,7 @@ void flecs_query_populate_ptrs_w_shared(
         }
 
         ecs_size_t size = it->sizes[field_index];
-        if (!column || !size) {
+        if (!ecs_field_is_set(it, i + 1) || !size) {
             /* Tag / no data */
             it->ptrs[field_index] = NULL;
             continue;
@@ -101,7 +101,7 @@ void flecs_query_populate_ptrs_w_shared(
 
         ecs_entity_t src = it->sources[i];
         if (src != 0) {
-            ecs_ref_t *ref = &it->references[column - 1];
+            ecs_ref_t *ref = &it->references[column];
             if (ref->id) {
                 it->ptrs[field_index] = (void*)ecs_ref_get_id(
                     it->real_world, ref, ref->id);

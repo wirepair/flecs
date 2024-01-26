@@ -3739,6 +3739,7 @@ void Basic_not_instanced_table_src(void) {
         test_uint(e3, it.entities[2]);
 
         const Position *p = ecs_field(&it, Position, 1);
+        test_assert(p != NULL);
         test_int(p[0].x, 10); test_int(p[0].y, 20);
         test_int(p[1].x, 20); test_int(p[1].y, 30);
         test_int(p[2].x, 30); test_int(p[2].y, 40);
@@ -3776,6 +3777,7 @@ void Basic_not_instanced_entity_src(void) {
         test_bool(true, ecs_field_is_set(&it, 1));
 
         const Position *p = ecs_field(&it, Position, 1);
+        test_assert(p != NULL);
         test_int(p->x, 10);
         test_int(p->y, 20);
     }
@@ -3820,10 +3822,12 @@ void Basic_not_instanced_mixed_src(void) {
         test_uint(e1, it.entities[0]);
 
         const Position *p = ecs_field(&it, Position, 1);
+        test_assert(p != NULL);
         test_int(p->x, 10);
         test_int(p->y, 20);
 
         const Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(v != NULL);
         test_int(v->x, 1);
         test_int(v->y, 2);
     }
@@ -3839,10 +3843,12 @@ void Basic_not_instanced_mixed_src(void) {
         test_uint(e2, it.entities[0]);
 
         const Position *p = ecs_field(&it, Position, 1);
+        test_assert(p != NULL);
         test_int(p->x, 20);
         test_int(p->y, 30);
 
         const Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(v != NULL);
         test_int(v->x, 1);
         test_int(v->y, 2);
     }
@@ -3858,10 +3864,12 @@ void Basic_not_instanced_mixed_src(void) {
         test_uint(e3, it.entities[0]);
 
         const Position *p = ecs_field(&it, Position, 1);
+        test_assert(p != NULL);
         test_int(p->x, 30);
         test_int(p->y, 40);
 
         const Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(v != NULL);
         test_int(v->x, 1);
         test_int(v->y, 2);
     }
@@ -4025,6 +4033,7 @@ void Basic_instanced_table_src(void) {
         test_uint(e3, it.entities[2]);
 
         const Position *p = ecs_field(&it, Position, 1);
+        test_assert(p != NULL);
         test_int(p[0].x, 10); test_int(p[0].y, 20);
         test_int(p[1].x, 20); test_int(p[1].y, 30);
         test_int(p[2].x, 30); test_int(p[2].y, 40);
@@ -4063,6 +4072,7 @@ void Basic_instanced_entity_src(void) {
         test_bool(true, ecs_field_is_set(&it, 1));
 
         const Position *p = ecs_field(&it, Position, 1);
+        test_assert(p != NULL);
         test_int(p->x, 10);
         test_int(p->y, 20);
     }
@@ -4108,6 +4118,7 @@ void Basic_instanced_mixed_src(void) {
         test_uint(e3, it.entities[2]);
 
         const Position *p = ecs_field(&it, Position, 1);
+        test_assert(p != NULL);
         test_int(p[0].x, 10); test_int(p[0].y, 20);
         test_int(p[1].x, 20); test_int(p[1].y, 30);
         test_int(p[2].x, 30); test_int(p[2].y, 40);
@@ -6366,6 +6377,8 @@ void Basic_instanced_w_singleton(void) {
         Velocity *v = ecs_field(&it, Velocity, 2);
         test_bool(true, ecs_field_is_set(&it, 1));
         test_bool(true, ecs_field_is_set(&it, 2));
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 3);
         test_int(it.entities[0], e1);
         test_int(it.entities[1], e2);
@@ -6386,6 +6399,8 @@ void Basic_instanced_w_singleton(void) {
         Velocity *v = ecs_field(&it, Velocity, 2);
         test_bool(true, ecs_field_is_set(&it, 1));
         test_bool(true, ecs_field_is_set(&it, 2));
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 2);
         test_int(it.entities[0], e4);
         test_int(it.entities[1], e5);
@@ -6457,6 +6472,8 @@ void Basic_instanced_w_base(void) {
 
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 2);
         test_int(it.entities[0], e8);
         test_int(it.entities[1], e9);
@@ -6477,7 +6494,8 @@ void Basic_instanced_w_base(void) {
 
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
-
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 3);
         test_int(it.entities[0], e1);
         test_int(it.entities[1], e2);
@@ -6501,6 +6519,8 @@ void Basic_instanced_w_base(void) {
 
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 2);
         test_int(it.entities[0], e4);
         test_int(it.entities[1], e5);
@@ -6521,6 +6541,8 @@ void Basic_instanced_w_base(void) {
 
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 2);
         test_int(it.entities[0], e6);
         test_int(p[0].x, 60);
@@ -6572,6 +6594,8 @@ void Basic_not_instanced_w_singleton(void) {
     {
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 1);
         test_int(it.entities[0], e1);
         test_int(v->x, 1);
@@ -6588,6 +6612,8 @@ void Basic_not_instanced_w_singleton(void) {
     {
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 1);
         test_int(it.entities[0], e2);
         test_int(v->x, 1);
@@ -6604,6 +6630,8 @@ void Basic_not_instanced_w_singleton(void) {
     {
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 1);
         test_int(it.entities[0], e3);
         test_int(v->x, 1);
@@ -6620,6 +6648,8 @@ void Basic_not_instanced_w_singleton(void) {
     {
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 1);
         test_int(it.entities[0], e4);
         test_int(p[0].x, 40);
@@ -6636,6 +6666,8 @@ void Basic_not_instanced_w_singleton(void) {
     {
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 1);
         test_int(it.entities[0], e5);
         test_int(p[0].x, 50);
@@ -6707,6 +6739,8 @@ void Basic_not_instanced_w_base(void) {
 
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 1);
         test_int(it.entities[0], e8);
         test_int(p->x, 80);
@@ -6724,6 +6758,8 @@ void Basic_not_instanced_w_base(void) {
 
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 1);
         test_int(it.entities[0], e9);
         test_int(p->x, 80);
@@ -6741,7 +6777,8 @@ void Basic_not_instanced_w_base(void) {
 
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
-
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 1);
         test_int(it.entities[0], e1);
         test_int(p[0].x, 10);
@@ -6759,7 +6796,8 @@ void Basic_not_instanced_w_base(void) {
 
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
-
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 1);
         test_int(it.entities[0], e2);
         test_int(p[0].x, 20);
@@ -6777,7 +6815,8 @@ void Basic_not_instanced_w_base(void) {
 
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
-
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 1);
         test_int(it.entities[0], e3);
         test_int(p[0].x, 30);
@@ -6795,6 +6834,8 @@ void Basic_not_instanced_w_base(void) {
 
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 1);
         test_int(it.entities[0], e4);
         test_int(p[0].x, 40);
@@ -6812,6 +6853,8 @@ void Basic_not_instanced_w_base(void) {
 
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 1);
         test_int(it.entities[0], e5);
         test_int(p[0].x, 50);
@@ -6829,6 +6872,8 @@ void Basic_not_instanced_w_base(void) {
 
         Position *p = ecs_field(&it, Position, 1);
         Velocity *v = ecs_field(&it, Velocity, 2);
+        test_assert(p != NULL);
+        test_assert(v != NULL);
         test_int(it.count, 2);
         test_int(it.entities[0], e6);
         test_int(p[0].x, 60);

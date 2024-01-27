@@ -32,8 +32,6 @@ void Toggle_fixed_src_1_tag_toggle(void) {
 
     test_assert(q != NULL);
 
-    printf("%s\n", ecs_query_plan(q));
-
     {
         ecs_iter_t it = ecs_query_iter(world, q);
         test_bool(false, ecs_query_next(&it));
@@ -3314,8 +3312,6 @@ void Toggle_this_written_toggle_w_2_not_toggle(void) {
 
     test_assert(q != NULL);
 
-    printf("%s\n", ecs_query_plan(q));
-
     ecs_iter_t it = ecs_query_iter(world, q);
     test_bool(true, ecs_iter_next(&it));
     test_int(1, it.count);
@@ -3576,18 +3572,6 @@ void Toggle_this_written_toggle_w_2_optional_toggle(void) {
 
     test_bool(true, ecs_iter_next(&it));
     test_int(1, it.count);
-    test_uint(e12, it.entities[0]);
-    test_uint(Tag, ecs_field_id(&it, 1));
-    test_uint(ecs_id(Position), ecs_field_id(&it, 2));
-    test_uint(ecs_id(Velocity), ecs_field_id(&it, 3));
-    test_uint(ecs_id(Mass), ecs_field_id(&it, 4));
-    test_bool(true, ecs_field_is_set(&it, 1));
-    test_bool(true, ecs_field_is_set(&it, 2));
-    test_bool(true, ecs_field_is_set(&it, 3));
-    test_bool(false, ecs_field_is_set(&it, 4));
-
-    test_bool(true, ecs_iter_next(&it));
-    test_int(1, it.count);
     test_uint(e9, it.entities[0]);
     test_uint(Tag, ecs_field_id(&it, 1));
     test_uint(ecs_id(Position), ecs_field_id(&it, 2));
@@ -3596,6 +3580,18 @@ void Toggle_this_written_toggle_w_2_optional_toggle(void) {
     test_bool(true, ecs_field_is_set(&it, 1));
     test_bool(true, ecs_field_is_set(&it, 2));
     test_bool(false, ecs_field_is_set(&it, 3));
+    test_bool(false, ecs_field_is_set(&it, 4));
+
+    test_bool(true, ecs_iter_next(&it));
+    test_int(1, it.count);
+    test_uint(e12, it.entities[0]);
+    test_uint(Tag, ecs_field_id(&it, 1));
+    test_uint(ecs_id(Position), ecs_field_id(&it, 2));
+    test_uint(ecs_id(Velocity), ecs_field_id(&it, 3));
+    test_uint(ecs_id(Mass), ecs_field_id(&it, 4));
+    test_bool(true, ecs_field_is_set(&it, 1));
+    test_bool(true, ecs_field_is_set(&it, 2));
+    test_bool(true, ecs_field_is_set(&it, 3));
     test_bool(false, ecs_field_is_set(&it, 4));
 
     test_bool(true, ecs_iter_next(&it));
